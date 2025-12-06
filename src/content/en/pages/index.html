@@ -42,7 +42,7 @@ permalink: /
 				{% if value | isString %}
 				<pre>{{ value }}</pre>
 				{% else %}
-				<pre>{{ value | inspect }}</pre>
+				<pre>{{ value | inspect() }}</pre>
 				{% endif %}
 			</details>
 		{% endfor %}

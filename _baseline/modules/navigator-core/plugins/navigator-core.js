@@ -13,7 +13,7 @@ export default function(eleventyConfig, options = {}) {
 	})
 
 	if (getVerbose(eleventyConfig)) {
-		// Read virtual template from file
+		// Read virtual template synchronously; Nunjucks pipeline here is sync-only.
 		const templatePath = path.join(__dirname, "../templates/core-navigator.html");
 		const virtualTemplateContent = fs.readFile(templatePath, "utf-8");
 	
