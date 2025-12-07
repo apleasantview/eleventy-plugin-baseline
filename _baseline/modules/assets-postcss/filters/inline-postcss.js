@@ -11,7 +11,7 @@ export default async function inlinePostCSS(cssFilePath) {
 			map: postcssConfig.map
 		});
 
-		return `<style>${result}</style>`;
+		return `<style>${result.css}</style>`;
 	} catch (error) {
 		console.error(error);
 		return `<style>/* Error processing CSS */</style>`;
