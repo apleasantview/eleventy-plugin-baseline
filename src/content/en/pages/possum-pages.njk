@@ -1,4 +1,5 @@
 ---
+title: Possums
 pagination:
   data: possums
   size: 1
@@ -6,57 +7,24 @@ pagination:
 permalink: "possums/{{ possum.name | slugify }}/"
 ---
 
+{% extends "layouts/base.njk" %}
 
-
-<!DOCTYPE html>
-<html lang="{{ site.defaultLanguage }}">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ site.title }}</title>
-	<link rel="stylesheet" href="/assets/css/index.css">
-	<script src="/assets/js/index.js" defer></script>
-	<meta name="generator" content="{{ eleventy.generator }}">
-	<meta name="description" content="{{ description | default(site.tagline) }}">
-	{% if site.noindex %}
-	<meta name="robots" content="noindex, nofollow">
-	{% endif %}
-</head>
-<body>
-	<a href="#main" class="skip-link">
-		Skip to main content
-	</a>
-	<header>
-		<h1>{{ site.title }}</h1>
-		<a href="{{ site.baseURL }}">Home</a>
-	</header>
-	<main id="main" tabindex="-1">
-		<p>{{ site.tagline }}</p>
-		{{ possum.name }} is {{ possum.age }} years old.
-		{% for key, value in _context() %}
-			<p><strong>{{ key }}</strong></p>
-			{% if value | isString %}
-				<pre>{{ value }}</pre>
-			{% else %}
-				<pre>{{ value | inspect }}</pre>
-			{% endif %}
-		{% endfor %}
-		<nav aria-labelledby="my-pagination">
-  		<h2 id="my-pagination">This is my Pagination</h2>
-			<ol>
-				<li>{% if page.url != pagination.href.first %}<a href="{{ pagination.href.first }}">First</a>{% else %}First{% endif %}</li>
-				<li>{% if pagination.href.previous %}<a href="{{ pagination.href.previous }}">Previous</a>{% else %}Previous{% endif %}</li>
-		{%- for pageEntry in pagination.pages %}
-				<li><a href="{{ pagination.hrefs[ loop.index0 ] }}"{% if page.url == pagination.hrefs[ loop.index0 ] %} aria-current="page"{% endif %}>Page {{ loop.index }}</a></li>
-		{%- endfor %}
-				<li>{% if pagination.href.next %}<a href="{{ pagination.href.next }}">Next</a>{% else %}Next{% endif %}</li>
-				<li>{% if page.url != pagination.href.last %}<a href="{{ pagination.href.last }}">Last</a>{% else %}Last{% endif %}</li>
-			</ol>
-		</nav>
-	</body>
-	<footer>
-	<small>Build: {{ helpers.buildCommit() }}</small>
-</footer>
-
-</html>
+{% block content %}
+	{{ possum.name }} is {{ possum.age }} years old.
+	<nav aria-labelledby="my-pagination">
+		<h2 id="my-pagination">This is my Pagination</h2>
+		<ol>
+			<li>{% if page.url != pagination.href.first %}<a href="{{ pagination.href.first }}">First</a>{% else %}First{% endif %}</li>
+			<li>{% if pagination.href.previous %}<a href="{{ pagination.href.previous }}">Previous</a>{% else %}Previous{% endif %}</li>
+	{%- for pageEntry in pagination.pages %}
+			<li><a href="{{ pagination.hrefs[ loop.index0 ] }}"{% if page.url == pagination.hrefs[ loop.index0 ] %} aria-current="page"{% endif %}>Page {{ loop.index }}</a></li>
+	{%- endfor %}
+			<li>{% if pagination.href.next %}<a href="{{ pagination.href.next }}">Next</a>{% else %}Next{% endif %}</li>
+			<li>{% if page.url != pagination.href.last %}<a href="{{ pagination.href.last }}">Last</a>{% else %}Last{% endif %}</li>
+		</ol>
+	</nav>
+	<p><strong>Collections.all</strong></p>
+	{% for item in collections.all %}
+	<p><a href="{{ item.url }}">{{ item.url }}</a></p>
+	{% endfor %}
+{% endblock %}

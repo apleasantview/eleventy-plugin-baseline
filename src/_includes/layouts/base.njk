@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="{{ site.defaultLanguage }}">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ site.title }}</title>
+		<link rel="stylesheet" href="/assets/css/index.css">
+		<script src="/assets/js/index.js" defer></script>
+		<meta name="generator" content="{{ eleventy.generator }}">
+		<meta name="description" content="{{ description | default(site.tagline) }}">
+		{% if site.noindex %}
+		<meta name="robots" content="noindex, nofollow">
+		{% endif %}
+	</head>
+	<body>
+		<a href="#main" class="skip-link">
+			Skip to main content
+		</a>
+		<header>
+			<h1>{{ title }}</h1>
+			<p>{{ site.tagline }}</p>
+			<p><a href="{{ site.baseURL | htmlBaseUrl}}">Home</a></p>
+		</header>
+		<main id="main" tabindex="-1">
+			{% block content %}
+				<p>
+					No content found.
+				</p>
+			{% endblock %}
+		</main>
+	</body>
+	<footer>
+		<small>Build: {{ helpers.buildCommit() }}</small>
+	</footer>
+</html>
