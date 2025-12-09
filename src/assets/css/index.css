@@ -6,6 +6,7 @@
 @import "./generic/modern-reset.css" layer(reset);
 
 /* 04. Elements */
+@import "./elements/base.css";
 @import "./elements/skip-link.css";
 
 /* 05. Objects */
