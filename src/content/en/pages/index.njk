@@ -1,7 +1,12 @@
 ---
 title: Homepage of docs
-meta: very important page
 permalink: /
+description: you know it
+head:
+  title: "overriding titles dude"
+  link: [
+    { rel: "something", src: "something else"}
+  ]
 ---
 
 {% extends "layouts/base.njk" %}
@@ -12,13 +17,13 @@ permalink: /
 	<p><a href="{{ item.url }}">{{ item.url }}</a></p>
 	{% endfor %}
 	<p><strong><u>Core navigator</u></strong></p>
-	{% for key, value in _navigator() %}
+	{% for key, value in _context() %}
 		<details open>
 			<summary><strong>{{ key }}</strong></summary>
 			{% if value | isString %}
 			<pre>{{ value }}</pre>
 			{% else %}
-			<pre>{{ value | inspect() }}</pre>
+			<pre>{{ value | inspect({depth: 4}) }}</pre>
 			{% endif %}
 		</details>
 	{% endfor %}
