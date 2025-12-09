@@ -20,6 +20,8 @@ const defaultHead = (data = {}, userKey) => {
 			{ name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
 		],
 		link: [],
+		script: [],
+		hreflang: [],
 		openGraph: {
 			"og:title": title,
 			"og:description": description,
@@ -33,19 +35,17 @@ const defaultHead = (data = {}, userKey) => {
 			"twitter:description": description,
 			"twitter:image": "",
 		},
-		structuredData: null,
 		miscMeta: [],
-		hreflang: [],
-		scripts: [],
+		structuredData: null,
 	};
 
 	// Merge objects (arrays are replaced), then manually concat arrays to keep defaults + user
 	const merged = Merge({}, base, user);
 	merged.meta = [...(base.meta || []), ...(user.meta || [])];
 	merged.link = [...(base.link || []), ...(user.link || [])];
-	merged.miscMeta = [...(base.miscMeta || []), ...(user.miscMeta || [])];
+	merged.script = [...(base.script || []), ...(user.script || [])];
 	merged.hreflang = [...(base.hreflang || []), ...(user.hreflang || [])];
-	merged.scripts = [...(base.scripts || []), ...(user.scripts || [])];
+	merged.miscMeta = [...(base.miscMeta || []), ...(user.miscMeta || [])];
 
 	return merged;
 };
@@ -61,33 +61,47 @@ const resolveCanonical = (head, page, contentMap) => {
 };
 
 const flattenHead = (head = {}, canonical) => {
-	const meta = [
-		...(head.meta || []),
-		...(head.miscMeta || []),
+	const meta = [...(head.meta || [])];
+
+	const meta_1 = [
 		...(head.openGraph
 			? Object.entries(head.openGraph)
 				.filter(([, v]) => v)
 				.map(([k, v]) => ({ property: k, content: v }))
-			: []),
+			: [])
+	];
+
+	const meta_2 = [
 		...(head.twitter
 			? Object.entries(head.twitter)
 				.filter(([, v]) => v)
 				.map(([k, v]) => ({ name: k, content: v }))
-			: []),
+			: [])
 	];
 
+	const meta_3 = [...(head.miscMeta || [])];
+
 	// Deduplicate meta: last occurrence wins per name/property key
-	const seen = new Set();
-	const dedupedMeta = [];
-	for (let i = meta.length - 1; i >= 0; i--) {
-		const m = meta[i];
-		const key = m.name ? `name:${m.name}` : m.property ? `prop:${m.property}` : null;
-		if (!key) continue;
-		if (seen.has(key)) continue;
-		seen.add(key);
-		dedupedMeta.push(m);
+	const dedupe = (arr) => {
+		const seen = new Set();
+		const out = [];
+		for (let i = arr.length - 1; i >= 0; i--) {
+			const m = arr[i];
+			const key = 
+			m.charset
+			? "charset"
+			:m.name
+			? `name:${m.name}`
+			: m.property
+			? `prop:${m.property}`
+			: null;
+			if (!key) continue;
+			if (seen.has(key)) continue;
+			seen.add(key);
+			out.push(m);
+		}
+		return out.reverse();
 	}
-	dedupedMeta.reverse();
 
 	const link = [...(head.link || [])];
 	if (canonical) {
@@ -97,7 +111,7 @@ const flattenHead = (head = {}, canonical) => {
 		link.push(...head.hreflang);
 	}
 
-	const script = [...(head.scripts || [])];
+	const script = [...(head.script || [])];
 	if (head.structuredData) {
 		script.unshift({
 			type: "application/ld+json",
@@ -106,10 +120,13 @@ const flattenHead = (head = {}, canonical) => {
 	}
 
 	return {
+		meta: dedupe(meta),
 		title: head.title || "",
-		meta: dedupedMeta,
 		link,
 		script,
+		meta_1: dedupe(meta_1),
+		meta_2: dedupe(meta_2),
+		meta_3: dedupe(meta_3),
 	};
 };
 

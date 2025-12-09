@@ -5,7 +5,7 @@ import { defaultHead, buildHeadSpec } from "../utils/head-utils.js";
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, options = {}) {
 	const userKey = options.dirKey || "head";
-	const headElementsTag = options.headElementsTag || "posthtml-head-elements";
+	const headElementsTag = options.headElementsTag || "baseline-head";
 	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
 	const eol = options.EOL || "\n";
 
@@ -38,4 +38,3 @@ export default function headCore(eleventyConfig, options = {}) {
 		};
 	});
 }
-
