@@ -1,15 +1,15 @@
 # Eleventy Baseline
 
-_An experimental starting point for building Eleventy sites — with a few handy tools already wired up._
+_An experimental Swiss army knife for Eleventy._
 
-Eleventy Baseline is a lightweight boilerplate that collects small but useful patterns for everyday Eleventy development. It aims to reduce setup friction, add a few missing conveniences, and explore what a minimal, optional “core” for Eleventy could look like without becoming a framework or theme.
+Eleventy Baseline is a lightweight toolkit that collects small but useful patterns for everyday Eleventy development. It explores what a minimal, optional “core” for Eleventy could look like without becoming a framework or theme.
 
 This is a practical, evolving baseline.  
 Things might shift, break, or get renamed as the project evolves.
 
 ## Current Features
 
-- Debugging helpers (filter, shortcode, Nunjucks globals)
+- Debugging helpers (filter, Nunjucks globals)
 - Markdown parsing filter
 - Related-posts filter
 - CSS processing with PostCSS + minification
@@ -17,7 +17,7 @@ Things might shift, break, or get renamed as the project evolves.
 - JS bundling with esbuild
 - Filter to inline bundled JS where needed
 - Image handling via eleventy-img with a custom shortcode
-- Head/meta injection via `head-core` (baseline-head tag + defaults for title/description/robots/OG/Twitter)
+- Head/meta injection via PostHTML with `<baseline-head>` (defaults for meta/assets/basic SEO)
 
 ## Planned / Exploratory Features
 
