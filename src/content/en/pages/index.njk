@@ -1,27 +1,16 @@
 ---
-title: Homepage of docs
+title: Homepage
 permalink: /
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
-	<p><strong><u>Collections.all</u></strong></p>
+	<p><strong><u>Index</u></strong></p>
 	<ul role="list" style="padding-left: 0">
 		{% for item in collections.all %}
 		<li><a href="{{ item.url }}">{{ item.url }}</a></li>
 		{% endfor %}
 	</ul>
-	<p><strong><u>Core navigator</u></strong></p>
-	{% for key, value in _context() %}
-		<details open>
-			<summary><strong>{{ key }}</strong></summary>
-			{% if value | isString %}
-			<pre>{{ value }}</pre>
-			{% else %}
-			<pre>{{ value | inspect({depth: 4}) }}</pre>
-			{% endif %}
-		</details>
-	{% endfor %}
 {% endblock %}
 
