@@ -2,4 +2,12 @@
 
 {% block content %}
 	{{ content | safe }}
+
+	{% set previousPost = collections.docs | getPreviousCollectionItem %}
+	{% set nextPost = collections.docs | getNextCollectionItem %}
+
+	<div style="margin-top: var(--space-2xl); max-width: 48rem; display: flex; justify-content: space-between; box-sizing: content-box; padding-inline: 0.5rem;">
+		{% if previousPost %}<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>{% endif %}
+		{% if nextPost %}<p>Next: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></p>{% endif %}
+	</div>
 {% endblock %}
