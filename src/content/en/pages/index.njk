@@ -9,12 +9,6 @@ permalink: /
 	<p><strong>Eleventy Baseline</strong> is an experimental Swiss army knife for Eleventy: small, prewired helpers for assets, head/meta, images, and debug so you spend less time wiring the same pieces.</p>
 	<p>Work in progress: docs and APIs may shift. Start with the getting-started docs below.</p>
 
-	{% set topics = collections.docs | groupby("data.topicTitle") %}
-	{% for topic, items in topics %}
-		<p><strong>{{ topic }}</strong></p>
-		{% for item in items %}
-			<a href="{{ item.url }}">{{ item.data.title }}</a>
-		{% endfor %}
-	{% endfor %}
+	{% include "layouts/components/docs-toc.njk" %}
 {% endblock %}
 

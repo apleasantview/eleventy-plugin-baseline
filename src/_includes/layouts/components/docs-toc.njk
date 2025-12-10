@@ -1,0 +1,10 @@
+<div style="margin-top: var(--space-l); flex: 1 100%;">
+	<small><u>Table of Contents</u></small>
+	{% set topics = collections.docs | groupby("data.topicTitle") %}
+	{% for topic, items in topics %}
+		<p style="margin-top: var(--space-s);"><strong>{{ topic }}</strong></p>
+		{% for item in items %}
+			<a href="{{ item.page.url }}">{{ item.data.title }}</a>
+		{% endfor %}
+	{% endfor %}
+</div>
