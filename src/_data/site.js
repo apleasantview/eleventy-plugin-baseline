@@ -1,5 +1,5 @@
 export default {
-	title: "Baseline",
+	title: "Eleventy Baseline",
 	tagline: "A magic carpet ride",
 	baseURL: "/",
 	defaultLanguage: "en",
