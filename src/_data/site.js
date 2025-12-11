@@ -1,5 +1,5 @@
 export default {
-	title: "Eleventy Baseline",
+	title: "Eleventy Plugin Baseline",
 	tagline: "A magic carpet ride",
 	baseURL: "/",
 	defaultLanguage: "en",
