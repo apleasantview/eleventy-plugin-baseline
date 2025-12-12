@@ -24,6 +24,6 @@
 		</main>
 	</body>
 	<footer>
-		<small>Build: {{ helpers.buildCommit() }}</small>
+		<small>Build: {{ helpers.buildCommit() | safe }}</small>
 	</footer>
 </html>
