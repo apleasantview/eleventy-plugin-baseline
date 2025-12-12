@@ -1,11 +1,11 @@
 {% extends "layouts/base.njk" %}
 
 {% block content %}
-	{% include "./components/docs-toc.njk" %}
+	{% include "components/docs-toc.njk" %}
 	<div style="padding-block: var(--space-2xs);"></div>
 	<h1>{{ title }}</h1>	
 	{{ content | safe }}
 	<div style="max-width: 48rem; margin-block-start: var(--space-3xl); border-top: 1px solid var(--border-color);">
-		{% include "./components/docs-nav.njk" %}
+		{% include "components/docs-nav.njk" %}
 	</div>
 {% endblock %}

@@ -20,7 +20,7 @@ export default async function (eleventyConfig) {
 	});
 
 	eleventyConfig.addPairedNunjucksShortcode("alertBlock", function(text, type = "info") { 
-		const res = this.env.render("layouts/components/alerts.njk", {
+		const res = this.env.render("components/alerts.njk", {
 			content: text,
 			type: type
 		});
