@@ -32,7 +32,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addWatchTarget('./src/assets/**/*.{css,js,svg,png,jpeg}');
 
 		// Modules.
-		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || "/" });
+		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
 		eleventyConfig.addPlugin(modules.syntaxHighlight);
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
