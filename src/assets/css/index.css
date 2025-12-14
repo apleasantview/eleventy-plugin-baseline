@@ -6,9 +6,9 @@
 /* 02. Tools */
 
 /* 03. Generic */
-@import "./generic/modern-reset.css" layer(reset);
 @import "./generic/semantic-tokens.css" layer(tokens);
 @import "./generic/elements-defaults.css" layer(tokens);
+@import "./generic/modern-reset.css" layer(reset);
 
 /* 04. Elements */
 @import "./elements/base.css";
