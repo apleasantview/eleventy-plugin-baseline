@@ -16,7 +16,7 @@ permalink: /nl/
 		<details open>
 			<summary><strong>{{ key }}</strong></summary>
 			{% if value | isString %}
-			<pre>{{ value }}</pre>
+			<pre>{{ value | safe }}</pre>
 			{% else %}
 			<pre>{{ value | inspect() }}</pre>
 			{% endif %}
