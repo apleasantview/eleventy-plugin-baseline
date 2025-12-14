@@ -55,6 +55,10 @@ h3 {
 	font-size: var(--heading-3-size);
 }
 
+ul {
+	padding-inline-start: 2rem;
+}
+
 pre, code:not(pre code) {
 	background: var(--surface-color-subtle);
 }
