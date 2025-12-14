@@ -19,30 +19,31 @@ permalink: /navigator-core.html
 		<h1>{{ site.title }} Navigator</h1>
 		<div>
 			<p>{{ site.tagline }}</p>
-			<p><a href="{{ site.baseURL | htmlBaseUrl}}">{{ site.baseURL | htmlBaseUrl}}</a></p>
 		</div>
 	</header>
 	<main id="main" tabindex="-1">
-		<p>{{ page.outputPath }}</p>
+		<p><a id="go-back" href="">&#8592; Go back</a></p>
 		<h2><u>Navigator</u></h2>
 		{% for key, value in _navigator() %}
 		<details>
 			<summary><strong>{{ key }}</strong></summary>
 			{% if value | isString %}
-				{% highlight "js" %}
-					{{ value | safe }}
-				{% endhighlight %}
+			<pre>{{ value | safe }}</pre>
 			{% else %}
-				{% highlight "js" %}
-					{{ value | inspect | safe }}
-				{% endhighlight %}
+			<pre>{{ value | inspect({ depth: inspectorDepth }) }}</pre>
 			{% endif %}
 		</details>
 		{% endfor %}
 	</main>
+	<script>
+		document.getElementById("go-back").addEventListener("click", (event) => {
+			event.preventDefault();
+			history.back();
+		});
+	</script>
 </body>
 <footer>
-	<small>Build: {{ helpers.buildCommit() }}</small>
+	<small>Build: {{ helpers.buildCommit() | default("User")}}</small>
 </footer>
 
 </html>

@@ -7,15 +7,21 @@ const __dirname = path.dirname(__filename);
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function (eleventyConfig, options = {}) {
+	const raw = options.enableNavigatorTemplate;
+	const [enableNavigatorTemplate, inspectorDepth] = Array.isArray(raw)
+		? [raw[0], raw[1]]
+		: [raw, undefined];
+
 	const userOptions = {
-		enableVirtualTemplate: process.env.ELEVENTY_ENV !== "production",
-		...options
+		...options,
+		enableNavigatorTemplate: enableNavigatorTemplate ?? false,
+		inspectorDepth: inspectorDepth ?? 2
 	};
 
 	eleventyConfig.addNunjucksGlobal("_navigator", function () { return this; });
 	eleventyConfig.addNunjucksGlobal("_context", function () { return this.ctx; });
 
-	if (userOptions.enableVirtualTemplate) {
+	if (userOptions.enableNavigatorTemplate) {
 		// Read virtual template synchronously; Nunjucks pipeline here is sync-only.
 		const templatePath = path.join(__dirname, "../templates/navigator-core.html");
 		const virtualTemplateContent = fs.readFileSync(templatePath, "utf-8");
@@ -24,6 +30,7 @@ export default function (eleventyConfig, options = {}) {
 			permalink: "/navigator-core.html",
 			title: "Navigator Core",
 			description: "",
+			inspectorDepth: userOptions.inspectorDepth
 		});
 	}
 }

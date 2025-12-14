@@ -21,6 +21,7 @@ export default function baseline(options = {}) {
 
 		const userOptions = {
 			verbose: options.verbose ?? false,
+			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			...options
 		};
 
@@ -53,7 +54,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter("inspect", debug.inspect);
 		eleventyConfig.addFilter("json", debug.json);
 		eleventyConfig.addFilter("keys", debug.keys);
-		eleventyConfig.addPlugin(modules.navigatorCore);
+		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 	};
 }
 
