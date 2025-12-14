@@ -9,6 +9,7 @@ export default async function (eleventyConfig) {
 	// Import baseline
 	eleventyConfig.addPlugin(baseline({
 		verbose: false,
+		enableNavigatorTemplate: true,
 		Bob: "My number one guy."
 	}));
 
