@@ -1,6 +1,6 @@
 import { inspect as utilInspect } from "node:util";
 
-// by pdehaan - https://github.com/pdehaan/eleventy-plugin-debug
+// Adapted from pdehaan - https://github.com/pdehaan/eleventy-plugin-debug
 const debugOptions = Object.assign({
   space: 0
 });
