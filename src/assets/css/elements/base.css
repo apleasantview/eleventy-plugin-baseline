@@ -31,9 +31,8 @@ footer {
 }
 
 p {
-	max-width: 78ch;
+	max-width: 80ch;
 }
-
 
 a {
 	color: var(--link-color);
@@ -42,6 +41,18 @@ a {
 	&:hover {
 		color: var(--link-color-hover);
 	}
+}
+
+h1 {
+	font-size: var(--heading-1-size);
+}
+
+h2 {
+	font-size: var(--heading-2-size);
+}
+
+h3 {
+	font-size: var(--heading-3-size);
 }
 
 pre, code:not(pre code) {
