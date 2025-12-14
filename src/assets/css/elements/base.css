@@ -76,6 +76,7 @@ pre {
 	padding-inline-end: 0.75em;
 	box-sizing: content-box;
 	max-width: fit-content;
+	overflow: auto;
 }
 
 blockquote {
