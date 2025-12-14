@@ -15,6 +15,9 @@
 	--heading-line-height: var(--text-lineheight-tight);
 	--body-line-height: var(--text-lineheight-default);
 
+	/* Headings flow-space */ 
+	--heading-flow-space: 1.5em;
+
 	/* Text and surface colors */
 	--text-color: var(--color-text-primary);
 	--text-color-muted: var(--color-text-muted);
@@ -34,7 +37,7 @@
 	--card-padding-inline: var(--space-s-l);
 	--panel-gap: var(--space-cluster-m);
 	--section-spacing: var(--space-stack-xl);
-	--flow-space: var(--space-stack-m);
+	--flow-space: var(--space-stack-xs);
 
 	/* An exception for wrapper values */
 	--wrapper-max-width: 120rem;

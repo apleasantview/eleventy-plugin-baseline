@@ -17,7 +17,7 @@ body {
 
 header> * + *,
 main > * + * {
-	margin-block-start: 1em;
+	margin-block-start: var(--flow-space, 1em);
 }
 
 header,
@@ -43,15 +43,22 @@ a {
 	}
 }
 
+:heading {
+	color: tomato;
+	margin-block-start: 1.5em;
+}
+
 h1 {
 	font-size: var(--heading-1-size);
 }
 
 h2 {
+	--flow-space: var(--heading-flow-space);
 	font-size: var(--heading-2-size);
 }
 
 h3 {
+	--flow-space: var(--heading-flow-space);
 	font-size: var(--heading-3-size);
 }
 

@@ -65,6 +65,7 @@
 	--space-inline-default: var(--space-s);
 	--space-inline-comfortable: var(--space-m);
 
+	--space-stack-2xs: var(--space-2xs);
 	--space-stack-xs: var(--space-xs);
 	--space-stack-s: var(--space-s);
 	--space-stack-m: var(--space-m);
