@@ -43,7 +43,7 @@ permalink: /navigator-core.html
 	</script>
 </body>
 <footer>
-	<small>Build: {{ helpers.buildCommit() | default("User")}}</small>
+	<small>Build: {{ helpers.buildCommit() | safe | default("User build")}}</small>
 </footer>
 
 </html>
