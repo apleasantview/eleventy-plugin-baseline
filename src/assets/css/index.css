@@ -22,6 +22,6 @@
 @import "./utilities/prism.css";
 
 /* CSS is organised followng ITCSS and BEMIT naming conventions, see:
-@link: https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/
-@link: https://benmarshall.me/itcss/
+* @link https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/
+* @link https://benmarshall.me/itcss/
 */

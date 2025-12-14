@@ -79,9 +79,8 @@ pre {
 }
 
 blockquote {
-	--alert-type: var(--border-color-strong);
 	border: 0.0625em solid var(--border-color);
-	border-left: 0.24em solid var(--alert-type);
+	border-left: 0.24em solid var(--alert-type, var(--color-border-strong));
 	padding: 0.5em;
 	padding-inline-end: 0.75em;
 	box-sizing: content-box;
