@@ -40,7 +40,6 @@ export default function baseline(options = {}) {
 		// Filters — Module filters might move to their respective module.
 		eleventyConfig.addFilter("markdownify", filters.markdownFilter);
 		eleventyConfig.addFilter("relatedPosts", filters.relatedPostsFilter);
-		eleventyConfig.addFilter("inlinePostCSS", filters.inlinePostCSS);
 		eleventyConfig.addFilter("isString", filters.isStringFilter);
 
 		// Shortcodes.
