@@ -66,7 +66,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		});
 	});
 
-	eleventyConfig.addGlobalData("_baseline.modules.assets", () => {
+	eleventyConfig.addGlobalData("_baseline.assets", () => {
 		ensureCache(cache, eleventyConfig, rawDir, verbose);
 		return {
 			assetsInput: cache.assetsInput,
