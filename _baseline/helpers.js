@@ -20,20 +20,17 @@ export function addTrailingSlash(path) {
  * @param {string} rawDir - Raw directory value from config (e.g., "assets")
  * @returns {{assetsDir: string, assetsDirRelative: string}}
  */
-export function resolveAssetsDir(inputDir, rawDir) {
-	// Match Eleventy's pattern: TemplatePath.join(inputDir, rawDir), then normalizeDirectory
-	// 1. Join inputDir with rawDir (rawDir is relative to inputDir)
-	const joined = TemplatePath.join(inputDir, rawDir || "");
-	
-	// 2. Normalize (standardize to forward slashes) and add trailing slash
-	const assetsDir = addTrailingSlash(TemplatePath.standardizeFilePath(joined));
-	
-	// 3. Store relative path (normalized, no trailing slash for consistency)
-	const assetsDirRelative = TemplatePath.standardizeFilePath(rawDir || "");
-	
+export function resolveAssetsDir(inputDir, outputDir, rawDir) {
+	// Join input/output with assets subdir and normalize
+	const joinedInput = TemplatePath.join(inputDir, rawDir || "");
+	const joinedOutput = TemplatePath.join(outputDir, rawDir || "");
+
+	const assetsDir = addTrailingSlash(TemplatePath.standardizeFilePath(joinedInput));
+	const assetsOutputDir = addTrailingSlash(TemplatePath.standardizeFilePath(joinedOutput));
+
 	return {
 		assetsDir,
-		assetsDirRelative,
+		assetsOutputDir,
 	};
 }
 

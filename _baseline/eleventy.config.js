@@ -29,9 +29,6 @@ export default function baseline(options = {}) {
 		eleventyConfig.addGlobalData("_baseline", userOptions);
 		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
 
-		// Watch target — Possibly moving this to assets-core.
-		eleventyConfig.addWatchTarget('./src/assets/**/*.{css,js,svg,png,jpeg}');
-
 		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
 		eleventyConfig.addPlugin(modules.syntaxHighlight);
