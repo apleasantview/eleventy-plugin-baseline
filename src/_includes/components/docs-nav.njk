@@ -1,7 +1,7 @@
 {% set previousPost = collections.docs | getPreviousCollectionItem %}
 {% set nextPost = collections.docs | getNextCollectionItem %}
 
-<div style="margin-block-start: var(--space-2xs); display: flex; flex-wrap: wrap; justify-content: space-between; box-sizing: content-box; padding-inline-end: 1em;">
+<div style="margin-block-start: var(--space-2xs); display: flex; flex-wrap: wrap; justify-content: space-between; box-sizing: content-box; padding-inline: 0 0.5em;">
 	{% if previousPost %}<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>{% endif %}
 	{% if nextPost %}<p>Next: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></p>{% endif %}
 </div>
