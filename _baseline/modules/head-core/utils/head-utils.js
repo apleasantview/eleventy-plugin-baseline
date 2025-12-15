@@ -1,115 +1,133 @@
 import Merge from "@11ty/eleventy-utils/src/Merge.js";
+import { TemplatePath } from "@11ty/eleventy-utils";
 
 const pick = (...values) => values.find((v) => v !== undefined && v !== null);
 
-const defaultHead = (data = {}, userKey) => {
-	const site = data.site || {};
-	const user = userKey ? data[userKey] || {} : {};
-	const root = data || {};
-
-	const title = pick(root.title, user.title, site.title, "");
-	const description = pick(root.description, user.description, site.tagline, "");
-	const noindex = pick(root.noindex, user.noindex, site.noindex, false);
-
-	const base = {
-		title,
-		meta: [
-			{ charset: "UTF-8" },
-			{ name: "viewport", content: "width=device-width, initial-scale=1.0" },
-			{ name: "description", content: description },
-			{ name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
-		],
-		link: [],
-		script: [],
-		hreflang: [],
-		openGraph: {
-			"og:title": title,
-			"og:description": description,
-			"og:type": "website",
-			"og:url": "",
-			"og:image": "",
-		},
-		twitter: {
-			"twitter:card": "summary_large_image",
-			"twitter:title": title,
-			"twitter:description": description,
-			"twitter:image": "",
-		},
-		miscMeta: [],
-		structuredData: null,
-	};
-
-	// Merge objects (arrays are replaced), then manually concat arrays to keep defaults + user
-	const merged = Merge({}, base, user);
-	merged.meta = [...(base.meta || []), ...(user.meta || [])];
-	merged.link = [...(base.link || []), ...(user.link || [])];
-	merged.script = [...(base.script || []), ...(user.script || [])];
-	merged.hreflang = [...(base.hreflang || []), ...(user.hreflang || [])];
-	merged.miscMeta = [...(base.miscMeta || []), ...(user.miscMeta || [])];
-
-	return merged;
+const normalizePathPrefix = (pathPrefix = "") => {
+	// Align with Eleventy’s normalizeUrlPath behavior
+	const normalized = TemplatePath.normalizeUrlPath("/", pathPrefix);
+	return normalized === "/" ? "" : normalized; // empty means root
 };
 
-const resolveCanonical = (head, page, contentMap) => {
-	const explicit = pick(head.canonical);
-	if (explicit) return explicit;
+const isAbsoluteUrl = (url = "") =>
+	/^[a-z][a-z\d+\-.]*:\/\//i.test(url) || url.startsWith("//");
 
-	const url = pick(page?.url, page?.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
+const absoluteUrl = (siteUrl, pathPrefix, url) => {
+	if (!url) return url;
+	if (isAbsoluteUrl(url)) return url;
+	const prefix = normalizePathPrefix(pathPrefix);
+	const joined = TemplatePath.normalizeUrlPath(prefix || "/", url);
+	return siteUrl ? `${siteUrl.replace(/\/+$/, "")}${joined}` : joined;
+};
+
+const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
+	return Merge(
+		{},
+		{
+			title,
+			meta: [
+				{ charset: "UTF-8" },
+				{ name: "viewport", content: "width=device-width, initial-scale=1.0" },
+				{ name: "description", content: description },
+				{ name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
+			],
+			link: [],
+			script: [],
+			hreflang: [],
+			openGraph: {
+				"og:title": title,
+				"og:description": description,
+				"og:type": "website",
+				"og:url": url || "",
+				"og:image": "",
+			},
+			twitter: {
+				"twitter:card": "summary_large_image",
+				"twitter:title": title,
+				"twitter:description": description,
+				"twitter:image": "",
+			},
+			miscMeta: [],
+			structuredData: null,
+		},
+		user
+	);
+};
+
+const resolveCanonical = (head, page, contentMap, env = {}) => {
+	const { siteUrl, pathPrefix = "", pageUrlOverride } = env;
+	const explicit = pick(head.canonical);
+	if (explicit) return absoluteUrl(siteUrl, pathPrefix, explicit);
+
+	const url = pick(
+		pageUrlOverride,
+		page?.url,
+		page?.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]
+	);
 	if (!url) return undefined;
 
-	return url;
+	return absoluteUrl(siteUrl, pathPrefix, url);
+};
+
+const dedupeMeta = (arr = []) => {
+	const seen = new Set();
+	const out = [];
+	for (let i = arr.length - 1; i >= 0; i--) {
+		const m = arr[i];
+		const key =
+			m.charset
+				? "charset"
+				: m.name
+				? `name:${m.name}`
+				: m.property
+				? `prop:${m.property}`
+				: m["http-equiv"]
+				? `http:${m["http-equiv"]}`
+				: null;
+		if (!key || seen.has(key)) continue;
+		seen.add(key);
+		out.push(m);
+	}
+	return out.reverse();
+};
+
+const dedupeLink = (links = []) => {
+	const seen = new Set();
+	const out = [];
+	for (let i = links.length - 1; i >= 0; i--) {
+		const l = links[i];
+		const key = l.rel && l.href ? `rel:${l.rel}|${l.href}` : null;
+		if (!key || seen.has(key)) continue;
+		seen.add(key);
+		out.push(l);
+	}
+	return out.reverse();
 };
 
 const flattenHead = (head = {}, canonical) => {
-	const meta = [...(head.meta || [])];
+	// base/meta first, keep OG/Twitter last by placing them in a separate meta bucket
+	const baseMeta = dedupeMeta([...(head.meta || []), ...(head.miscMeta || [])]);
 
-	const meta_1 = [
+	const socialMeta = dedupeMeta([
 		...(head.openGraph
 			? Object.entries(head.openGraph)
-				.filter(([, v]) => v)
-				.map(([k, v]) => ({ property: k, content: v }))
-			: [])
-	];
-
-	const meta_2 = [
+					.filter(([, v]) => v)
+					.map(([k, v]) => ({ property: k, content: v }))
+			: []),
 		...(head.twitter
 			? Object.entries(head.twitter)
-				.filter(([, v]) => v)
-				.map(([k, v]) => ({ name: k, content: v }))
-			: [])
-	];
+					.filter(([, v]) => v)
+					.map(([k, v]) => ({ name: k, content: v }))
+			: []),
+	]);
 
-	const meta_3 = [...(head.miscMeta || [])];
-
-	// Deduplicate meta: last occurrence wins per name/property key
-	const dedupe = (arr) => {
-		const seen = new Set();
-		const out = [];
-		for (let i = arr.length - 1; i >= 0; i--) {
-			const m = arr[i];
-			const key = 
-			m.charset
-			? "charset"
-			:m.name
-			? `name:${m.name}`
-			: m.property
-			? `prop:${m.property}`
-			: null;
-			if (!key) continue;
-			if (seen.has(key)) continue;
-			seen.add(key);
-			out.push(m);
-		}
-		return out.reverse();
-	}
-
-	const link = [...(head.link || [])];
-	if (canonical) {
-		link.unshift({ rel: "canonical", href: canonical });
-	}
-	if (head.hreflang?.length) {
-		link.push(...head.hreflang);
-	}
+	const link = dedupeLink(
+		[
+			canonical ? { rel: "canonical", href: canonical } : null,
+			...(head.link || []),
+			...(head.hreflang || []),
+		].filter(Boolean)
+	);
 
 	const script = [...(head.script || [])];
 	if (head.structuredData) {
@@ -119,30 +137,51 @@ const flattenHead = (head = {}, canonical) => {
 		});
 	}
 
+	// Key order matters for posthtml-head-elements.
 	return {
-		meta: dedupe(meta),
+		meta: baseMeta,
 		title: head.title || "",
 		link,
 		script,
-		meta_1: dedupe(meta_1),
-		meta_2: dedupe(meta_2),
-		meta_3: dedupe(meta_3),
+		meta_social: socialMeta,
 	};
 };
 
-const buildHeadSpec = (context, contentMap) => {
-	const page = context.page || {};
-	const head = page.head || defaultHead({});
+const buildHead = (data = {}, env = {}) => {
+	const { userKey = "head", contentMap = {}, siteUrl, pathPrefix } = env;
+	const site = data.site || {};
+	const user = userKey ? data[userKey] || {} : {};
+	const page = data.page || {};
+	const resolvedSiteUrl =
+		siteUrl ||
+		site.url ||
+		process.env.URL ||
+		process.env.DEPLOY_URL ||
+		process.env.DEPLOY_PRIME_URL;
 
-	const canonical = resolveCanonical(head, page, contentMap);
-	return flattenHead(head, canonical);
+	const title = pick(data.title, user.title, site.title, "");
+	const description = pick(data.description, user.description, site.tagline, "");
+	const noindex = pick(page.noindex, user.noindex, site.noindex, false);
+
+	const canonical = resolveCanonical(
+		{ canonical: absoluteUrl(resolvedSiteUrl, pathPrefix, user.canonical) },
+		page,
+		contentMap,
+		{ ...env, siteUrl: resolvedSiteUrl }
+	);
+	const merged = mergeBaseHead(site, user, page, title, description, noindex, canonical);
+	return flattenHead(merged, canonical);
+};
+
+const buildHeadSpec = (context, contentMap, env = {}) => {
+	return buildHead(context, { ...env, contentMap });
 };
 
 export {
 	pick,
-	defaultHead,
 	resolveCanonical,
 	flattenHead,
+	buildHead,
 	buildHeadSpec,
+	absoluteUrl,
 };
-

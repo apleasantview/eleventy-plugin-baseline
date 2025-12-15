@@ -1,6 +1,6 @@
 import headElements from "../lib/posthtml-head-elements.js";
 import { getVerbose, logIfVerbose } from "../../../helpers.js";
-import { defaultHead, buildHeadSpec } from "../utils/head-utils.js";
+import { buildHead } from "../utils/head-utils.js";
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, options = {}) {
@@ -8,6 +8,8 @@ export default function headCore(eleventyConfig, options = {}) {
 	const headElementsTag = options.headElementsTag || "baseline-head";
 	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
 	const eol = options.EOL || "\n";
+	const pathPrefix = options.pathPrefix ?? eleventyConfig?.pathPrefix ?? "";
+	const siteUrl = options.siteUrl;
 
 	let cachedContentMap = {};
 	eleventyConfig.on("eleventy.contentMap", ({ inputPathToUrl, urlToInputPath }) => {
@@ -15,11 +17,26 @@ export default function headCore(eleventyConfig, options = {}) {
 	});
 
 	eleventyConfig.addGlobalData("eleventyComputed.page.head", () => {
-		return (data) => defaultHead(data, userKey);
+		return (data) =>
+			buildHead(data, {
+				userKey,
+				siteUrl,
+				pathPrefix,
+				contentMap: cachedContentMap,
+				pageUrlOverride: data?.page?.url,
+			});
 	});
 
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin("html", function (context) {
-		const headElementsSpec = buildHeadSpec(context, cachedContentMap);
+		const headElementsSpec =
+			context?.page?.head ||
+			buildHead(context, {
+				userKey,
+				siteUrl,
+				pathPrefix,
+				contentMap: cachedContentMap,
+				pageUrlOverride: context?.page?.url,
+			});
 
 		logIfVerbose(
 			verbose,
