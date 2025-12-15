@@ -3,6 +3,15 @@ import * as esbuild from "esbuild";
 import { resolveAssetsDir } from "../../../helpers.js";
 import inlineESbuild from "../filters/inline-esbuild.js";
 
+/**
+ * assets-esbuild
+ *
+ * - Registers `js` as a template format and bundles/minifies `index.js` entries under the resolved assets `js` dir.
+ * - Registers `inlineESbuild` filter to inline arbitrary JS by bundling it with esbuild.
+ * - Filters the `all` collection to drop `11tydata.js` files (added by the `js` template format).
+ *
+ * Options: none (inherits global Baseline verbose only).
+ */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsESBuild(eleventyConfig) {
 	const { assetsDir } = resolveAssetsDir(
