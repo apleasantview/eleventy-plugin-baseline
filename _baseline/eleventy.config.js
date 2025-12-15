@@ -41,7 +41,6 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter("markdownify", filters.markdownFilter);
 		eleventyConfig.addFilter("relatedPosts", filters.relatedPostsFilter);
 		eleventyConfig.addFilter("inlinePostCSS", filters.inlinePostCSS);
-		eleventyConfig.addFilter("inlineESbuild", filters.inlineESbuild);
 		eleventyConfig.addFilter("isString", filters.isStringFilter);
 
 		// Shortcodes.
