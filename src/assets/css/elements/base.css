@@ -54,6 +54,7 @@ a {
 
 h1 {
 	font-size: var(--heading-1-size);
+	margin-block-start: 1em;
 }
 
 h2 {
@@ -72,7 +73,7 @@ ol {
 }
 
 ul {
-	padding-inline-start: 2rem;
+	padding-inline-start: 1.5rem;
 }
 
 pre, code:not(pre code) {
