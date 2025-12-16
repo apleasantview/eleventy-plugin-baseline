@@ -25,13 +25,12 @@ export default function baseline(options = {}) {
 			...options
 		};
 
-		// Core  functions.
+		// Core functions.
 		eleventyConfig.addGlobalData("_baseline", userOptions);
 		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
 
 		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
-		eleventyConfig.addPlugin(modules.syntaxHighlight);
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
 		eleventyConfig.addPlugin(modules.assetsESBuild);
