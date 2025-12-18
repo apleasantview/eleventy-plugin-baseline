@@ -29,6 +29,11 @@ export default function baseline(options = {}) {
 		// Core functions.
 		eleventyConfig.addGlobalData("_baseline", userOptions);
 		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
+		eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
+			if(data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+				return false;
+			}
+		});
 
 		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
