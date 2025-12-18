@@ -30,7 +30,7 @@ permalink: /navigator-core.html
 			{% if value | isString %}
 			<pre>{{ value | safe }}</pre>
 			{% else %}
-			<pre>{{ value | inspect({ depth: inspectorDepth }) }}</pre>
+			<pre>{{ value | _inspect({ depth: inspectorDepth }) }}</pre>
 			{% endif %}
 		</details>
 		{% endfor %}

@@ -45,9 +45,9 @@ export default function baseline(options = {}) {
 		eleventyConfig.addShortcode("image", shortcodes.imageShortcode);
 
 		// Debug filters and navigators.
-		eleventyConfig.addFilter("inspect", debug.inspect);
-		eleventyConfig.addFilter("json", debug.json);
-		eleventyConfig.addFilter("keys", debug.keys);
+		eleventyConfig.addFilter("_inspect", debug.inspect);
+		eleventyConfig.addFilter("_json", debug.json);
+		eleventyConfig.addFilter("_keys", debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 	};
 }
