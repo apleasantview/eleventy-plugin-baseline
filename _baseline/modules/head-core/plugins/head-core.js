@@ -1,4 +1,4 @@
-import headElements from "../lib/posthtml-head-elements.js";
+import headElements from "../engines/posthtml-head-elements.js";
 import { getVerbose, logIfVerbose } from "../../../helpers.js";
 import { buildHead } from "../utils/head-utils.js";
 
