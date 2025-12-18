@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function (eleventyConfig, options = {}) {
+export default function navigatorCore(eleventyConfig, options = {}) {
 	const raw = options.enableNavigatorTemplate;
 	const [enableNavigatorTemplate, inspectorDepth] = Array.isArray(raw)
 		? [raw[0], raw[1]]
@@ -25,11 +25,12 @@ export default function (eleventyConfig, options = {}) {
 		// Read virtual template synchronously; Nunjucks pipeline here is sync-only.
 		const templatePath = path.join(__dirname, "../templates/navigator-core.html");
 		const virtualTemplateContent = fs.readFileSync(templatePath, "utf-8");
-
 		eleventyConfig.addTemplate("navigator-core.html", virtualTemplateContent, {
 			permalink: "/navigator-core.html",
 			title: "Navigator Core",
 			description: "",
+			layout: null,
+			eleventyExcludeFromCollections: true,
 			inspectorDepth: userOptions.inspectorDepth
 		});
 	}
