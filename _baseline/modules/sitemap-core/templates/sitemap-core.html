@@ -1,0 +1,27 @@
+---
+permalink: /sitemap.xml
+layout: null
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+{%- if not site.noindex %}
+	{%- for item in collections.all %}
+		{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) %}
+		{%- set absoluteUrl = item.url | htmlBaseUrl -%}
+			<url>
+				<loc>{{ absoluteUrl }}</loc>
+				{#- {% if item.date -%}
+					<lastmod>{{ item.date }}</lastmod>
+				{% endif %} -#}
+				{%- if item.data.sitemap and item.data.sitemap.changefreq %}
+					<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>
+				{%- endif %}
+				{%- if item.data.sitemap and item.data.sitemap.priority is defined %}
+					<priority>{{ item.data.sitemap.priority }}</priority>
+				{%- endif %}
+			</url>
+		{%- endif %}
+	{%- endfor %}
+{%- endif %}
+</urlset>

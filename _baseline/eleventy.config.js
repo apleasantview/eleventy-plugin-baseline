@@ -22,6 +22,7 @@ export default function baseline(options = {}) {
 		const userOptions = {
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
+			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 			...options
 		};
 
@@ -49,6 +50,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter("_json", debug.json);
 		eleventyConfig.addFilter("_keys", debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
+		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate });
 	};
 }
 
