@@ -37,7 +37,7 @@
 	--card-padding-inline: var(--space-s-l);
 	--panel-gap: var(--space-cluster-m);
 	--section-spacing: var(--space-stack-xl);
-	--flow-space: var(--space-stack-xs);
+	--flow-space: var(--space-stack-s);
 
 	/* An exception for wrapper values */
 	--wrapper-max-width: 120rem;
