@@ -18,7 +18,7 @@ permalink: /nl/
 			{% if value | isString %}
 			<pre>{{ value | safe }}</pre>
 			{% else %}
-			<pre>{{ value | inspect() }}</pre>
+			<pre>{{ value | _inspect() }}</pre>
 			{% endif %}
 		</details>
 	{% endfor %}
