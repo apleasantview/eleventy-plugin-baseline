@@ -9,11 +9,12 @@ eleventyExcludeFromCollections: true
 	{%- for item in collections.all %}
 		{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) %}
 		{%- set absoluteUrl = item.url | htmlBaseUrl -%}
+		{%- set lastmod = item.data.sitemap and item.data.sitemap.lastmod or item.date -%}
 			<url>
 				<loc>{{ absoluteUrl }}</loc>
-				{#- {% if item.date -%}
-					<lastmod>{{ item.date }}</lastmod>
-				{% endif %} -#}
+				{%- if lastmod %}
+					<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
+				{%- endif %}
 				{%- if item.data.sitemap and item.data.sitemap.changefreq %}
 					<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>
 				{%- endif %}
