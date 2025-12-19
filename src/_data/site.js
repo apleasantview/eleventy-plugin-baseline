@@ -1,7 +1,7 @@
 export default {
 	title: "Eleventy Plugin Baseline",
 	tagline: "A magic carpet ride",
-	baseURL: "/",
+	url: process.env.URL,
 	defaultLanguage: "en",
 	noindex: false
 }
