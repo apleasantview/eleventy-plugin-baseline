@@ -3,6 +3,7 @@ import debug from "./debug.js";
 import filters from "./filters.js";
 import modules from "./modules.js";
 import shortcodes from "./shortcodes.js";
+import globals from "./globals.js";
 
 /**
  * Eleventy Plugin Baseline
@@ -34,6 +35,7 @@ export default function baseline(options = {}) {
 				return false;
 			}
 		});
+		globals(eleventyConfig);
 
 		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
