@@ -1,5 +1,6 @@
 /* 🌈 Base Neutrals */
 :root {
+	color-scheme: light;
 	/* Backgrounds */
 	--bg: oklch(0.98 0.01 95);
 	/* main page background */
@@ -15,28 +16,55 @@
 	/* Borders / Dividers */
 	--border: oklch(0.87 0.02 95);
 	--border-strong: oklch(0.75 0.03 95);
-}
 
 /* 🔵 Blue (links, primary actions) */
-:root {
 	--blue: oklch(0.60 0.15 255);
 	--blue-hover: oklch(0.55 0.15 255);
-}
 
 /* 🟢 Green (success) */
-:root {
 	--green: oklch(0.65 0.15 150);
 	--green-hover: oklch(0.60 0.15 150);
-}
 
 /* 🟡 Yellow (warnings) */
-:root {
 	--yellow: oklch(0.85 0.13 95);
 	--yellow-hover: oklch(0.80 0.13 95);
-}
 
 /* 🔴 Red (errors) */
-:root {
+	--red: oklch(0.58 0.16 30);
+	--red-hover: oklch(0.53 0.16 30);
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+	/* Backgrounds */
+	--bg: oklch(0.98 0.01 95);
+	/* main page background */
+	--bg-alt: oklch(0.96 0.01 95);
+	/* subtle section background */
+
+	/* Text */
+	--text: oklch(0.20 0.02 255);
+	/* primary body text */
+	--text-muted: oklch(0.45 0.02 255);
+	/* secondary text */
+
+	/* Borders / Dividers */
+	--border: oklch(0.87 0.02 95);
+	--border-strong: oklch(0.75 0.03 95);
+
+/* 🔵 Blue (links, primary actions) */
+	--blue: oklch(0.60 0.15 255);
+	--blue-hover: oklch(0.55 0.15 255);
+
+/* 🟢 Green (success) */
+	--green: oklch(0.65 0.15 150);
+	--green-hover: oklch(0.60 0.15 150);
+
+/* 🟡 Yellow (warnings) */
+	--yellow: oklch(0.85 0.13 95);
+	--yellow-hover: oklch(0.80 0.13 95);
+
+/* 🔴 Red (errors) */
 	--red: oklch(0.58 0.16 30);
 	--red-hover: oklch(0.53 0.16 30);
 }

@@ -4,109 +4,109 @@
  */
 
 :root {
-  --prism-scheme: light;
+	--prism-scheme: light;
 
-  /* Colors */
-  --prism-foreground: #6e6e6e;
-  --prism-background: #f4f4f4;
+	/* Colors */
+	--prism-foreground: #6e6e6e;
+	--prism-background: #f4f4f4;
 
-  /* Tokens */
-  --prism-comment: #a8a8a8;
-  --prism-string: #555555;
-  --prism-literal: #333333;
-  --prism-keyword: #000000;
-  --prism-function: #4f4f4f;
-  --prism-deleted: #333333;
-  --prism-class: #333333;
-  --prism-builtin: #757575;
-  --prism-property: #333333;
-  --prism-namespace: #4f4f4f;
-  --prism-punctuation: #ababab;
-  --prism-decorator: var(--prism-class);
-  --prism-operator: var(--prism-punctuation);
-  --prism-number: var(--prism-literal);
-  --prism-boolean: var(--prism-literal);
-  --prism-variable: var(--prism-literal);
-  --prism-constant: var(--prism-literal);
-  --prism-symbol: var(--prism-literal);
-  --prism-interpolation: var(--prism-literal);
-  --prism-selector: var(--prism-keyword);
-  --prism-keyword-control: var(--prism-keyword);
-  --prism-regex: var(--prism-string);
-  --prism-json-property: var(--prism-property);
-  --prism-inline-background: var(--prism-background);
+	/* Tokens */
+	--prism-comment: #a8a8a8;
+	--prism-string: #555555;
+	--prism-literal: #333333;
+	--prism-keyword: #000000;
+	--prism-function: #4f4f4f;
+	--prism-deleted: #333333;
+	--prism-class: #333333;
+	--prism-builtin: #757575;
+	--prism-property: #333333;
+	--prism-namespace: #4f4f4f;
+	--prism-punctuation: #ababab;
+	--prism-decorator: var(--prism-class);
+	--prism-operator: var(--prism-punctuation);
+	--prism-number: var(--prism-literal);
+	--prism-boolean: var(--prism-literal);
+	--prism-variable: var(--prism-literal);
+	--prism-constant: var(--prism-literal);
+	--prism-symbol: var(--prism-literal);
+	--prism-interpolation: var(--prism-literal);
+	--prism-selector: var(--prism-keyword);
+	--prism-keyword-control: var(--prism-keyword);
+	--prism-regex: var(--prism-string);
+	--prism-json-property: var(--prism-property);
+	--prism-inline-background: var(--prism-background);
 
-  /* Token Styles */
-  --prism-comment-style: italic;
-  --prism-url-decoration: underline;
+	/* Token Styles */
+	--prism-comment-style: italic;
+	--prism-url-decoration: underline;
 
-  /* Extension */
-  --prism-line-number: #a5a5a5;
-  --prism-line-number-gutter: #333333;
-  --prism-line-highlight-background: #eeeeee;
-  --prism-selection-background: #dddddd;
-  --prism-marker-color: var(--prism-foreground);
-  --prism-marker-opacity: 0.4;
-  --prism-marker-font-size: 0.8em;
+	/* Extension */
+	--prism-line-number: #a5a5a5;
+	--prism-line-number-gutter: #333333;
+	--prism-line-highlight-background: #eeeeee;
+	--prism-selection-background: #dddddd;
+	--prism-marker-color: var(--prism-foreground);
+	--prism-marker-opacity: 0.4;
+	--prism-marker-font-size: 0.8em;
 
-  /* Font */
-  --prism-font-size: var(--body-text-size);
-  --prism-line-height: 1.5em;
-  --prism-font-family: monospace;
-  --prism-inline-font-size: var(--prism-font-size);
-  --prism-block-font-size: var(--prism-font-size);
+	/* Font */
+	--prism-font-size: var(--body-text-size);
+	--prism-line-height: 1.5em;
+	--prism-font-family: monospace;
+	--prism-inline-font-size: var(--prism-font-size);
+	--prism-block-font-size: var(--prism-font-size);
 
-  /* Sizing */
-  --prism-tab-size: 2;
+	/* Sizing */
+	--prism-tab-size: 2;
 
-  --prism-block-padding-x: 0.71em;
-  --prism-block-padding-y: 0.71em;
-  --prism-block-margin-x: 0;
-  --prism-block-margin-y: 0.75em;
-  --prism-block-radius: 0.3em;
-  --prism-inline-padding-x: 0.3em;
-  --prism-inline-padding-y: 0.1em;
-  --prism-inline-radius: 0.3em;
+	--prism-block-padding-x: 0.71em;
+	--prism-block-padding-y: 0.71em;
+	--prism-block-margin-x: 0;
+	--prism-block-margin-y: 0.75em;
+	--prism-block-radius: 0.3em;
+	--prism-inline-padding-x: 0.3em;
+	--prism-inline-padding-y: 0.1em;
+	--prism-inline-radius: 0.3em;
 }
 
 div[class*='language-'],
 pre[class*='language-'],
 code[class*='language-'] {
-  font-size: var(--prism-font-size);
-  font-family: var(--prism-font-family);
-  direction: ltr;
-  text-align: left;
-  white-space: pre;
-  word-spacing: normal;
-  word-break: normal;
-  line-height: var(--prism-line-height);
-  -moz-tab-size: var(--prism-tab-size);
-  -o-tab-size: var(--prism-tab-size);
-  tab-size: var(--prism-tab-size);
-  -webkit-hyphens: none;
-  -moz-hyphens: none;
-  -ms-hyphens: none;
-  hyphens: none;
-  color: var(--prism-foreground) !important;
+	font-size: var(--prism-font-size);
+	font-family: var(--prism-font-family);
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	line-height: var(--prism-line-height);
+	-moz-tab-size: var(--prism-tab-size);
+	-o-tab-size: var(--prism-tab-size);
+	tab-size: var(--prism-tab-size);
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	color: var(--prism-foreground) !important;
 }
 
 /* Code blocks */
 div[class*='language-'],
 pre[class*='language-'] {
-  font-size: var(--prism-block-font-size);
-  padding: var(--prism-block-padding-y) var(--prism-block-padding-x);
-  margin: var(--prism-block-margin-y) var(--prism-block-margin-x);
-  border-radius: var(--prism-block-radius);
-  overflow: auto;
-  background: var(--prism-background);
+	font-size: var(--prism-block-font-size);
+	padding: var(--prism-block-padding-y) var(--prism-block-padding-x);
+	margin: var(--prism-block-margin-y) var(--prism-block-margin-x);
+	border-radius: var(--prism-block-radius);
+	overflow: auto;
+	background: var(--prism-background);
 }
 
 /* Inline code */
 :not(pre) > code[class*='language-'] {
-  font-size: var(--prism-inline-font-size);
-  padding: var(--prism-inline-padding-y) var(--prism-inline-padding-x);
-  border-radius: var(--prism-inline-radius);
-  background: var(--prism-inline-background);
+	font-size: var(--prism-inline-font-size);
+	padding: var(--prism-inline-padding-y) var(--prism-inline-padding-x);
+	border-radius: var(--prism-inline-radius);
+	background: var(--prism-inline-background);
 }
 
 /* Selection */
@@ -114,14 +114,14 @@ pre[class*='language-']::-moz-selection,
 pre[class*='language-'] ::-moz-selection,
 code[class*='language-']::-moz-selection,
 code[class*='language-'] ::-moz-selection {
-  background: var(--prism-selection-background);
+	background: var(--prism-selection-background);
 }
 
 pre[class*='language-']::selection,
 pre[class*='language-'] ::selection,
 code[class*='language-']::selection,
 code[class*='language-'] ::selection {
-  background: var(--prism-selection-background);
+	background: var(--prism-selection-background);
 }
 
 /* Tokens */
@@ -129,184 +129,214 @@ code[class*='language-'] ::selection {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: var(--prism-comment);
-  font-style: var(--prism-comment-style);
+	color: var(--prism-comment);
+	font-style: var(--prism-comment-style);
 }
 
 .token.namespace {
-  color: var(--prism-namespace);
+	color: var(--prism-namespace);
 }
 
 .token.interpolation {
-  color: var(--prism-interpolation);
+	color: var(--prism-interpolation);
 }
 
 .token.string {
-  color: var(--prism-string);
+	color: var(--prism-string);
 }
 
 .token.punctuation {
-  color: var(--prism-punctuation);
+	color: var(--prism-punctuation);
 }
 
 .token.operator {
-  color: var(--prism-operator);
+	color: var(--prism-operator);
 }
 
 .token.keyword.module,
 .token.keyword.control-flow {
-  color: var(--prism-keyword-control);
+	color: var(--prism-keyword-control);
 }
 
 .token.url,
 .token.symbol,
 .token.inserted {
-  color: var(--prism-symbol);
+	color: var(--prism-symbol);
 }
 
 .token.constant {
-  color: var(--prism-constant);
+	color: var(--prism-constant);
 }
 
 .token.string.url {
-  text-decoration: var(--prism-url-decoration);
+	text-decoration: var(--prism-url-decoration);
 }
 
 .token.boolean,
 .language-json .token.boolean {
-  color: var(--prism-boolean);
+	color: var(--prism-boolean);
 }
 
 .token.number,
 .language-json .token.number {
-  color: var(--prism-number);
+	color: var(--prism-number);
 }
 
 .token.variable {
-  color: var(--prism-variable);
+	color: var(--prism-variable);
 }
 
 .token.keyword {
-  color: var(--prism-keyword);
+	color: var(--prism-keyword);
 }
 
 .token.atrule,
 .token.attr-value,
 .token.selector {
-  color: var(--prism-selector);
+	color: var(--prism-selector);
 }
 
 .token.function {
-  color: var(--prism-function);
+	color: var(--prism-function);
 }
 
 .token.deleted {
-  color: var(--prism-deleted);
+	color: var(--prism-deleted);
 }
 
 .token.important,
 .token.bold {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 .token.italic {
-  font-style: italic;
+	font-style: italic;
 }
 
 .token.class-name {
-  color: var(--prism-class);
+	color: var(--prism-class);
 }
 
 .token.tag,
 .token.builtin {
-  color: var(--prism-builtin);
+	color: var(--prism-builtin);
 }
 
 .token.attr-name,
 .token.property,
 .token.entity {
-  color: var(--prism-property);
+	color: var(--prism-property);
 }
 
 .language-json .token.property {
-  color: var(--prism-json-property);
+	color: var(--prism-json-property);
 }
 
 .token.regex {
-  color: var(--prism-regex);
+	color: var(--prism-regex);
 }
 
 .token.decorator,
 .token.annotation {
-  color: var(--prism-decorator);
+	color: var(--prism-decorator);
 }
 
 /* overrides color-values for the Line Numbers plugin
  * http://prismjs.com/plugins/line-numbers/
  */
 .line-numbers .line-numbers-rows {
-  border-right-color: var(--prism-line-number);
+	border-right-color: var(--prism-line-number);
 }
 
 .line-numbers-rows > span:before {
-  color: var(--prism-line-number-gutter);
+	color: var(--prism-line-number-gutter);
 }
 
 /* overrides color-values for the Line Highlight plugin
-  * http://prismjs.com/plugins/line-highlight/
-  */
+	* http://prismjs.com/plugins/line-highlight/
+	*/
 .line-highlight {
-  background: var(--prism-line-highlight-background);
+	background: var(--prism-line-highlight-background);
 }
 
 /* prism-theme-vars/themes/vitesse-light.css — tuned to site palette */
 :root {
-  /* Base & background */
-  --prism-foreground: oklch(0.24 0.04 255); /* strong body text */
-  --prism-background: oklch(0.96 0.01 95); /* bg-alt */
-  --prism-comment: oklch(0.38 0.03 255); /* muted; AA on light bg */
-  --prism-punctuation: oklch(0.32 0.03 255); /* separators; AA on light bg */
+	color-scheme: light;
+	/* Base & background */
+	--prism-foreground: oklch(0.24 0.04 255); /* strong body text */
+	--prism-background: oklch(0.96 0.01 95); /* bg-alt */
+	--prism-comment: oklch(0.38 0.03 255); /* muted; AA on light bg */
+	--prism-punctuation: oklch(0.32 0.03 255); /* separators; AA on light bg */
 
-  /* Core tokens (AA on light bg) */
-  --prism-string: oklch(0.52 0.16 60);    /* amber */
-  --prism-literal: oklch(0.50 0.18 255);  /* blue */
-  --prism-number: oklch(0.50 0.18 255);   /* blue */
-  --prism-keyword: oklch(0.48 0.20 150);  /* green */
-  --prism-boolean: oklch(0.48 0.20 150);  /* green */
-  --prism-function: oklch(0.52 0.14 95);  /* yellow-olive */
-  --prism-constant: oklch(0.50 0.18 50);  /* orange */
-  --prism-deleted: oklch(0.45 0.20 30);   /* red */
-  --prism-class: oklch(0.50 0.16 220);    /* teal */
-  --prism-builtin: oklch(0.45 0.18 340);  /* magenta */
-  --prism-property: oklch(0.52 0.14 90);  /* gold */
-  --prism-namespace: oklch(0.48 0.16 315);/* plum */
-  --prism-decorator: oklch(0.46 0.14 330);/* muted magenta */
-  --prism-regex: oklch(0.50 0.14 90);     /* gold */
-  --prism-json-property: oklch(0.50 0.16 220); /* teal */
+	/* Core tokens (AA on light bg) */
+	--prism-string: oklch(0.52 0.16 60);    /* amber */
+	--prism-literal: oklch(0.50 0.18 255);  /* blue */
+	--prism-number: oklch(0.50 0.18 255);   /* blue */
+	--prism-keyword: oklch(0.48 0.20 150);  /* green */
+	--prism-boolean: oklch(0.48 0.20 150);  /* green */
+	--prism-function: oklch(0.52 0.14 95);  /* yellow-olive */
+	--prism-constant: oklch(0.50 0.18 50);  /* orange */
+	--prism-deleted: oklch(0.45 0.20 30);   /* red */
+	--prism-class: oklch(0.50 0.16 220);    /* teal */
+	--prism-builtin: oklch(0.45 0.18 340);  /* magenta */
+	--prism-property: oklch(0.52 0.14 90);  /* gold */
+	--prism-namespace: oklch(0.48 0.16 315);/* plum */
+	--prism-decorator: oklch(0.46 0.14 330);/* muted magenta */
+	--prism-regex: oklch(0.50 0.14 90);     /* gold */
+	--prism-json-property: oklch(0.50 0.16 220); /* teal */
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+	/* Base & background */
+	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
+	--prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
+	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
+	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
+
+	/* Core tokens (AA on dark bg) */
+	--prism-string: oklch(0.80 0.12 70);    /* amber, softened */
+	--prism-literal: oklch(0.80 0.10 250);  /* blue */
+	--prism-number: oklch(0.80 0.10 250);   /* blue */
+	--prism-keyword: oklch(0.78 0.12 150);  /* green */
+	--prism-boolean: oklch(0.78 0.12 150);  /* green */
+	--prism-function: oklch(0.83 0.10 95);  /* yellow-olive */
+	--prism-constant: oklch(0.78 0.08 50);  /* orange, softened */
+	--prism-deleted: oklch(0.76 0.10 25);   /* red, softened */
+	--prism-class: oklch(0.82 0.12 220);    /* teal */
+	--prism-builtin: oklch(0.80 0.10 330);  /* magenta, softened */
+	--prism-property: oklch(0.82 0.07 90);  /* gold, softened */
+	--prism-namespace: oklch(0.80 0.12 315);/* plum */
+	--prism-decorator: oklch(0.78 0.08 330);/* muted magenta */
+	--prism-regex: oklch(0.84 0.08 90);     /* gold */
+	--prism-json-property: oklch(0.82 0.12 220); /* teal */
+	}
 }
 
 /* Dark theme overrides */
 :root[data-theme="dark"] {
-  /* Base & background */
-  --prism-foreground: oklch(0.88 0.015 245); /* bright body text */
-  --prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
-  --prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
-  --prism-punctuation: oklch(0.74 0.015 245); /* separators */
+	color-scheme: dark;
+	/* Base & background */
+	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
+	--prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
+	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
+	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
 
-  /* Core tokens (AA on dark bg) */
-  --prism-string: oklch(0.80 0.12 70);    /* amber, softened */
-  --prism-literal: oklch(0.80 0.10 250);  /* blue */
-  --prism-number: oklch(0.80 0.10 250);   /* blue */
-  --prism-keyword: oklch(0.78 0.12 150);  /* green */
-  --prism-boolean: oklch(0.78 0.12 150);  /* green */
-  --prism-function: oklch(0.83 0.10 95);  /* yellow-olive */
-  --prism-constant: oklch(0.78 0.08 50);  /* orange, softened */
-  --prism-deleted: oklch(0.76 0.10 25);   /* red, softened */
-  --prism-class: oklch(0.82 0.12 220);    /* teal */
-  --prism-builtin: oklch(0.80 0.10 330);  /* magenta, softened */
-  --prism-property: oklch(0.82 0.07 90);  /* gold, softened */
-  --prism-namespace: oklch(0.80 0.12 315);/* plum */
-  --prism-decorator: oklch(0.78 0.08 330);/* muted magenta */
-  --prism-regex: oklch(0.84 0.08 90);     /* gold */
-  --prism-json-property: oklch(0.82 0.12 220); /* teal */
+	/* Core tokens (AA on dark bg) */
+	--prism-string: oklch(0.80 0.12 70);    /* amber, softened */
+	--prism-literal: oklch(0.80 0.10 250);  /* blue */
+	--prism-number: oklch(0.80 0.10 250);   /* blue */
+	--prism-keyword: oklch(0.78 0.12 150);  /* green */
+	--prism-boolean: oklch(0.78 0.12 150);  /* green */
+	--prism-function: oklch(0.83 0.10 95);  /* yellow-olive */
+	--prism-constant: oklch(0.78 0.08 50);  /* orange, softened */
+	--prism-deleted: oklch(0.76 0.10 25);   /* red, softened */
+	--prism-class: oklch(0.82 0.12 220);    /* teal */
+	--prism-builtin: oklch(0.80 0.10 330);  /* magenta, softened */
+	--prism-property: oklch(0.82 0.07 90);  /* gold, softened */
+	--prism-namespace: oklch(0.80 0.12 315);/* plum */
+	--prism-decorator: oklch(0.78 0.08 330);/* muted magenta */
+	--prism-regex: oklch(0.84 0.08 90);     /* gold */
+	--prism-json-property: oklch(0.82 0.12 220); /* teal */
 }
