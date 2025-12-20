@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 /**
  * Register Nunjucks global "date" with helper methods.
- * Currently exposes date.toISO(value) -> UTC ISO string without milliseconds.
+ * Currently exposes date.toUTCISO(value) -> UTC ISO string without milliseconds.
  *
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  */
