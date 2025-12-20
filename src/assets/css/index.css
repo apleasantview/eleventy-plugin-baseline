@@ -1,5 +1,6 @@
 /* 01. Settings */
 @import "./settings/colors.css";
+@import "./settings/colors-dark.css";
 @import "./settings/type.css";
 @import "./settings/space.css";
 

@@ -1,0 +1,46 @@
+/* Dark theme token set aligned with the light theme structure.
+ * Targets :root when data-theme="dark" is present to avoid clobbering defaults.
+ */
+
+:root[data-theme="dark"] {
+	/* Backgrounds */
+	--bg: oklch(0.16 0.01 245);
+	/* main page background */
+	--bg-alt: oklch(0.21 0.01 245);
+	/* subtle section background */
+
+	/* Text */
+	--text: oklch(0.92 0.02 255);
+	/* primary body text */
+	--text-muted: oklch(0.75 0.02 255);
+	/* secondary text */
+
+	/* Borders / Dividers */
+	--border: oklch(0.28 0.02 255);
+	--border-strong: oklch(0.40 0.03 255);
+}
+
+/* Blue (links, primary actions) */
+:root[data-theme="dark"] {
+	--blue: oklch(0.74 0.18 250);
+	--blue-hover: oklch(0.78 0.18 250);
+}
+
+/* Green (success) */
+:root[data-theme="dark"] {
+	--green: oklch(0.76 0.14 150);
+	--green-hover: oklch(0.80 0.14 150);
+}
+
+/* Yellow (warnings) */
+:root[data-theme="dark"] {
+	--yellow: oklch(0.88 0.14 95);
+	--yellow-hover: oklch(0.92 0.14 95);
+}
+
+/* Red (errors) */
+:root[data-theme="dark"] {
+	--red: oklch(0.70 0.18 25);
+	--red-hover: oklch(0.74 0.18 25);
+}
+

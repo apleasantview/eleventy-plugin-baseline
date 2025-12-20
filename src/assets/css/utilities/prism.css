@@ -284,3 +284,29 @@ code[class*='language-'] ::selection {
   --prism-regex: oklch(0.50 0.14 90);     /* gold */
   --prism-json-property: oklch(0.50 0.16 220); /* teal */
 }
+
+/* Dark theme overrides */
+:root[data-theme="dark"] {
+  /* Base & background */
+  --prism-foreground: oklch(0.88 0.015 245); /* bright body text */
+  --prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
+  --prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
+  --prism-punctuation: oklch(0.74 0.015 245); /* separators */
+
+  /* Core tokens (AA on dark bg) */
+  --prism-string: oklch(0.80 0.12 70);    /* amber, softened */
+  --prism-literal: oklch(0.80 0.10 250);  /* blue */
+  --prism-number: oklch(0.80 0.10 250);   /* blue */
+  --prism-keyword: oklch(0.78 0.12 150);  /* green */
+  --prism-boolean: oklch(0.78 0.12 150);  /* green */
+  --prism-function: oklch(0.83 0.10 95);  /* yellow-olive */
+  --prism-constant: oklch(0.78 0.08 50);  /* orange, softened */
+  --prism-deleted: oklch(0.76 0.10 25);   /* red, softened */
+  --prism-class: oklch(0.82 0.12 220);    /* teal */
+  --prism-builtin: oklch(0.80 0.10 330);  /* magenta, softened */
+  --prism-property: oklch(0.82 0.07 90);  /* gold, softened */
+  --prism-namespace: oklch(0.80 0.12 315);/* plum */
+  --prism-decorator: oklch(0.78 0.08 330);/* muted magenta */
+  --prism-regex: oklch(0.84 0.08 90);     /* gold */
+  --prism-json-property: oklch(0.82 0.12 220); /* teal */
+}

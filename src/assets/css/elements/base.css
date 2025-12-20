@@ -27,7 +27,7 @@ footer {
 }
 
 main {
-	max-width: 50rem;
+	max-width: 60rem;
 }
 
 footer {
@@ -44,6 +44,11 @@ a {
 
 	&:hover {
 		color: var(--link-color-hover);
+	}
+
+	&.theme-toggle {
+		margin-inline-start: var(--panel-gap);
+		vertical-align: text-bottom;
 	}
 }
 
