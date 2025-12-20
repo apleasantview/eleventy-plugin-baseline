@@ -48,7 +48,6 @@ a {
 
 	&.theme-toggle {
 		margin-inline-start: var(--panel-gap);
-		vertical-align: text-bottom;
 	}
 }
 
