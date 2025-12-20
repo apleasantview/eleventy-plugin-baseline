@@ -1,6 +1,7 @@
 const storageKey = 'theme-preference';
 
-const onClick = () => {
+const onClick = (event) => {
+	event.preventDefault();
 	// flip current value
 	theme.value = theme.value === 'light' ? 'dark' : 'light';
 
