@@ -1,5 +1,5 @@
 import headElements from "../drivers/posthtml-head-elements.js";
-import { getVerbose, logIfVerbose } from "../../../logging.js";
+import { getVerbose, logIfVerbose } from "../../../core/logging.js";
 import { buildHead } from "../utils/head-utils.js";
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */

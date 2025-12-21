@@ -3,7 +3,7 @@ import postcss from "postcss";
 import loadPostCSSConfig from "postcss-load-config";
 import fallbackPostCSSConfig from "../fallback/postcss.config.js";
 import inlinePostCSS from "../filters/inline-postcss.js";
-import { resolveAssetsDir } from "../../../helpers.js";
+import { resolveAssetsDir } from "../../../core/helpers.js";
 
 /**
  * assets-postcss

@@ -1,6 +1,6 @@
 import path from "node:path";
 import * as esbuild from "esbuild";
-import { resolveAssetsDir } from "../../../helpers.js";
+import { resolveAssetsDir } from "../../../core/helpers.js";
 import inlineESbuild from "../filters/inline-esbuild.js";
 
 /**

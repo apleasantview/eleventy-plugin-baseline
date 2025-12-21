@@ -1,9 +1,9 @@
 import "dotenv/config";
-import globals from "./globals.js";
-import debug from "./debug.js";
-import filters from "./filters.js";
-import modules from "./modules.js";
-import shortcodes from "./shortcodes.js";
+import globals from "./core/globals.js";
+import debug from "./core/debug.js";
+import filters from "./core/filters.js";
+import modules from "./core/modules.js";
+import shortcodes from "./core/shortcodes.js";
 
 /**
  * Eleventy Plugin Baseline
