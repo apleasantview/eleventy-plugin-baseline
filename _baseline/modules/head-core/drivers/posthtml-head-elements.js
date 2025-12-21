@@ -51,6 +51,13 @@ function findElmType(type, objectData) {
       }
 
     },
+    'linkCanonical': function() {
+      if (Array.isArray(objectData)) {
+        return nonString('link', objectData);
+      } else {
+        util.log('posthtml-head-elements: Please use the correct syntax for a linkCanonical element');
+      }
+    },
     'script': function() {
       if (Array.isArray(objectData)) {
         return objectData.map(function(entry) {

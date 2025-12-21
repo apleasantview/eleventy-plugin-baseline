@@ -122,15 +122,10 @@ const flattenHead = (head = {}, canonical) => {
 			: []),
 	]);
 
-	const link = dedupeLink(
-		[
-			canonical ? { rel: "canonical", href: canonical } : null,
-			...(head.link || []),
-			...(head.hreflang || []),
-		].filter(Boolean)
-	);
-
 	const style = [...(head.style || [])];
+
+	const linkCanonical = canonical ? [{ rel: "canonical", href: canonical }] : [];
+	const link = dedupeLink([...(head.link || []), ...(head.hreflang || [])].filter(Boolean));
 
 	const script = [...(head.script || [])];
 	if (head.structuredData) {
@@ -144,8 +139,9 @@ const flattenHead = (head = {}, canonical) => {
 	return {
 		meta: baseMeta,
 		title: head.title || "",
-		link,
+		linkCanonical,
 		style,
+		link,
 		script,
 		meta_social: socialMeta,
 	};
