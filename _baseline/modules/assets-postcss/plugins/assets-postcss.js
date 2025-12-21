@@ -1,6 +1,7 @@
 import path from "node:path";
 import postcss from "postcss";
-import postcssConfig from "../../../../postcss.config.js";
+import loadPostCSSConfig from "postcss-load-config";
+import fallbackPostCSSConfig from "../fallback/postcss.config.js";
 import inlinePostCSS from "../filters/inline-postcss.js";
 import { resolveAssetsDir } from "../../../helpers.js";
 
@@ -20,6 +21,9 @@ export default function assetsPostCSS(eleventyConfig) {
 	);
 	const cssDir = `${assetsDir}css/`;
 
+	// Resolve user PostCSS config from the project root (cwd), not the Eleventy input dir.
+	const configRoot = process.cwd();
+
 	eleventyConfig.addTemplateFormats("css");
 
 	eleventyConfig.addExtension("css", {
@@ -31,9 +35,21 @@ export default function assetsPostCSS(eleventyConfig) {
 			}
 
 			return async () => {
-				let result = await postcss(postcssConfig.plugins).process(_inputContent, {
+				let plugins;
+				let options;
+
+				try {
+					// Prefer the consuming project's PostCSS config (postcss.config.* or package.json#postcss).
+					({ plugins, options } = await loadPostCSSConfig({}, configRoot));
+				} catch (error) {
+					// If none is found, fall back to the bundled Baseline config to keep builds working.
+					({plugins, ...options } = fallbackPostCSSConfig);
+				}
+
+				const result = await postcss(plugins).process(_inputContent, {
 					from: inputPath,
-					map: postcssConfig.map // Enable or disable source maps based on the parameter
+					map: options?.map,
+					...options
 				});
 
 				return result.css;

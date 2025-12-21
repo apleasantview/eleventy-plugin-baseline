@@ -1,14 +1,26 @@
 import fs from "fs/promises";
 import postcss from "postcss";
-import postcssConfig from "../../../../postcss.config.js";
+import loadPostCSSConfig from "postcss-load-config";
+import fallbackPostCSSConfig from "../fallback/postcss.config.js";
 
 export default async function inlinePostCSS(cssFilePath) {
 	try {
 		let cssContent = await fs.readFile(cssFilePath, 'utf8');
 
-		let result = await postcss(postcssConfig.plugins).process(cssContent, {
+		let plugins;
+		let options;
+
+		try {
+			// Prefer the consuming project's PostCSS config (postcss.config.* or package.json#postcss).
+			({ plugins, options } = await loadPostCSSConfig({}, configRoot));
+		} catch (error) {
+			// If none is found, fall back to the bundled Baseline config to keep builds working.
+			({plugins, ...options } = fallbackPostCSSConfig);
+		}
+
+		let result = await postcss(plugins).process(cssContent, {
 			from: cssFilePath,
-			map: postcssConfig.map
+			map: options?.map
 		});
 
 		return `<style>${result.css}</style>`;
