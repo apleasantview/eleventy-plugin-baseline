@@ -24,6 +24,7 @@ export default function baseline(options = {}) {
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
+			multilingual: options.multilingual ?? false,
 			...options
 		};
 
@@ -36,6 +37,21 @@ export default function baseline(options = {}) {
 				return false;
 			}
 		});
+
+		// `languages` may be provided as an object; normalize to an array of values.
+		const languages = Array.isArray(userOptions.languages)
+			? userOptions.languages
+			: userOptions.languages && typeof userOptions.languages === "object"
+			? Object.values(userOptions.languages)
+			: [];
+		const hasLanguages = languages.length >= 1;
+
+		if (userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages) {
+			eleventyConfig.addPlugin(modules.featureI18n, {
+				defaultLanguage: userOptions.defaultLanguage,
+				languages
+			});
+		}
 
 		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });

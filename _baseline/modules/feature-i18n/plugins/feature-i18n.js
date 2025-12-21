@@ -1,5 +1,6 @@
 /** @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig */
 export default function (eleventyConfig, options = {}) {
+	debugger;
 	const config = {
 		defaultLanguage: "en",
 		languages: {
