@@ -1,5 +1,6 @@
 import { TemplatePath } from "@11ty/eleventy-utils";
-import { addTrailingSlash, resolveAssetsDir, warnIfVerbose, getVerbose } from "../../../helpers.js";
+import { addTrailingSlash, resolveAssetsDir } from "../../../helpers.js";
+import { warnIfVerbose, getVerbose } from "../../../logging.js";
 
 const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || "./");
