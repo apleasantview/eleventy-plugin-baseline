@@ -31,8 +31,7 @@ const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, options = {}) {
-	const globalVerbose = getVerbose(eleventyConfig);
-	const verbose = options.verbose ?? globalVerbose ?? false;
+	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
 	const userKey = "assets";
 
 	// Extract raw directory value from config (can be done early)
