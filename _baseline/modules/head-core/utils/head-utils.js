@@ -33,6 +33,7 @@ const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
 			],
 			link: [],
 			script: [],
+			style: [],
 			hreflang: [],
 			openGraph: {
 				"og:title": title,
@@ -129,6 +130,8 @@ const flattenHead = (head = {}, canonical) => {
 		].filter(Boolean)
 	);
 
+	const style = [...(head.style || [])];
+
 	const script = [...(head.script || [])];
 	if (head.structuredData) {
 		script.unshift({
@@ -142,6 +145,7 @@ const flattenHead = (head = {}, canonical) => {
 		meta: baseMeta,
 		title: head.title || "",
 		link,
+		style,
 		script,
 		meta_social: socialMeta,
 	};
@@ -159,7 +163,13 @@ const buildHead = (data = {}, env = {}) => {
 		process.env.DEPLOY_URL ||
 		process.env.DEPLOY_PRIME_URL;
 
-	const title = pick(data.title, user.title, site.title, "");
+	const siteTitle = site.title || "";
+	const pageTitle = pick(data.title, user.title, site.title, "");
+	const title =
+		siteTitle && pageTitle && siteTitle !== pageTitle
+			? `${pageTitle} | ${siteTitle}`
+			: pageTitle || siteTitle || "";
+
 	const description = pick(data.description, user.description, site.tagline, "");
 	const noindex = pick(page.noindex, user.noindex, site.noindex, false);
 

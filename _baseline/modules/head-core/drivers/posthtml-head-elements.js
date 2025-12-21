@@ -2,6 +2,10 @@
 // Original: https://github.com/posthtml/posthtml-head-elements
 // Adapted for Baseline head-core.
 
+// Based on posthtml-head-elements (MIT License).
+// Original: https://github.com/posthtml/posthtml-head-elements
+// Adapted for Baseline head-core.
+
 import util from "node:util";
 import { createRequire } from "node:module";
 
@@ -48,13 +52,28 @@ function findElmType(type, objectData) {
 
     },
     'script': function() {
-
       if (Array.isArray(objectData)) {
-        return nonString(type, objectData);
+        return objectData.map(function(entry) {
+          const { content, ...attrs } = entry || {};
+          return content !== undefined
+            ? { tag: "script", attrs, content: [content] }
+            : { tag: "script", attrs };
+        });
       } else {
         util.log('posthtml-head-elements: Please use the correct syntax for a script element');
       }
-
+    },
+    'style': function() {
+      if (Array.isArray(objectData)) {
+        return objectData.map(function(entry) {
+          const { content, ...attrs } = entry || {};
+          return content !== undefined
+            ? { tag: "style", attrs, content: [content] }
+            : { tag: "style", attrs };
+        });
+      } else {
+        util.log('posthtml-head-elements: Please use the correct syntax for a style element');
+      }
     },
     'base': function() {
 
