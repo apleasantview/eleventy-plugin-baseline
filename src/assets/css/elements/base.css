@@ -1,4 +1,16 @@
 body {
+  --GRAD: 0;
+  font-variation-settings: "GRAD" var(--GRAD);
+}
+
+@media (prefers-contrast: more) { body { --GRAD: 700 } }
+@media (prefers-contrast: less) { body { --GRAD: -50 } }
+
+@media (prefers-color-scheme: dark) { body { --GRAD: -50 } }
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) { body { --GRAD: 150 } }
+@media (prefers-color-scheme: dark) and (prefers-contrast: less) { body { --GRAD: -150 } }
+
+body {
 	max-width: var(--wrapper-max-width);
 	margin-inline: var(--wrapper-margin-inline);
 	padding-inline: var(--wrapper-padding-inline);
