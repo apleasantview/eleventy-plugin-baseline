@@ -30,7 +30,6 @@ export default function multilangCore(eleventyConfig, options = {}) {
 				data: page.data
 			};
 		}
-		debugger;
 		return translations;
 	});
 }
