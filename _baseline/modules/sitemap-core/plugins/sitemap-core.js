@@ -8,8 +8,10 @@ const __dirname = path.dirname(__filename);
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function sitemapCore(eleventyConfig, options = {}) {
 	const userOptions = {
-		enableSitemapTemplate: options.enableSitemapTemplate ?? true
-	}
+		enableSitemapTemplate: options.enableSitemapTemplate ?? true,
+		multilingual: options.multilingual,
+		languages: options.languages
+	};
 
 	eleventyConfig.addGlobalData("eleventyComputed.page.sitemap", () => {
 		return (data) => ({
@@ -20,15 +22,44 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 	});
 
 	if (userOptions.enableSitemapTemplate) {
-		// Read virtual template synchronously; Nunjucks pipeline here is sync-only.
 		const templatePath = path.join(__dirname, "../templates/sitemap-core.html");
-		const virtualTemplateContent = fs.readFileSync(templatePath, "utf-8");
-		eleventyConfig.addTemplate("_baseline/sitemap-core.html", virtualTemplateContent, {
-			permalink: "/sitemap.xml",
-			title: "",
-			description: "",
-			layout: null,
-			eleventyExcludeFromCollections: true
-		});
+		const indexTemplatePath = path.join(__dirname, "../templates/sitemap-index.html");
+		const baseContent = fs.readFileSync(templatePath, "utf-8");
+		const indexContent = fs.readFileSync(indexTemplatePath, "utf-8");
+
+		const languages = userOptions.languages || {};
+		const langKeys = Array.isArray(languages) ? languages : Object.keys(languages);
+		const multilingual = typeof userOptions.multilingual === "boolean" ? userOptions.multilingual : langKeys.length > 1;
+
+		if (multilingual && langKeys.length > 1) {
+			for (const lang of langKeys) {
+				eleventyConfig.addTemplate(`_baseline/sitemap-core-${lang}.html`, baseContent, {
+					permalink: `${lang}/sitemap.xml`,
+					title: "",
+					description: "",
+					layout: null,
+					eleventyExcludeFromCollections: true,
+					isMultilingual: multilingual,
+					sitemapLang: lang
+				});
+			}
+
+			eleventyConfig.addTemplate("_baseline/sitemap-index.html", indexContent, {
+				permalink: "/sitemap.xml",
+				title: "",
+				description: "",
+				layout: null,
+				eleventyExcludeFromCollections: true,
+				isMultilingual: multilingual
+			});
+		} else {
+			eleventyConfig.addTemplate("_baseline/sitemap-core.html", baseContent, {
+				permalink: "/sitemap.xml",
+				title: "",
+				description: "",
+				layout: null,
+				eleventyExcludeFromCollections: true
+			});
+		}
 	}
- }
+}
