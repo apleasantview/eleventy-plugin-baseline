@@ -29,24 +29,22 @@ export default function baseline(options = {}) {
 		};
 
 		// Core functions.
+		// Languages are expected as an object map; if missing or invalid, skip.
+		const languages = userOptions.languages && typeof userOptions.languages === "object"
+			? userOptions.languages : null;
+		const hasLanguages = languages && Object.keys(languages).length > 0;
+		const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
+
 		eleventyConfig.addGlobalData("_baseline", userOptions);
 		globals(eleventyConfig);
 		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
 		eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
-			if(data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+			if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
 				return false;
 			}
 		});
 
-		// `languages` may be provided as an object; normalize to an array of values.
-		const languages = Array.isArray(userOptions.languages)
-			? userOptions.languages
-			: userOptions.languages && typeof userOptions.languages === "object"
-			? Object.values(userOptions.languages)
-			: [];
-		const hasLanguages = languages.length >= 1;
-
-		if (userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages) {
+		if (isMultilingual) {
 			eleventyConfig.addPlugin(modules.multilangCore, {
 				defaultLanguage: userOptions.defaultLanguage,
 				languages
@@ -59,7 +57,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
 		eleventyConfig.addPlugin(modules.assetsESBuild);
 		eleventyConfig.addPlugin(modules.headCore);
-		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate });
+		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate, multilingual: isMultilingual, languages });
 
 		// Filters — Module filters might move to their respective module.
 		eleventyConfig.addFilter("markdownify", filters.markdownFilter);
