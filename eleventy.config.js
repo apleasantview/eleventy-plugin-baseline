@@ -5,7 +5,7 @@ import baseline from "./_baseline/eleventy.config.js";
 import { config as _config } from "./_baseline/eleventy.config.js";
 import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 
-import lang from "./src/_data/languages.js";
+import i18n from "./src/_data/i18n.js";
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
@@ -14,8 +14,8 @@ export default async function (eleventyConfig) {
 		verbose: false,
 		enableNavigatorTemplate: true,
 		multilingual: true,
-		defaultLanguage: lang.defaultLanguage,
-		languages: lang.languages,
+		defaultLanguage: i18n.defaultLanguage,
+		languages: i18n.languages,
 		Bob: "My number one guy."
 	}));
 

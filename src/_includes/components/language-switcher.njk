@@ -1,7 +1,7 @@
 <div>
 	<small>
-	{% for item, value in languages.languages %}
-		{% if item === languages.defaultLanguage %}
+	{% for item, value in i18n.languages %}
+		{% if item === i18n.defaultLanguage %}
 			<a lang="{{ item }}" hreflang="{{ item }}" href="/">{{ value.languageName }}</a>
 		{% else %}
 			&emsp;<a lang="{{ item }}" hreflang="{{ item }}" href="/{{ item }}/">{{ value.languageName }}</a>
