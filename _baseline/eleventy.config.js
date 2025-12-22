@@ -47,7 +47,7 @@ export default function baseline(options = {}) {
 		const hasLanguages = languages.length >= 1;
 
 		if (userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages) {
-			eleventyConfig.addPlugin(modules.featureI18n, {
+			eleventyConfig.addPlugin(modules.multilangCore, {
 				defaultLanguage: userOptions.defaultLanguage,
 				languages
 			});
