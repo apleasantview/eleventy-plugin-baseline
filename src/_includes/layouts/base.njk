@@ -20,7 +20,7 @@
 				{% set home = collections.translations.homepage[lang] or collections.translations.homepage[site.defaultLanguage] %}
 				{% set homeText = { en: "Homepage", nl: "Homepage", fr: "Accueil" } %}
 				{% set docText = { en: "Documentation", nl: "Documentatie" } %}
-				<a href="{{ home.url }}">{{ homeText[lang] or homeText[site.defaultLanguage]}}</a>&emsp;<a href="/docs/getting-started/introduction/">{{ docText[lang] or docText[site.defaultLanguage]}}</a>&emsp;|&emsp;<a href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">GitHub</a>
+				<a href="{{ home.url }}">{{ homeText[lang] or homeText[site.defaultLanguage]}}</a>&emsp;<a href="/docs/">{{ docText[lang] or docText[site.defaultLanguage]}}</a>&emsp;|&emsp;<a href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">GitHub</a>
 			</nav>
 		</header>
 		<main id="main" tabindex="-1">
