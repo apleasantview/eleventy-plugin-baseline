@@ -1,1 +1,15 @@
-<!-- stub -->
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- if not site.noindex %}
+{%- set langs = _baseline.languages or _i18n.languages %}
+{%- if langs %}
+{%- for lang, cfg in langs %}
+<sitemap>
+<loc>{{ (lang ~ "/sitemap.xml") | htmlBaseUrl }}</loc>
+{#- Optional lastmod if you track it per-language: #}
+{%- if cfg.lastmod %}<lastmod>{{ date.toUTCISO(cfg.lastmod) }}</lastmod>{% endif %}
+</sitemap>
+{%- endfor %}
+{%- endif %}
+{%- endif %}
+</sitemapindex>
