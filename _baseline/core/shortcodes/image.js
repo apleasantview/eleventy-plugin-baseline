@@ -1,21 +1,23 @@
 import path from "node:path";
 import Image from "@11ty/eleventy-img";
 
-export async function imageShortcode(
-	src,
-	alt = "",
-	caption = "",
-	loading = "lazy",
-	containerClass = "",
-	imageClass = "",
-	widths = [150, 300, 768, 1024, "auto"],
-	sizes,
-	formats = ["avif", "webp", "auto"]) {
+export async function imageShortcode(options = {}) {
+	let {
+		src,
+		alt = "",
+		caption = "",
+		loading = "lazy",
+		containerClass = "",
+		imageClass = "",
+		widths = [150, 300, 768, 1024, "auto"],
+		sizes,
+		formats = ["avif", "webp", "auto"] } = options;
+
 	let metadata = await Image(src, {
 		widths: [...widths],
 		formats: [...formats],
-		outputDir: "./dist/uploads/",
-		urlPath: "/uploads/",
+		outputDir: "./dist/media/",
+		urlPath: "/media/",
 		filenameFormat: function (id, src, width, format, options) {
 			const extension = path.extname(src);
 			const name = path.basename(src, extension);
@@ -38,26 +40,25 @@ export async function imageShortcode(
 	// Set sizes if not defined or empty.
 	if (!sizes || sizes.trim() === "") {
 		sizes = `(max-width: ${highsrc.width}px) 100vw, ${highsrc.width}px`;
-}
+	}
 
-let imageAttributes = {
-	src: lowsrc.url,
-	width: highsrc.width,
-	height: highsrc.height,
-	alt,
-	loading,
-	decoding: loading === "eager" ? "sync" : "async",
-};
+	let imageAttributes = {
+		src: lowsrc.url,
+		width: highsrc.width,
+		height: highsrc.height,
+		alt,
+		loading,
+		decoding: loading === "eager" ? "sync" : "async",
+	};
 
-let imageSources = Object.values(metadata)
-	.map((imageFormat) => {
-		return `  <source type="${
-			imageFormat[0].sourceType
-		}" srcset="${imageFormat
-			.map((entry) => entry.srcset)
-			.join(", ")}" sizes="${sizes}">`;
-	})
-	.join("\n");
+	let imageSources = Object.values(metadata)
+		.map((imageFormat) => {
+			return `  <source type="${imageFormat[0].sourceType
+				}" srcset="${imageFormat
+					.map((entry) => entry.srcset)
+					.join(", ")}" sizes="${sizes}">`;
+		})
+		.join("\n");
 
 	let imageOutput = `<picture class="${containerClass}">
 		${imageSources}
