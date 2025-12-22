@@ -1,0 +1,26 @@
+---
+title: Bienvenue
+permalink: /fr/
+draft: false
+translationKey: homepage
+---
+
+{% extends "layouts/base.njk" %}
+
+{% block content %}
+	<h1>{{ title }}</h1>
+
+	<p><strong>Eleventy Plugin Baseline</strong> est un couteau suisse expérimental pour Eleventy : de petits outils d’aide préconfigurés pour les assets, le head/méta, les images et le débogage, afin de passer moins de temps à assembler toujours les mêmes éléments.</p>
+
+	{% alertBlock "warning" %}
+		<p>Work in progress: la documentation et les API peuvent évoluer.</p><p>Consultez la documentation de prise en main.</p>
+	{% endalertBlock %}
+
+	<h2>À propos</h2>
+	<p>Ce plugin est ma tentative de regrouper en un kit optionnel toutes les petites fonctionnalités que j’aurais aimé voir intégrées nativement à Eleventy. Il s’appuie fortement sur les patterns et bonnes pratiques partagés par la communauté Eleventy, ainsi que par d’autres projets comme Hugo, Astro <small>ou même WordPress</small>.</p>
+	<p>Dans son état actuel, le plugin est encore en évolution ; son utilisation se fait donc à vos propres risques.</p>
+	<p><small><strong style="color: var(--text-color-muted);">Cristovao Verstraeten</strong><br><a href="https://www.apleasantview.com/" target="_blank" style="display: inline-block; transform: translateY(-0.25em)">a pleasant view</a><small></p>
+
+	<div style="padding-block: var(--space-s)"></div>
+	{% include "components/docs-toc.njk" %}
+{% endblock %}

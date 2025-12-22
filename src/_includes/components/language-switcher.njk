@@ -1,0 +1,11 @@
+<div>
+	<small>
+	{% for item, value in languages.languages %}
+		{% if item === languages.defaultLanguage %}
+			<a lang="{{ item }}" hreflang="{{ item }}" href="/">{{ value.languageName }}</a>
+		{% else %}
+			&emsp;<a lang="{{ item }}" hreflang="{{ item }}" href="/{{ item }}/">{{ value.languageName }}</a>
+		{% endif %}
+	{% endfor %}
+	</small>
+</div>

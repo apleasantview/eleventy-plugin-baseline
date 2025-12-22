@@ -1,30 +1,26 @@
 ---
-title: Nederlands
-meta: very important page
+title: Welkom
 permalink: /nl/
-draft: true
-sitemap:
-  ignore: true
-eleventyExcludeFromCollections: true
+draft: false
+translationKey: homepage
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
-	<p><strong><u>Collections.all</u></strong></p>
-	{% for item in collections.all %}
-	<p><a href="{{ item.url }}">{{ item.url }}</a></p>
-	{% endfor %}
-	<p><strong><u>Core navigator</u></strong></p>
-	{% for key, value in _navigator() %}
-		<details open>
-			<summary><strong>{{ key }}</strong></summary>
-			{% if value | isString %}
-			<pre>{{ value | safe }}</pre>
-			{% else %}
-			<pre>{{ value | _inspect() }}</pre>
-			{% endif %}
-		</details>
-	{% endfor %}
-{% endblock %}
+	<h1>{{ title }}</h1>
 
+	<p><strong>Eleventy Plugin Baseline</strong> is een experimenteel Zwitsers zakmes voor Eleventy: kleine, vooraf bedrade hulpfuncties voor assets, head/meta, afbeeldingen en debugging, zodat je minder tijd kwijt bent aan het telkens opnieuw koppelen van dezelfde onderdelen.</p>
+
+	{% alertBlock "warning" %}
+		<p>Work in progress: documentatie en API's kunnen veranderen.</p><p>Begin met de getting-started-documentatie.</p>
+	{% endalertBlock %}
+
+	<h2>Over de plugin</h2>
+	<p>Deze plugin is mijn poging om alle kleine dingen die ik graag standaard in Eleventy had gezien te bundelen in één optionele toolkit. Hij leunt sterk op patronen en best practices die worden gedeeld door de Eleventy-community, en door andere projecten zoals Hugo, Astro <small>en zelfs WordPress</small>.</p>
+	<p>De plugin bevindt zich in zijn huidige staat nog in ontwikkeling en is voortdurend in beweging, dus gebruik hem op eigen risico!</p>
+	<p><small><strong style="color: var(--text-color-muted);">Cristovao Verstraeten</strong><br><a href="https://www.apleasantview.com/" target="_blank" style="display: inline-block; transform: translateY(-0.25em)">a pleasant view</a><small></p>
+
+	<div style="padding-block: var(--space-s)"></div>
+	{% include "components/docs-toc.njk" %}
+{% endblock %}

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ site.defaultLanguage }}">
+<html lang="{{ lang | default(site.defaultLanguage) }}">
 	<head>
 		<baseline-head></baseline-head>
+		{% include "components/head-languages.njk" %}
+		<meta name="color-scheme" content="light dark">
 		<meta name="generator" content="{{ eleventy.generator }}">
 	</head>
 	<body>
@@ -14,7 +16,9 @@
 			<p>{{ site.tagline }}</p>
 			</div>
 			<nav>
-				<a href="/">Homepage</a>&emsp;<a href="/docs/getting-started/introduction/">Documentation</a>&emsp;|&emsp;<a href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">GitHub</a>
+				{% set lang = lang or site.defaultLanguage %}
+				{% set text = { en: "Documentation", nl: "Documentatie" } %}
+				<a href="/">Homepage</a>&emsp;<a href="/docs/getting-started/introduction/">{{ text[lang] or text[site.defaultLanguage]}}</a>&emsp;|&emsp;<a href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">GitHub</a>
 			</nav>
 		</header>
 		<main id="main" tabindex="-1">
@@ -26,6 +30,7 @@
 		</main>
 	</body>
 	<footer>
+		{% include "components/language-switcher.njk" %}
 		<small>Build: {{ helpers.buildCommit() | safe }}</small>
 		{% include "components/theme-switch.njk" %}
 	</footer>
