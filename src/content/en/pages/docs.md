@@ -1,7 +1,11 @@
 ---
-title: "Introduction"
+title: "Documentation"
+description: "Documentation for Eleventy Plugin Baseline"
+permalink: "/docs/"
+layout: "layouts/page.njk"
 ---
 
+## Introduction
 Eleventy Baseline is an experimental, optional toolkit for Eleventy. It bundles the little pieces you tend to wire on every project—assets, head/meta, images, debugging, and sitemap—without turning into a framework.
 
 {% alertBlock "warning" %}
