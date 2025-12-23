@@ -7,6 +7,15 @@ import shortcodes from "./core/shortcodes.js";
 
 /**
  * Eleventy Plugin Baseline
+ *
+ * Options (with defaults):
+ * - verbose?: boolean — enable extra logging. Default: false.
+ * - enableNavigatorTemplate?: boolean — register navigator template/routes. Default: false.
+ * - enableSitemapTemplate?: boolean — register sitemap template/routes. Default: true.
+ * - multilingual?: boolean — enable multilang core (requires defaultLanguage + languages). Default: false.
+ * - defaultLanguage?: string — IETF/BCP47 code for the default language (used when multilingual=true). Default: undefined.
+ * - languages?: Record<string, unknown> — map of language definitions (any shape; only presence/keys are checked). Default: {}.
+ *
  * @param {object} options - Custom options for the plugin.
  * @returns {(eleventyConfig: UserConfig) => void}
  */
