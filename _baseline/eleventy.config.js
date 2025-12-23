@@ -6,17 +6,17 @@ import modules from "./core/modules.js";
 import shortcodes from "./core/shortcodes.js";
 
 /**
- * Eleventy Plugin Baseline
+ * Eleventy Plugin Baseline.
  *
- * Options (with defaults):
- * - verbose?: boolean — enable extra logging. Default: false.
- * - enableNavigatorTemplate?: boolean — register navigator template/routes. Default: false.
- * - enableSitemapTemplate?: boolean — register sitemap template/routes. Default: true.
- * - multilingual?: boolean — enable multilang core (requires defaultLanguage + languages). Default: false.
- * - defaultLanguage?: string — IETF/BCP47 code for the default language (used when multilingual=true). Default: undefined.
- * - languages?: Record<string, unknown> — map of language definitions (any shape; only presence/keys are checked). Default: {}.
+ * @typedef {Object} BaselineOptions
+ * @property {boolean} [verbose=false] Enable extra logging from the plugin.
+ * @property {boolean} [enableNavigatorTemplate=false] Register navigator template/routes.
+ * @property {boolean} [enableSitemapTemplate=true] Register sitemap template/routes.
+ * @property {boolean} [multilingual=false] Enable multilang core (requires defaultLanguage + languages).
+ * @property {string} [defaultLanguage] IETF/BCP47 default language code (used when multilingual=true).
+ * @property {Record<string, unknown>} [languages={}] Language definition map (shape not enforced; only presence/keys checked).
  *
- * @param {object} options - Custom options for the plugin.
+ * @param {BaselineOptions} [options={}] Custom options for the plugin.
  * @returns {(eleventyConfig: UserConfig) => void}
  */
 export default function baseline(options = {}) {
