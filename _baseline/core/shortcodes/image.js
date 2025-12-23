@@ -104,7 +104,9 @@ export async function imageShortcode(options = {}) {
 		.map(([key, value]) => `${key}="${value}"`)
 		.join(" ");
 
-	const picture = `<picture class="${containerClass}">
+	const pictureClass = containerClass && containerClass.trim() ? ` class="${containerClass.trim()}"` : "";
+
+	const picture = `<picture${pictureClass}>
 	${sourceTags}
 	<img ${imgAttrString}>
 </picture>`;
