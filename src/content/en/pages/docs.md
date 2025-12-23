@@ -5,7 +5,7 @@ permalink: "/docs/"
 layout: "layouts/page.njk"
 ---
 
-## Introduction
+## Overview
 Eleventy Baseline is an experimental, optional toolkit for Eleventy. It bundles the little pieces you tend to wire on every project—assets, head/meta, images, debugging, and sitemap—without turning into a framework.
 
 {% alertBlock "warning" %}
@@ -35,4 +35,4 @@ Work in progress: APIs and defaults may shift as this project evolves.
 
 ## Status
 - Experimental; APIs and defaults may still shift.
-- Package: `eleventy-plugin-baseline` (npm).
+- Package: `@apleasantview/eleventy-plugin-baseline` (npm).
