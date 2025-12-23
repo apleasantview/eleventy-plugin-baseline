@@ -1,0 +1,49 @@
+{
+  "name": "@apleasantview/eleventy-plugin-baseline",
+  "version": "0.1.0-next.0",
+  "description": "An experimental Swiss army knife toolkit for Eleventy",
+  "type": "module",
+  "main": "eleventy.config.js",
+  "exports": {
+    ".": "./eleventy.config.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "eleventy.config.js",
+    "core/**",
+    "modules/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "eleventy-plugin",
+    "eleventy",
+    "baseline"
+  ],
+  "author": "Cristovao Verstraeten",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apleasantview/eleventy-plugin-baseline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/apleasantview/eleventy-plugin-baseline/issues"
+  },
+  "homepage": "https://github.com/apleasantview/eleventy-plugin-baseline#readme",
+  "peerDependencies": {
+    "@11ty/eleventy": ">=3.1.0"
+  },
+  "dependencies": {
+    "cssnano": "^7.1.2",
+    "dotenv": "^17.2.3",
+    "esbuild": "0.27.0",
+    "postcss": "^8.5.6",
+    "postcss-import": "^16.1.1",
+    "postcss-import-ext-glob": "^2.1.1",
+    "postcss-preset-env": "^10.4.0"
+  },
+  "sideEffects": false
+}
