@@ -4,14 +4,14 @@ An experimental Swiss army knife toolkit for Eleventy. Bundles handy helpers for
 
 ## Install
 
-If you already have Eleventy installed:
+If you already have Eleventy and eleventy-img installed:
 ```bash
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
-For a fresh project (install Eleventy too):
+For a fresh project (install Eleventy and eleventy-img too):
 ```bash
-npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline
+npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-baseline
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ export default function (eleventyConfig) {
 }
 ```
 
-Requires Eleventy 3.x. Additional peers you may need: `@11ty/eleventy-img`.
+Requires Eleventy 3.x.
 
 ## License
 
