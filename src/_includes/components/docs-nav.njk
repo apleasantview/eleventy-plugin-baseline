@@ -2,12 +2,16 @@
 {% set nextPost = collections.docs | getNextCollectionItem %}
 
 <div style="margin-block-start: var(--space-2xs); display: flex; flex-wrap: wrap; justify-content: space-between; box-sizing: content-box; padding-inline: 0 0.5em;">
-	{% if page.url === "/docs/tutorials/build-a-simple-baseline-site/" %}
+	{% if page.url === "/docs/quickstart/" %}
 		<p>Previous: <a href="/docs/">Overview</a></p>
+	{% elseif page.url === "/docs/tutorials/build-a-simple-baseline-site/" %}
+		<p>Previous: <a href="/docs/quickstart/">Quickstart</a></p>
 	{% endif %}
 	{% if previousPost %}<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>{% endif %}
 	{% if nextPost %}<p>Next: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></p>{% endif %}
 	{% if page.url === "/docs/" %}
-		<p>Next: <a href="/docs/tutorials/build-a-simple-baseline-site">Build a Simple Baseline Site</a></p>
+		<p>Next: <a href="/docs/quickstart/">Quickstart</a></p>
+	{% elseif page.url === "/docs/quickstart/" %}
+		<p>Next: <a href="/docs/tutorials/build-a-simple-baseline-site/">Build a Simple Baseline Site</a></p>
 	{% endif %}
 </div>

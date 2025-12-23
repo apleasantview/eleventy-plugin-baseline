@@ -1,7 +1,7 @@
 <nav class="c-docs-toc">
 	<small><u>Documentation — Table of Contents</u></small>
 	<br>
-	<a href="/docs/">Overview</a>
+	<a href="/docs/">Overview</a>&emsp;<a href="/docs/quickstart/">Quickstart</a>
 	{% set topics = collections.docs | groupby("data.topicTitle") %}
 	{% for topic, items in topics %}
 		<p><strong>{{ topic }}</strong></p>
