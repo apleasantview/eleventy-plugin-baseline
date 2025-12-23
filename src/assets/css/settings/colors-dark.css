@@ -5,9 +5,9 @@
 	:root {
 		color-scheme: dark;
 		/* Backgrounds */
-		--bg: oklch(0.16 0.01 245);
+		--bg: oklch(0.2 0.01 245);
 		/* main page background */
-		--bg-alt: oklch(0.21 0.01 245);
+		--bg-alt: oklch(0.26 0.01 245);
 		/* subtle section background */
 
 		/* Text */
@@ -41,9 +41,9 @@
 :root[data-theme="dark"] {
 	color-scheme: dark;
 	/* Backgrounds */
-	--bg: oklch(0.16 0.01 245);
+	--bg: oklch(0.2 0.01 245);
 	/* main page background */
-	--bg-alt: oklch(0.21 0.01 245);
+	--bg-alt: oklch(0.26 0.01 245);
 	/* subtle section background */
 
 	/* Text */

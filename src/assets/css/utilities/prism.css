@@ -286,12 +286,38 @@ code[class*='language-'] ::selection {
 	--prism-json-property: oklch(0.50 0.16 220); /* teal */
 }
 
+:root[data-theme="light"] {
+	color-scheme: light;
+	/* Base & background */
+	--prism-foreground: oklch(0.24 0.04 255); /* strong body text */
+	--prism-background: oklch(0.96 0.01 95); /* bg-alt */
+	--prism-comment: oklch(0.38 0.03 255); /* muted; AA on light bg */
+	--prism-punctuation: oklch(0.32 0.03 255); /* separators; AA on light bg */
+
+	/* Core tokens (AA on light bg) */
+	--prism-string: oklch(0.52 0.16 60);    /* amber */
+	--prism-literal: oklch(0.50 0.18 255);  /* blue */
+	--prism-number: oklch(0.50 0.18 255);   /* blue */
+	--prism-keyword: oklch(0.48 0.20 150);  /* green */
+	--prism-boolean: oklch(0.48 0.20 150);  /* green */
+	--prism-function: oklch(0.52 0.14 95);  /* yellow-olive */
+	--prism-constant: oklch(0.50 0.18 50);  /* orange */
+	--prism-deleted: oklch(0.45 0.20 30);   /* red */
+	--prism-class: oklch(0.50 0.16 220);    /* teal */
+	--prism-builtin: oklch(0.45 0.18 340);  /* magenta */
+	--prism-property: oklch(0.52 0.14 90);  /* gold */
+	--prism-namespace: oklch(0.48 0.16 315);/* plum */
+	--prism-decorator: oklch(0.46 0.14 330);/* muted magenta */
+	--prism-regex: oklch(0.50 0.14 90);     /* gold */
+	--prism-json-property: oklch(0.50 0.16 220); /* teal */
+}
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		color-scheme: dark;
 	/* Base & background */
 	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
-	--prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
+	--prism-background: oklch(0.21 0.01 245); /* matches dark bg-alt */
 	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
 	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
 
@@ -319,7 +345,7 @@ code[class*='language-'] ::selection {
 	color-scheme: dark;
 	/* Base & background */
 	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
-	--prism-background: oklch(0.20 0.01 245); /* matches dark bg-alt */
+	--prism-background: oklch(0.21 0.01 245); /* matches dark bg-alt */
 	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
 	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
 
