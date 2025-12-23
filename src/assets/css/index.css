@@ -18,6 +18,7 @@
 /* 05. Objects */
 
 /* 06. Components */
+@import "./components/docs-toc.css";
 
 /* 07. Utilities */
 @import "./utilities/prism.css";
