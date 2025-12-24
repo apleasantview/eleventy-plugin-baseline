@@ -1,15 +1,16 @@
-import fs from "fs/promises";
 import * as esbuild from "esbuild";
 
-export default async function inlineESbuild(jsFilePath) {
-	try {
-		// let jsContent = await fs.readFile(jsFilePath, 'utf8');
+const defaultOptions = { minify: true, target: "es2020" };
 
+export default async function inlineESbuild(jsFilePath, options = {}) {
+	const userOptions = { ...defaultOptions, ...options };
+
+	try {
 		let result = await esbuild.build({
 			entryPoints: [jsFilePath],
 			bundle: true,
-			minify: true,
-			target: "es2020",
+			minify: userOptions.minify,
+			target: userOptions.target,
 			write: false
 		});
 
@@ -18,4 +19,4 @@ export default async function inlineESbuild(jsFilePath) {
 		console.error(error);
 		return `<script>/* Error processing JS */</script>`;
 	}
-} 
+}
