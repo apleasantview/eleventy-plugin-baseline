@@ -1,23 +1,25 @@
 import postcssImportExtGlob from "postcss-import-ext-glob";
 import postcssImport from "postcss-import";
 import postcssPresetEnv from "postcss-preset-env";
-import cssnano from "cssnano"; // Import cssnano for minification
+import cssnano from "cssnano";
 
-const isProd = process.env.ELEVENTY_ENV === "production" || false;
-const productionPlugins = [];
+const isProd = process.env.ELEVENTY_ENV === "production";
+
+const plugins = [
+	postcssImportExtGlob(),
+	postcssImport(),
+	postcssPresetEnv({
+		preserve: true,
+	}),
+];
 
 if (isProd) {
-	productionPlugins.push(cssnano);
+	plugins.push(cssnano({ preset: "default" }));
 }
 
 const config = {
-	plugins: [postcssImportExtGlob, postcssImport, postcssPresetEnv({
-		"browsers": [
-			"> 0.2% and not dead"
-		],
-		"preserve": true,
-	}), ...productionPlugins],
-	map: !isProd
+	map: isProd ? false : { inline: true },
+	plugins,
 };
 
-export default config
+export default config;
