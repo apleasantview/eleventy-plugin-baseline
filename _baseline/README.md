@@ -19,7 +19,7 @@ npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-bas
 In your Eleventy config (ESM):
 
 ```js
-import baseline from "eleventy-plugin-baseline";
+import baseline, { config as baselineConfig } from "@apleasantview/eleventy-plugin-baseline";
 
 export default function (eleventyConfig) {
 	eleventyConfig.addPlugin(baseline, {
@@ -28,9 +28,16 @@ export default function (eleventyConfig) {
 		// enableSitemapTemplate: true,
 	});
 }
+
+export const config = baselineConfig;
 ```
 
 Requires Eleventy 3.x.
+
+## Docs
+
+Documentation tracks latest builds:  
+[https://eleventy-plugin-baseline.netlify.app/](https://eleventy-plugin-baseline.netlify.app/)
 
 ## License
 
