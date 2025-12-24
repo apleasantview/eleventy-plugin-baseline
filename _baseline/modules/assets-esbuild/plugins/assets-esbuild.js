@@ -10,16 +10,20 @@ import inlineESbuild from "../filters/inline-esbuild.js";
  * - Registers `inlineESbuild` filter to inline arbitrary JS by bundling it with esbuild.
  * - Filters the `all` collection to drop `11tydata.js` files (added by the `js` template format).
  *
- * Options: none (inherits global Baseline verbose only).
+ * Options:
+ * - minify (boolean, default true): pass-through to esbuild minify flag.
+ * - target (string|string[], default "es2020"): pass-through to esbuild target.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function assetsESBuild(eleventyConfig) {
+export default function assetsESBuild(eleventyConfig, options = {}) {
+	const defaultOptions = { minify: true, target: "es2020" };
 	const { assetsDir } = resolveAssetsDir(
 		eleventyConfig.dir?.input || "./",
 		eleventyConfig.dir?.output || "./",
 		eleventyConfig.dir?.assets || "assets"
 	);
 	const jsDir = `${assetsDir}js/`;
+	const userOptions = { ...defaultOptions, ...options };
 	
 	eleventyConfig.addTemplateFormats("js");
 
@@ -35,8 +39,8 @@ export default function assetsESBuild(eleventyConfig) {
 				let result = await esbuild.build({
 					entryPoints: [inputPath],
 					bundle: true,
-					minify: true,
-					target: "es2020",
+					minify: userOptions.minify,
+					target: userOptions.target,
 					write: false
 				});
 

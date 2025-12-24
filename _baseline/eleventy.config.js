@@ -15,6 +15,7 @@ import shortcodes from "./core/shortcodes.js";
  * @property {boolean} [multilingual=false] Enable multilang core (requires defaultLanguage + languages).
  * @property {string} [defaultLanguage] IETF/BCP47 default language code (used when multilingual=true).
  * @property {Record<string, unknown>} [languages={}] Language definition map (shape not enforced; only presence/keys checked).
+ * @property {Object} [assetsESBuild] Options forwarded to assets-esbuild (minify/target).
  *
  * @param {BaselineOptions} [options={}] Custom options for the plugin.
  * @returns {(eleventyConfig: UserConfig) => void}
@@ -34,6 +35,7 @@ export default function baseline(options = {}) {
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 			multilingual: options.multilingual ?? false,
+			assetsESBuild: options.assetsESBuild ?? {},
 			...options
 		};
 
@@ -64,7 +66,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
-		eleventyConfig.addPlugin(modules.assetsESBuild);
+		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assetsESBuild);
 		eleventyConfig.addPlugin(modules.headCore);
 		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate, multilingual: isMultilingual, languages });
 
