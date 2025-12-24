@@ -1,5 +1,5 @@
 .c-docs-steps {
-	p {
+	p:first-of-type {
 		display: inline-block;
 	}
 
