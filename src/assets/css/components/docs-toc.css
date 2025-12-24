@@ -1,11 +1,13 @@
 .c-docs-toc {
-	> a {
+	>a {
 		margin-block-start: var(--space-s);
 		display: inline-block;
 	}
+
 	p {
-		margin-block-start: var(--space-s);	
+		margin-block-start: var(--space-s);
 	}
+
 	.c-docs-toc__block {
 		display: flex;
 		flex-wrap: wrap;
