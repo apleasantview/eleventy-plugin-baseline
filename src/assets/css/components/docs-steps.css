@@ -1,0 +1,9 @@
+.c-docs-steps {
+	p {
+		display: inline-block;
+	}
+
+	ol > li + li {
+	margin-block-start: var(--space-l);
+	}
+}

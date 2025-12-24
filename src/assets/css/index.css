@@ -19,6 +19,7 @@
 
 /* 06. Components */
 @import "./components/docs-toc.css";
+@import "./components/docs-steps.css";
 
 /* 07. Utilities */
 @import "./utilities/prism.css";
