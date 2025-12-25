@@ -97,11 +97,12 @@ export async function imageShortcode(options = {}) {
 		class: combinedClass,
 		...(setDimensions ? { width: highsrc.width, height: highsrc.height } : {}),
 		...restAttrs,
+		"eleventy:ignore": true
 	};
 
 	const imgAttrString = Object.entries(imageAttributes)
 		.filter(([, value]) => value !== undefined && value !== null && value !== "")
-		.map(([key, value]) => `${key}="${value}"`)
+		.map(([key, value]) => value === true ? key : `${key}="${value}"`)
 		.join(" ");
 
 	const pictureClass = containerClass && containerClass.trim() ? ` class="${containerClass.trim()}"` : "";
