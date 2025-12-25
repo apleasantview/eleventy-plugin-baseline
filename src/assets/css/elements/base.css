@@ -140,3 +140,7 @@ blockquote:has(details[open]) {
 details summary {
 	cursor: pointer;
 }
+
+figure, picture {
+	max-width: fit-content;
+}
