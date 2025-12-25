@@ -4,6 +4,7 @@ import debug from "./core/debug.js";
 import filters from "./core/filters.js";
 import modules from "./core/modules.js";
 import shortcodes from "./core/shortcodes.js";
+import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
 
 /**
  * Eleventy Plugin Baseline.
@@ -77,6 +78,9 @@ export default function baseline(options = {}) {
 
 		// Shortcodes.
 		eleventyConfig.addShortcode("image", shortcodes.imageShortcode);
+
+		// Add the dev server middleware for images.
+		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);
 
 		// Debug filters and navigators.
 		eleventyConfig.addFilter("_inspect", debug.inspect);

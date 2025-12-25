@@ -1,5 +1,6 @@
 import path from "node:path";
 import Image from "@11ty/eleventy-img";
+import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
 
 const DEFAULT_WIDTHS = [320, 640, 960, 1280];
 const DEFAULT_FORMATS = ["avif", "webp", "jpeg"];
@@ -68,6 +69,7 @@ export async function imageShortcode(options = {}) {
 		: src;
 
 	const metadata = await Image(resolvedSrc, {
+		transformOnRequest: process.env.ELEVENTY_RUN_MODE === "serve",
 		widths: [...widths],
 		formats: [...formats],
 		outputDir,
