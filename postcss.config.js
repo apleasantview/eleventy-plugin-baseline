@@ -9,6 +9,9 @@ const plugins = [
 	postcssImportExtGlob(),
 	postcssImport(),
 	postcssPresetEnv({
+		"browsers": [
+			"> 0.2% and not dead"
+		],
 		preserve: true,
 	}),
 ];
