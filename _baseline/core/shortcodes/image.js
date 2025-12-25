@@ -34,6 +34,7 @@ function pickRenditions(metadata) {
  * @param {string} [options.outputDir=DEFAULT_OUTPUT.outputDir] Output directory for generated assets.
  * @param {string} [options.urlPath=DEFAULT_OUTPUT.urlPath]       Public URL base for generated assets.
  * @param {Object} [options.attrs={}]                   Extra attributes applied to <img>; `class` merges with imageClass.
+ * @param {string} [options.style]                      Inline style applied to <img> (alias for attrs.style).
  * @param {boolean} [options.figure=true]               Wrap in <figure> when caption is provided.
  * @param {boolean} [options.setDimensions=true]        When false, omit width/height on <img>.
  */
@@ -45,6 +46,7 @@ export async function imageShortcode(options = {}) {
 		loading = "lazy",
 		containerClass = "",
 		imageClass = "",
+		style,
 		widths = DEFAULT_WIDTHS,
 		sizes = DEFAULT_SIZES,
 		formats = DEFAULT_FORMATS,
@@ -61,6 +63,9 @@ export async function imageShortcode(options = {}) {
 			"imageShortcode: alt is required (use empty string for decorative images)",
 		);
 	}
+
+	const normalizedCaption = caption == null ? "" : String(caption);
+	const normalizedAlt = alt == null ? "" : String(alt);
 
 	const inputDir = this?.eleventy?.directories?.input;
 	const isRemote = /^https?:\/\//i.test(src);
@@ -99,10 +104,11 @@ export async function imageShortcode(options = {}) {
 
 	const imageAttributes = {
 		src: lowsrc.url,
-		alt,
+		alt: normalizedAlt,
 		loading,
 		decoding: loading === "eager" ? "sync" : "async",
 		class: combinedClass,
+		style,
 		...(setDimensions ? { width: highsrc.width, height: highsrc.height } : {}),
 		...restAttrs,
 		"eleventy:ignore": true
@@ -120,10 +126,10 @@ export async function imageShortcode(options = {}) {
 	<img ${imgAttrString}>
 </picture>`;
 
-	if (!figure || !caption) return picture;
+	if (!figure || !normalizedCaption) return picture;
 
 	return `<figure>
 	${picture}
-	<figcaption>${caption}</figcaption>
+	<figcaption>${normalizedCaption}</figcaption>
 </figure>`;
 }
