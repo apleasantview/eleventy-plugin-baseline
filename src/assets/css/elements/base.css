@@ -48,6 +48,9 @@ footer {
 
 p {
 	max-width: 80ch;
+}
+
+p, li {
 	text-wrap: pretty;
 }
 
