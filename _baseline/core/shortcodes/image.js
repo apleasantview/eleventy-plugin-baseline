@@ -61,7 +61,13 @@ export async function imageShortcode(options = {}) {
 		);
 	}
 
-	const metadata = await Image(src, {
+	const inputDir = this?.eleventy?.directories?.input;
+	const isRemote = /^https?:\/\//i.test(src);
+	const resolvedSrc = !isRemote && inputDir
+		? path.join(inputDir, src.replace(/^\//, ""))
+		: src;
+
+	const metadata = await Image(resolvedSrc, {
 		widths: [...widths],
 		formats: [...formats],
 		outputDir,
