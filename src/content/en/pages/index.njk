@@ -19,12 +19,16 @@ translationKey: homepage
 	<p>This plugin is my attempt to bundle the little things I wish Eleventy shipped into one optional toolkit. It leans heavily on patterns and best practices shared by the Eleventy community, and other projects like Hugo, Astro <small>or even WordPress</small>.</p>
 	<p>The plugin in its current state is still an evolving piece of software so use at your own risk!</p>
 	<p><small><strong style="color: var(--text-color-muted);">Cristovao Verstraeten</strong><br><a href="https://www.apleasantview.com/" target="_blank" style="display: inline-block; transform: translateY(-0.25em)">a pleasant view</a><small></p>
-	{% image {
-		src: "/media/example.jpg",
-		alt: "Photo by Rohit Choudhari on Unsplash",
-		caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
-		widths: [320, 640, 768]
-	} %}
+	<div style="margin-block: var(--space-l-xl);">
+		{% image {
+			src: "/media/example.jpg",
+			alt: "Photo by Rohit Choudhari on Unsplash",
+			caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
+			widths: [320, 640, 768],
+			setDimensions: false,
+			style: "object-fit: contain;"
+		} %}
+	</div>
 	<div style="padding-block: var(--space-s)"></div>
 	{% include "components/docs-toc.njk" %}
 {% endblock %}
