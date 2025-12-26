@@ -6,4 +6,8 @@
 	ol > li + li {
 	margin-block-start: var(--space-l);
 	}
+
+	li > * + * {
+		margin-block-start: var(--flow-space);
+	}
 }
