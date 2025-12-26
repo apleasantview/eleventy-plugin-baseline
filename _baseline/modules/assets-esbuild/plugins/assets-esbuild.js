@@ -49,9 +49,6 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 		}
 	});
 
-	// Filter to inline a bundled entry.
-	eleventyConfig.addFilter("inlineESbuild", inlineESbuild);
-
 	// Filter to inline a bundled entry (async, works with callback or promise).
 	eleventyConfig.addAsyncFilter("inlineESbuild", async function (jsFilePath, callback) {
 		const done = typeof callback === "function" ? callback : null;
@@ -68,11 +65,7 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 	// Override the default collection behavior. Adding js as template format and extension collects 11tydata.js files.
 	eleventyConfig.addCollection("all", function (collectionApi) {
 		return collectionApi.getAll().filter(item => {
-			// Skip 11tydata.js files
-			if (item.inputPath.endsWith('11tydata.js')) {
-				return false;
-			}
-			return true;
+			return !item.inputPath.endsWith("11tydata.js");
 		});
 	});
 };
