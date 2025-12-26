@@ -52,6 +52,19 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 	// Filter to inline a bundled entry.
 	eleventyConfig.addFilter("inlineESbuild", inlineESbuild);
 
+	// Filter to inline a bundled entry (async, works with callback or promise).
+	eleventyConfig.addAsyncFilter("inlineESbuild", async function (jsFilePath, callback) {
+		const done = typeof callback === "function" ? callback : null;
+		try {
+			const html = await inlineESbuild(jsFilePath);
+			if (done) return done(null, html);
+			return html;
+		} catch (error) {
+			if (done) return done(error);
+			throw error;
+		}
+	});
+
 	// Override the default collection behavior. Adding js as template format and extension collects 11tydata.js files.
 	eleventyConfig.addCollection("all", function (collectionApi) {
 		return collectionApi.getAll().filter(item => {

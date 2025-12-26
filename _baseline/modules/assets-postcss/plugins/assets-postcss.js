@@ -57,6 +57,16 @@ export default function assetsPostCSS(eleventyConfig) {
 		}
 	});
 
-	// Filter to inline a bundled entry.
-	eleventyConfig.addFilter("inlinePostCSS", inlinePostCSS);
+	// Filter to inline a bundled entry; supports callback style (Nunjucks/Liquid) and Promise return.
+	eleventyConfig.addAsyncFilter("inlinePostCSS", async function (cssFilePath, callback) {
+		const done = typeof callback === "function" ? callback : null;
+		try {
+			const html = await inlinePostCSS(cssFilePath);
+			if (done) return done(null, html);
+			return html;
+		} catch (error) {
+			if (done) return done(error);
+			throw error;
+		}
+	});
 };
