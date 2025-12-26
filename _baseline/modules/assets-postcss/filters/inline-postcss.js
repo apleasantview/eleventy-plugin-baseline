@@ -3,6 +3,9 @@ import postcss from "postcss";
 import loadPostCSSConfig from "postcss-load-config";
 import fallbackPostCSSConfig from "../fallback/postcss.config.js";
 
+// Resolve user PostCSS config from the project root (cwd), not the Eleventy input dir.
+const configRoot = process.cwd();
+
 export default async function inlinePostCSS(cssFilePath) {
 	try {
 		let cssContent = await fs.readFile(cssFilePath, 'utf8');
@@ -15,7 +18,9 @@ export default async function inlinePostCSS(cssFilePath) {
 			({ plugins, options } = await loadPostCSSConfig({}, configRoot));
 		} catch (error) {
 			// If none is found, fall back to the bundled Baseline config to keep builds working.
-			({plugins, ...options } = fallbackPostCSSConfig);
+			const { plugins: fallbackPlugins, ...fallbackOptions } = fallbackPostCSSConfig;
+			plugins = fallbackPlugins;
+			options = fallbackOptions;
 		}
 
 		let result = await postcss(plugins).process(cssContent, {
