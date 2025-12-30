@@ -61,10 +61,6 @@ a {
 	&:hover {
 		color: var(--link-color-hover);
 	}
-
-	&.theme-toggle {
-		margin-inline-start: var(--panel-gap);
-	}
 }
 
 :heading {

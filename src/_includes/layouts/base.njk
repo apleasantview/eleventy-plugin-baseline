@@ -32,8 +32,11 @@
 		</main>
 	</body>
 	<footer>
-		{% include "components/language-switcher.njk" %}
-		<small>Build: {{ helpers.buildCommit() | safe }}</small>
-		{% include "components/theme-switcher.njk" %}
+		<div>
+			{% include "components/theme-switcher.njk" %}&emsp;{% include "components/language-switcher.njk" %}
+		</div>
+		<div>
+			<small>Build: {{ helpers.buildCommit() | safe }}</small>&emsp;<small><a href="https://www.npmjs.com/package/@apleasantview/eleventy-plugin-baseline" target="_blank">npm</a></small>
+		</div>
 	</footer>
 </html>
