@@ -5,6 +5,7 @@ layout: "layouts/page.njk"
 topicSlug: "introduction"
 topicTitle: " "
 description: "Fast path to a single-language Baseline site—install, configure, run dev/build."
+parent: "docs"
 ---
 
 Fast path to a single-language Baseline site. For full context, see the Simple Baseline Site tutorial.
