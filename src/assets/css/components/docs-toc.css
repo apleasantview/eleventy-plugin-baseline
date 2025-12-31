@@ -19,7 +19,9 @@
 
 .c-docs-toc__details {
 	box-sizing: content-box;
-	padding: var(--space-inset-xs);
+	max-width: fit-content;
+	padding-block: calc(var(--space-inset-xs) * 0.8 );
+	padding-inline: var(--space-inset-xs);
 	border: 0.08em solid var(--border-color-strong);
 	border-radius: 6px;
 	
