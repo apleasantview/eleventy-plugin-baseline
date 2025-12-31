@@ -152,5 +152,9 @@ figure figcaption {
 }
 
 hr {
+	--flow-space: var(--space-stack-m);
+	border: 0;
+	border-top: 1px solid;
 	color: var(--border-color-strong);
+	margin-block-start: var(--flow-space);
 }

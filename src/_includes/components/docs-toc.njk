@@ -1,13 +1,13 @@
 <nav class="c-docs-toc">
-	<details>
-		<summary><small><u>Documentation — Table of Contents</u></small></summary>
+	<details class="c-docs-toc__details">
+		<summary>
+			<span><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+			Documentation — Table of Contents</span></summary>
 		<div>
-		<br>
 		<a href="/docs/">Overview</a>&emsp;<a href="/docs/quickstart/">Quickstart</a>
 		</div>
 		{% set topics = collections.docs | groupby("data.topicTitle") %}
 		{% for topic, items in topics %}
-			<br>
 			<hr>
 			<p><strong>{{ topic }}</strong></p>
 			<div class="c-docs-toc__block">
