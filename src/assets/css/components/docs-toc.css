@@ -20,12 +20,14 @@
 .c-docs-toc__details {
 	box-sizing: content-box;
 	max-width: fit-content;
-	padding: var(--space-2xs);
-	border: 0.08em solid currentColor;
-	border-radius: 6px;
+	padding-block: calc(var(--space-inset-xs) * 0.8 );
+	padding-inline: var(--space-inset-xs);
+	border: 0.08em solid var(--border-color-strong);
+	border-radius: 0.375em;
 	
 	&[open]::details-content {
 		padding-block: var(--space-inset-m);
+		padding-inline: 0.2em;
 	}
 
 	summary::marker {
