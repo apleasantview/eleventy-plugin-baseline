@@ -35,7 +35,7 @@ Work in progress: APIs and defaults may shift as this project evolves.
 - [Custom PostCSS Config](/docs/how-to/custom-postcss-config/)
 - [Custom Esbuild Targets](/docs/how-to/custom-esbuild-targets/)
 - [Deploy Under a Subpath](/docs/how-to/deploy-under-subpath/)
--- [Image Transform](/docs/how-to/image-transform/)
+- [Image Transform](/docs/how-to/image-transform/)
 - [Multilingual Index](/docs/how-to/multilingual-index/)
 - [CI/Publish Checklist](/docs/how-to/ci-publish-checklist/)
 - [Integrate Baseline with Eleventy Base Blog](/docs/how-to/integrate-eleventy-base-blog/)
