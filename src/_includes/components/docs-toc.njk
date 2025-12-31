@@ -1,14 +1,20 @@
 <nav class="c-docs-toc">
-	<small><u>Documentation — Table of Contents</u></small>
-	<br>
-	<a href="/docs/">Overview</a>&emsp;<a href="/docs/quickstart/">Quickstart</a>
-	{% set topics = collections.docs | groupby("data.topicTitle") %}
-	{% for topic, items in topics %}
-		<p><strong>{{ topic }}</strong></p>
-		<div class="c-docs-toc__block">
-		{% for item in items %}
-			<a href="{{ item.page.url }}">{{ item.data.title }}</a>
-		{% endfor %}
+	<details>
+		<summary><small><u>Documentation — Table of Contents</u></small></summary>
+		<div>
+		<br>
+		<a href="/docs/">Overview</a>&emsp;<a href="/docs/quickstart/">Quickstart</a>
 		</div>
-	{% endfor %}
+		{% set topics = collections.docs | groupby("data.topicTitle") %}
+		{% for topic, items in topics %}
+			<br>
+			<hr>
+			<p><strong>{{ topic }}</strong></p>
+			<div class="c-docs-toc__block">
+			{% for item in items %}
+				<a href="{{ item.page.url }}">{{ item.data.title }}</a>
+			{% endfor %}
+			</div>
+		{% endfor %}
+	</details>
 </nav>

@@ -150,3 +150,7 @@ figure figcaption {
 	padding-block: 0.5rem;
 	text-align: center;
 }
+
+hr {
+	color: var(--border-color-strong);
+}
