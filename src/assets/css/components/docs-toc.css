@@ -27,7 +27,6 @@
 	
 	&[open]::details-content {
 		padding-block: var(--space-inset-m);
-		padding-inline: 0.2em;
 	}
 
 	summary::marker {
