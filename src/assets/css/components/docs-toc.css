@@ -20,9 +20,8 @@
 .c-docs-toc__details {
 	box-sizing: content-box;
 	max-width: fit-content;
-	padding-block: calc(var(--space-inset-xs) * 0.8 );
-	padding-inline: var(--space-inset-xs);
-	border: 0.08em solid var(--border-color-strong);
+	padding: var(--space-2xs);
+	border: 0.08em solid currentColor;
 	border-radius: 6px;
 	
 	&[open]::details-content {
