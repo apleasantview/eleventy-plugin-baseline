@@ -33,7 +33,6 @@
 		content: "";
 	}
 
-
 	summary > span {
 		display: inline-flex;
 		gap: var(--space-2xs);
@@ -46,4 +45,19 @@
 		height: 1em;
 		flex-shrink: 0;
 	}
+
+	&[open] .c-docs-toc {
+		animation: animateDown 0.2s ease-out forwards;
+	}
 }
+
+@keyframes animateDown {
+	0% {
+		opacity: 0;
+		transform: translatey(-15px);
+	}
+	100% {
+		opacity: 1;
+		transform: translatey(0);
+	}
+}	
