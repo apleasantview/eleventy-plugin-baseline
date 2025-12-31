@@ -3,10 +3,11 @@ title: "Quickstart"
 permalink: "/docs/quickstart/"
 layout: "layouts/page.njk"
 topicSlug: "introduction"
-topicTitle: " " 
+topicTitle: " "
+description: "Fast path to a single-language Baseline site—install, configure, run dev/build."
 ---
 
-A fast path to a single-language Baseline site. For code and details, use the linked tutorial.
+Fast path to a single-language Baseline site. For full context, see the Simple Baseline Site tutorial.
 
 ## Prerequisites
 - Node 20.15.0+ and npm.
@@ -21,7 +22,7 @@ A fast path to a single-language Baseline site. For code and details, use the li
   }
   ```
 
-## Install
+## 1) Install
 ```bash
 mkdir baseline-quickstart
 cd baseline-quickstart
@@ -29,31 +30,24 @@ npm init -y
 npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
-Create a `.env` file:
-```
-ELEVENTY_ENV="development"
-URL="http://localhost:8080/"
-```
-
-## Checklist
-- Config: `eleventy.config.js` with `baseline({})` and config object.
-- Data: `src/_data/site.js` (title/tagline/url/lang) and `src/_data/head.js` (CSS/JS links).
-- Layout: `src/_includes/layouts/base.njk` with `<baseline-head>` in `<head>`.
-- Page: `src/content/pages/index.md` with front matter + minimal body.
+## 2) Configure
+- `.env`:
+  ```
+  ELEVENTY_ENV="development"
+  URL="http://localhost:8080/"
+  ```
+- `eleventy.config.js`: add `baseline({})` and export `config`; if you have other config/plugins, place Baseline last.
+- `src/_data/site.js`: title/tagline/url/defaultLanguage.
+- `src/_data/head.js`: CSS/JS links.
+- `src/_includes/layouts/base.njk`: add `<baseline-head>` inside `<head>`.
+- `src/content/pages/index.md`: front matter + minimal body.
 - Assets: `src/assets/assets.11tydata.js` (exclude from collections), `src/assets/css/index.css`, `src/assets/js/index.js`.
 
-Follow the tutorial: [Build a Simple Baseline Site](/docs/tutorials/build-a-simple-baseline-site/).
-
-## Run and build
-```bash
-npx rimraf dist && npm run dev
-```
-Open http://localhost:8080/, peek at `dist/` (including `dist/sitemap.xml`).
-
-```bash
-npx rimraf dist && npm run build
-```
-Check `dist/` for final output.
+## 3) Run and build
+- Dev: `npx rimraf dist && npm run dev`
+  - Open http://localhost:8080/; check `dist/` (including `dist/sitemap.xml`).
+- Build: `npx rimraf dist && npm run build`
+  - Inspect `dist/` for final output.
 
 ## Next steps
 - Tutorial: [Build a Simple Baseline Site](/docs/tutorials/build-a-simple-baseline-site/)
