@@ -19,7 +19,7 @@ export default async function (eleventyConfig) {
 		Bob: "My number one guy."
 	}));
 
-	eleventyConfig.addPlugin(syntaxHighlight);
+	eleventyConfig.addPlugin(syntaxHighlight, { preAttributes: { tabindex: 0 } });
 
 	eleventyConfig.addCollection("docs", function (collectionApi) {
 		const docs = collectionApi.getFilteredByGlob("src/content/en/docs/**/*.md");
