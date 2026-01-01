@@ -33,7 +33,7 @@ npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/elevent
 
 ## 2) Configure
 - `.env`:
-  ```
+  ```txt
   ELEVENTY_ENV="development"
   URL="http://localhost:8080/"
   ```
