@@ -15,8 +15,7 @@ export default async function (eleventyConfig) {
 		enableNavigatorTemplate: true,
 		multilingual: true,
 		defaultLanguage: i18n.defaultLanguage,
-		languages: i18n.languages,
-		Bob: "My number one guy."
+		languages: i18n.languages
 	}));
 
 	eleventyConfig.addPlugin(syntaxHighlight, { preAttributes: { tabindex: 0 } });
