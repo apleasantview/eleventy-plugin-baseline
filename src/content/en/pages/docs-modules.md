@@ -1,6 +1,7 @@
 ---
 title: "Modules"
 permalink: "/docs/modules/"
+slug: "modules"
 layout: "layouts/page.njk"
 topicSlug: "modules"
 topicTitle: "Modules"

@@ -2,9 +2,10 @@
 title: "Documentation"
 description: "Documentation for Eleventy Plugin Baseline"
 permalink: "/docs/"
+slug: "docs"
 layout: "layouts/page.njk"
 topicSlug: "introduction"
-topicTitle: " "
+topicTitle: "Introductions"
 ---
 
 ## Overview
@@ -17,7 +18,7 @@ Work in progress: APIs and defaults may shift as this project evolves.
 ## Quick start
 - Quickstart (checklist): [Docs Quickstart](/docs/quickstart/)
 - Build from scratch: [Build a Simple Baseline Site](/docs/tutorials/build-a-simple-baseline-site/)
-- Add to an existing site: [Integrate Baseline with Eleventy Base Blog](/docs/how-to/integrate-eleventy-base-blog/)
+- Add to an existing site: [Integrate Baseline with Eleventy Base Blog](/docs/how-to/integrate-baseline-with-eleventy-base-blog/)
 - Set correct URLs: [Deployment URL Checks](/docs/tutorials/deployment-url-checks/)
 
 ## Tutorials (learn)

@@ -1,6 +1,7 @@
 ---
 title: "How-tos"
 permalink: "/docs/how-to/"
+slug: "how-to"
 layout: "layouts/page.njk"
 topicSlug: "how-to"
 topicTitle: "How-To’s"
