@@ -55,7 +55,7 @@
 		display: inline-block;
 	}
 
-	p {
+	* + p {
 		margin-block-start: var(--space-stack-m);
 	}
 
