@@ -97,7 +97,7 @@ pre, code:not(pre code) {
 }
 
 pre {
-	border: 0.0625em solid var(--border-color);
+	border: 0.0625em solid var(--color-border-strong);
 	padding: 0.5em;
 	padding-inline-end: 0.75em;
 	box-sizing: content-box;

@@ -317,7 +317,7 @@ code[class*='language-'] ::selection {
 		color-scheme: dark;
 	/* Base & background */
 	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
-	--prism-background: oklch(0.21 0.01 245); /* matches dark bg-alt */
+	--prism-background: oklch(0.26 0.01 245); /* matches dark bg-alt */
 	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
 	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
 
@@ -345,7 +345,7 @@ code[class*='language-'] ::selection {
 	color-scheme: dark;
 	/* Base & background */
 	--prism-foreground: oklch(0.88 0.015 245); /* bright body text */
-	--prism-background: oklch(0.21 0.01 245); /* matches dark bg-alt */
+	--prism-background: oklch(0.26 0.01 245); /* matches dark bg-alt */
 	--prism-comment: oklch(0.60 0.015 245); /* muted; AA on dark bg */
 	--prism-punctuation: oklch(0.74 0.015 245); /* separators */
 
