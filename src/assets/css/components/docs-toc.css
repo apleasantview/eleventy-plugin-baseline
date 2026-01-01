@@ -21,16 +21,20 @@
 }
 
 .c-docs-toc__summary {
+	width: 100%;
+	display: inline-flex;
+	gap: var(--space-2xs);
+	align-items: center;
+
 	&::marker {
 		content: "";
 	}
 
 	span {
-		width: 100%;
-		display: inline-flex;
-		gap: var(--space-2xs);
-		align-items: center;
-		line-height: 0;
+		line-height: 1;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	svg {
