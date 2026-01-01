@@ -6,6 +6,10 @@ import modules from "./core/modules.js";
 import shortcodes from "./core/shortcodes.js";
 import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
 
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { version } = require("./package.json");
+
 /**
  * Eleventy Plugin Baseline.
  *
@@ -32,6 +36,7 @@ export default function baseline(options = {}) {
 		}
 
 		const userOptions = {
+			version: version,
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
