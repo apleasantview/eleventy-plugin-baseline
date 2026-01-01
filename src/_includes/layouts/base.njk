@@ -30,6 +30,8 @@
 				</p>
 			{% endblock %}
 		</main>
+		{% set jsPath = _baseline.assets.input ~ "js/prism-toolbar.js" %}
+		{{ jsPath | inlineESbuild | safe }}
 	</body>
 	<footer>
 		<div>

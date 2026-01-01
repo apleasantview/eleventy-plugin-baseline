@@ -2,6 +2,7 @@
  * Based on Prism --theme-vars (MIT License).
  * Source: https://github.com/antfu/prism-theme-vars
  */
+ @import "prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
 	--prism-scheme: light;
