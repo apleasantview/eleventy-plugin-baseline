@@ -28,9 +28,11 @@ export default async function inlinePostCSS(cssFilePath) {
 			map: options?.map
 		});
 
-		return `<style>${result.css}</style>`;
+		// Return raw CSS; markup wrapping is handled in the plugin registration.
+		return result.css;
 	} catch (error) {
 		console.error(error);
-		return `<style>/* Error processing CSS */</style>`;
+		// Surface a safe CSS string so the caller can decide how to wrap it.
+		return "/* Error processing CSS */";
 	}
 } 

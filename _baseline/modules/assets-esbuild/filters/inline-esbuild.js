@@ -14,9 +14,11 @@ export default async function inlineESbuild(jsFilePath, options = {}) {
 			write: false
 		});
 
-		return `<script>${result.outputFiles[0].text}</script>`;
+		// Return raw JS; markup wrapping is handled by the plugin registration.
+		return result.outputFiles[0].text;
 	} catch (error) {
 		console.error(error);
-		return `<script>/* Error processing JS */</script>`;
+		// Surface a safe JS comment so the caller can decide how to wrap it.
+		return "/* Error processing JS */";
 	}
 }

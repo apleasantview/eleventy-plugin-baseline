@@ -61,12 +61,15 @@ export default function assetsPostCSS(eleventyConfig) {
 	eleventyConfig.addAsyncFilter("inlinePostCSS", async function (cssFilePath, callback) {
 		const done = typeof callback === "function" ? callback : null;
 		try {
-			const html = await inlinePostCSS(cssFilePath);
+			const css = await inlinePostCSS(cssFilePath);
+			const html = `<style>${css}</style>`;
 			if (done) return done(null, html);
 			return html;
 		} catch (error) {
-			if (done) return done(error);
-			throw error;
+			// Keep behavior non-fatal: return a styled error comment instead of throwing.
+			const html = `<style>/* Error processing CSS */</style>`;
+			if (done) return done(null, html);
+			return html;
 		}
 	});
 };

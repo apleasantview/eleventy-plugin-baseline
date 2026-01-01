@@ -49,16 +49,19 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 		}
 	});
 
-	// Filter to inline a bundled entry (async, works with callback or promise).
+	// Filter to inline a bundled entry; supports callback style (Nunjucks/Liquid) and Promise return.
 	eleventyConfig.addAsyncFilter("inlineESbuild", async function (jsFilePath, callback) {
 		const done = typeof callback === "function" ? callback : null;
 		try {
-			const html = await inlineESbuild(jsFilePath);
+			const js = await inlineESbuild(jsFilePath);
+			const html = `<script>${js}</script>`;
 			if (done) return done(null, html);
 			return html;
 		} catch (error) {
-			if (done) return done(error);
-			throw error;
+			// Non-fatal fallback: return an error comment wrapped in script tags.
+			const html = `<script>/* Error processing JS */</script>`;
+			if (done) return done(null, html);
+			return html;
 		}
 	});
 
