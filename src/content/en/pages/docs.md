@@ -28,13 +28,13 @@ Work in progress: APIs and defaults may shift as this project evolves.
 - [Image Shortcode Basics](/docs/tutorials/image-shortcode-basics/)
 - [Build a Multilingual Baseline Site](/docs/tutorials/build-a-multilingual-baseline-site/)
 - [Custom Social Previews](/docs/tutorials/custom-social-previews/)
-- More tutorials: `/docs/tutorials/`
+- [More tutorials](/docs/tutorials/)
 
-## How-tos (recipes)
+## How-To’s (recipes)
 - [Social Previews Checklist](/docs/how-to/social-previews-checklist/)
 - [Custom PostCSS Config](/docs/how-to/custom-postcss-config/)
 - [Custom Esbuild Targets](/docs/how-to/custom-esbuild-targets/)
-- [Deploy Under a Subpath](/docs/how-to/deploy-under-subpath/)
+- [Deploy Under a Subpath](/docs/how-to/deploy-under-a-subpath/)
 - [Image Transform](/docs/how-to/image-transform/)
 - [Multilingual Index](/docs/how-to/multilingual-index/)
 - [CI/Publish Checklist](/docs/how-to/ci-publish-checklist/)
@@ -48,7 +48,7 @@ Work in progress: APIs and defaults may shift as this project evolves.
 - [multilang-core](/docs/modules/multilang-core/)
 - [navigator-core](/docs/modules/navigator-core/)
 - [sitemap-core](/docs/modules/sitemap-core/)
-- Full list: `/docs/modules/`
+- [Full list](/docs/modules/)
 
 ## Status & reminders
 - Experimental; APIs may shift. Package: `@apleasantview/eleventy-plugin-baseline` (npm).
