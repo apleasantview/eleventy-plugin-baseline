@@ -1,4 +1,4 @@
 export default {
-	topicSlug: "modules",
+	topicSlug: "module",
 	topicTitle: "Modules"
 };

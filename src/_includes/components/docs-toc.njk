@@ -11,13 +11,17 @@
 		</div>
 		{% set topics = collections.docs | groupby("data.topicTitle") %}
 		{% for topic, items in topics %}
-			<hr>
-			<p><strong>{{ topic }}</strong></p>
-			<div class="c-docs-toc__block">
-				{% for item in items %}
-					<a href="{{ item.page.url }}">{{ item.data.title }}</a>
-				{% endfor %}
-			</div>
+			{% if loop.index0 >= 1 %}
+				<hr>
+				<p><strong>{{ topic }}</strong></p>
+				<div class="c-docs-toc__block">
+					{% for item in items %}
+						{% if item.page.fileSlug !== "00.index" %}
+							<a href="{{ item.page.url }}">{{ item.data.title }}</a>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
 		{% endfor %}
 	</nav>
 </details>
