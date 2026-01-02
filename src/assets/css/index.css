@@ -16,6 +16,7 @@
 @import "./elements/skip-link.css";
 
 /* 05. Objects */
+@import "./layouts/fluid-grid.css";
 
 /* 06. Components */
 @import "./components/docs-toc.css";
