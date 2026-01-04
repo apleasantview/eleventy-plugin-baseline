@@ -29,9 +29,12 @@ translationKey: homepage
 			src: "/media/example.jpg",
 			alt: "Photo by Rohit Choudhari on Unsplash",
 			caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
-			widths: [320, 640, 768],
-			setDimensions: false,
-			style: "object-fit: contain;"
+			loading: "eager",
+			widths: [320, 578, 768],
+			attrs: {
+				fetchpriority: "high"
+			},
+			style: "object-fit: contain; height: auto;"
 		} %}
 	</div>
 
