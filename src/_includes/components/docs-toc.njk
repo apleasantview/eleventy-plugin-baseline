@@ -16,7 +16,9 @@
 				<p><strong>{{ topic }}</strong></p>
 				<div class="c-docs-toc__block">
 					{% for item in items %}
-						{% if item.page.fileSlug !== "00.index" %}
+						{% if item.page.fileSlug === "00.index" %}
+							<a href="{{ item.page.url }}">Index</a>
+						{% elseif item.page.fileSlug !== "00.index" %}
 							<a href="{{ item.page.url }}">{{ item.data.title }}</a>
 						{% endif %}
 					{% endfor %}
