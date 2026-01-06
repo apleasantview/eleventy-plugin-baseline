@@ -55,11 +55,15 @@ export default function baseline(options = {}) {
 		eleventyConfig.addGlobalData("_baseline", userOptions);
 		globals(eleventyConfig);
 		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
-		eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
-			if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
-				return false;
-			}
-		});
+
+		// Prevents double-registering the preprocessor, user config wins.
+		if (!eleventyConfig.preprocessors.drafts) {
+			eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
+				if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+					return false;
+				}
+			});
+		}
 
 		if (isMultilingual) {
 			eleventyConfig.addPlugin(modules.multilangCore, {
