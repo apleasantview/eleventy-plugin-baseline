@@ -1,0 +1,7 @@
+Release steps
+-------------
+1. `cd _baseline`
+2. Bump version: `npm version prerelease --preid next`
+3. Preview pack: `npm pack --pack-destination ../packages --dry-run`
+4. Publish: `npm publish --tag next --access public`
+5. Tag latest to this version: `npm dist-tag add @apleasantview/eleventy-plugin-baseline@<ver> latest`
