@@ -57,6 +57,8 @@ export async function imageShortcode(options = {}) {
 		setDimensions = true,
 	} = options;
 
+	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
+
 	if (!src) throw new Error("imageShortcode: src is required");
 	if (alt === undefined) {
 		throw new Error(
@@ -111,7 +113,7 @@ export async function imageShortcode(options = {}) {
 		style,
 		...(setDimensions ? { width: highsrc.width, height: highsrc.height } : {}),
 		...restAttrs,
-		"eleventy:ignore": true
+		...(hasImageTransformPlugin ? { "eleventy:ignore": true } : {})
 	};
 
 	const imgAttrString = Object.entries(imageAttributes)
