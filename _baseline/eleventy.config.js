@@ -23,7 +23,7 @@ const { version } = require("./package.json");
  * @property {Object} [assetsESBuild] Options forwarded to assets-esbuild (minify/target).
  *
  * @param {BaselineOptions} [options={}] Custom options for the plugin.
- * @returns {(eleventyConfig: UserConfig) => void}
+ * @returns {(eleventyConfig: import("@11ty/eleventy").UserConfig) => Promise<void>}
  */
 export default function baseline(options = {}) {
 	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
