@@ -27,7 +27,7 @@ const { version } = require("./package.json");
  */
 export default function baseline(options = {}) {
 	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-	return async function (eleventyConfig) {
+	const plugin = async function (eleventyConfig) {
 		try {
 			// Emit a warning message if the application is not using Eleventy 3.0 or newer (including prereleases).
 			eleventyConfig.versionCheck(">=3.0");
@@ -100,6 +100,10 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter("_keys", debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 	};
+
+	// Set plugin name so `eleventyConfig.hasPlugin()` can detect it.
+	Object.defineProperty(plugin, "name", { value: "@apleasantview/eleventy-plugin-baseline" });
+	return plugin;
 }
 
 export const config = {
