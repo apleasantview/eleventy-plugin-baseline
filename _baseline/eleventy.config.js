@@ -35,13 +35,16 @@ export default function baseline(options = {}) {
 			console.log(`[eleventy-plugin-baseline] WARN Eleventy plugin compatibility: ${e.message}`);
 		}
 
+		const hasImageTransformPlugin = eleventyConfig.hasPlugin("eleventyImageTransformPlugin");
+
 		const userOptions = {
 			version: version,
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 			multilingual: options.multilingual ?? false,
-			assetsESBuild: options.assetsESBuild ?? {},
+			assetsESBuild: options.assetsESBuild ?? { minify: true, target: "es2020" },
+			hasImageTransformPlugin,
 			...options
 		};
 
