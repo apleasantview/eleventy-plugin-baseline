@@ -42,11 +42,13 @@ export default function baseline(options = {}) {
 			version,
 			name,
 			verbose: options.verbose ?? false,
+			hasImageTransformPlugin,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
+			assets: {
+				esbuild: options.assetsESBuild ?? { minify: true, target: "es2020" }
+			},
 			multilingual: options.multilingual ?? false,
-			assetsESBuild: options.assetsESBuild ?? { minify: true, target: "es2020" },
-			hasImageTransformPlugin,
 			...options
 		};
 
@@ -81,7 +83,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
-		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assetsESBuild);
+		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assets.esbuild);
 		eleventyConfig.addPlugin(modules.headCore);
 		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate, multilingual: isMultilingual, languages });
 

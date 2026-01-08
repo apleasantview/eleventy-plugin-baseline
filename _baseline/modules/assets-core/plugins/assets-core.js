@@ -68,9 +68,12 @@ export default function assetsCore(eleventyConfig, options = {}) {
 
 	eleventyConfig.addGlobalData("_baseline.assets", () => {
 		ensureCache(cache, eleventyConfig, rawDir, verbose);
+		// Merge with existing _baseline.assets (e.g., esbuild config)
+		const existing = eleventyConfig.globalData?._baseline?.assets || {};
 		return {
 			input: cache.assetsInput,
-			output: cache.assetsOutput
+			output: cache.assetsOutput,
+			...existing
 		};
 	});
 
