@@ -7,8 +7,9 @@ import shortcodes from "./core/shortcodes.js";
 import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
 
 import { createRequire } from "node:module";
-const require = createRequire(import.meta.url);
-const { version } = require("./package.json");
+const __require = createRequire(import.meta.url);
+
+const { name, version } = __require("./package.json");
 
 /**
  * Eleventy Plugin Baseline.
@@ -38,7 +39,8 @@ export default function baseline(options = {}) {
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin("eleventyImageTransformPlugin");
 
 		const userOptions = {
-			version: version,
+			version,
+			name,
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
@@ -102,7 +104,7 @@ export default function baseline(options = {}) {
 	};
 
 	// Set plugin name so `eleventyConfig.hasPlugin()` can detect it.
-	Object.defineProperty(plugin, "name", { value: "@apleasantview/eleventy-plugin-baseline" });
+	Object.defineProperty(plugin, "name", { value: `${name}` });
 	return plugin;
 }
 
