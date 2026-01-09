@@ -6,23 +6,24 @@
 	</summary>
 	<nav class="c-docs-toc">
 		<p><strong>Introduction</strong></p>
-		<div class="c-docs-toc__block">
-			<a href="/docs/">Overview</a><a href="/docs/quickstart/">Quickstart</a>
-		</div>
+		<ul class="c-docs-toc__block">
+			<li><a href="/docs/">Overview</a></li>
+			<li><a href="/docs/quickstart/">Quickstart</a></li>
+		</ul>
 		{% set topics = collections.docs | groupby("data.topicTitle") %}
 		{% for topic, items in topics %}
 			{% if loop.index0 >= 1 %}
 				<hr>
 				<p><strong>{{ topic }}</strong></p>
-				<div class="c-docs-toc__block">
+				<ul class="c-docs-toc__block">
 					{% for item in items %}
 						{% if item.page.fileSlug === "00.index" %}
-							<a href="{{ item.page.url }}">Index</a>
+							<li><a href="{{ item.page.url }}">Index</a></li>
 						{% elseif item.page.fileSlug !== "00.index" %}
-							<a href="{{ item.page.url }}">{{ item.data.title }}</a>
+							<li><a href="{{ item.page.url }}">{{ item.data.title }}</a></li>
 						{% endif %}
 					{% endfor %}
-				</div>
+				</ul>
 			{% endif %}
 		{% endfor %}
 	</nav>
