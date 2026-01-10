@@ -1,6 +1,6 @@
 .l-document {
 	display: grid;
-	grid-template-columns: minmax(min(0px, 100%), max-content) auto;
+	grid-template-columns: minmax(min(288px, 100%), 1fr);
 	align-items: baseline;
 	justify-content: flex-start;
 	column-gap: var(--space-3xl);
@@ -14,6 +14,10 @@
 	}
 
 	@media (--screen-lg) {
+		& {
+			grid-template-columns: minmax(min(0px, 100%), max-content) auto;
+		}
+
 		.l-document__sidebar {
 			display: block;
 		}
