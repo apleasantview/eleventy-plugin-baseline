@@ -1,4 +1,5 @@
 <nav class="c-docs-toc--sidebar">
+	<p><strong><a class="c-docs-toc__link" href="/">Welcome</a></strong></p>
 	<p><strong>Introduction</strong></p>
 	<ul class="c-docs-toc__block">
 		<li><a class="c-docs-toc__link" href="/docs/" {% if page.url == "/docs/" %} aria-current="page"{% endif %}>Overview</a></li>
@@ -7,12 +8,10 @@
 	{% set topics = collections.docs | groupby("data.topicTitle") %}
 	{% for topic, items in topics %}
 		{% if loop.index0 >= 1 %}
-			<p><strong>{{ topic }}</strong></p>
+			<p><strong><a class="c-docs-toc__link" href="/docs/{{ items[0].data.topicSlug }}/">{{ topic }}</a></strong></p>
 			<ul class="c-docs-toc__block">
 				{% for item in items %}
-					{% if item.page.fileSlug === "00.index" %}
-						<li><a class="c-docs-toc__link" href="{{ item.page.url }}" {% if page.url === item.page.url %} aria-current="page"{% endif %}>Index</a></li>
-					{% elseif item.page.fileSlug !== "00.index" %}
+					{% if item.page.fileSlug !== "00.index" %}
 						<li><a class="c-docs-toc__link" href="{{ item.page.url }}" {% if page.url === item.page.url %} aria-current="page"{% endif %}>{{ item.data.title }}</a></li>
 					{% endif %}
 				{% endfor %}

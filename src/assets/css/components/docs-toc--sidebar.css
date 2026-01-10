@@ -8,7 +8,7 @@
 	}
 	
 	.c-docs-toc__block li {
-		margin-left: -0.01em;
+		margin-left: -0.05em;
 	}
 
 	.c-docs-toc__link {
@@ -17,21 +17,28 @@
 		color: var(--text-color-muted);
 		text-decoration: none;
 		max-width: 45ch;
-	}
 
-	.c-docs-toc__link:hover {
-		color: var(--link-color-hover);
-		text-decoration: underline;
-	}
+		&:hover {
+			color: var(--link-color);
+			text-decoration: underline;
+		}
 
-	.c-docs-toc__link[aria-current] {
-		border-left: 1px solid currentColor;
-		font-weight: 600;
-		letter-spacing: 0.03em;
-		color: var(--link-color);
-	}
+		&:not(li > a) {
+			display: inline-block;
+			padding-inline-start: 0;
+			color: var(--text-color);
+			text-decoration: none;
+			max-width: 45ch;
+		}
 
-	.c-docs-toc__link[aria-current]:hover {
-		color: var(--link-color-hover);
+		&[aria-current] {
+			border-left: 0.12em solid currentColor;
+			letter-spacing: 0.03em;
+			color: var(--link-color);
+		}
+
+		&[aria-current]:hover {
+			color: var(--link-color-hover);
+		}
 	}
 }
