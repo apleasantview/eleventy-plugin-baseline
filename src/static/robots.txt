@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eleventy-plugin-baseline.netlify.app/sitemap.xml
