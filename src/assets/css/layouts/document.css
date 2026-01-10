@@ -1,9 +1,6 @@
 .l-document {
 	display: grid;
 	grid-template-columns: minmax(min(288px, 100%), 1fr);
-	align-items: baseline;
-	justify-content: flex-start;
-	column-gap: var(--space-3xl);
 
 	.l-document__sidebar {
 		display: none;
@@ -15,11 +12,20 @@
 
 	@media (--screen-lg) {
 		& {
-			grid-template-columns: minmax(min(0px, 100%), max-content) auto;
+			grid-template-columns: minmax(min(0px, 100%), 27ch) auto;
+			align-items: baseline;
+			justify-content: flex-start;
+			column-gap: var(--space-2xl);
 		}
 
 		.l-document__sidebar {
 			display: block;
+			position: sticky;
+			top: var(--space-stack-xl);
+			height: calc(100vh - 6rem);
+			overflow-y: auto;
+			padding-inline-end: var(--space-inset-s);
+			scrollbar-width: thin;
 		}
 	}
 }
