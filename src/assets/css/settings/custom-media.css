@@ -1,0 +1,2 @@
+@custom-media --screen-md (width >= 48rem);
+@custom-media --screen-lg (width >= 75rem);
