@@ -22,6 +22,7 @@
 
 /* 06. Components */
 @import "./components/header.css";
+@import "./components/navigation.css";
 @import "./components/docs-toc.css";
 @import "./components/docs-toc--sidebar.css";
 @import "./components/docs-steps.css";

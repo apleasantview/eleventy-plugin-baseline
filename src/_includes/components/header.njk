@@ -1,13 +1,7 @@
 <header class="c-header">
 	<div class="c-header__block">
-		<p><strong>{{ site.title }}</strong></p>
+		<p><strong><a class="c-header__link" href="/">{{ site.title }}</a></strong></p>
 		<p>{{ site.tagline }}</p>
 	</div>
-	<nav>
-		{% set lang = lang or site.defaultLanguage %}
-		{% set home = collections.translations.homepage[lang] or collections.translations.homepage[site.defaultLanguage] %}
-		{% set homeText = { en: "Homepage", nl: "Homepage", fr: "Accueil" } %}
-		{% set docText = { en: "Documentation", nl: "Documentatie" } %}
-		<a href="{{ home.url }}">{{ homeText[lang] or homeText[site.defaultLanguage]}}</a>&emsp;<a href="/docs/">{{ docText[lang] or docText[site.defaultLanguage]}}</a>&emsp;|&emsp;<a href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">GitHub</a>
-	</nav>
+	{% include "components/navigation.njk" %}
 </header>
