@@ -1,0 +1,37 @@
+.c-docs-toc--sidebar {
+	font-size: var(--text-size-secondary);
+
+	.c-docs-toc__block {
+		flex-direction: column;
+		border-left: 1px solid var(--border-color-strong);
+		margin-block-start: 1em;
+	}
+	
+	.c-docs-toc__block li {
+		margin-left: -0.01em;
+	}
+
+	.c-docs-toc__link {
+		display: inline-block;
+		padding-inline-start: 1em;
+		color: var(--text-color-muted);
+		text-decoration: none;
+		max-width: 45ch;
+	}
+
+	.c-docs-toc__link:hover {
+		color: var(--link-color-hover);
+		text-decoration: underline;
+	}
+
+	.c-docs-toc__link[aria-current] {
+		border-left: 1px solid currentColor;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		color: var(--link-color);
+	}
+
+	.c-docs-toc__link[aria-current]:hover {
+		color: var(--link-color-hover);
+	}
+}

@@ -4,7 +4,7 @@
 	padding-inline: var(--space-inset-xs);
 	border: 0.08em solid var(--border-color-strong);
 	border-radius: 0.375em;
-	max-width: 768px;
+	margin-block-start: var(--space-stack-s);
 	
 	&[open]::details-content {
 		padding-block: var(--space-inset-m);
@@ -17,6 +17,12 @@
 
 	&[open] .c-docs-toc__summary svg:nth-of-type(2) {
 		transform: rotate(-180deg);
+	}
+
+	@media (--screen-lg) {
+		& {
+				display: none;
+		}
 	}
 }
 
@@ -49,8 +55,8 @@
 	}
 }
 
-.c-docs-toc {
-	>a {
+.c-docs-toc, .c-docs-toc--sidebar {
+	> a {
 		margin-block-start: var(--space-stack-m);
 		display: inline-block;
 	}
