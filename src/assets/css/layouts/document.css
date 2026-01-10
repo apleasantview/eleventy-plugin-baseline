@@ -12,7 +12,7 @@
 
 	@media (--screen-lg) {
 		& {
-			grid-template-columns: minmax(min(0px, 100%), 27ch) auto;
+			grid-template-columns: minmax(min(0px, 100%), 34ch) auto;
 			align-items: baseline;
 			justify-content: flex-start;
 			column-gap: var(--space-2xl);
