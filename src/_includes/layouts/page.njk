@@ -2,9 +2,18 @@
 
 {% block content %}
 	{% include "components/docs-toc.njk" %}
-	<h1>{{ title }}</h1>	
-	{{ content | safe }}
-	<div style="margin-block-start: var(--space-3xl); border-top: 1px solid var(--border-color);">
-		{% include "components/docs-nav.njk" %}
+	<div class="l-document">
+		<!-- sidebar -->
+		<div class="l-document__sidebar">
+			{# {% include "components/docs-toc--sidebar.njk" %} #}
+		</div>
+
+		<div class="l-document__principal u-flow">
+			<h1>{{ title }}</h1>	
+			{{ content | safe }}
+			<div style="margin-block-start: var(--space-3xl); border-top: 1px solid var(--border-color);">
+				{% include "components/docs-nav.njk" %}
+			</div>
+		</div>
 	</div>
 {% endblock %}

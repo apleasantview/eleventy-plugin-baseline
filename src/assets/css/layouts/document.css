@@ -1,0 +1,21 @@
+.l-document {
+	display: grid;
+	grid-template-columns: minmax(min(0px, 100%), max-content) auto;
+	align-items: baseline;
+	justify-content: flex-start;
+	column-gap: var(--space-3xl);
+
+	.l-document__sidebar {
+		display: none;
+	}
+
+	.l-document__principal {
+		max-width: 60rem;
+	}
+
+	@media (--screen-lg) {
+		.l-document__sidebar {
+			display: block;
+		}
+	}
+}

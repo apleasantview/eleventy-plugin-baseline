@@ -16,6 +16,7 @@
 @import "./elements/skip-link.css";
 
 /* 05. Objects */
+@import "./layouts/document.css";
 @import "./layouts/fluid-grid.css";
 
 /* 06. Components */
@@ -24,6 +25,7 @@
 @import "./components/docs-steps.css";
 
 /* 07. Utilities */
+@import "./utilities/flow.css";
 @import "./utilities/prism.css";
 
 /* CSS is organised followng ITCSS and BEMIT naming conventions, see:

@@ -38,15 +38,11 @@ footer {
 	padding-block: 1rem;
 }
 
-main {
-	max-width: 60rem;
-}
-
 footer {
 	margin-block-start: auto;
 }
 
-p {
+p, li {
 	max-width: 80ch;
 }
 
