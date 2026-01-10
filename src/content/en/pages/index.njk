@@ -2,13 +2,9 @@
 title: Welcome
 permalink: /
 translationKey: homepage
+layout: layouts/page.njk
 ---
-
-{% extends "layouts/base.njk" %}
-
 {% block content %}
-	<h1>{{ title }}</h1>
-
 	<p><strong>Eleventy Plugin Baseline</strong> is an experimental Swiss army knife for Eleventy: small, prewired helpers for assets, head/meta, images, and debug so you spend less time wiring the same pieces.</p>
 
 	{% alertBlock "warning" %}
