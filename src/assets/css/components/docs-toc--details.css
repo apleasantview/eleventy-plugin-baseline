@@ -7,7 +7,7 @@
 	margin-block-start: var(--space-stack-s);
 	
 	&[open]::details-content {
-		padding-block: var(--space-inset-m);
+		padding-block-start: var(--space-inset-m);
 		padding-inline: 0.2em;
 	}
 
@@ -23,6 +23,10 @@
 		& {
 				display: none;
 		}
+	}
+
+	.c-docs-toc {
+		padding-inline: var(--space-2xs);
 	}
 }
 
