@@ -1,61 +1,5 @@
-.c-docs-toc__details {
-	box-sizing: content-box;
-	padding-block: calc(var(--space-inset-xs) * 0.8 );
-	padding-inline: var(--space-inset-xs);
-	border: 0.08em solid var(--border-color-strong);
-	border-radius: 0.375em;
-	margin-block-start: var(--space-stack-s);
-	
-	&[open]::details-content {
-		padding-block: var(--space-inset-m);
-		padding-inline: 0.2em;
-	}
-
-	&[open] .c-docs-toc {
-		animation: animateDown 0.2s ease-out forwards;
-	}
-
-	&[open] .c-docs-toc__summary svg:nth-of-type(2) {
-		transform: rotate(-180deg);
-	}
-
-	@media (--screen-lg) {
-		& {
-				display: none;
-		}
-	}
-}
-
-.c-docs-toc__summary {
-	width: 100%;
-	display: inline-flex;
-	gap: var(--space-2xs);
-	align-items: center;
-
-	&::marker {
-		content: "";
-	}
-
-	span {
-		line-height: 1;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	svg {
-		width: 1.25em;
-		height: 1.25em;
-		flex-shrink: 0;
-	}
-
-	svg:nth-of-type(2) {
-		margin-inline-start: auto;
-		transition: transform 0.1s ease-out;
-	}
-}
-
-.c-docs-toc, .c-docs-toc--sidebar {
+.c-docs-toc,
+.c-docs-toc--sidebar {
 	> a {
 		margin-block-start: var(--space-stack-m);
 		display: inline-block;
@@ -76,13 +20,39 @@
 	}
 }
 
-@keyframes animateDown {
-	0% {
-		opacity: 0;
-		transform: translatey(-15px);
+.c-docs-toc__link {
+	display: inline-block;
+	padding-inline-start: 1em;
+	color: var(--text-color-muted);
+	text-decoration: none;
+	max-width: 45ch;
+
+	&:hover {
+		color: var(--link-color-hover);
+		text-decoration: underline;
 	}
-	100% {
-		opacity: 1;
-		transform: translatey(0);
+
+	&[aria-current] {
+		border-left: 0.12em solid currentColor;
+		color: var(--link-color);
+	}
+
+	&[aria-current]:hover {
+		color: var(--link-color-hover);
+	}
+
+	&:not(li > a) {
+		display: inline-block;
+		padding-inline-start: 0;
+		color: var(--text-color);
+		text-decoration: none;
+		max-width: 45ch;
+	}
+
+	&[aria-current]:not(li > a) {
+		text-decoration: underline;
+		color: var(--text-color);
+		border: none;
+		max-width: 45ch;
 	}
 }

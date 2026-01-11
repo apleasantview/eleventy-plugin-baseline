@@ -3,42 +3,11 @@
 
 	.c-docs-toc__block {
 		flex-direction: column;
-		border-left: 1px solid var(--border-color-strong);
+		border-left: 1px solid var(--border-color);
 		margin-block-start: 1em;
 	}
 	
 	.c-docs-toc__block li {
-		margin-left: -0.05em;
-	}
-
-	.c-docs-toc__link {
-		display: inline-block;
-		padding-inline-start: 1em;
-		color: var(--text-color-muted);
-		text-decoration: none;
-		max-width: 45ch;
-
-		&:hover {
-			color: var(--link-color);
-			text-decoration: underline;
-		}
-
-		&:not(li > a) {
-			display: inline-block;
-			padding-inline-start: 0;
-			color: var(--text-color);
-			text-decoration: none;
-			max-width: 45ch;
-		}
-
-		&[aria-current] {
-			border-left: 0.12em solid currentColor;
-			letter-spacing: 0.03em;
-			color: var(--link-color);
-		}
-
-		&[aria-current]:hover {
-			color: var(--link-color-hover);
-		}
+		margin-left: -0.0875em;
 	}
 }

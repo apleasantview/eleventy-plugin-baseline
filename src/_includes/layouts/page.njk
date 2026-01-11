@@ -1,7 +1,7 @@
 {% extends "layouts/base.njk" %}
 
 {% block content %}
-	{% include "components/docs-toc.njk" %}
+	{% include "components/docs-toc--details.njk" %}
 	<div class="l-document">
 		<!-- sidebar -->
 		<div class="l-document__sidebar">
@@ -14,6 +14,7 @@
 			<div style="margin-block-start: var(--space-3xl); border-top: 1px solid var(--border-color);">
 				{% include "components/docs-nav.njk" %}
 			</div>
+			<div style="margin-block-start: var(--space-2xl)">
 		</div>
 	</div>
 {% endblock %}
