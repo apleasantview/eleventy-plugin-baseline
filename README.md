@@ -7,6 +7,43 @@ Eleventy Baseline is a lightweight toolkit that collects small but useful patter
 This is a practical, evolving baseline.  
 Things might shift, break, or get renamed as the project evolves.
 
+## Install
+
+If you already have Eleventy and eleventy-img installed:
+```bash
+npm install @apleasantview/eleventy-plugin-baseline
+```
+
+For a fresh project (install Eleventy and eleventy-img too):
+```bash
+npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-baseline
+```
+
+## Usage
+
+In your Eleventy config (ESM):
+
+```js
+import baseline, { config as baselineConfig } from "@apleasantview/eleventy-plugin-baseline";
+
+export default function (eleventyConfig) {
+	eleventyConfig.addPlugin(baseline, {
+		// verbose: false,
+		// enableNavigatorTemplate: false,
+		// enableSitemapTemplate: true,
+	});
+}
+
+export const config = baselineConfig;
+```
+
+Requires Eleventy 3.x.
+
+## Docs
+
+Documentation tracks latest builds:  
+[https://eleventy-plugin-baseline.netlify.app/](https://eleventy-plugin-baseline.netlify.app/)
+
 ## Current Features
 
 - Debugging helpers (filter, Nunjucks globals)
@@ -26,19 +63,6 @@ Things might shift, break, or get renamed as the project evolves.
 - SEO helpers (JSON-LD, canonical URLs, sitemaps)
 
 The long-term goal is to offer just enough structure and tooling to start a new Eleventy site quickly, while respecting Eleventy’s deliberately unopinionated nature.
-
-## Usage
-
-There’s no npm package yet. To try it locally:
-
-```bash
-git clone https://github.com/apleasantview/eleventy-baseline
-cd eleventy-baseline
-npm install
-npm run dev
-```
-
-Expect sharp edges. This repo is still a sandbox.
 
 ## Who Might Enjoy This
 
