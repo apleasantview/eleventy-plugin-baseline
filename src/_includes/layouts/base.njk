@@ -2,7 +2,7 @@
 <html lang="{{ lang | default(site.defaultLanguage) }}">
 	<head>
 		<baseline-head></baseline-head>
-		{% include "components/head-languages.njk" %}
+		{% include "partials/head-languages.njk" %}
 		<meta name="color-scheme" content="light dark">
 		<meta name="generator" content="{{ eleventy.generator }}">
 	</head>
@@ -21,7 +21,7 @@
 	</body>
 	<footer>
 		<div>
-			{% include "components/theme-switcher.njk" %}&emsp;{% include "components/language-switcher.njk" %}
+			{% include "partials/theme-switcher.njk" %}&emsp;{% include "partials/language-switcher.njk" %}
 		</div>
 		<div>
 			<small>revision: {{ helpers.buildCommit() | safe }}</small></small>&emsp;<small>npm: <a href="https://www.npmjs.com/package/@apleasantview/eleventy-plugin-baseline" target="_blank">{{ _baseline.version }}</a>
