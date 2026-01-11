@@ -38,16 +38,19 @@ footer {
 	padding-block: 1rem;
 }
 
+main,
+footer {
+	border-top: 1px solid var(--border-color);
+}
+
 footer {
 	margin-block-start: auto;
 }
 
 p, li {
 	max-width: 80ch;
-}
-
-p, li {
 	text-wrap: pretty;
+	letter-spacing: 0.015em;
 }
 
 a {

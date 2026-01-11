@@ -3,6 +3,8 @@
 	flex-wrap: wrap;
 	justify-content: space-between;
 	column-gap: var(--space-3xl);
+	padding-block-start: var(--space-inset-s);
+	padding-block-end: var(--space-inset-m);
 }
 
 .c-header__link {

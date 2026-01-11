@@ -7,7 +7,7 @@
 	}
 
 	.l-document__principal {
-		max-width: 60rem;
+		max-width: 50rem;
 	}
 
 	@media (--screen-lg) {
@@ -22,7 +22,7 @@
 			display: block;
 			position: sticky;
 			top: var(--space-stack-xl);
-			height: calc(100vh - 6rem);
+			height: calc(95vh - 6rem);
 			overflow-y: auto;
 			padding-inline-start: var(--space-stack-2xs);
 			padding-inline-end: var(--space-stack-s);

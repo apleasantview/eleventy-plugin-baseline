@@ -9,12 +9,27 @@
 }
 
 .c-navigation__link {
-  color: var(--text-color-muted);
+  color: var(--text-color);
 	text-decoration: none;
 	font-size: var(--text-size-secondary);
 
-	&:hover, &[aria-current] {
+	&:hover {
+		color: var(--link-color-hover);
+		text-decoration: underline;
+	}
+
+	&[aria-current] {
 		color: var(--text-color);
+		text-decoration: underline;
+	}
+
+	&[aria-current]:hover {
+		color: var(--link-color-hover);
+	}
+
+	svg {
+		display: inline-block;
+		vertical-align: -.35em;
 	}
 }
 
