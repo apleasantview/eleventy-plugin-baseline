@@ -3,7 +3,7 @@
 
 	.c-docs-toc__block {
 		flex-direction: column;
-		border-left: 1px solid var(--border-color);
+		border-left: 1px solid var(--color-border);
 		margin-block-start: 1em;
 	}
 	

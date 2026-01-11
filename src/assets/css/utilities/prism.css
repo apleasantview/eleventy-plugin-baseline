@@ -51,7 +51,7 @@
 	--prism-marker-font-size: 0.8em;
 
 	/* Font */
-	--prism-font-size: var(--body-text-size);
+	--prism-font-size: var(--text-size-body);
 	--prism-line-height: 1.5em;
 	--prism-font-family: monospace;
 	--prism-inline-font-size: var(--prism-font-size);

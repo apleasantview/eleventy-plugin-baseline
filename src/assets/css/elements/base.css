@@ -21,10 +21,10 @@ body {
 
 body {
 	font-family: var(--font-family-body);
-	font-size: var(--body-text-size);
-	line-height: var(--body-line-height);
-	color: var(--text-color);
-	background-color: var(--surface-color);
+	font-size: var(--text-size-body);
+	line-height: var(--text-lineheight-default);
+	color: var(--color-text-primary);
+	background-color: var(--color-surface-default);
 }
 
 header> * + *,
@@ -35,12 +35,12 @@ main > * + * {
 header,
 main,
 footer {
-	padding-block: 1rem;
+	padding-block: var(--space-inset-s);
 }
 
 main,
 footer {
-	border-top: 1px solid var(--border-color);
+	border-top: 1px solid var(--color-border);
 }
 
 footer {
@@ -54,11 +54,11 @@ p, li {
 }
 
 a {
-	color: var(--link-color);
+	color: var(--color-accent);
 	word-break: keep-all;
 
 	&:hover {
-		color: var(--link-color-hover);
+		color: var(--color-accent-hover);
 	}
 }
 
@@ -68,17 +68,18 @@ a {
 }
 
 h1 {
-	font-size: var(--heading-1-size);
+	font-size: var(--text-size-display);
+	margin-top: var(--flow-space);
 }
 
 h2 {
 	--flow-space: var(--heading-flow-space);
-	font-size: var(--heading-2-size);
+	font-size: var(--text-size-title);
 }
 
 h3 {
 	--flow-space: var(--heading-flow-space);
-	font-size: var(--heading-3-size);
+	font-size: var(--text-size-lede);
 }
 
 ol {
@@ -91,7 +92,7 @@ ul {
 }
 
 pre, code:not(pre code) {
-	background: var(--surface-color-subtle);
+	background: var(--color-surface-subtle);
 }
 
 pre {
@@ -103,7 +104,7 @@ pre {
 }
 
 blockquote {
-	border: 0.0625em solid var(--border-color);
+	border: 0.0625em solid var(--color-border);
 	border-left: 0.24em solid var(--alert-type, var(--color-border-strong));
 	padding-block: 0.5em;
 	padding-inline: 1em;
@@ -112,22 +113,22 @@ blockquote {
 	vertical-align: middle;
 	margin-block: var(--space-inset-m);
 	border-radius: 0 0.25em 0.25em 0;
-	background-color: var(--surface-color-subtle);
+	background-color: var(--color-surface-subtle);
 
 	&.alert-info {
-		--alert-type: var(--accent-color);
+		--alert-type: var(--color-accent);
 	}
 
 	&.alert-success {
-		--alert-type: var(--success-color);
+		--alert-type: var(--color-success);
 	}
 
 	&.alert-warning {
-		--alert-type: var(--warning-color);
+		--alert-type: var(--color-warning);
 	}
 
 	&.alert-danger {
-		--alert-type: var(--danger-color);
+		--alert-type: var(--color-danger);
 	}
 }
 
@@ -144,7 +145,7 @@ figure, picture {
 }
 
 figure figcaption {
-	font-size: var(--meta-text-size);
+	font-size: var(--text-size-secondary);
 	padding-block: 0.5rem;
 	text-align: center;
 }
@@ -153,6 +154,6 @@ hr {
 	--flow-space: var(--space-stack-m);
 	border: 0;
 	border-top: 1px solid;
-	color: var(--border-color-strong);
+	color: var(--color-border);
 	margin-block-start: var(--flow-space);
 }

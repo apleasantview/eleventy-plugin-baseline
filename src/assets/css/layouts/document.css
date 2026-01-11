@@ -7,12 +7,12 @@
 	}
 
 	.l-document__principal {
-		max-width: 50rem;
+		max-width: 60rem;
 	}
 
 	@media (--screen-lg) {
 		& {
-			grid-template-columns: minmax(min(0px, 100%), 37ch) auto;
+			grid-template-columns: minmax(min(0px, 100%), 32ch) auto;
 			align-items: baseline;
 			justify-content: flex-start;
 			column-gap: var(--space-2xl);
@@ -21,7 +21,7 @@
 		.l-document__sidebar {
 			display: block;
 			position: sticky;
-			top: var(--space-stack-xl);
+			top: var(--space-stack-l);
 			height: calc(95vh - 6rem);
 			overflow-y: auto;
 			padding-inline-start: var(--space-stack-2xs);

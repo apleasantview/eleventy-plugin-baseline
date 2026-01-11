@@ -2,7 +2,7 @@
 	box-sizing: content-box;
 	padding-block: calc(var(--space-inset-xs) * 0.8 );
 	padding-inline: var(--space-inset-xs);
-	border: 0.08em solid var(--border-color-strong);
+	border: 0.08em solid var(--color-border-strong);
 	border-radius: 0.375em;
 	margin-block-start: var(--space-stack-s);
 	
@@ -26,14 +26,14 @@
 	}
 
 	.c-docs-toc {
-		padding-inline: var(--space-2xs);
+		padding-inline: var(--space-inset-2xs);
 	}
 }
 
 .c-docs-toc__summary {
 	width: 100%;
 	display: inline-flex;
-	gap: var(--space-2xs);
+	gap: var(--space-inset-2xs);
 	align-items: center;
 
 	&::marker {

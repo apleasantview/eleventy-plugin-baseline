@@ -4,7 +4,7 @@
 	}
 
 	ol > li + li {
-	margin-block-start: var(--space-l);
+	margin-block-start: var(--space-stack-l);
 	}
 
 	li > * + * {

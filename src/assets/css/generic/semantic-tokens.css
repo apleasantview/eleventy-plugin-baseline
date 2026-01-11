@@ -56,11 +56,13 @@
 	--text-weight-heavy: 700;
 
 	/* Spacing roles */
+	--space-inset-2xs: var(--space-2xs);
 	--space-inset-xs: var(--space-xs);
 	--space-inset-s: var(--space-s);
 	--space-inset-m: var(--space-m);
 	--space-inset-l: var(--space-l);
 
+	--space-inline-tight: var(--space-2xs);
 	--space-inline-compact: var(--space-xs);
 	--space-inline-default: var(--space-s);
 	--space-inline-comfortable: var(--space-m);
@@ -79,4 +81,14 @@
 	--space-fluid-s-l: var(--space-s-l);
 	--space-fluid-s-xl: var(--space-s-xl);
 	--space-fluid-s-2xl: var(--space-s-2xl);
+
+	/* An exception for wrapper values */
+	--wrapper-max-width: 120rem;
+	--wrapper-margin-inline: auto;
+	--wrapper-padding-inline: var(--space-fluid-s-xl);
+
+	--flow-space: var(--space-stack-s);
+
+	/* Headings flow-space */ 
+	--heading-flow-space: var(--space-stack-l);
 }

@@ -12,8 +12,8 @@
 	.c-docs-toc__block {
 		display: flex;
 		flex-wrap: wrap;
-		column-gap: var(--space-s);
-		row-gap: var(--space-2xs);
+		column-gap: var(--space-inline-default);
+		row-gap: var(--space-inline-tight);
 		margin-block-start: 0.5rem;
 		padding: 0;
 		list-style: none;
@@ -23,35 +23,35 @@
 .c-docs-toc__link {
 	display: inline-block;
 	padding-inline-start: 1em;
-	color: var(--text-color-muted);
+	color: var(--color-text-muted);
 	text-decoration: none;
 	max-width: 45ch;
 
 	&:hover {
-		color: var(--link-color-hover);
+		color: var(--color-accent-hover);
 		text-decoration: underline;
 	}
 
 	&[aria-current] {
 		border-left: 0.12em solid currentColor;
-		color: var(--link-color);
+		color: var(--color-accent);
 	}
 
 	&[aria-current]:hover {
-		color: var(--link-color-hover);
+		color: var(--color-accent-hover);
 	}
 
 	&:not(li > a) {
 		display: inline-block;
 		padding-inline-start: 0;
-		color: var(--text-color);
+		color: var(--color-text-primary);
 		text-decoration: none;
 		max-width: 45ch;
 	}
 
 	&[aria-current]:not(li > a) {
 		text-decoration: underline;
-		color: var(--text-color);
+		color: var(--color-text-primary);
 		border: none;
 		max-width: 45ch;
 	}
