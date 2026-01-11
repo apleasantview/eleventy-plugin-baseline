@@ -5,7 +5,7 @@
 	{% set docText = { en: "Documentation", nl: "Documentatie" } %}
 	<ul>
 		{# <li><a {% if page.url == "/" %} aria-current="page"{% endif %} class="c-navigation__link" href="{{ home.url }}">{{ homeText[lang] or homeText[site.defaultLanguage]}}</a></li> #}
-		<li><a {% if page.url == "/docs/" %} aria-current="page"{% endif %} class="c-navigation__link" href="/docs/">{{ docText[lang] or docText[site.defaultLanguage]}}</a></li>
+		<li><a class="c-navigation__link" href="/docs/" {% if page.url == "/docs/" %}aria-current="page"{% endif %}>{{ docText[lang] or docText[site.defaultLanguage]}}</a></li>
 		<li>|</li>
 		<li>
 			<a class="c-navigation__link" href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">
