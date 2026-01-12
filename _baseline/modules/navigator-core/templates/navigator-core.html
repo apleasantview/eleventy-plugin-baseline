@@ -24,7 +24,7 @@ permalink: /navigator-core.html
 		<p><a id="go-back" href=""><span style="vertical-align: text-bottom;">&#8592;</span>&nbsp;Go back</a></p>
 		<h2><u>Navigator</u></h2>
 		{% for key, value in _navigator() %}
-		<details name="navigator-item">
+		<details>
 			<summary><strong>{{ key }}</strong></summary>
 			{% if value | isString %}
 			<pre>{{ value | safe }}</pre>
