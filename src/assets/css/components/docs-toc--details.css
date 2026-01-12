@@ -32,7 +32,7 @@
 
 .c-docs-toc__summary {
 	width: 100%;
-	display: inline-flex;
+	display: flex;
 	gap: var(--space-inset-2xs);
 	align-items: center;
 
@@ -48,8 +48,6 @@
 	}
 
 	svg {
-		width: 1.25em;
-		height: 1.25em;
 		flex-shrink: 0;
 	}
 
