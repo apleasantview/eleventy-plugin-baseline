@@ -25,7 +25,7 @@
 	}
 
 	li .c-docs-toc__link[aria-current]::after {
-		transform-origin: left;
-		scale: 120% 110%;
+		transform-origin: left center;
+		scale: 120% 108%;
 	}
 }
