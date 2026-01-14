@@ -12,7 +12,7 @@
 
 	@media (--screen-lg) {
 		& {
-			grid-template-columns: minmax(min(310px, 100%), 32ch) auto;
+			grid-template-columns: minmax(min(300px, 100%), 32ch) min(740px, 100%);
 			align-items: baseline;
 			column-gap: var(--space-2xl);
 		}
@@ -23,8 +23,6 @@
 			top: var(--space-stack-l);
 			height: calc(95vh - 6rem);
 			overflow-y: auto;
-			padding-inline-start: var(--space-stack-2xs);
-			padding-inline-end: var(--space-stack-s);
 			scrollbar-width: thin;
 		}
 	}

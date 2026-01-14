@@ -1,5 +1,6 @@
 .c-docs-toc--sidebar {
 	font-size: var(--text-size-secondary);
+	padding-inline: var(--space-inset-2xs);
 
 	.c-docs-toc__block {
 		flex-direction: column;
