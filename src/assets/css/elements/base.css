@@ -76,7 +76,6 @@ a {
 		scale: 116% 140%;
 		background-color: var(--color-surface-subtle);
 		border-radius: 0.1em;
-		max-width: 224px;
 	}
 }
 

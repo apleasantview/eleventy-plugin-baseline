@@ -26,5 +26,6 @@
 	li .c-docs-toc__link[aria-current]::after {
 		transform-origin: left center;
 		scale: 120% 108%;
+		max-width: 224px;
 	}
 }
