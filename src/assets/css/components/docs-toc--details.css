@@ -1,7 +1,7 @@
 .c-docs-toc--details {
 	box-sizing: content-box;
 	padding-block: calc(var(--space-inset-xs) * 0.8 );
-	padding-inline: var(--space-inset-xs);
+	padding-inline: var(--space-inset-2xs);
 	border: 0.08em solid var(--color-border-strong);
 	border-radius: 0.375em;
 	margin-block-start: var(--space-stack-s);
