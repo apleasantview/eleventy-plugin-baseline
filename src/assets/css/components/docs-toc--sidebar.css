@@ -10,4 +10,22 @@
 	.c-docs-toc__block li {
 		margin-left: -0.0875em;
 	}
+
+	.c-docs-toc__link {
+		margin-top: 0.1em;
+		text-decoration: none;
+	}
+
+	li .c-docs-toc__link {
+		margin: 0;
+	}
+
+	.c-docs-toc__link[aria-current]::after {
+		scale: 124%;
+	}
+
+	li .c-docs-toc__link[aria-current]::after {
+		transform-origin: left;
+		scale: 120% 110%;
+	}
 }

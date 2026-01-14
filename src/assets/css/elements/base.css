@@ -60,6 +60,24 @@ a {
 	&:hover {
 		color: var(--color-accent-hover);
 	}
+
+	&[aria-current] {
+		position: relative;
+		margin-top: 0.1em;
+	}
+
+	&[aria-current]::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		width: 100%;
+		height: 100%;
+		scale: 116% 140%;
+		background-color: var(--color-surface-subtle);
+		border-radius: 0.1em;
+		max-width: 224px;
+	}
 }
 
 :heading {

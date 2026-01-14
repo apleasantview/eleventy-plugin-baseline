@@ -28,6 +28,11 @@
 	.c-docs-toc {
 		padding-inline: var(--space-inset-2xs);
 	}
+
+	li .c-docs-toc__link[aria-current]::after {
+		transform-origin: left;
+		scale: 110% 100%;
+	}
 }
 
 .c-docs-toc__summary {

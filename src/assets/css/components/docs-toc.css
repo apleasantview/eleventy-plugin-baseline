@@ -35,6 +35,7 @@
 	&[aria-current] {
 		border-left: 0.12em solid currentColor;
 		color: var(--color-accent);
+		margin: 0;
 	}
 
 	&[aria-current]:hover {
@@ -50,7 +51,6 @@
 	}
 
 	&[aria-current]:not(li > a) {
-		text-decoration: underline;
 		color: var(--color-text-primary);
 		border: none;
 		max-width: 45ch;
