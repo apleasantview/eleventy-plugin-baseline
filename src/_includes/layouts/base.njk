@@ -12,19 +12,23 @@
 		</a>
 		{% include "components/header.njk" %}
 		<main id="main" tabindex="-1">
-			{% block content %}
-				<p>
-					No content found.
-				</p>
-			{% endblock %}
+			<div class="u-wrapper">
+				{% block content %}
+					<p>
+						No content found.
+					</p>
+				{% endblock %}
+			</div>
 		</main>
 	</body>
 	<footer>
-		<div>
-			{% include "partials/theme-switcher.njk" %}&emsp;{% include "partials/language-switcher.njk" %}
-		</div>
-		<div>
-			<small>revision: {{ helpers.buildCommit() | safe }}</small></small>&emsp;<small>npm: <a href="https://www.npmjs.com/package/@apleasantview/eleventy-plugin-baseline" target="_blank">{{ _baseline.version }}</a>
+		<div class="u-wrapper">
+			<div>
+				{% include "partials/theme-switcher.njk" %}&emsp;{% include "partials/language-switcher.njk" %}
+			</div>
+			<div>
+				<small>revision: {{ helpers.buildCommit() | safe }}</small></small>&emsp;<small>npm: <a href="https://www.npmjs.com/package/@apleasantview/eleventy-plugin-baseline" target="_blank">{{ _baseline.version }}</a>
+			</div>
 		</div>
 	</footer>
 </html>

@@ -1,7 +1,9 @@
-<header class="c-header">
-	<div class="c-header__block">
-		<p><strong><a class="c-header__link" href="/">{{ site.title }}</a></strong></p>
-		<p>{{ site.tagline }}</p>
+<header>
+	<div class="c-header u-wrapper">
+		<div class="c-header__block">
+			<p><strong><a class="c-header__link" href="/">{{ site.title }}</a></strong></p>
+			<p>{{ site.tagline }}</p>
+		</div>
+		{% include "components/navigation.njk" %}
 	</div>
-	{% include "components/navigation.njk" %}
 </header>
