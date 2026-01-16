@@ -4,7 +4,7 @@
 	padding-inline: var(--space-inset-2xs);
 	border: 0.08em solid var(--color-border-strong);
 	border-radius: 0.375em;
-	margin-block-start: var(--space-stack-s);
+	margin-block: var(--space-stack-s);
 	
 	&[open]::details-content {
 		padding-block-start: var(--space-inset-m);

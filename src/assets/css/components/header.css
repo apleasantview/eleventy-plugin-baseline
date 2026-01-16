@@ -5,6 +5,7 @@
 	column-gap: var(--space-3xl);
 	padding-block-start: var(--space-inset-s);
 	padding-block-end: var(--space-inset-m);
+	align-items: center;
 }
 
 .c-header__link {
