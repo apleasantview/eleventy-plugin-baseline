@@ -367,3 +367,8 @@ code[class*='language-'] ::selection {
 	--prism-regex: oklch(0.84 0.08 90);     /* gold */
 	--prism-json-property: oklch(0.82 0.12 220); /* teal */
 }
+
+div.code-toolbar {
+	margin-block-start: var(--space-stack-s);
+	margin-block-end: var(--space-stack-l);
+}

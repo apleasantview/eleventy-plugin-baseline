@@ -103,6 +103,10 @@ ul {
 	padding-inline-start: 1.5rem;
 }
 
+li + li {
+	margin-block-start: var(--space-stack-3xs);
+}
+
 pre, code:not(pre code) {
 	background: var(--color-surface-subtle);
 }
@@ -116,10 +120,13 @@ pre {
 }
 
 code:not(pre code) {
+	padding-inline: 0.25em;
+	border-radius: 0.1em;
 	word-wrap: break-word;
 }
 
 blockquote {
+	--flow-space: var(--space-stack-m);
 	border: 0.0625em solid var(--color-border);
 	border-left: 0.24em solid var(--alert-type, var(--color-border-strong));
 	padding-block: 0.5em;
