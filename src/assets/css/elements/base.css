@@ -115,6 +115,10 @@ pre {
 	overflow: auto;
 }
 
+code:not(pre code) {
+	word-wrap: break-word;
+}
+
 blockquote {
 	border: 0.0625em solid var(--color-border);
 	border-left: 0.24em solid var(--alert-type, var(--color-border-strong));

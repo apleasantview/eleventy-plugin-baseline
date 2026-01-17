@@ -27,6 +27,7 @@
 
 	.c-docs-toc {
 		padding-inline: var(--space-inset-2xs);
+		margin-block: var(--space-stack-2xs);
 	}
 
 	li .c-docs-toc__link[aria-current]::after {

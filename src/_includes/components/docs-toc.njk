@@ -1,5 +1,6 @@
 <nav class="c-docs-toc{{ variant }}">
 	<p><strong><a class="c-docs-toc__link" href="/" {% if page.url == "/" %}aria-current="page"{% endif %}>Welcome</a></strong></p>
+	{% if not variant %}<hr>{% endif %}
 	<p><strong>Introduction</strong></p>
 	<ul class="c-docs-toc__block">
 		<li><a class="c-docs-toc__link" href="/docs/" {% if page.url == "/docs/" %}aria-current="page"{% endif %}>Overview</a></li>
