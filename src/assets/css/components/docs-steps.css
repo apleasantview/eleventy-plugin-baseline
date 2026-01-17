@@ -1,4 +1,4 @@
-.c-docs-steps {
+.c-docs-steps, .c-docs-steps--compact {
 	p:first-of-type {
 		display: inline-block;
 	}
@@ -12,11 +12,17 @@
 		margin-top: 0;
 	}
 
-	ol:nth-child(1) > li + li, ul:nth-child(1) > li + li {
+	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
 	margin-block-start: var(--space-stack-l);
 	}
 
 	li > * + * {
 		margin-block-start: var(--flow-space);
+	}
+}
+
+.c-docs-steps--compact {
+	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
+		margin-block-start: inherit;
 	}
 }
