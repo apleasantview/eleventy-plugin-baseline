@@ -3,7 +3,12 @@
 		display: inline-block;
 	}
 
-	ol > li + li {
+	ul {
+		padding: 0;
+		list-style: none;
+	}
+
+	ol > li + li, ul > li + li {
 	margin-block-start: var(--space-stack-l);
 	}
 

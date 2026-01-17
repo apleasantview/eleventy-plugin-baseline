@@ -21,7 +21,7 @@
 			display: block;
 			position: sticky;
 			top: var(--space-stack-l);
-			height: calc(95vh - 6rem);
+			max-height: calc(95vh - 6rem);
 			overflow-y: auto;
 			scrollbar-width: thin;
 		}
