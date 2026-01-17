@@ -2,3 +2,13 @@
   margin-block-start: var(--flow-space, 1em);
 }
 
+.u-flow {
+  > h1 + * {
+    margin-block-start: var(--space-stack-m);
+  }
+
+  > h2 {
+    margin-block-start: var(--space-stack-xl);
+  }
+}  
+

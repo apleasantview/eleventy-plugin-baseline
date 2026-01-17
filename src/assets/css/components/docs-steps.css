@@ -8,7 +8,11 @@
 		list-style: none;
 	}
 
-	ol > li + li, ul > li + li {
+	li > p:nth-child(n + 2) {
+		margin-top: 0;
+	}
+
+	ol:nth-child(1) > li + li, ul:nth-child(1) > li + li {
 	margin-block-start: var(--space-stack-l);
 	}
 
