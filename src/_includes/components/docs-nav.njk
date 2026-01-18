@@ -2,7 +2,7 @@
 {% set nextPost = collections.docs | getNextCollectionItem %}
 
 <div style="margin-block-start: var(--space-2xs); display: flex; flex-wrap: wrap; justify-content: space-between; box-sizing: content-box; padding-inline: 0 0.5em;">
-	{% if page.url === "/docs/quickstart/" %}
+	{% if page.url === "/docs/baseline-concepts/" %}
 		<p>Previous: <a href="/docs/">Overview</a></p>
 	{% endif %}
 	{% if previousPost and previousPost.fileSlug != "01.overview" %}<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>{% endif %}
