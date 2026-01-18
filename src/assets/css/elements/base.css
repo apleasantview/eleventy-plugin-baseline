@@ -104,7 +104,7 @@ ul {
 	padding-inline-start: 1.5rem;
 }
 
-li + li {
+li {
 	margin-block-start: var(--space-stack-3xs);
 }
 
