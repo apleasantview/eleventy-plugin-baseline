@@ -5,6 +5,11 @@
 		gap: var(--space-cluster-s);
 		padding: 0;
 		margin: 0;
+		align-items: center;
+	}
+
+	li {
+		margin: 0;
 	}
 }
 
@@ -28,7 +33,7 @@
 
 	svg {
 		display: inline-block;
-		vertical-align: -.35em;
+		vertical-align: -.435em;
 	}
 }
 
