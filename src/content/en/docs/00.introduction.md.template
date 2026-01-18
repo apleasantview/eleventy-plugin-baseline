@@ -24,7 +24,7 @@ Work in progress: APIs and defaults may shift as this project evolves.
 - Globals: `date.toUTCISO` for sitemap `lastmod`.
 
 ## Status and expectations
-- Package name: `eleventy-plugin-baseline` (install path may change when published).
+- Package name: `@apleasantview/eleventy-plugin-baseline` (install path may change when published).
 - Options API is still evolving; modules may gain/lose switches.
 - Docs aim to stay in sync with code; check module pages for specifics.
 

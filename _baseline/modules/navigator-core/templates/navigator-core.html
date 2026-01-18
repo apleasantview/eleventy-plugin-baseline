@@ -8,6 +8,18 @@ permalink: /navigator-core.html
 
 <head>
 	<baseline-head></baseline-head>
+	<style>
+		._navigator__wrapper:not(#\#):not(#\#) {
+			box-sizing: content-box;
+			max-width: 60rem;
+			padding-inline: clamp(1rem, 0.2083rem + 3.5185vw, 3.375rem);
+			margin-inline: auto;
+		}
+
+		._navigator__wrapper:not(#\#):not(#\#) > * + * {
+			margin-block-start: 1.25rem;
+		}
+	</style>
 </head>
 
 <body>
@@ -15,24 +27,28 @@ permalink: /navigator-core.html
 		Skip to main content
 	</a>
 	<header>
-		<h1>{{ site.title }} Navigator</h1>
-		<div>
-			<p>{{ site.tagline }}</p>
+		<div class="_navigator__wrapper">
+			<h1>{{ site.title }} Navigator</h1>
+			<div>
+				<p>{{ site.tagline }}</p>
+			</div>
 		</div>
 	</header>
 	<main id="main" tabindex="-1">
-		<p><a id="go-back" href=""><span style="vertical-align: text-bottom;">&#8592;</span>&nbsp;Go back</a></p>
-		<h2><u>Navigator</u></h2>
-		{% for key, value in _navigator() %}
-		<details>
-			<summary><strong>{{ key }}</strong></summary>
-			{% if value | isString %}
-			<pre>{{ value | safe }}</pre>
-			{% else %}
-			<pre>{{ value | _inspect({ depth: inspectorDepth }) }}</pre>
-			{% endif %}
-		</details>
-		{% endfor %}
+		<div class="_navigator__wrapper">
+			<p><a id="go-back" href=""><span style="vertical-align: text-bottom;">&#8592;</span>&nbsp;Go back</a></p>
+			<h2><u>Navigator</u></h2>
+			{% for key, value in _navigator() %}
+			<details>
+				<summary><strong>{{ key }}</strong></summary>
+				{% if value | isString %}
+				<pre>{{ value | safe }}</pre>
+				{% else %}
+				<pre>{{ value | _inspect({ depth: inspectorDepth }) }}</pre>
+				{% endif %}
+			</details>
+			{% endfor %}
+		</div>
 	</main>
 	<script>
 		document.getElementById("go-back").addEventListener("click", (event) => {
@@ -42,7 +58,7 @@ permalink: /navigator-core.html
 	</script>
 </body>
 <footer>
-	<small>Navigator Core — Eleventy Plugin Baseline</small>
+	<div class="_navigator__wrapper"><small>Navigator Core — Eleventy Plugin Baseline</small></div>
 </footer>
 
 </html>

@@ -4,6 +4,7 @@
 	<p><strong>Introduction</strong></p>
 	<ul class="c-docs-toc__block">
 		<li><a class="c-docs-toc__link" href="/docs/" {% if page.url == "/docs/" %}aria-current="page"{% endif %}>Overview</a></li>
+		<li><a class="c-docs-toc__link" href="/docs/baseline-concepts/" {% if page.url == "/docs/baseline-concepts/" %}aria-current="page"{% endif %}>Baseline concepts</a></li>
 		<li><a class="c-docs-toc__link" href="/docs/quickstart/" {% if page.url == "/docs/quickstart/" %}aria-current="page"{% endif %}>Quickstart</a></li>
 	</ul>
 	{% set topics = collections.docs | groupby("data.topicTitle") %}
