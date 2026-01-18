@@ -3,11 +3,6 @@
 		display: inline-block;
 	}
 
-	ul {
-		padding: 0;
-		list-style: none;
-	}
-
 	li > p:nth-child(n + 2) {
 		margin-top: 0;
 	}
@@ -22,6 +17,11 @@
 }
 
 .c-docs-steps--compact {
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+
 	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
 		margin-block-start: inherit;
 	}

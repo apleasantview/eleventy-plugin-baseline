@@ -11,16 +11,13 @@ body {
 @media (prefers-color-scheme: dark) and (prefers-contrast: less) { body { --GRAD: -150 } }
 
 body {
-	display: flex;
-	flex-direction: column;
-}
-
-body {
 	font-family: var(--font-family-body);
 	font-size: var(--text-size-body);
-	line-height: var(--text-lineheight-default);
+	line-height: var(--text-lineheight-loose);
 	color: var(--color-text-primary);
 	background-color: var(--color-surface-default);
+	display: flex;
+	flex-direction: column;
 }
 
 header> * + *,
