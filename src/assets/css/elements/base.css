@@ -101,10 +101,6 @@ ul {
 	padding-inline-start: 1.5rem;
 }
 
-li {
-	margin-block-start: var(--space-stack-3xs);
-}
-
 pre, code:not(pre code) {
 	background: var(--color-surface-subtle);
 }
