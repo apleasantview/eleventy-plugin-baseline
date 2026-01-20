@@ -17,7 +17,7 @@
 }
 
 .c-docs-steps--compact {
-	ul {
+	ul:only-child {
 		list-style: none;
 		padding: 0;
 	}
