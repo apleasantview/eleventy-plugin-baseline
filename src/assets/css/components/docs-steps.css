@@ -3,8 +3,8 @@
 		display: inline-block;
 	}
 
-	li > p:nth-child(n + 2) {
-		margin-top: 0;
+	li > p:first-child + p {
+		margin-top: var(--space-stack-2xs);
 	}
 
 	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
