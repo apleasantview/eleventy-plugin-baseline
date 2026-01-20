@@ -1,4 +1,5 @@
 export default {
+	lang: "en",
 	layout: "layouts/page.njk",
 	random: "Random string",
 	permalink: function ({title, slug, page, topicSlug}) {

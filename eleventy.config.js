@@ -21,7 +21,7 @@ export default async function (eleventyConfig) {
 	eleventyConfig.addPlugin(syntaxHighlight, { preAttributes: { tabindex: 0 } });
 
 	eleventyConfig.addCollection("docs", function (collectionApi) {
-		const docs = collectionApi.getFilteredByGlob("src/content/en/docs/**/*.md");
+		const docs = collectionApi.getFilteredByGlob("src/content/docs/**/*.md");
 		return docs.sort(function (a, b) {
 			return a.inputPath.localeCompare(b.inputPath);
 		});
