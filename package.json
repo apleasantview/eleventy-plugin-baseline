@@ -47,6 +47,8 @@
     "rimraf": "^6.1.2"
   },
   "devDependencies": {
+    "prettier": "^3.8.1",
+    "prettier-plugin-jinja-template": "^2.1.0",
     "sharp": "^0.34.5"
   }
 }
