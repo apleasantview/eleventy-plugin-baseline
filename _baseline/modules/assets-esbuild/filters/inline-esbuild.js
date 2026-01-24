@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild";
+import * as esbuild from 'esbuild';
 
-const defaultOptions = { minify: true, target: "es2020" };
+const defaultOptions = { minify: true, target: 'es2020' };
 
 export default async function inlineESbuild(jsFilePath, options = {}) {
 	const userOptions = { ...defaultOptions, ...options };
@@ -19,6 +19,6 @@ export default async function inlineESbuild(jsFilePath, options = {}) {
 	} catch (error) {
 		console.error(error);
 		// Surface a safe JS comment so the caller can decide how to wrap it.
-		return "/* Error processing JS */";
+		return '/* Error processing JS */';
 	}
 }

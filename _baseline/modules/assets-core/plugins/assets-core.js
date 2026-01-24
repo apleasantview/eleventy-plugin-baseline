@@ -1,10 +1,10 @@
-import { TemplatePath } from "@11ty/eleventy-utils";
-import { addTrailingSlash, resolveAssetsDir } from "../../../core/helpers.js";
-import { warnIfVerbose, getVerbose } from "../../../core/logging.js";
+import { TemplatePath } from '@11ty/eleventy-utils';
+import { addTrailingSlash, resolveAssetsDir } from '../../../core/helpers.js';
+import { warnIfVerbose, getVerbose } from '../../../core/logging.js';
 
 const syncCacheFromDirectories = (cache, dirs, rawDir) => {
-	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || "./");
-	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || "./");
+	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
+	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || './');
 	const { assetsDir, assetsOutputDir } = resolveAssetsDir(inputDir, outputDir, rawDir);
 
 	cache.input = addTrailingSlash(inputDir);
@@ -16,7 +16,7 @@ const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
 	if (cache.assetsInput) return;
 	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
-	warnIfVerbose(verbose, "Fallback directory resolution");
+	warnIfVerbose(verbose, 'Fallback directory resolution');
 };
 
 /**
@@ -32,7 +32,7 @@ const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, options = {}) {
 	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
-	const userKey = "assets";
+	const userKey = 'assets';
 
 	// Extract raw directory value from config (can be done early)
 	const rawDir = eleventyConfig.dir?.[userKey] || userKey;
@@ -42,12 +42,12 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		input: eleventyConfig.dir?.input || null,
 		output: eleventyConfig.dir?.output || null,
 		assetsInput: eleventyConfig.dir?.assets ?? userKey ?? null,
-		assetsOutput: null,
+		assetsOutput: null
 	};
 
 	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
 
-	eleventyConfig.on("eleventy.directories", (directories) => {
+	eleventyConfig.on('eleventy.directories', (directories) => {
 		syncCacheFromDirectories(cache, directories, rawDir);
 
 		// Add a virtual directory key only if not already defined/configurable.
@@ -62,11 +62,11 @@ export default function assetsCore(eleventyConfig, options = {}) {
 				return cache.assetsInput;
 			},
 			enumerable: true,
-			configurable: false,
+			configurable: false
 		});
 	});
 
-	eleventyConfig.addGlobalData("_baseline.assets", () => {
+	eleventyConfig.addGlobalData('_baseline.assets', () => {
 		ensureCache(cache, eleventyConfig, rawDir, verbose);
 		// Merge with existing _baseline.assets (e.g., esbuild config)
 		const existing = eleventyConfig.globalData?._baseline?.assets || {};
@@ -79,6 +79,6 @@ export default function assetsCore(eleventyConfig, options = {}) {
 
 	// Watch target — use resolved assets input dir.
 	ensureCache(cache, eleventyConfig, rawDir, verbose);
-	const watchGlob = TemplatePath.join(cache.assetsInput, "**/*.{css,js,svg,png,jpeg}");
+	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg}');
 	eleventyConfig.addWatchTarget(watchGlob);
 }

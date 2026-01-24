@@ -1,13 +1,13 @@
-import path from "node:path";
-import Image from "@11ty/eleventy-img";
-import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
+import path from 'node:path';
+import Image from '@11ty/eleventy-img';
+import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 const DEFAULT_WIDTHS = [320, 640, 960, 1280];
-const DEFAULT_FORMATS = ["avif", "webp", "jpeg"];
-const DEFAULT_SIZES = "(max-width: 768px) 100vw, 768px";
+const DEFAULT_FORMATS = ['avif', 'webp', 'jpeg'];
+const DEFAULT_SIZES = '(max-width: 768px) 100vw, 768px';
 const DEFAULT_OUTPUT = {
-	outputDir: "./dist/media/",
-	urlPath: "/media/",
+	outputDir: './dist/media/',
+	urlPath: '/media/'
 };
 
 function pickRenditions(metadata) {
@@ -42,10 +42,10 @@ export async function imageShortcode(options = {}) {
 	const {
 		src,
 		alt,
-		caption = "",
-		loading = "lazy",
-		containerClass = "",
-		imageClass = "",
+		caption = '',
+		loading = 'lazy',
+		containerClass = '',
+		imageClass = '',
 		style,
 		widths = DEFAULT_WIDTHS,
 		sizes = DEFAULT_SIZES,
@@ -54,29 +54,25 @@ export async function imageShortcode(options = {}) {
 		urlPath = DEFAULT_OUTPUT.urlPath,
 		attrs = {},
 		figure = true,
-		setDimensions = true,
+		setDimensions = true
 	} = options;
 
 	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
 
-	if (!src) throw new Error("imageShortcode: src is required");
+	if (!src) throw new Error('imageShortcode: src is required');
 	if (alt === undefined) {
-		throw new Error(
-			"imageShortcode: alt is required (use empty string for decorative images)",
-		);
+		throw new Error('imageShortcode: alt is required (use empty string for decorative images)');
 	}
 
-	const normalizedCaption = caption == null ? "" : String(caption);
-	const normalizedAlt = alt == null ? "" : String(alt);
+	const normalizedCaption = caption == null ? '' : String(caption);
+	const normalizedAlt = alt == null ? '' : String(alt);
 
 	const inputDir = this?.eleventy?.directories?.input;
 	const isRemote = /^https?:\/\//i.test(src);
-	const resolvedSrc = !isRemote && inputDir
-		? path.join(inputDir, src.replace(/^\//, ""))
-		: src;
+	const resolvedSrc = !isRemote && inputDir ? path.join(inputDir, src.replace(/^\//, '')) : src;
 
 	const metadata = await Image(resolvedSrc, {
-		transformOnRequest: process.env.ELEVENTY_RUN_MODE === "serve",
+		transformOnRequest: process.env.ELEVENTY_RUN_MODE === 'serve',
 		widths: [...widths],
 		formats: [...formats],
 		outputDir,
@@ -85,7 +81,7 @@ export async function imageShortcode(options = {}) {
 			const extension = path.extname(srcPath);
 			const name = path.basename(srcPath, extension);
 			return `${name}-${width}w.${format}`;
-		},
+		}
 	});
 
 	const { lowsrc, highsrc } = pickRenditions(metadata);
@@ -96,32 +92,32 @@ export async function imageShortcode(options = {}) {
 	const sourceTags = Object.values(metadata)
 		.map((formatEntries) => {
 			const type = formatEntries[0].sourceType;
-			const srcset = formatEntries.map((entry) => entry.srcset).join(", ");
+			const srcset = formatEntries.map((entry) => entry.srcset).join(', ');
 			return `<source type="${type}" srcset="${srcset}" sizes="${sizes}">`;
 		})
-		.join("\n");
+		.join('\n');
 
 	const { class: attrClass, ...restAttrs } = attrs;
-	const combinedClass = [imageClass, attrClass].filter(Boolean).join(" ").trim() || undefined;
+	const combinedClass = [imageClass, attrClass].filter(Boolean).join(' ').trim() || undefined;
 
 	const imageAttributes = {
 		src: lowsrc.url,
 		alt: normalizedAlt,
 		loading,
-		decoding: loading === "eager" ? "sync" : "async",
+		decoding: loading === 'eager' ? 'sync' : 'async',
 		class: combinedClass,
 		style,
 		...(setDimensions ? { width: highsrc.width, height: highsrc.height } : {}),
 		...restAttrs,
-		...(hasImageTransformPlugin ? { "eleventy:ignore": true } : {})
+		...(hasImageTransformPlugin ? { 'eleventy:ignore': true } : {})
 	};
 
 	const imgAttrString = Object.entries(imageAttributes)
-		.filter(([, value]) => value !== undefined && value !== null && value !== "")
-		.map(([key, value]) => value === true ? key : `${key}="${value}"`)
-		.join(" ");
+		.filter(([, value]) => value !== undefined && value !== null && value !== '')
+		.map(([key, value]) => (value === true ? key : `${key}="${value}"`))
+		.join(' ');
 
-	const pictureClass = containerClass && containerClass.trim() ? ` class="${containerClass.trim()}"` : "";
+	const pictureClass = containerClass && containerClass.trim() ? ` class="${containerClass.trim()}"` : '';
 
 	const picture = `<picture${pictureClass}>
 	${sourceTags}

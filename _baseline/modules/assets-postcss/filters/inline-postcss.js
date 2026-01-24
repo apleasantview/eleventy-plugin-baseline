@@ -1,7 +1,7 @@
-import fs from "fs/promises";
-import postcss from "postcss";
-import loadPostCSSConfig from "postcss-load-config";
-import fallbackPostCSSConfig from "../fallback/postcss.config.js";
+import fs from 'fs/promises';
+import postcss from 'postcss';
+import loadPostCSSConfig from 'postcss-load-config';
+import fallbackPostCSSConfig from '../fallback/postcss.config.js';
 
 // Resolve user PostCSS config from the project root (cwd), not the Eleventy input dir.
 const configRoot = process.cwd();
@@ -33,6 +33,6 @@ export default async function inlinePostCSS(cssFilePath) {
 	} catch (error) {
 		console.error(error);
 		// Surface a safe CSS string so the caller can decide how to wrap it.
-		return "/* Error processing CSS */";
+		return '/* Error processing CSS */';
 	}
-} 
+}

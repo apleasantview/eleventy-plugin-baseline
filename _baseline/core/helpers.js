@@ -1,5 +1,5 @@
-import path from "node:path";
-import { TemplatePath } from "@11ty/eleventy-utils";
+import path from 'node:path';
+import { TemplatePath } from '@11ty/eleventy-utils';
 
 /**
  * Helper function to add trailing slash to a path
@@ -7,10 +7,10 @@ import { TemplatePath } from "@11ty/eleventy-utils";
  * @returns {string}
  */
 export function addTrailingSlash(path) {
-	if (path.slice(-1) === "/") {
+	if (path.slice(-1) === '/') {
 		return path;
 	}
-	return path + "/";
+	return path + '/';
 }
 
 /**
@@ -22,15 +22,15 @@ export function addTrailingSlash(path) {
  */
 export function resolveAssetsDir(inputDir, outputDir, rawDir) {
 	// Join input/output with assets subdir and normalize
-	const joinedInput = TemplatePath.join(inputDir, rawDir || "");
-	const joinedOutput = TemplatePath.join(outputDir, rawDir || "");
+	const joinedInput = TemplatePath.join(inputDir, rawDir || '');
+	const joinedOutput = TemplatePath.join(outputDir, rawDir || '');
 
 	const assetsDir = addTrailingSlash(TemplatePath.standardizeFilePath(joinedInput));
 	const assetsOutputDir = addTrailingSlash(TemplatePath.standardizeFilePath(joinedOutput));
 
 	return {
 		assetsDir,
-		assetsOutputDir,
+		assetsOutputDir
 	};
 }
 
@@ -41,13 +41,11 @@ export function resolveAssetsDir(inputDir, outputDir, rawDir) {
  * @returns {string[]} Absolute glob patterns
  */
 export function buildGlobPatterns(patterns, assetsDir) {
-	const assetsDirAbsolute = TemplatePath.absolutePath(
-		TemplatePath.stripLeadingDotSlash(assetsDir)
-	);
-	
+	const assetsDirAbsolute = TemplatePath.absolutePath(TemplatePath.stripLeadingDotSlash(assetsDir));
+
 	return patterns.map((pattern) => {
 		const normalized = TemplatePath.standardizeFilePath(pattern);
-		return normalized.startsWith("/") || path.isAbsolute(normalized)
+		return normalized.startsWith('/') || path.isAbsolute(normalized)
 			? normalized
 			: TemplatePath.join(assetsDirAbsolute, normalized);
 	});
@@ -60,7 +58,7 @@ export function buildGlobPatterns(patterns, assetsDir) {
  */
 export function extractFileMetadata(filePath) {
 	const ext = path.extname(filePath); // Returns extension with dot (e.g., ".css") or ""
-	const inputFileExtension = ext && ext.length > 0 ? ext.slice(1) : "";
+	const inputFileExtension = ext && ext.length > 0 ? ext.slice(1) : '';
 	const basename = TemplatePath.getLastPathSegment(filePath, false);
 	const fileSlug = ext ? basename.slice(0, -ext.length) : basename;
 
@@ -90,41 +88,31 @@ export function createCollectionItem(
 	// Get path relative to input directory
 	// e.g., inputPath = "./src/assets/css/index.css", inputDir = "./src/"
 	// relToInput = "assets/css/index.css"
-	const relToInput = TemplatePath.stripLeadingSubPath(
-		inputPath,
-		TemplatePath.addLeadingDotSlash(inputDir)
-	);
+	const relToInput = TemplatePath.stripLeadingSubPath(inputPath, TemplatePath.addLeadingDotSlash(inputDir));
 
 	// outputPath: prepend output directory (with leading ./)
 	// e.g., relToInput = "assets/css/index.css", outputDir = "./dist/"
 	// outputPath = "./dist/assets/css/index.css"
 	const outputPath = TemplatePath.addLeadingDotSlash(
-		TemplatePath.normalize(
-			TemplatePath.join(
-				TemplatePath.addLeadingDotSlash(outputDir),
-				relToInput
-			)
-		)
+		TemplatePath.normalize(TemplatePath.join(TemplatePath.addLeadingDotSlash(outputDir), relToInput))
 	);
 
 	// relToAssets: path relative to assets directory for URL generation
 	// e.g., inputPath = "./src/assets/css/index.css", assetsDirRelative = "assets"
 	// relToAssets = "css/index.css"
-	const assetsDirPath = TemplatePath.addLeadingDotSlash(
-		TemplatePath.join(inputDir, assetsDirRelative)
-	);
+	const assetsDirPath = TemplatePath.addLeadingDotSlash(TemplatePath.join(inputDir, assetsDirRelative));
 	const relToAssets = TemplatePath.stripLeadingSubPath(inputPath, assetsDirPath);
 
-	const url = passthrough
-		? TemplatePath.join(passthroughOutput, relToAssets).replace(/\/$/, "")
-		: undefined;
+	const url = passthrough ? TemplatePath.join(passthroughOutput, relToAssets).replace(/\/$/, '') : undefined;
 
 	// filePathStem: path relative to input without extension, with leading slash
 	// e.g., relToInput = "assets/css/index.css"
 	// filePathStem = "/assets/css/index"
-	const filePathStem = "/" + (inputFileExtension
-		? relToInput.slice(0, -inputFileExtension.length - 1) // Remove extension and dot
-		: relToInput);
+	const filePathStem =
+		'/' +
+		(inputFileExtension
+			? relToInput.slice(0, -inputFileExtension.length - 1) // Remove extension and dot
+			: relToInput);
 
 	return {
 		inputPath,
@@ -134,6 +122,6 @@ export function createCollectionItem(
 		inputFileExtension,
 		filePathStem,
 		dir: TemplatePath.getDirFromFilePath(inputPath),
-		url,
+		url
 	};
 }

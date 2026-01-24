@@ -1,20 +1,20 @@
-import { I18nPlugin } from "@11ty/eleventy";
+import { I18nPlugin } from '@11ty/eleventy';
 
 /** @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig */
 export default function multilangCore(eleventyConfig, options = {}) {
 	const userOptions = {
-		defaultLanguage: "en",
+		defaultLanguage: 'en',
 		languages: [],
 		...options
-	}
+	};
 
 	eleventyConfig.addPlugin(I18nPlugin, {
 		defaultLanguage: userOptions.defaultLanguage,
-		errorMode: "allow-fallback"
+		errorMode: 'allow-fallback'
 	});
 
 	// Add translations collection
-	eleventyConfig.addCollection("translations", function (collection) {
+	eleventyConfig.addCollection('translations', function (collection) {
 		const translations = {};
 		for (const page of collection.getAll()) {
 			const translationKey = page.data.translationKey;

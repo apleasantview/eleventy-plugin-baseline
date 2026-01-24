@@ -1,3 +1,3 @@
 export default function isStringFilter(object) {
-	return typeof object === "string";
+	return typeof object === 'string';
 }

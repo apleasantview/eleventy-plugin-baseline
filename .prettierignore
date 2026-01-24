@@ -4,3 +4,4 @@ coverage
 **/*.md
 package.json
 package-lock.json
+_baseline/**/*.html

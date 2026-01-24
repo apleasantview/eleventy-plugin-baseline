@@ -19,7 +19,7 @@
     "lint:fix": "eslint . --ext=js,jsx,ts,tsx --fix",
     "baseline": "npx @11ty/eleventy --config _baseline/eleventy.config.js --serve",
     "format:docs": "prettier . \"!_baseline/**/*\" --check",
-    "format:baseline": "prettier ./_baseline --check"
+    "format:baseline": "prettier ./_baseline --check --debug-check"
   },
   "author": "Cristovao Verstraeten",
   "license": "ISC",

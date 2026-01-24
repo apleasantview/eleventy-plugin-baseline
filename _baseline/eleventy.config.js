@@ -1,15 +1,15 @@
-import "dotenv/config";
-import globals from "./core/globals.js";
-import debug from "./core/debug.js";
-import filters from "./core/filters.js";
-import modules from "./core/modules.js";
-import shortcodes from "./core/shortcodes.js";
-import { eleventyImageOnRequestDuringServePlugin } from "@11ty/eleventy-img";
+import 'dotenv/config';
+import globals from './core/globals.js';
+import debug from './core/debug.js';
+import filters from './core/filters.js';
+import modules from './core/modules.js';
+import shortcodes from './core/shortcodes.js';
+import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
-import { createRequire } from "node:module";
+import { createRequire } from 'node:module';
 const __require = createRequire(import.meta.url);
 
-const { name, version } = __require("./package.json");
+const { name, version } = __require('./package.json');
 
 /**
  * Eleventy Plugin Baseline.
@@ -31,12 +31,12 @@ export default function baseline(options = {}) {
 	const plugin = async function (eleventyConfig) {
 		try {
 			// Emit a warning message if the application is not using Eleventy 3.0 or newer (including prereleases).
-			eleventyConfig.versionCheck(">=3.0");
+			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
 			console.log(`[eleventy-plugin-baseline] WARN Eleventy plugin compatibility: ${e.message}`);
 		}
 
-		const hasImageTransformPlugin = eleventyConfig.hasPlugin("eleventyImageTransformPlugin");
+		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const userOptions = {
 			version,
@@ -46,7 +46,7 @@ export default function baseline(options = {}) {
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 			assets: {
-				esbuild: options.assetsESBuild ?? { minify: true, target: "es2020" }
+				esbuild: options.assetsESBuild ?? { minify: true, target: 'es2020' }
 			},
 			multilingual: options.multilingual ?? false,
 			...options
@@ -54,19 +54,18 @@ export default function baseline(options = {}) {
 
 		// Core functions.
 		// Languages are expected as an object map; if missing or invalid, skip.
-		const languages = userOptions.languages && typeof userOptions.languages === "object"
-			? userOptions.languages : null;
+		const languages = userOptions.languages && typeof userOptions.languages === 'object' ? userOptions.languages : null;
 		const hasLanguages = languages && Object.keys(languages).length > 0;
 		const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
 
-		eleventyConfig.addGlobalData("_baseline", userOptions);
+		eleventyConfig.addGlobalData('_baseline', userOptions);
 		globals(eleventyConfig);
-		eleventyConfig.addPassthroughCopy({ "./src/static": "/" }, { failOnError: true });
+		eleventyConfig.addPassthroughCopy({ './src/static': '/' }, { failOnError: true });
 
 		// Prevents double-registering the preprocessor, user config wins.
 		if (!eleventyConfig.preprocessors.drafts) {
-			eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
-				if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+			eleventyConfig.addPreprocessor('drafts', '*', (data, content) => {
+				if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
 					return false;
 				}
 			});
@@ -80,45 +79,51 @@ export default function baseline(options = {}) {
 		}
 
 		// Modules.
-		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, { baseHref: process.env.URL || eleventyConfig.pathPrefix });
+		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
+			baseHref: process.env.URL || eleventyConfig.pathPrefix
+		});
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
 		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assets.esbuild);
 		eleventyConfig.addPlugin(modules.headCore);
-		eleventyConfig.addPlugin(modules.sitemapCore, { enableSitemapTemplate: userOptions.enableSitemapTemplate, multilingual: isMultilingual, languages });
+		eleventyConfig.addPlugin(modules.sitemapCore, {
+			enableSitemapTemplate: userOptions.enableSitemapTemplate,
+			multilingual: isMultilingual,
+			languages
+		});
 
 		// Filters — Module filters might move to their respective module.
-		eleventyConfig.addFilter("markdownify", filters.markdownFilter);
-		eleventyConfig.addFilter("relatedPosts", filters.relatedPostsFilter);
-		eleventyConfig.addFilter("isString", filters.isStringFilter);
+		eleventyConfig.addFilter('markdownify', filters.markdownFilter);
+		eleventyConfig.addFilter('relatedPosts', filters.relatedPostsFilter);
+		eleventyConfig.addFilter('isString', filters.isStringFilter);
 
 		// Shortcodes.
-		eleventyConfig.addShortcode("image", shortcodes.imageShortcode);
+		eleventyConfig.addShortcode('image', shortcodes.imageShortcode);
 
 		// Add the dev server middleware for images.
 		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);
 
 		// Debug filters and navigators.
-		eleventyConfig.addFilter("_inspect", debug.inspect);
-		eleventyConfig.addFilter("_json", debug.json);
-		eleventyConfig.addFilter("_keys", debug.keys);
+		eleventyConfig.addFilter('_inspect', debug.inspect);
+		eleventyConfig.addFilter('_json', debug.json);
+		eleventyConfig.addFilter('_keys', debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 	};
 
 	// Set plugin name so `eleventyConfig.hasPlugin()` can detect it.
-	Object.defineProperty(plugin, "name", { value: `${name}` });
+	Object.defineProperty(plugin, 'name', { value: `${name}` });
 	return plugin;
 }
 
 export const config = {
 	dir: {
-		input: "src",
-		output: "dist",
-		data: "_data",
-		includes: "_includes",
-		assets: "assets"
+		input: 'src',
+		output: 'dist',
+		data: '_data',
+		includes: '_includes',
+		assets: 'assets'
 	},
-	htmlTemplateEngine: "njk",
-	markdownTemplateEngine: "njk",
-	templateFormats: ["html", "njk", "md"]
+	htmlTemplateEngine: 'njk',
+	markdownTemplateEngine: 'njk',
+	templateFormats: ['html', 'njk', 'md']
 };
