@@ -10,26 +10,48 @@ translationKey: homepage
 {% block content %}
 	<h1>{{ title }}</h1>
 
-	<p><strong>Eleventy Plugin Baseline</strong> est un couteau suisse expérimental pour Eleventy : de petits outils d’aide préconfigurés pour les assets, le head/méta, les images et le débogage, afin de passer moins de temps à assembler toujours les mêmes éléments.</p>
+	<p>
+		<strong>Eleventy Plugin Baseline</strong> est un couteau suisse expérimental pour Eleventy : de petits outils d’aide
+		préconfigurés pour les assets, le head/méta, les images et le débogage, afin de passer moins de temps à assembler
+		toujours les mêmes éléments.
+	</p>
 
 	{% alertBlock "warning" %}
 		<p>Work in progress: la documentation et les API peuvent évoluer.</p>
 	{% endalertBlock %}
 
 	<h2>À propos</h2>
-	<p>Ce plugin est ma tentative de regrouper en un kit optionnel toutes les petites fonctionnalités que j’aurais aimé voir intégrées nativement à Eleventy. Il s’appuie fortement sur les patterns et bonnes pratiques partagés par la communauté Eleventy, ainsi que par d’autres projets comme Hugo, Astro <small>ou même WordPress</small>.</p>
-	<p>Le plugin est actuellement disponible en preview sur npm et une version stable est prévue pour <a href="https://github.com/11ty/eleventy/milestone/46">Eleventy 4.0</a>.</p>
-	<p><small><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br><a href="https://www.apleasantview.com/" target="_blank" style="display: inline-block; transform: translateY(-0.25em)">a pleasant view</a><small></p>
+	<p>
+		Ce plugin est ma tentative de regrouper en un kit optionnel toutes les petites fonctionnalités que j’aurais aimé
+		voir intégrées nativement à Eleventy. Il s’appuie fortement sur les patterns et bonnes pratiques partagés par la
+		communauté Eleventy, ainsi que par d’autres projets comme Hugo, Astro <small>ou même WordPress</small>.
+	</p>
+	<p>
+		Le plugin est actuellement disponible en preview sur npm et une version stable est prévue pour
+		<a href="https://github.com/11ty/eleventy/milestone/46">Eleventy 4.0</a>.
+	</p>
+	<p>
+		<small
+			><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br /><a
+				href="https://www.apleasantview.com/"
+				target="_blank"
+				style="display: inline-block; transform: translateY(-0.25em)"
+				>a pleasant view</a
+			></small
+		>
+	</p>
 
 	<div style="margin-block: var(--space-xl);">
-		{% image {
-			src: "/media/example.jpg",
-			alt: "Photo by Rohit Choudhari on Unsplash",
-			caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
-			widths: [320, 640, 768],
-			setDimensions: false,
-			style: "object-fit: contain;"
-		} %}
+		{%
+			image {
+				src: "/media/example.jpg",
+				alt: "Photo by Rohit Choudhari on Unsplash",
+				caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
+				widths: [320, 640, 768],
+				setDimensions: false,
+				style: "object-fit: contain;"
+			}
+		%}
 	</div>
 
 	<div style="padding-block: var(--space-s)"></div>

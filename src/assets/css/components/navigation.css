@@ -14,7 +14,7 @@
 }
 
 .c-navigation__link {
-  color: var(--color-text-primary);
+	color: var(--color-text-primary);
 	text-decoration: none;
 	font-size: var(--text-size-secondary);
 
@@ -33,7 +33,6 @@
 
 	svg {
 		display: inline-block;
-		vertical-align: -.435em;
+		vertical-align: -0.435em;
 	}
 }
-

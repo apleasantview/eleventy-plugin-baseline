@@ -1,4 +1,4 @@
 export default {
-	topicSlug: "introduction",
-	topicTitle: "Introduction"
-}
+	topicSlug: 'introduction',
+	topicTitle: 'Introduction'
+};

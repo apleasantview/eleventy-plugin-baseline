@@ -4,30 +4,51 @@ permalink: /
 translationKey: homepage
 layout: layouts/page.njk
 ---
+
 {% block content %}
-	<p><strong>Eleventy Plugin Baseline</strong> is an experimental Swiss army knife for Eleventy: small, prewired helpers for assets, head/meta, images, and debug so you spend less time wiring the same pieces.</p>
+	<p>
+		<strong>Eleventy Plugin Baseline</strong> is an experimental Swiss army knife for Eleventy: small, prewired helpers
+		for assets, head/meta, images, and debug so you spend less time wiring the same pieces.
+	</p>
 
 	{% alertBlock "warning" %}
 		<p>Work in progress: docs and APIs may shift.</p>
 	{% endalertBlock %}
 
 	<h2>About</h2>
-	<p>This plugin is my attempt to bundle the little things I wish Eleventy shipped into one optional toolkit. It leans heavily on patterns and best practices shared by the Eleventy community, and other projects like Hugo, Astro <small>or even WordPress</small>.</p>
-	<p>The plugin is currently available for preview on npm and a stable release is aimed for <a href="https://github.com/11ty/eleventy/milestone/46">Eleventy 4.0</a>.</p>
-	<p><small><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br><a href="https://www.apleasantview.com/" target="_blank" style="display: inline-block; transform: translateY(-0.25em)">a pleasant view</a><small></p>
+	<p>
+		This plugin is my attempt to bundle the little things I wish Eleventy shipped into one optional toolkit. It leans
+		heavily on patterns and best practices shared by the Eleventy community, and other projects like Hugo, Astro
+		<small>or even WordPress</small>.
+	</p>
+	<p>
+		The plugin is currently available for preview on npm and a stable release is aimed for
+		<a href="https://github.com/11ty/eleventy/milestone/46">Eleventy 4.0</a>.
+	</p>
+	<p>
+		<small
+			><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br /><a
+				href="https://www.apleasantview.com/"
+				target="_blank"
+				style="display: inline-block; transform: translateY(-0.25em)"
+				>a pleasant view</a
+			></small
+		>
+	</p>
 
 	<div style="margin-block: var(--space-xl);">
-		{% image {
-			src: "/media/example.jpg",
-			alt: "Photo by Rohit Choudhari on Unsplash",
-			caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
-			loading: "eager",
-			widths: [320, 578, 768],
-			attrs: {
-				fetchpriority: "high"
-			},
-			style: "object-fit: contain; height: auto;"
-		} %}
+		{%
+			image {
+				src: "/media/example.jpg",
+				alt: "Photo by Rohit Choudhari on Unsplash",
+				caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
+				loading: "eager",
+				widths: [320, 578, 768],
+				attrs: {
+					fetchpriority: "high"
+				},
+				style: "object-fit: contain; height: auto;"
+			}
+		%}
 	</div>
 {% endblock %}
-

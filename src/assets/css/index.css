@@ -1,36 +1,36 @@
 /* 01. Settings */
-@import "./settings/colors.css";
-@import "./settings/colors-dark.css";
-@import "./settings/type.css";
-@import "./settings/space.css";
-@import "./settings/custom-media.css";
+@import './settings/colors.css';
+@import './settings/colors-dark.css';
+@import './settings/type.css';
+@import './settings/space.css';
+@import './settings/custom-media.css';
 
 /* 02. Tools */
 
 /* 03. Generic */
-@import "./generic/semantic-tokens.css" layer(tokens);
-@import "./generic/modern-reset.css" layer(reset);
+@import './generic/semantic-tokens.css' layer(tokens);
+@import './generic/modern-reset.css' layer(reset);
 
 /* 04. Elements */
-@import "./elements/base.css";
-@import "./elements/skip-link.css";
+@import './elements/base.css';
+@import './elements/skip-link.css';
 
-/* 05. Objects */
-@import "./layouts/document.css";
-@import "./layouts/fluid-grid.css";
+/* 05. Objects & Layouts */
+@import './layouts/document.css';
+@import './layouts/fluid-grid.css';
 
 /* 06. Components */
-@import "./components/header.css";
-@import "./components/navigation.css";
-@import "./components/docs-toc.css";
-@import "./components/docs-toc--details.css";
-@import "./components/docs-toc--sidebar.css";
-@import "./components/docs-steps.css";
+@import './components/header.css';
+@import './components/navigation.css';
+@import './components/docs-toc.css';
+@import './components/docs-toc--details.css';
+@import './components/docs-toc--sidebar.css';
+@import './components/docs-steps.css';
 
 /* 07. Utilities */
-@import "./utilities/flow.css";
-@import "./utilities/wrapper.css";
-@import "./utilities/prism.css";
+@import './utilities/flow.css';
+@import './utilities/wrapper.css';
+@import './utilities/prism.css';
 
 /* CSS is organised followng ITCSS and BEMIT naming conventions, see:
 * @link https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/

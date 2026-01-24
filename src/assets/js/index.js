@@ -26,7 +26,7 @@ const reflectPreference = () => {
 };
 
 const theme = {
-	value: getColorPreference(),
+	value: getColorPreference()
 };
 
 // set early so no page flashes / CSS is made aware
@@ -41,14 +41,11 @@ window.onload = () => {
 };
 
 // sync with system changes
-window
-	.matchMedia('(prefers-color-scheme: dark)')
-	.addEventListener('change', ({ matches: isDark }) => {
-		theme.value = isDark ? 'dark' : 'light';
-		setPreference();
-	});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches: isDark }) => {
+	theme.value = isDark ? 'dark' : 'light';
+	setPreference();
+});
 
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
 	console.log(`Howdy!`);
 });

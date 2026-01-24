@@ -4,17 +4,15 @@
 	{% include "components/docs-toc--details.njk" %}
 	<div class="l-document">
 		<!-- sidebar -->
-		<div class="l-document__sidebar">
-			{% include "components/docs-toc--sidebar.njk" %}
-		</div>
+		<div class="l-document__sidebar">{% include "components/docs-toc--sidebar.njk" %}</div>
 
 		<div class="l-document__principal u-flow">
-			<h1>{{ title }}</h1>	
+			<h1>{{ title }}</h1>
 			{{ content | safe }}
 			<div style="margin-block-start: var(--space-3xl); border-top: 1px solid var(--color-border);">
 				{% include "components/docs-nav.njk" %}
 			</div>
-			<div style="margin-block-start: var(--space-2xl)">
+			<div style="margin-block-start: var(--space-2xl)"></div>
 		</div>
 	</div>
 {% endblock %}

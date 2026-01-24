@@ -1,14 +1,34 @@
 body {
-  --GRAD: 0;
-  font-variation-settings: "GRAD" var(--GRAD);
+	--GRAD: 0;
+	font-variation-settings: 'GRAD' var(--GRAD);
 }
 
-@media (prefers-contrast: more) { body { --GRAD: 700 } }
-@media (prefers-contrast: less) { body { --GRAD: -50 } }
+@media (prefers-contrast: more) {
+	body {
+		--GRAD: 700;
+	}
+}
+@media (prefers-contrast: less) {
+	body {
+		--GRAD: -50;
+	}
+}
 
-@media (prefers-color-scheme: dark) { body { --GRAD: -50 } }
-@media (prefers-color-scheme: dark) and (prefers-contrast: more) { body { --GRAD: 150 } }
-@media (prefers-color-scheme: dark) and (prefers-contrast: less) { body { --GRAD: -150 } }
+@media (prefers-color-scheme: dark) {
+	body {
+		--GRAD: -50;
+	}
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+	body {
+		--GRAD: 150;
+	}
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: less) {
+	body {
+		--GRAD: -150;
+	}
+}
 
 body {
 	font-family: var(--font-family-body);
@@ -20,7 +40,7 @@ body {
 	flex-direction: column;
 }
 
-header> * + *,
+header > * + *,
 main > * + * {
 	margin-block-start: var(--flow-space, 1em);
 }
@@ -40,7 +60,8 @@ footer {
 	margin-block-start: auto;
 }
 
-p, li {
+p,
+li {
 	max-width: 85ch;
 	text-wrap: pretty;
 	letter-spacing: 0.015em;
@@ -60,7 +81,7 @@ a {
 	}
 
 	&[aria-current]::after {
-		content: "";
+		content: '';
 		position: absolute;
 		inset: 0;
 		z-index: -1;
@@ -101,7 +122,8 @@ ul {
 	padding-inline-start: 1.5rem;
 }
 
-pre, code:not(pre code) {
+pre,
+code:not(pre code) {
 	background: var(--color-surface-subtle);
 }
 
@@ -157,7 +179,8 @@ details summary {
 	cursor: pointer;
 }
 
-figure, picture {
+figure,
+picture {
 	max-width: fit-content;
 }
 

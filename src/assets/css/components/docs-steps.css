@@ -1,4 +1,5 @@
-.c-docs-steps, .c-docs-steps--compact {
+.c-docs-steps,
+.c-docs-steps--compact {
 	p:first-of-type {
 		display: inline-block;
 	}
@@ -7,8 +8,9 @@
 		margin-top: var(--space-stack-2xs);
 	}
 
-	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
-	margin-block-start: var(--space-stack-l);
+	> ol:first-of-type > li + li,
+	> ul:first-of-type > li + li {
+		margin-block-start: var(--space-stack-l);
 	}
 
 	li > * + * {
@@ -22,7 +24,8 @@
 		padding: 0;
 	}
 
-	> ol:first-of-type > li + li, > ul:first-of-type > li + li {
+	> ol:first-of-type > li + li,
+	> ul:first-of-type > li + li {
 		margin-block-start: inherit;
 	}
 }
