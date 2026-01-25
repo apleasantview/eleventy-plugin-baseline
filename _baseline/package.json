@@ -1,6 +1,6 @@
 {
   "name": "@apleasantview/eleventy-plugin-baseline",
-  "version": "0.1.0-next.23",
+  "version": "0.1.0-next.24",
   "description": "An experimental Swiss army knife toolkit for Eleventy",
   "type": "module",
   "main": "eleventy.config.js",
