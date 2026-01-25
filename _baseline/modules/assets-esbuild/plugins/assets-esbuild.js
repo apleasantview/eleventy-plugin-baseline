@@ -61,7 +61,7 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 			const html = `<script>${js}</script>`;
 			if (done) return done(null, html);
 			return html;
-		} catch (error) {
+		} catch {
 			// Non-fatal fallback: return an error comment wrapped in script tags.
 			const html = `<script>/* Error processing JS */</script>`;
 			if (done) return done(null, html);

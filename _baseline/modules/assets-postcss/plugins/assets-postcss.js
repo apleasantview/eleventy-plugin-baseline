@@ -41,7 +41,7 @@ export default function assetsPostCSS(eleventyConfig) {
 				try {
 					// Prefer the consuming project's PostCSS config (postcss.config.* or package.json#postcss).
 					({ plugins, options } = await loadPostCSSConfig({}, configRoot));
-				} catch (error) {
+				} catch {
 					// If none is found, fall back to the bundled Baseline config to keep builds working.
 					({ plugins, ...options } = fallbackPostCSSConfig);
 				}
@@ -65,7 +65,7 @@ export default function assetsPostCSS(eleventyConfig) {
 			const html = `<style>${css}</style>`;
 			if (done) return done(null, html);
 			return html;
-		} catch (error) {
+		} catch {
 			// Keep behavior non-fatal: return a styled error comment instead of throwing.
 			const html = `<style>/* Error processing CSS */</style>`;
 			if (done) return done(null, html);

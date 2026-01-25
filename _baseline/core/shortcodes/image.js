@@ -1,6 +1,5 @@
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
-import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 const DEFAULT_WIDTHS = [320, 640, 960, 1280];
 const DEFAULT_FORMATS = ['avif', 'webp', 'jpeg'];

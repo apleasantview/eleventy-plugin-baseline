@@ -64,7 +64,7 @@ export default function baseline(options = {}) {
 
 		// Prevents double-registering the preprocessor, user config wins.
 		if (!eleventyConfig.preprocessors.drafts) {
-			eleventyConfig.addPreprocessor('drafts', '*', (data, content) => {
+			eleventyConfig.addPreprocessor('drafts', '*', (data) => {
 				if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
 					return false;
 				}

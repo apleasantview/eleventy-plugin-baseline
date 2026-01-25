@@ -12,7 +12,6 @@ export default function headCore(eleventyConfig, options = {}) {
 	const eol = options.EOL || '\n';
 	const pathPrefix = options.pathPrefix ?? eleventyConfig?.pathPrefix ?? '';
 	const siteUrl = options.siteUrl;
-	const inputDir = eleventyConfig.dir?.input || '.';
 
 	let cachedContentMap = {};
 	eleventyConfig.on('eleventy.contentMap', ({ inputPathToUrl, urlToInputPath }) => {

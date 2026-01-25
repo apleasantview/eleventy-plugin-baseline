@@ -16,7 +16,7 @@ export default async function inlinePostCSS(cssFilePath) {
 		try {
 			// Prefer the consuming project's PostCSS config (postcss.config.* or package.json#postcss).
 			({ plugins, options } = await loadPostCSSConfig({}, configRoot));
-		} catch (error) {
+		} catch {
 			// If none is found, fall back to the bundled Baseline config to keep builds working.
 			const { plugins: fallbackPlugins, ...fallbackOptions } = fallbackPostCSSConfig;
 			plugins = fallbackPlugins;
