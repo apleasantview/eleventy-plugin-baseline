@@ -37,7 +37,7 @@ Prism.languages.nunjucks = {
 		},
 		/[=<>]=?|!=|\*\*?|\/\/?|\?:?|[-+~%|]/
 	],
-	punctuation: /[()\[\]{}:.,]/
+	punctuation: /[()\[\]{}:.,]/ // eslint-disable-line
 };
 
 Prism.hooks.add('before-tokenize', function (env) {
