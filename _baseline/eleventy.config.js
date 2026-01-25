@@ -60,7 +60,7 @@ export default function baseline(options = {}) {
 
 		eleventyConfig.addGlobalData('_baseline', userOptions);
 		globals(eleventyConfig);
-		eleventyConfig.addPassthroughCopy({ './src/static': '/' }, { failOnError: true });
+		eleventyConfig.addPassthroughCopy({ './src/static': '/' });
 
 		// Prevents double-registering the preprocessor, user config wins.
 		if (!eleventyConfig.preprocessors.drafts) {
