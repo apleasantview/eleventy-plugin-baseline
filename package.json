@@ -17,6 +17,10 @@
     "dryrun": "npx @11ty/eleventy --dryrun",
     "lint": "eslint . --ext=js,jsx,ts,tsx",
     "lint:fix": "eslint . --ext=js,jsx,ts,tsx --fix",
+    "lint:docs": "eslint . --ignore-pattern \"_baseline/\" --ext=js,jsx,ts,tsx",
+    "lint:docs-fix": "eslint . --ignore-pattern \"_baseline/\" --ext=js,jsx,ts,tsx --fix",
+    "lint:plugin": "eslint _baseline/ --ext=js,jsx,ts,tsx",
+    "lint:plugin-fix": "eslint _baseline/ --ext=js,jsx,ts,tsx --fix",
     "baseline": "npx @11ty/eleventy --config _baseline/eleventy.config.js --serve",
     "format:docs": "prettier . \"!_baseline/**/*\" --check",
     "format:baseline": "prettier ./_baseline --check --debug-check"
@@ -49,6 +53,8 @@
     "rimraf": "^6.1.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "prettier-plugin-jinja-template": "^2.1.0",
     "sharp": "^0.34.5"
