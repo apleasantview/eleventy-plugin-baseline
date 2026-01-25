@@ -53,8 +53,27 @@ export default function baseline(options = {}) {
 		};
 
 		// Core functions.
-		// Languages are expected as an object map; if missing or invalid, skip.
-		const languages = userOptions.languages && typeof userOptions.languages === 'object' ? userOptions.languages : null;
+
+		// Normalize languages to an object map; if missing or invalid, use null.
+		const normalizedLanguages = Array.isArray(userOptions.languages)
+			? Object.fromEntries(
+					userOptions.languages
+						.filter((lang) => typeof lang === 'string' && lang.trim())
+						.map((lang) => [lang.trim(), {}])
+				)
+			: userOptions.languages && typeof userOptions.languages === 'object'
+				? userOptions.languages
+				: null;
+
+		if (userOptions.verbose && Array.isArray(userOptions.languages)) {
+			const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
+			if (normalizedCount !== userOptions.languages.length) {
+				console.warn('[baseline] Some languages entries were invalid and were dropped.');
+			}
+		}
+
+		userOptions.languages = normalizedLanguages;
+		const languages = normalizedLanguages;
 		const hasLanguages = languages && Object.keys(languages).length > 0;
 		const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
 
