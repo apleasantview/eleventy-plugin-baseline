@@ -5,11 +5,13 @@ An experimental Swiss army knife toolkit for Eleventy. Bundles handy helpers for
 ## Install
 
 If you already have Eleventy and eleventy-img installed:
+
 ```bash
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
 For a fresh project (install Eleventy and eleventy-img too):
+
 ```bash
 npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-baseline
 ```
@@ -19,7 +21,7 @@ npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-bas
 In your Eleventy config (ESM):
 
 ```js
-import baseline, { config as baselineConfig } from "@apleasantview/eleventy-plugin-baseline";
+import baseline, { config as baselineConfig } from '@apleasantview/eleventy-plugin-baseline';
 
 export default function (eleventyConfig) {
 	eleventyConfig.addPlugin(baseline, {
