@@ -79,6 +79,6 @@ export default function assetsCore(eleventyConfig, options = {}) {
 
 	// Watch target — use resolved assets input dir.
 	ensureCache(cache, eleventyConfig, rawDir, verbose);
-	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg}');
+	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 	eleventyConfig.addWatchTarget(watchGlob);
 }
