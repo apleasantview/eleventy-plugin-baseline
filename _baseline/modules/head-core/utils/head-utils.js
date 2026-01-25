@@ -155,7 +155,7 @@ const buildHead = (data = {}, env = {}) => {
 		siteTitle && pageTitle && siteTitle !== pageTitle ? `${pageTitle} | ${siteTitle}` : pageTitle || siteTitle || '';
 
 	const description = pick(data.description, user.description, site.tagline, '');
-	const noindex = pick(page.noindex, user.noindex, site.noindex, false);
+	const noindex = pick(data.noindex, page.noindex, user.noindex, site.noindex, false);
 
 	const canonical = resolveCanonical(
 		{ canonical: absoluteUrl(resolvedSiteUrl, pathPrefix, user.canonical) },

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 {%- if not site.noindex -%}
 {%- for item in collections.all -%}
-{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) -%}
+{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) and item.data.noindex != true -%}
 {%- set pageLang = item.data.lang or site.defaultLanguage -%}
 {%- if (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) -%}
 {%- set absoluteUrl = item.url | htmlBaseUrl -%}

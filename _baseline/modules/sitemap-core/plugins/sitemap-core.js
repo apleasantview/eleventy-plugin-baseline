@@ -15,7 +15,7 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 
 	eleventyConfig.addGlobalData('eleventyComputed.page.sitemap', () => {
 		return (data) => ({
-			ignore: data.site?.noindex ?? false,
+			ignore: data.noindex ?? data.page?.noindex ?? data.site?.noindex ?? false,
 			changefreq: '',
 			priority: -1
 		});
