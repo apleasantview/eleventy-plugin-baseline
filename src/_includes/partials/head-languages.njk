@@ -2,5 +2,5 @@
 {% set defaultLang = site.defaultLanguage %}
 {%- for language, item in translations %}
 	<link rel="alternate" hreflang="{{ item.lang }}" href="{{ item.url }}" />
-	{% if item.isDefault %}<link rel="alternate" hreflang="x-default" href="{{ item.url }}" />{% endif %}
+	{% if item.isDefaultLang %}<link rel="alternate" hreflang="x-default" href="{{ item.url }}" />{% endif %}
 {%- endfor -%}
