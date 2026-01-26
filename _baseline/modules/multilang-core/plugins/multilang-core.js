@@ -28,8 +28,9 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		Array.isArray(userOptions.languages) ? userOptions.languages : Object.keys(userOptions.languages || {})
 	);
 
-	const buildTranslationsMap = (collection) => {
+	const buildTranslations = (collection) => {
 		const map = {};
+		const list = [];
 
 		for (const page of collection.getAll()) {
 			const translationKey = page.data.translationKey;
@@ -45,6 +46,10 @@ export default function multilangCore(eleventyConfig, options = {}) {
 				continue;
 			}
 
+			const locale = { locale: { translationKey, lang, isDefaultLang: lang === userOptions.defaultLanguage } };
+			const safeCopy = DeepCopy(page, locale);
+			list.push(safeCopy);
+
 			if (!map[translationKey]) map[translationKey] = {};
 			map[translationKey][lang] = {
 				title: page.data.title,
@@ -55,36 +60,17 @@ export default function multilangCore(eleventyConfig, options = {}) {
 			};
 		}
 
-		return map;
+		return { map, list };
 	};
 
 	// Map form for direct lookups
 	eleventyConfig.addCollection('translationsMap', (collection) => {
-		return buildTranslationsMap(collection);
+		return buildTranslations(collection).map;
 	});
 
 	// Canonical translations collection
 	eleventyConfig.addCollection('translations', (collection) => {
-		return collection.getAll().flatMap((page) => {
-			const translationKey = page.data.translationKey;
-			if (!translationKey) return [];
-
-			const lang = page.data.lang || page.data.language || userOptions.defaultLanguage;
-			if (!lang) return [];
-
-			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
-				if (userOptions.verbose) {
-					console.warn(`[baseline:multilang-core] Unknown lang "${lang}" in ${page.inputPath}`);
-				}
-				return [];
-			}
-
-			// Avoid spreading page to prevent early templateContent access
-			const locale = { locale: { translationKey, lang, isDefaultLang: lang === userOptions.defaultLanguage } };
-			const safeCopy = DeepCopy(page, locale);
-
-			return [safeCopy];
-		});
+		return buildTranslations(collection).list;
 	});
 
 	// Get all translations for the current page
