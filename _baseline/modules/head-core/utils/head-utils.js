@@ -55,12 +55,21 @@ const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
 };
 
 const resolveCanonical = (head, page, contentMap, env = {}) => {
-	const { siteUrl, pathPrefix = '', pageUrlOverride } = env;
+	const { siteUrl, pathPrefix = '', pageUrlOverride, verbose } = env;
 	const explicit = pick(head.canonical);
-	if (explicit) return absoluteUrl(siteUrl, pathPrefix, explicit);
+	if (explicit) {
+		if (!siteUrl && verbose) {
+			console.warn('[baseline] site.url is missing; canonical will be relative.');
+		}
+		return absoluteUrl(siteUrl, pathPrefix, explicit);
+	}
 
 	const url = pick(pageUrlOverride, page?.url, page?.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
 	if (!url) return undefined;
+
+	if (!siteUrl && verbose) {
+		console.warn('[baseline] site.url is missing; canonical will be relative.');
+	}
 
 	return absoluteUrl(siteUrl, pathPrefix, url);
 };
@@ -161,7 +170,7 @@ const buildHead = (data = {}, env = {}) => {
 		{ canonical: absoluteUrl(resolvedSiteUrl, pathPrefix, user.canonical) },
 		page,
 		contentMap,
-		{ ...env, siteUrl: resolvedSiteUrl }
+		{ ...env, siteUrl: resolvedSiteUrl, verbose: env.verbose }
 	);
 	const merged = mergeBaseHead(site, user, page, title, description, noindex, canonical);
 	return flattenHead(merged, canonical);

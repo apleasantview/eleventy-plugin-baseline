@@ -25,7 +25,8 @@ export default function headCore(eleventyConfig, options = {}) {
 				siteUrl,
 				pathPrefix,
 				contentMap: cachedContentMap,
-				pageUrlOverride: data?.page?.url
+				pageUrlOverride: data?.page?.url,
+				verbose
 			});
 	});
 
@@ -39,7 +40,8 @@ export default function headCore(eleventyConfig, options = {}) {
 				siteUrl,
 				pathPrefix,
 				contentMap: cachedContentMap,
-				pageUrlOverride: context?.page?.url
+				pageUrlOverride: context?.page?.url,
+				verbose
 			});
 
 		const plugin = headElements({
