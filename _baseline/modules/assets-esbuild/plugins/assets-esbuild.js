@@ -68,11 +68,4 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 			return html;
 		}
 	});
-
-	// Override the default collection behavior. Adding js as template format and extension collects 11tydata.js files.
-	eleventyConfig.addCollection('all', function (collectionApi) {
-		return collectionApi.getAll().filter((item) => {
-			return !item.inputPath.endsWith('11tydata.js');
-		});
-	});
 }

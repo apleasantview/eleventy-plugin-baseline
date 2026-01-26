@@ -45,6 +45,7 @@ export default function baseline(options = {}) {
 			hasImageTransformPlugin,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
+			filterAllCollection: options.filterAllCollection ?? true,
 			assets: {
 				esbuild: options.assetsESBuild ?? { minify: true, target: 'es2020' }
 			},
@@ -104,6 +105,14 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.assetsCore);
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
 		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assets.esbuild);
+
+		if (userOptions.filterAllCollection) {
+			// Override the default collection behavior. Adding js as template format collects 11tydata.js files.
+			eleventyConfig.addCollection('all', (collectionApi) =>
+				collectionApi.getAll().filter((item) => !item.inputPath.endsWith('11tydata.js'))
+			);
+		}
+
 		eleventyConfig.addPlugin(modules.headCore);
 		eleventyConfig.addPlugin(modules.sitemapCore, {
 			enableSitemapTemplate: userOptions.enableSitemapTemplate,
