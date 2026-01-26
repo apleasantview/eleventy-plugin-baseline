@@ -4,10 +4,6 @@ import Image from '@11ty/eleventy-img';
 const DEFAULT_WIDTHS = [320, 640, 960, 1280];
 const DEFAULT_FORMATS = ['avif', 'webp', 'jpeg'];
 const DEFAULT_SIZES = '(max-width: 768px) 100vw, 768px';
-const DEFAULT_OUTPUT = {
-	outputDir: './dist/media/',
-	urlPath: '/media/'
-};
 
 function pickRenditions(metadata) {
 	// Use the first available format; first entry is smallest, last is largest.
@@ -30,14 +26,15 @@ function pickRenditions(metadata) {
  * @param {Array<number|string>} [options.widths=DEFAULT_WIDTHS]   Widths passed to eleventy-img.
  * @param {string} [options.sizes=DEFAULT_SIZES]        Sizes attribute used on sources.
  * @param {string[]} [options.formats=DEFAULT_FORMATS]  Output formats (order matters).
- * @param {string} [options.outputDir=DEFAULT_OUTPUT.outputDir] Output directory for generated assets.
- * @param {string} [options.urlPath=DEFAULT_OUTPUT.urlPath]       Public URL base for generated assets.
+ * @param {string} [options.outputDir]                  Output directory for generated assets (defaults to `./dist/media/` or `./<dir.output>/media/` when set).
+ * @param {string} [options.urlPath="/media/"]          Public URL base for generated assets.
  * @param {Object} [options.attrs={}]                   Extra attributes applied to <img>; `class` merges with imageClass.
  * @param {string} [options.style]                      Inline style applied to <img> (alias for attrs.style).
  * @param {boolean} [options.figure=true]               Wrap in <figure> when caption is provided.
  * @param {boolean} [options.setDimensions=true]        When false, omit width/height on <img>.
  */
 export async function imageShortcode(options = {}) {
+	const outputBase = this?.eleventy?.directories?.output || 'dist';
 	const {
 		src,
 		alt,
@@ -49,13 +46,12 @@ export async function imageShortcode(options = {}) {
 		widths = DEFAULT_WIDTHS,
 		sizes = DEFAULT_SIZES,
 		formats = DEFAULT_FORMATS,
-		outputDir = DEFAULT_OUTPUT.outputDir,
-		urlPath = DEFAULT_OUTPUT.urlPath,
+		outputDir = path.join('.', outputBase, 'media'),
+		urlPath = '/media/',
 		attrs = {},
 		figure = true,
 		setDimensions = true
 	} = options;
-
 	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
 
 	if (!src) throw new Error('imageShortcode: src is required');
