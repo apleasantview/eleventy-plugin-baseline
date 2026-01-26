@@ -1,5 +1,8 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
+import i18nTranslationsFor from '../filters/i18n-translations-for.js';
+import i18nTranslationIn from '../filters/i18n-translation-in.js';
+import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
 
 /**
  * Baseline – multilang-core
@@ -24,9 +27,27 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		errorMode: 'allow-fallback'
 	});
 
+	// Normalize allowed languages (optionally lower/trim)
+	const normalizeLang = (lang) => (lang || '').toLowerCase().trim();
 	const allowedLanguages = new Set(
-		Array.isArray(userOptions.languages) ? userOptions.languages : Object.keys(userOptions.languages || {})
+		Array.isArray(userOptions.languages)
+			? userOptions.languages.map(normalizeLang)
+			: Object.keys(userOptions.languages || {}).map(normalizeLang)
 	);
+
+	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
+		return (data) => {
+			const lang = normalizeLang(data.lang || data.language || userOptions.defaultLanguage);
+			const translationKey = data.translationKey;
+			const isDefaultLang = lang === normalizeLang(userOptions.defaultLanguage);
+
+			return {
+				translationKey,
+				lang,
+				isDefaultLang
+			};
+		};
+	});
 
 	const buildTranslations = (collection) => {
 		const map = {};
@@ -73,32 +94,8 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		return buildTranslations(collection).list;
 	});
 
-	// Get all translations for the current page
-	eleventyConfig.addFilter('i18nTranslationsFor', (page, collection) => {
-		if (!page?.locale?.translationKey) return [];
-
-		return collection.filter((p) => p.locale && p.locale.translationKey === page.locale.translationKey);
-	});
-
-	// Get a specific language variant for the current page
-	eleventyConfig.addFilter('i18nTranslationIn', (page, collection, lang) => {
-		if (!page?.locale?.translationKey) return null;
-
-		return (
-			collection.find(
-				(p) => p.locale && p.locale.translationKey === page.locale.translationKey && p.locale.lang === lang
-			) || null
-		);
-	});
-
-	// Get the default-language variant for the current page
-	eleventyConfig.addFilter('i18nDefaultTranslation', (page, collection) => {
-		if (!page?.locale?.translationKey) return null;
-
-		return (
-			collection.find(
-				(p) => p.locale && p.locale.translationKey === page.locale.translationKey && p.locale.isDefaultLang
-			) || null
-		);
-	});
+	// Filters – relational helpers
+	eleventyConfig.addFilter('i18nTranslationsFor', i18nTranslationsFor);
+	eleventyConfig.addFilter('i18nTranslationIn', i18nTranslationIn);
+	eleventyConfig.addFilter('i18nDefaultTranslation', i18nDefaultTranslation);
 }
