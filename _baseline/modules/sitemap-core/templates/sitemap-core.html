@@ -12,9 +12,9 @@
 {%- if lastmod -%}<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>{%- endif -%}
 {%- if item.data.sitemap and item.data.sitemap.changefreq -%}<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>{%- endif -%}
 {%- if item.data.sitemap and item.data.sitemap.priority is defined -%}<priority>{{ item.data.sitemap.priority }}</priority>{%- endif -%}
-{%- if item.data.translationKey and collections.translations and collections.translations[item.data.translationKey] -%}
-{%- for language, item in collections.translations[item.data.translationKey] -%}
-<xhtml:link rel="alternate" hreflang="{{ item.lang }}" href="{{ item.url | htmlBaseUrl }}" />
+{%- if item.data.translationKey and collections.translationsMap and collections.translationsMap[item.data.translationKey] -%}
+{%- for language, entry in collections.translationsMap[item.data.translationKey] -%}
+<xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl }}" />
 {%- endfor -%}
 {%- endif -%}
 </url>
