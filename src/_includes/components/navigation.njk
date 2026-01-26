@@ -1,6 +1,6 @@
 <nav class="c-navigation">
 	{% set lang = lang or site.defaultLanguage %}
-	{% set home = collections.translations.homepage[lang] or collections.translations.homepage[site.defaultLanguage] %}
+	{% set home = collections.translationsMap.homepage[lang] or collections.translationsMap.homepage[site.defaultLanguage] %}
 	{% set homeText = { en: "Homepage", nl: "Homepage", fr: "Accueil" } %}
 	{% set docText = { en: "Documentation", nl: "Documentatie" } %}
 	<ul>
