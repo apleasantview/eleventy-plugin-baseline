@@ -1,5 +1,5 @@
 ---
-title: Bob
+title: Welkom
 permalink: /nl/
 draft: false
 translationKey: homepage
@@ -8,51 +8,49 @@ translationKey: homepage
 {% extends "layouts/base.njk" %}
 
 {% block content %}
-	<h1>{{ title }}</h1>
+	<div class="u-flow">
+		<h1>{{ title }}</h1>
+		<p>
+			<strong>Eleventy Plugin Baseline</strong> is een experimenteel Zwitsers zakmes voor Eleventy: kleine, vooraf
+			bedrade hulpfuncties voor assets, head/meta, afbeeldingen en debugging, zodat je minder tijd kwijt bent aan het
+			telkens opnieuw koppelen van dezelfde onderdelen.
+		</p>
+		{% alertBlock "warning" %}
+			<p>Work in progress: documentatie en API's kunnen veranderen.</p>
+		{% endalertBlock %}
+		<h2>Over de plugin</h2>
+		<p>
+			Deze plugin is mijn poging om alle kleine dingen die ik graag standaard in Eleventy had gezien te bundelen in één
+			optionele toolkit. Hij leunt sterk op patronen en best practices die worden gedeeld door de Eleventy-community, en
+			door andere projecten zoals Hugo, Astro <small>en zelfs WordPress</small>.
+		</p>
+		<p>
+			De plugin is momenteel beschikbaar als preview op npm en een stabiele release is gepland voor
+			<a href="https://github.com/11ty/eleventy/milestone/46"> Eleventy 4.0</a>.
+		</p>
+		<p>
+			<small
+				><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br /><a
+					href="https://www.apleasantview.com/"
+					target="_blank"
+					style="display: inline-block; transform: translateY(-0.25em)"
+					>a pleasant view</a
+				></small
+			>
+		</p>
+		<div style="margin-block: var(--space-xl);">
+			{%
+				image {
+					src: "/media/example.jpg",
+					alt: "Photo by Rohit Choudhari on Unsplash",
+					caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
+					widths: [320, 640, 768],
+					setDimensions: false,
+					style: "object-fit: contain;"
+				}
+			%}
+		</div>
 
-	<p>
-		<strong>Eleventy Plugin Baseline</strong> is een experimenteel Zwitsers zakmes voor Eleventy: kleine, vooraf bedrade
-		hulpfuncties voor assets, head/meta, afbeeldingen en debugging, zodat je minder tijd kwijt bent aan het telkens
-		opnieuw koppelen van dezelfde onderdelen.
-	</p>
-
-	{% alertBlock "warning" %}
-		<p>Work in progress: documentatie en API's kunnen veranderen.</p>
-	{% endalertBlock %}
-
-	<h2>Over de plugin</h2>
-	<p>
-		Deze plugin is mijn poging om alle kleine dingen die ik graag standaard in Eleventy had gezien te bundelen in één
-		optionele toolkit. Hij leunt sterk op patronen en best practices die worden gedeeld door de Eleventy-community, en
-		door andere projecten zoals Hugo, Astro <small>en zelfs WordPress</small>.
-	</p>
-	<p>
-		De plugin is momenteel beschikbaar als preview op npm en een stabiele release is gepland voor
-		<a href="https://github.com/11ty/eleventy/milestone/46"> Eleventy 4.0</a>.
-	</p>
-	<p>
-		<small
-			><strong style="color: var(--color-text-muted);">Cristovao Verstraeten</strong><br /><a
-				href="https://www.apleasantview.com/"
-				target="_blank"
-				style="display: inline-block; transform: translateY(-0.25em)"
-				>a pleasant view</a
-			></small
-		>
-	</p>
-
-	<div style="margin-block: var(--space-xl);">
-		{%
-			image {
-				src: "/media/example.jpg",
-				alt: "Photo by Rohit Choudhari on Unsplash",
-				caption: 'Photo by <a href="https://unsplash.com/@iamrohitchoudhari?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Rohit Choudhari</a> on <a href="https://unsplash.com/photos/an-abstract-image-of-a-star-shaped-object-PkrUN6pvLYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>',
-				widths: [320, 640, 768],
-				setDimensions: false,
-				style: "object-fit: contain;"
-			}
-		%}
+		<div style="padding-block: var(--space-s)"></div>
 	</div>
-
-	<div style="padding-block: var(--space-s)"></div>
 {% endblock %}
