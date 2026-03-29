@@ -9,7 +9,7 @@ const plugins = [
 	postcssImportExtGlob(),
 	postcssImport(),
 	postcssPresetEnv({
-		browsers: ['> 0.2% and not dead'],
+		browsers: ['baseline widely available with downstream'],
 		preserve: true
 	})
 ];
