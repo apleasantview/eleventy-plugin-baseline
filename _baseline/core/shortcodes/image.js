@@ -1,8 +1,8 @@
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
 
-const DEFAULT_WIDTHS = [320, 640, 960, 1280];
-const DEFAULT_FORMATS = ['avif', 'webp', 'jpeg'];
+const DEFAULT_WIDTHS = [320, 640, 960, 1280, 1920, 'auto'];
+const DEFAULT_FORMATS = ['avif', 'webp'];
 const DEFAULT_SIZES = '(max-width: 768px) 100vw, 768px';
 
 function pickRenditions(metadata) {
@@ -26,7 +26,7 @@ function pickRenditions(metadata) {
  * @param {Array<number|string>} [options.widths=DEFAULT_WIDTHS]   Widths passed to eleventy-img.
  * @param {string} [options.sizes=DEFAULT_SIZES]        Sizes attribute used on sources.
  * @param {string[]} [options.formats=DEFAULT_FORMATS]  Output formats (order matters).
- * @param {string} [options.outputDir]                  Output directory for generated assets (defaults to `./dist/media/` or `./<dir.output>/media/` when set).
+ * @param {string} [options.outputDir]                  Output directory for generated assets.
  * @param {string} [options.urlPath="/media/"]          Public URL base for generated assets.
  * @param {Object} [options.attrs={}]                   Extra attributes applied to <img>; `class` merges with imageClass.
  * @param {string} [options.style]                      Inline style applied to <img> (alias for attrs.style).
@@ -66,18 +66,34 @@ export async function imageShortcode(options = {}) {
 	const isRemote = /^https?:\/\//i.test(src);
 	const resolvedSrc = !isRemote && inputDir ? path.join(inputDir, src.replace(/^\//, '')) : src;
 
-	const metadata = await Image(resolvedSrc, {
-		transformOnRequest: process.env.ELEVENTY_RUN_MODE === 'serve',
-		widths: [...widths],
-		formats: [...formats],
-		outputDir,
-		urlPath,
-		filenameFormat(id, srcPath, width, format) {
-			const extension = path.extname(srcPath);
-			const name = path.basename(srcPath, extension);
-			return `${name}-${width}w.${format}`;
-		}
-	});
+	let metadata;
+	try {
+		metadata = await Image(resolvedSrc, {
+			transformOnRequest: process.env.ELEVENTY_RUN_MODE === 'serve',
+			widths: [...widths],
+			formats: [...formats],
+			outputDir,
+			urlPath,
+			filenameFormat(id, srcPath, width, format) {
+				const extension = path.extname(srcPath);
+				const name = path.basename(srcPath, extension);
+				return `${name}-${width}w.${format}`;
+			}
+		});
+	} catch (error) {
+		console.warn(`imageShortcode: transformOnRequest failed for ${src}.\n > ${error?.message || error}`);
+		metadata = await Image(resolvedSrc, {
+			widths: [...widths],
+			formats: [...formats],
+			outputDir,
+			urlPath,
+			filenameFormat(id, srcPath, width, format) {
+				const extension = path.extname(srcPath);
+				const name = path.basename(srcPath, extension);
+				return `${name}-${width}w.${format}`;
+			}
+		});
+	}
 
 	const { lowsrc, highsrc } = pickRenditions(metadata);
 	if (!lowsrc || !highsrc) {
