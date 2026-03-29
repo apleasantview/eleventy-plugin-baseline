@@ -5,3 +5,9 @@ temp/
 
 dist/
 .env
+
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+CLAUDE.private.md

@@ -1,0 +1,59 @@
+# ============================================================
+# AI tool-specific files — Claude Code / Cursor / Copilot / Gemini / MCP
+# Source: https://gist.github.com/cristovaov/70639e8304ac7aedb7f60e27b73198a7
+# ============================================================
+
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+CLAUDE.private.md
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorrules
+
+# GitHub Copilot / GitHub AI
+.github/copilot/
+.github/copilot-instructions.md
+.github/ai/
+.github/ai-instructions.md
+.github/instructions/
+.github/prompts/
+.github/agents/
+copilot-instructions.md
+
+# Gemini CLI
+.gemini/
+.geminiignore
+GEMINI.md
+
+# MCP
+.mcp/
+mcp.local.json
+mcp-config.json
+mcp-config.local.json
+
+# OpenAI / Anthropic local tooling
+.openai/
+.anthropic/
+
+# Agent standards / shared instruction files
+AGENTS.md
+AGENTS.local.md
+AGENTS.private.md
+PROMPTS.md
+prompts/
+instructions.md
+instruction.md
+context.md
+memory.md
+notes.ai.md
+
+# Skill / rule packs
+skills/
+skill/
+.skillpacks/
+.skillset/
+SKILLS.md
