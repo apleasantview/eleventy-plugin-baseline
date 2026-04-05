@@ -10,6 +10,13 @@
 			"request": "launch",
 			"type": "node-terminal",
 			"cwd": "${workspaceFolder}"
+		},
+		{
+			"command": "npm run debug:log",
+			"name": "Logged debug 11ty",
+			"request": "launch",
+			"type": "node-terminal",
+			"cwd": "${workspaceFolder}"
 		}
 	]
 }
