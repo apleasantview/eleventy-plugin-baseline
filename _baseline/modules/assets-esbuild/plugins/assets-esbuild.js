@@ -17,11 +17,13 @@ import inlineESbuild from '../filters/inline-esbuild.js';
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsESBuild(eleventyConfig, options = {}) {
 	const defaultOptions = { minify: true, target: 'es2020' };
+
 	const { assetsDir } = resolveAssetsDir(
 		eleventyConfig.dir?.input || './',
 		eleventyConfig.dir?.output || './',
 		eleventyConfig.dir?.assets || 'assets'
 	);
+
 	const jsDir = `${assetsDir}js/`;
 	const userOptions = { ...defaultOptions, ...options };
 

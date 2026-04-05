@@ -106,8 +106,8 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.assetsPostCSS);
 		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assets.esbuild);
 
+		// Override the default collection behavior. Adding js as template format collects 11tydata.js files.
 		if (userOptions.filterAllCollection) {
-			// Override the default collection behavior. Adding js as template format collects 11tydata.js files.
 			eleventyConfig.addCollection('all', (collectionApi) =>
 				collectionApi.getAll().filter((item) => !item.inputPath.endsWith('11tydata.js'))
 			);
