@@ -42,11 +42,10 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// Extract raw directory value from config (can be done early)
 	const rawDir = eleventyConfig.dir?.[userKey] || userKey;
 
-	// Cache object (raw values; normalized later by syncCacheFromDirectories)
 	const cache = {
-		input: eleventyConfig.dir?.input || null,
-		output: eleventyConfig.dir?.output || null,
-		assetsInput: eleventyConfig.dir?.assets ?? userKey ?? null,
+		input: null,
+		output: null,
+		assetsInput: null,
 		assetsOutput: null
 	};
 
@@ -73,12 +72,9 @@ export default function assetsCore(eleventyConfig, options = {}) {
 
 	eleventyConfig.addGlobalData('_baseline.assets', () => {
 		ensureCache(cache, eleventyConfig, rawDir, verbose);
-		// Merge with existing _baseline.assets (e.g., esbuild config)
-		const existing = eleventyConfig.globalData?._baseline?.assets || {};
 		return {
 			input: cache.assetsInput,
-			output: cache.assetsOutput,
-			...existing
+			output: cache.assetsOutput
 		};
 	});
 
