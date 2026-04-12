@@ -1,13 +1,9 @@
 import path from 'node:path';
-import * as esbuild from 'esbuild';
 import { TemplatePath } from '@11ty/eleventy-utils';
 import { addTrailingSlash, resolveAssetsDir } from '../../../core/helpers.js';
 import { warnIfVerbose, getVerbose } from '../../../core/logging.js';
-import inlineESbuild from '../../assets-esbuild/filters/inline-esbuild.js';
-import postcss from 'postcss';
-import loadPostCSSConfig from 'postcss-load-config';
-import fallbackPostCSSConfig from '../../assets-postcss/fallback/postcss.config.js';
-import inlinePostCSS from '../../assets-postcss/filters/inline-postcss.js';
+
+import assetsESbuild from '../../assets-esbuild/process.js';
 
 const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
@@ -121,24 +117,14 @@ export default function assetsCore(eleventyConfig, options = {}) {
 				return;
 			}
 
-			return async () => {
-				let result = await esbuild.build({
-					entryPoints: [inputPath],
-					bundle: true,
-					minify: esbuildOptions.minify,
-					target: esbuildOptions.target,
-					write: false
-				});
-
-				return result.outputFiles[0].text;
-			};
+			return async () => assetsESbuild(inputPath, esbuildOptions);
 		}
 	});
 
-	eleventyConfig.addAsyncFilter('inlineESbuild', async function (jsFilePath, callback) {
+	eleventyConfig.addAsyncFilter('inlineESbuild', async function (inputPath, callback) {
 		const done = typeof callback === 'function' ? callback : null;
 		try {
-			const js = await inlineESbuild(jsFilePath);
+			const js = await assetsESbuild(inputPath);
 			const html = `<script>${js}</script>`;
 			if (done) return done(null, html);
 			return html;
