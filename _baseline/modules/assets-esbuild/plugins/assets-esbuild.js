@@ -29,9 +29,17 @@ export default function assetsESBuild(eleventyConfig, options = {}) {
 
 	eleventyConfig.addTemplateFormats('js');
 
+	// Explicitly ignore 11tydata files from template processing.
+	eleventyConfig.ignores.add('./src/**/*.11tydata.js');
+
 	eleventyConfig.addExtension('js', {
 		outputFileExtension: 'js',
 		useLayouts: false,
+		read: false,
+		compileOptions: {
+			permalink: true,
+			cache: true
+		},
 		compile: async function (_inputContent, inputPath) {
 			if (
 				inputPath.includes('11tydata.js') ||

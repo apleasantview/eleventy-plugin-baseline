@@ -102,9 +102,7 @@ export default function baseline(options = {}) {
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
 			baseHref: process.env.URL || eleventyConfig.pathPrefix
 		});
-		eleventyConfig.addPlugin(modules.assetsCore);
-		eleventyConfig.addPlugin(modules.assetsPostCSS);
-		eleventyConfig.addPlugin(modules.assetsESBuild, userOptions.assets.esbuild);
+		eleventyConfig.addPlugin(modules.assetsCore, { esbuild: userOptions.assets.esbuild });
 
 		// Override the default collection behavior. Adding js as template format collects 11tydata.js files.
 		if (userOptions.filterAllCollection) {
@@ -136,6 +134,14 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter('_json', debug.json);
 		eleventyConfig.addFilter('_keys', debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
+
+		// Temporary template map debug.
+		eleventyConfig.on('eleventy.contentMap', async ({ inputPathToUrl, urlToInputPath }) => {
+			let debuginput = inputPathToUrl;
+			let debugurl = urlToInputPath;
+
+			return (debuginput, debugurl);
+		});
 	};
 
 	// Set plugin name so `eleventyConfig.hasPlugin()` can detect it.
