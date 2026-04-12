@@ -4,6 +4,7 @@ import { addTrailingSlash, resolveAssetsDir } from '../../../core/helpers.js';
 import { warnIfVerbose, getVerbose } from '../../../core/logging.js';
 
 import assetsESbuild from '../../assets-esbuild/process.js';
+import assetsPostCSS from '../../assets-postcss/process.js';
 
 const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
@@ -146,7 +147,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	eleventyConfig.addExtension('css', {
 		outputFileExtension: 'css',
 		useLayouts: false,
-		read: true,
+		read: false,
 		compileOptions: {
 			permalink: true,
 			cache: true
@@ -156,34 +157,15 @@ export default function assetsCore(eleventyConfig, options = {}) {
 				return;
 			}
 
-			return async () => {
-				let plugins;
-				let options;
-
-				try {
-					// Prefer the consuming project's PostCSS config (postcss.config.* or package.json#postcss).
-					({ plugins, options } = await loadPostCSSConfig({}, configRoot));
-				} catch {
-					// If none is found, fall back to the bundled Baseline config to keep builds working.
-					({ plugins, ...options } = fallbackPostCSSConfig);
-				}
-
-				const result = await postcss(plugins).process(_inputContent, {
-					from: inputPath,
-					map: options?.map,
-					...options
-				});
-
-				return result.css;
-			};
+			return async () => assetsPostCSS(inputPath);
 		}
 	});
 
 	// Filter to inline a bundled entry; supports callback style (Nunjucks/Liquid) and Promise return.
-	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (cssFilePath, callback) {
+	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath, callback) {
 		const done = typeof callback === 'function' ? callback : null;
 		try {
-			const css = await inlinePostCSS(cssFilePath);
+			const css = await assetsPostCSS(inputPath);
 			const html = `<style>${css}</style>`;
 			if (done) return done(null, html);
 			return html;
