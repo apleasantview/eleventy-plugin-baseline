@@ -246,15 +246,4 @@ const buildHead = (data = {}, env = {}) => {
 	return flattenHead(merged, canonical);
 };
 
-/**
- * Convenience wrapper: build a head spec from a PostHTML context.
- * @param {Object} context - PostHTML render context.
- * @param {Object} contentMap - Cached content map.
- * @param {Object} [env={}] - Additional environment options.
- * @returns {Object} Flat head spec.
- */
-const buildHeadSpec = (context, contentMap, env = {}) => {
-	return buildHead(context, { ...env, contentMap });
-};
-
-export { pick, resolveCanonical, flattenHead, buildHead, buildHeadSpec, absoluteUrl };
+export { pick, resolveCanonical, flattenHead, buildHead, absoluteUrl };
