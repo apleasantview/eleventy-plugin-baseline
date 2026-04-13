@@ -5,6 +5,20 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * eleventy-plugin-navigator-core
+ *
+ * Debug tooling. Exposes the full Nunjucks environment and template context
+ * as globals so templates can inspect what data is available at render time.
+ * Optionally registers a virtual /navigator-core.html page that dumps
+ * everything in a readable format.
+ *
+ * No dependencies on other modules or core utilities. Standalone.
+ *
+ * Options:
+ *  - enableNavigatorTemplate (boolean|[boolean, number]): register the debug page.
+ *    Pass [true, depth] to control inspector depth (default 2).
+ */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function navigatorCore(eleventyConfig, options = {}) {
 	const raw = options.enableNavigatorTemplate;
@@ -16,6 +30,9 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 		inspectorDepth: inspectorDepth ?? 2
 	};
 
+	// --- Globals ---
+	// _navigator: the full Nunjucks runtime environment (this).
+	// _context: the template context object (this.ctx) — what templates actually see.
 	eleventyConfig.addNunjucksGlobal('_navigator', function () {
 		return this;
 	});
@@ -23,8 +40,9 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 		return this.ctx;
 	});
 
+	// --- Virtual debug template ---
 	if (userOptions.enableNavigatorTemplate) {
-		// Read virtual template synchronously; Nunjucks pipeline here is sync-only.
+		// Read synchronously — Nunjucks virtual template registration is sync-only.
 		const templatePath = path.join(__dirname, '../templates/navigator-core.html');
 		const virtualTemplateContent = fs.readFileSync(templatePath, 'utf-8');
 		eleventyConfig.addTemplate('navigator-core.html', virtualTemplateContent, {

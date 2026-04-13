@@ -30,12 +30,14 @@ export default function baseline(options = {}) {
 	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 	const plugin = async function (eleventyConfig) {
 		try {
-			// Emit a warning message if the application is not using Eleventy 3.0 or newer (including prereleases).
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
 			console.log(`[eleventy-plugin-baseline] WARN Eleventy plugin compatibility: ${e.message}`);
 		}
 
+		// --- Options ---
+		// Merge user options with defaults, detect environment capabilities,
+		// and expose everything as _baseline global data for templates.
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const userOptions = {
@@ -53,9 +55,9 @@ export default function baseline(options = {}) {
 			...options
 		};
 
-		// Core functions.
-
-		// Normalize languages to an object map; if missing or invalid, use null.
+		// --- Language normalization ---
+		// Accept languages as array or object; normalize to object map.
+		// Drives multilang-core registration and sitemap-core language config.
 		const normalizedLanguages = Array.isArray(userOptions.languages)
 			? Object.fromEntries(
 					userOptions.languages
@@ -78,11 +80,14 @@ export default function baseline(options = {}) {
 		const hasLanguages = languages && Object.keys(languages).length > 0;
 		const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
 
+		// --- Core setup ---
+		// Global data, globals registration, static passthrough, drafts preprocessor.
 		eleventyConfig.addGlobalData('_baseline', userOptions);
 		globals(eleventyConfig);
 		eleventyConfig.addPassthroughCopy({ './src/static': '/' });
 
-		// Prevents double-registering the preprocessor, user config wins.
+		// Drafts preprocessor — skip draft pages during production builds.
+		// Guarded against double-registration; user config wins if already set.
 		if (!eleventyConfig.preprocessors.drafts) {
 			eleventyConfig.addPreprocessor('drafts', '*', (data) => {
 				if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
@@ -91,6 +96,10 @@ export default function baseline(options = {}) {
 			});
 		}
 
+		// --- Modules ---
+		// Registration order matters: multilang first (sets up locale data),
+		// then assets, head, sitemap. Navigator is last (debug only).
+
 		if (isMultilingual) {
 			eleventyConfig.addPlugin(modules.multilangCore, {
 				defaultLanguage: userOptions.defaultLanguage,
@@ -98,7 +107,6 @@ export default function baseline(options = {}) {
 			});
 		}
 
-		// Modules.
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
 			baseHref: process.env.URL || eleventyConfig.pathPrefix
 		});
@@ -111,24 +119,27 @@ export default function baseline(options = {}) {
 			languages
 		});
 
-		// Filters — Module filters might move to their respective module.
+		// --- Filters ---
 		eleventyConfig.addFilter('markdownify', filters.markdownFilter);
 		eleventyConfig.addFilter('relatedPosts', filters.relatedPostsFilter);
 		eleventyConfig.addFilter('isString', filters.isStringFilter);
 
-		// Shortcodes.
+		// --- Shortcodes ---
 		eleventyConfig.addShortcode('image', shortcodes.imageShortcode);
 
-		// Add the dev server middleware for images.
+		// --- Image dev server ---
+		// Serves on-demand image transforms during `--serve` without writing to disk.
 		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);
 
-		// Debug filters and navigators.
+		// --- Debug ---
+		// Underscore-prefixed filters and navigator template for inspecting
+		// data at render time. Not part of the public API surface.
 		eleventyConfig.addFilter('_inspect', debug.inspect);
 		eleventyConfig.addFilter('_json', debug.json);
 		eleventyConfig.addFilter('_keys', debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 
-		// Temporary template map debug.
+		// Temporary content map debug listener.
 		eleventyConfig.on('eleventy.contentMap', async ({ inputPathToUrl, urlToInputPath }) => {
 			let debuginput = inputPathToUrl;
 			let debugurl = urlToInputPath;
@@ -137,11 +148,13 @@ export default function baseline(options = {}) {
 		});
 	};
 
-	// Set plugin name so `eleventyConfig.hasPlugin()` can detect it.
+	// Set a named function identity so eleventyConfig.hasPlugin() can detect this plugin.
 	Object.defineProperty(plugin, 'name', { value: `${name}` });
 	return plugin;
 }
 
+// --- Eleventy directory and template config ---
+// Exported separately so consuming sites can re-export without duplicating values.
 export const config = {
 	dir: {
 		input: 'src',

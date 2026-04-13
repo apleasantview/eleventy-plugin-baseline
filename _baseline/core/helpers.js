@@ -14,11 +14,12 @@ export function addTrailingSlash(path) {
 }
 
 /**
- * Resolves the assets directory path from config
- * Follows Eleventy's pattern: join inputDir + rawDir, then normalize and add trailing slash
- * @param {string} inputDir - The input directory (e.g., "./src/")
- * @param {string} rawDir - Raw directory value from config (e.g., "assets")
- * @returns {{assetsDir: string, assetsDirRelative: string}}
+ * Resolves the assets directory paths from config.
+ * Joins inputDir/outputDir with rawDir, normalizes, and adds trailing slashes.
+ * @param {string} inputDir - The input directory (e.g., "./src/").
+ * @param {string} outputDir - The output directory (e.g., "./dist/").
+ * @param {string} rawDir - Raw directory value from config (e.g., "assets").
+ * @returns {{assetsDir: string, assetsOutputDir: string}}
  */
 export function resolveAssetsDir(inputDir, outputDir, rawDir) {
 	// Join input/output with assets subdir and normalize

@@ -5,8 +5,13 @@ const DEFAULT_WIDTHS = [320, 640, 960, 1280, 1920, 'auto'];
 const DEFAULT_FORMATS = ['avif', 'webp'];
 const DEFAULT_SIZES = '(max-width: 768px) 100vw, 768px';
 
+/**
+ * Pick the smallest and largest rendition from eleventy-img metadata.
+ * Uses the first available format; entries are ordered smallest → largest.
+ * @param {Object} metadata - eleventy-img metadata keyed by format.
+ * @returns {{lowsrc: Object, highsrc: Object}} Smallest and largest rendition.
+ */
 function pickRenditions(metadata) {
-	// Use the first available format; first entry is smallest, last is largest.
 	const firstFormat = Object.values(metadata)[0];
 	const lowsrc = firstFormat?.[0];
 	const highsrc = firstFormat?.[firstFormat.length - 1];

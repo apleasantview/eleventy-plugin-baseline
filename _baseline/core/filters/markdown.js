@@ -3,6 +3,11 @@ import markdownit from 'markdown-it';
 
 const md = markdownit();
 
+/**
+ * Render a string as inline Markdown (no wrapping <p> tag).
+ * @param {string} string - Markdown source.
+ * @returns {string} HTML output.
+ */
 export const markdownFilter = (string) => {
 	return md.renderInline(string);
 };

@@ -5,6 +5,23 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * eleventy-plugin-sitemap-core
+ *
+ * Generates XML sitemaps. Adds a computed page.sitemap object to every page
+ * (with ignore/changefreq/priority), then registers virtual templates for
+ * the sitemap XML. In multilingual mode, produces per-language sitemaps plus
+ * a sitemap index. Pages opt out via noindex in data.
+ *
+ * No cross-module dependencies. Receives multilingual config (languages,
+ * multilingual flag) via options at registration time — does not import
+ * from multilang-core.
+ *
+ * Options:
+ *  - enableSitemapTemplate (boolean, default true): register virtual sitemap templates.
+ *  - multilingual (boolean): force multilingual mode. Auto-detected from languages if omitted.
+ *  - languages (array|object): language codes. Determines per-language sitemap generation.
+ */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function sitemapCore(eleventyConfig, options = {}) {
 	const userOptions = {
@@ -13,6 +30,8 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 		languages: options.languages
 	};
 
+	// Computed sitemap data: every page gets a page.sitemap object.
+	// Pages set noindex in frontmatter or site data to be excluded.
 	eleventyConfig.addGlobalData('eleventyComputed.page.sitemap', () => {
 		return (data) => ({
 			ignore: data.noindex ?? data.page?.noindex ?? data.site?.noindex ?? false,
@@ -21,6 +40,10 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 		});
 	});
 
+	// --- Virtual sitemap templates ---
+	// Read template sources synchronously (same constraint as navigator-core).
+	// In multilingual mode: one sitemap per language + a sitemap index.
+	// In single-language mode: one flat sitemap at /sitemap.xml.
 	if (userOptions.enableSitemapTemplate) {
 		const templatePath = path.join(__dirname, '../templates/sitemap-core.html');
 		const indexTemplatePath = path.join(__dirname, '../templates/sitemap-index.html');

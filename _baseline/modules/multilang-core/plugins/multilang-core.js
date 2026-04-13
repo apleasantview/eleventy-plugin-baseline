@@ -5,12 +5,21 @@ import i18nTranslationIn from '../filters/i18n-translation-in.js';
 import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
 
 /**
- * Baseline – multilang-core
+ * eleventy-plugin-multilang-core
  *
- * Responsibilities:
- * - Normalize language metadata
- * - Annotate translatable pages
- * - Expose relational helpers for translations
+ * Language infrastructure for multilingual sites. Normalizes language metadata,
+ * builds a translations map keyed by translationKey + lang, and exposes
+ * relational filters for cross-language lookups. Wraps Eleventy's built-in
+ * I18nPlugin with stricter language validation.
+ *
+ * Depends on: Eleventy I18nPlugin (built-in), @11ty/eleventy-utils (DeepCopy).
+ * No cross-module dependencies. Sitemap-core receives language config via
+ * options at registration time, not through imports.
+ *
+ * Options:
+ *  - defaultLanguage (string, default 'en'): fallback language code.
+ *  - languages (array|object): allowed languages. Pages with unlisted langs are skipped.
+ *  - verbose (boolean, default false): warn on unknown language codes.
  *
  * @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig
  */
@@ -22,12 +31,13 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		...options
 	};
 
+	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {
 		defaultLanguage: userOptions.defaultLanguage,
 		errorMode: 'allow-fallback'
 	});
 
-	// Normalize allowed languages (optionally lower/trim)
+	// Build a set of allowed language codes for validation during collection building.
 	const normalizeLang = (lang) => (lang || '').toLowerCase().trim();
 	const allowedLanguages = new Set(
 		Array.isArray(userOptions.languages)
@@ -35,6 +45,8 @@ export default function multilangCore(eleventyConfig, options = {}) {
 			: Object.keys(userOptions.languages || {}).map(normalizeLang)
 	);
 
+	// Computed locale data: every page gets a page.locale object with its
+	// resolved lang, translationKey, and whether it's the default language.
 	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
 		return (data) => {
 			const lang = normalizeLang(data.lang || data.language || userOptions.defaultLanguage);
@@ -49,6 +61,8 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		};
 	});
 
+	// Build both the map (keyed by translationKey → lang) and the flat list.
+	// Shared logic for both collections — called once per collection registration.
 	const buildTranslations = (collection) => {
 		const map = {};
 		const list = [];
@@ -84,17 +98,20 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		return { map, list };
 	};
 
-	// Map form for direct lookups
+	// --- Collections ---
+
+	// Map form: translationsMap[translationKey][lang] → page metadata.
 	eleventyConfig.addCollection('translationsMap', (collection) => {
 		return buildTranslations(collection).map;
 	});
 
-	// Canonical translations collection
+	// Flat list: all translatable pages with locale data attached.
 	eleventyConfig.addCollection('translations', (collection) => {
 		return buildTranslations(collection).list;
 	});
 
-	// Filters – relational helpers
+	// --- Filters ---
+	// Relational helpers for cross-language lookups in templates.
 	eleventyConfig.addFilter('i18nTranslationsFor', i18nTranslationsFor);
 	eleventyConfig.addFilter('i18nTranslationIn', i18nTranslationIn);
 	eleventyConfig.addFilter('i18nDefaultTranslation', i18nDefaultTranslation);

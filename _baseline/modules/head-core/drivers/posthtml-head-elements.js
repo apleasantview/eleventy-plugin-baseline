@@ -2,10 +2,6 @@
 // Original: https://github.com/posthtml/posthtml-head-elements
 // Adapted for Baseline head-core.
 
-// Based on posthtml-head-elements (MIT License).
-// Original: https://github.com/posthtml/posthtml-head-elements
-// Adapted for Baseline head-core.
-
 import util from 'node:util';
 import { createRequire } from 'node:module';
 
