@@ -2,6 +2,15 @@ import * as esbuild from 'esbuild';
 
 const defaultOptions = { minify: true, target: 'es2020' };
 
+/**
+ * Bundle a JS file with esbuild.
+ *
+ * @param {string} jsFilePath - Absolute path to the entry file.
+ * @param {Object} [options] - esbuild options (merged with defaults).
+ * @param {boolean} [options.minify=true] - Minify output.
+ * @param {string} [options.target='es2020'] - esbuild target.
+ * @returns {Promise<string>} Bundled JS text, or an error comment on failure.
+ */
 export default async function assetsESbuild(jsFilePath, options = {}) {
 	const userOptions = { ...defaultOptions, ...options };
 

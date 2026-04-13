@@ -47,7 +47,7 @@ export default function baseline(options = {}) {
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 			filterAllCollection: options.filterAllCollection ?? true,
 			assets: {
-				esbuild: options.assetsESBuild ?? { minify: true, target: 'es2020' }
+				esbuild: options.assetsESBuild ?? {}
 			},
 			multilingual: options.multilingual ?? false,
 			...options

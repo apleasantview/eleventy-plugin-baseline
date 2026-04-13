@@ -21,6 +21,14 @@ async function getPostCSSConfig() {
 	return cachedConfig;
 }
 
+/**
+ * Process a CSS file through PostCSS.
+ * Reads from disk, uses project postcss.config.js or bundled fallback.
+ * Config is cached for the lifetime of the process.
+ *
+ * @param {string} cssFilePath - Absolute path to the entry file.
+ * @returns {Promise<string>} Processed CSS text, or an error comment on failure.
+ */
 export default async function assetsPostCSS(cssFilePath) {
 	try {
 		const cssContent = await fs.readFile(cssFilePath, 'utf8');

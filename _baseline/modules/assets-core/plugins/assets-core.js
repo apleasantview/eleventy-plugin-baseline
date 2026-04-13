@@ -6,6 +6,11 @@ import { warnIfVerbose, getVerbose } from '../../../core/logging.js';
 import assetsESbuild from '../../assets-esbuild/process.js';
 import assetsPostCSS from '../../assets-postcss/process.js';
 
+/**
+ * Sync the cache object with resolved directory paths.
+ * Called once at registration time and again on the eleventy.directories event
+ * when Eleventy finalizes its directory config.
+ */
 const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
 	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || './');
@@ -17,6 +22,10 @@ const syncCacheFromDirectories = (cache, dirs, rawDir) => {
 	cache.assetsOutput = assetsOutputDir;
 };
 
+/**
+ * Guard: resolve directories from eleventyConfig.dir if the eleventy.directories
+ * event hasn't fired yet (e.g. when global data or watch targets are read early).
+ */
 const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
 	if (cache.assetsInput) return;
 	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
@@ -26,22 +35,26 @@ const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
 /**
  * eleventy-plugin-assets-core
  *
- * Resolve assets input/output directories, register a virtual
- * `directories.assets`, expose the resolved paths via global data, and add
- * a watch target under the resolved assets input directory.
+ * The single assets plugin. Owns all Eleventy wiring for JS and CSS processing:
+ * directory resolution, template formats, extensions, compile guards, inline
+ * filters, watch targets, and global data. Processing logic lives in the
+ * pure functions imported from assets-esbuild and assets-postcss.
  *
  * Options:
  *  - verbose  (boolean, default global baseline verbose): enable verbose logs.
  *  - esbuild  (object): options forwarded to esbuild (minify, target).
+ *    Defaults live in assets-esbuild/process.js — pass only overrides.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, options = {}) {
 	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
 	const userKey = 'assets';
 
-	// Extract raw directory value from config (can be done early)
+	// Extract raw directory value from config (can be done early).
 	const rawDir = eleventyConfig.dir?.[userKey] || userKey;
 
+	// Cache holds resolved paths. Initialized as nulls, populated immediately
+	// by syncCacheFromDirectories, then updated when eleventy.directories fires.
 	const cache = {
 		input: null,
 		output: null,
@@ -51,6 +64,8 @@ export default function assetsCore(eleventyConfig, options = {}) {
 
 	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
 
+	// Update cache when Eleventy finalizes directories, and register a virtual
+	// `directories.assets` key so other code can read the resolved assets path.
 	eleventyConfig.on('eleventy.directories', (directories) => {
 		syncCacheFromDirectories(cache, directories, rawDir);
 
@@ -70,6 +85,8 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		});
 	});
 
+	// Expose resolved assets paths as global data for templates.
+	// Templates use _baseline.assets.input to build paths for inline filters.
 	eleventyConfig.addGlobalData('_baseline.assets', () => {
 		ensureCache(cache, eleventyConfig, rawDir, verbose);
 		return {
@@ -78,15 +95,18 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		};
 	});
 
-	// Watch target — use resolved assets input dir.
+	// Watch common asset formats so edits trigger reloads during --serve.
 	ensureCache(cache, eleventyConfig, rawDir, verbose);
 	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 	eleventyConfig.addWatchTarget(watchGlob);
 
 	// --- JS (esbuild) ---
+	// Register js as a template format. Only index.js files under assets/js/
+	// are compiled; everything else (11tydata.js, non-entry scripts) is skipped
+	// by the compile guard. The inline filter wraps the same process function.
+	// Defaults (minify, target) live in assets-esbuild/process.js.
 
-	const esbuildDefaults = { minify: true, target: 'es2020' };
-	const esbuildOptions = { ...esbuildDefaults, ...options.esbuild };
+	const esbuildOptions = options.esbuild || {};
 	const jsDir = `${cache.assetsInput}js/`;
 
 	eleventyConfig.addTemplateFormats('js');
@@ -105,6 +125,8 @@ export default function assetsCore(eleventyConfig, options = {}) {
 			permalink: true,
 			cache: true
 		},
+		// Compile guard: only process index.js files under the assets js directory.
+		// Returning undefined skips the file without error.
 		compile: async function (_inputContent, inputPath) {
 			if (
 				inputPath.includes('11tydata.js') ||
@@ -118,25 +140,27 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		}
 	});
 
-	eleventyConfig.addAsyncFilter('inlineESbuild', async function (inputPath, callback) {
-		const done = typeof callback === 'function' ? callback : null;
+	// Inline filter: bundle a JS file and wrap in <script> tags.
+	// Accepts per-call esbuild options (merged with defaults in process.js).
+	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
+	// so this is a plain async function.
+	eleventyConfig.addAsyncFilter('inlineESbuild', async function (inputPath, opts = {}) {
 		try {
-			const js = await assetsESbuild(inputPath);
-			const html = `<script>${js}</script>`;
-			if (done) return done(null, html);
-			return html;
+			const js = await assetsESbuild(inputPath, opts);
+			return `<script>${js}</script>`;
 		} catch {
-			const html = `<script>/* Error processing JS */</script>`;
-			if (done) return done(null, html);
-			return html;
+			// Non-fatal: return an error comment so the build doesn't break.
+			return `<script>/* Error processing JS */</script>`;
 		}
 	});
 
 	// --- CSS (PostCSS) ---
-	const cssDir = `${cache.assetsInput}css/`;
+	// Register css as a template format. Only index.css files under assets/css/
+	// are compiled; non-entry CSS is skipped. Reads from disk (read: false) —
+	// the process function owns its own I/O. Config loading and caching live
+	// in assets-postcss/process.js.
 
-	// Resolve user PostCSS config from the project root (cwd), not the Eleventy input dir.
-	const configRoot = process.cwd();
+	const cssDir = `${cache.assetsInput}css/`;
 
 	eleventyConfig.addTemplateFormats('css');
 
@@ -148,6 +172,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 			permalink: true,
 			cache: true
 		},
+		// Compile guard: only process index.css files under the assets css directory.
 		compile: async function (_inputContent, inputPath) {
 			if (!inputPath.startsWith(cssDir) || path.basename(inputPath) !== 'index.css') {
 				return;
@@ -157,19 +182,16 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		}
 	});
 
-	// Filter to inline a bundled entry; supports callback style (Nunjucks/Liquid) and Promise return.
-	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath, callback) {
-		const done = typeof callback === 'function' ? callback : null;
+	// Inline filter: process a CSS file through PostCSS and wrap in <style> tags.
+	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
+	// so this is a plain async function.
+	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath) {
 		try {
 			const css = await assetsPostCSS(inputPath);
-			const html = `<style>${css}</style>`;
-			if (done) return done(null, html);
-			return html;
+			return `<style>${css}</style>`;
 		} catch {
-			// Keep behavior non-fatal: return a styled error comment instead of throwing.
-			const html = `<style>/* Error processing CSS */</style>`;
-			if (done) return done(null, html);
-			return html;
+			// Non-fatal: return an error comment so the build doesn't break.
+			return `<style>/* Error processing CSS */</style>`;
 		}
 	});
 }
