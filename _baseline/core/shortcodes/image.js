@@ -57,18 +57,23 @@ export async function imageShortcode(options = {}) {
 		figure = true,
 		setDimensions = true
 	} = options;
+	// Read from global data set during plugin init. When true, `eleventy:ignore`
+	// is added to the <img> (line 140) to prevent double-processing.
 	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
 
-	if (!src) throw new Error('imageShortcode: src is required');
+	// --- Validation and normalization ---
+
+	if (!src) throw new Error(`imageShortcode: src is required (received ${JSON.stringify(src)})`);
 	if (alt == null) {
 		console.warn('imageShortcode: alt is required (use empty string for decorative images)');
 	}
 
-	const normalizedCaption = caption == null ? '' : String(caption);
+	const normalizedCaption = String(caption);
 	const normalizedAlt = alt == null ? '' : String(alt);
 
 	const inputDir = this?.eleventy?.directories?.input;
 	const isRemote = /^https?:\/\//i.test(src);
+	// Note: remote URLs rely on eleventy-img's built-in fetch — no timeout/retry control at shortcode level.
 	const resolvedSrc = !isRemote && inputDir ? path.join(inputDir, src.replace(/^\//, '')) : src;
 
 	const imageOptions = {
@@ -79,9 +84,14 @@ export async function imageShortcode(options = {}) {
 		filenameFormat(id, srcPath, width, format) {
 			const extension = path.extname(srcPath);
 			const name = path.basename(srcPath, extension);
-			return `${name}-${width}w.${format}`;
+			return `${name}-${id.slice(0, 6)}-${width}w.${format}`;
 		}
 	};
+
+	// --- Image processing ---
+	// In serve mode, `transformOnRequest` defers processing to first browser request
+	// for faster dev startup. If it fails, retry without it — this is an edge case
+	// but one that has bitten in practice. In build mode, errors surface immediately.
 
 	let metadata;
 	try {
@@ -103,6 +113,8 @@ export async function imageShortcode(options = {}) {
 		throw new Error(`imageShortcode: no renditions produced for ${src}`);
 	}
 
+	// --- HTML assembly ---
+	// One <source> per format, each carrying the full srcset for that format.
 	const sourceTags = Object.values(metadata)
 		.map((formatEntries) => {
 			const type = formatEntries[0].sourceType;
@@ -111,6 +123,8 @@ export async function imageShortcode(options = {}) {
 		})
 		.join('\n');
 
+	// Pull `class` out of attrs so it can merge with imageClass. Remaining attrs
+	// and `eleventy:ignore` (if needed) are spread onto imageAttributes below.
 	const { class: attrClass, ...restAttrs } = attrs;
 	const combinedClass = [imageClass, attrClass].filter(Boolean).join(' ').trim() || undefined;
 
@@ -126,6 +140,7 @@ export async function imageShortcode(options = {}) {
 		...(hasImageTransformPlugin ? { 'eleventy:ignore': true } : {})
 	};
 
+	// Build the attribute string, dropping any empty/null values to keep output clean.
 	const imgAttrString = Object.entries(imageAttributes)
 		.filter(([, value]) => value !== undefined && value !== null && value !== '')
 		.map(([key, value]) => (value === true ? key : `${key}="${value}"`))
@@ -134,14 +149,14 @@ export async function imageShortcode(options = {}) {
 	const pictureClass = containerClass && containerClass.trim() ? ` class="${containerClass.trim()}"` : '';
 
 	const picture = `<picture${pictureClass}>
-	${sourceTags}
-	<img ${imgAttrString}>
+${sourceTags}
+<img ${imgAttrString}>
 </picture>`;
 
 	if (!figure || !normalizedCaption) return picture;
 
 	return `<figure>
-	${picture}
-	<figcaption>${normalizedCaption}</figcaption>
+${picture}
+<figcaption>${normalizedCaption}</figcaption>
 </figure>`;
 }
