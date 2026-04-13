@@ -1,9 +1,7 @@
 import { inspect as utilInspect } from 'node:util';
 
 // Adapted from pdehaan - https://github.com/pdehaan/eleventy-plugin-debug
-const debugOptions = Object.assign({
-	space: 0
-});
+const debugOptions = { space: 0 };
 
 /**
  * Pretty-print an object using Node's util.inspect.

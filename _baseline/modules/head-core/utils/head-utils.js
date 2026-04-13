@@ -1,5 +1,4 @@
-import Merge from '@11ty/eleventy-utils/src/Merge.js';
-import { TemplatePath } from '@11ty/eleventy-utils';
+import { Merge, TemplatePath } from '@11ty/eleventy-utils';
 
 /**
  * Return the first value that is neither undefined nor null.

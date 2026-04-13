@@ -42,7 +42,7 @@ permalink: /navigator-core.html
 			<details>
 				<summary><strong>{{ key }}</strong></summary>
 				{% if value | isString %}
-				<pre>{{ value | safe }}</pre>
+				<pre>{{ value }}</pre>
 				{% else %}
 				<pre>{{ value | _inspect({ depth: inspectorDepth }) }}</pre>
 				{% endif %}
@@ -56,9 +56,9 @@ permalink: /navigator-core.html
 			history.back();
 		});
 	</script>
+	<footer>
+		<div class="_navigator__wrapper"><small>Navigator Core — Eleventy Plugin Baseline</small></div>
+	</footer>
 </body>
-<footer>
-	<div class="_navigator__wrapper"><small>Navigator Core — Eleventy Plugin Baseline</small></div>
-</footer>
 
 </html>

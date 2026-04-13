@@ -25,8 +25,8 @@ export function logIfVerbose(verbose, message, ...args) {
  * @param {boolean} verbose - Whether verbose logging is enabled
  * @param {string} message - Warning message
  */
-export function warnIfVerbose(verbose, message) {
+export function warnIfVerbose(verbose, message, ...args) {
 	if (verbose) {
-		console.warn(`[eleventy-plugin-baseline] WARN ${message}`);
+		console.warn(`[eleventy-plugin-baseline] WARN ${message}`, ...args);
 	}
 }

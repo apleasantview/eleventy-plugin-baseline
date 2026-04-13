@@ -9,5 +9,6 @@ const md = markdownit();
  * @returns {string} HTML output.
  */
 export const markdownFilter = (string) => {
+	if (!string) return '';
 	return md.renderInline(string);
 };
