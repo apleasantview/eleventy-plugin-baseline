@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-{%- if not site.noindex -%}
-{%- for item in collections.all -%}
-{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) and item.data.noindex != true -%}
-{%- set pageLang = item.data.lang or site.defaultLanguage -%}
-{%- if (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) -%}
-{%- set absoluteUrl = item.url | htmlBaseUrl -%}
-{%- set lastmod = item.data.sitemap and item.data.sitemap.lastmod or item.date -%}
+{%- if not site.noindex %}
+{%- for item in collections.all %}
+{%- if not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) and item.data.noindex != true %}
+{%- set pageLang = item.data.lang or site.defaultLanguage %}
+{%- if (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}
+{%- set absoluteUrl = item.url | htmlBaseUrl %}
+{%- set lastmod = item.data.sitemap and item.data.sitemap.lastmod or item.date %}
 <url>
 <loc>{{ absoluteUrl }}</loc>
-{%- if lastmod -%}<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>{%- endif -%}
-{%- if item.data.sitemap and item.data.sitemap.changefreq -%}<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>{%- endif -%}
-{%- if item.data.sitemap and item.data.sitemap.priority is defined -%}<priority>{{ item.data.sitemap.priority }}</priority>{%- endif -%}
-{%- if item.data.translationKey and collections.translationsMap and collections.translationsMap[item.data.translationKey] -%}
-{%- for language, entry in collections.translationsMap[item.data.translationKey] -%}
+{%- if lastmod %}
+<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
+{%- endif %}
+{%- if item.data.sitemap and item.data.sitemap.changefreq %}
+<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>
+{%- endif %}
+{%- if item.data.sitemap and item.data.sitemap.priority is defined %}
+<priority>{{ item.data.sitemap.priority }}</priority>
+{%- endif %}
+{%- if item.data.translationKey and collections.translationsMap and collections.translationsMap[item.data.translationKey] %}
+{%- for language, entry in collections.translationsMap[item.data.translationKey] %}
 <xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl }}" />
-{%- endfor -%}
-{%- endif -%}
+{%- if entry.isDefaultLang %}
+<xhtml:link rel="alternate" hreflang="x-default" href="{{ entry.url | htmlBaseUrl }}" />
+{%- endif %}
+{%- endfor %}
+{%- endif %}
 </url>
-{%- endif -%}
-{%- endif -%}
-{%- endfor -%}
-{%- endif -%}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
 </urlset>
