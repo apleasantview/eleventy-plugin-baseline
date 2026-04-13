@@ -60,8 +60,8 @@ export async function imageShortcode(options = {}) {
 	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
 
 	if (!src) throw new Error('imageShortcode: src is required');
-	if (alt === undefined) {
-		throw new Error('imageShortcode: alt is required (use empty string for decorative images)');
+	if (alt == null) {
+		console.warn('imageShortcode: alt is required (use empty string for decorative images)');
 	}
 
 	const normalizedCaption = caption == null ? '' : String(caption);
@@ -71,33 +71,31 @@ export async function imageShortcode(options = {}) {
 	const isRemote = /^https?:\/\//i.test(src);
 	const resolvedSrc = !isRemote && inputDir ? path.join(inputDir, src.replace(/^\//, '')) : src;
 
+	const imageOptions = {
+		widths: [...widths],
+		formats: [...formats],
+		outputDir,
+		urlPath,
+		filenameFormat(id, srcPath, width, format) {
+			const extension = path.extname(srcPath);
+			const name = path.basename(srcPath, extension);
+			return `${name}-${width}w.${format}`;
+		}
+	};
+
 	let metadata;
 	try {
 		metadata = await Image(resolvedSrc, {
 			transformOnRequest: process.env.ELEVENTY_RUN_MODE === 'serve',
-			widths: [...widths],
-			formats: [...formats],
-			outputDir,
-			urlPath,
-			filenameFormat(id, srcPath, width, format) {
-				const extension = path.extname(srcPath);
-				const name = path.basename(srcPath, extension);
-				return `${name}-${width}w.${format}`;
-			}
+			...imageOptions
 		});
 	} catch (error) {
-		console.warn(`imageShortcode: transformOnRequest failed for ${src}.\n > ${error?.message || error}`);
-		metadata = await Image(resolvedSrc, {
-			widths: [...widths],
-			formats: [...formats],
-			outputDir,
-			urlPath,
-			filenameFormat(id, srcPath, width, format) {
-				const extension = path.extname(srcPath);
-				const name = path.basename(srcPath, extension);
-				return `${name}-${width}w.${format}`;
-			}
-		});
+		if (process.env.ELEVENTY_RUN_MODE === 'serve') {
+			console.warn(`imageShortcode: transformOnRequest failed for ${src}, retrying.\n > ${error?.message || error}`);
+			metadata = await Image(resolvedSrc, imageOptions);
+		} else {
+			throw error;
+		}
 	}
 
 	const { lowsrc, highsrc } = pickRenditions(metadata);
