@@ -34,7 +34,7 @@ function pickRenditions(metadata) {
  * @param {string} [options.outputDir]                  Output directory for generated assets.
  * @param {string} [options.urlPath="/media/"]          Public URL base for generated assets.
  * @param {Object} [options.attrs={}]                   Extra attributes applied to <img>; `class` merges with imageClass.
- * @param {string} [options.style]                      Inline style applied to <img> (alias for attrs.style).
+ * @param {string} [options.style]                      Inline style applied to <img>. Separate from attrs.style — if both are passed, attrs.style takes precedence via restAttrs spread.
  * @param {boolean} [options.figure=true]               Wrap in <figure> when caption is provided.
  * @param {boolean} [options.setDimensions=true]        When false, omit width/height on <img>.
  */
