@@ -41,18 +41,20 @@ export default function baseline(options = {}) {
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const userOptions = {
+			// Internal - not overridable
 			version,
 			name,
-			verbose: options.verbose ?? false,
 			hasImageTransformPlugin,
+			// User options with defaults
+			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
-			filterAllCollection: options.filterAllCollection ?? true,
+			multilingual: options.multilingual ?? false,
+			defaultLanguage: options.defaultLanguage,
+			languages: options.languages,
 			assets: {
 				esbuild: options.assetsESBuild ?? {}
-			},
-			multilingual: options.multilingual ?? false,
-			...options
+			}
 		};
 
 		// --- Core setup ---
@@ -110,14 +112,6 @@ export default function baseline(options = {}) {
 		eleventyConfig.addFilter('_json', debug.json);
 		eleventyConfig.addFilter('_keys', debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
-
-		// Temporary content map debug listener.
-		eleventyConfig.on('eleventy.contentMap', async ({ inputPathToUrl, urlToInputPath }) => {
-			let debuginput = inputPathToUrl;
-			let debugurl = urlToInputPath;
-
-			return (debuginput, debugurl);
-		});
 	};
 
 	// Set a named function identity so eleventyConfig.hasPlugin() can detect this plugin.
