@@ -36,16 +36,10 @@ export default function baseline(options = {}) {
 		}
 
 		// --- Options ---
-		// Merge user options with defaults, detect environment capabilities,
-		// and expose everything as _baseline global data for templates.
+		// Merge user options with defaults, detect environment capabilities.
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const userOptions = {
-			// Internal - not overridable
-			version,
-			name,
-			hasImageTransformPlugin,
-			// User options with defaults
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
@@ -57,9 +51,17 @@ export default function baseline(options = {}) {
 			}
 		};
 
-		// --- Core setup ---
-		// Global data, globals registration, static passthrough, drafts preprocessor.
-		eleventyConfig.addGlobalData('_baseline', userOptions);
+		// --- Global data ---
+		// Curated public surface — only what templates and shortcodes need.
+		// `verbose` and `hasImageTransformPlugin` stay until getVerbose rework
+		// and image shortcode refactor remove the need to read them from global data.
+		eleventyConfig.addGlobalData('_baseline', {
+			version,
+			name,
+			verbose: userOptions.verbose,
+			hasImageTransformPlugin
+		});
+
 		globals(eleventyConfig);
 		eleventyConfig.addPassthroughCopy({ './src/static': '/' });
 
@@ -76,7 +78,6 @@ export default function baseline(options = {}) {
 		// --- Modules ---
 		// Registration order matters: multilang first (sets up locale data),
 		// then assets, head, sitemap. Navigator is last (debug only).
-
 		if (userOptions.multilingual) {
 			eleventyConfig.addPlugin(modules.multilangCore, {
 				...userOptions

@@ -77,7 +77,8 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 				description: '',
 				layout: null,
 				eleventyExcludeFromCollections: true,
-				isMultilingual: multilingual
+				isMultilingual: multilingual,
+				languages: userOptions.languages
 			});
 		} else {
 			eleventyConfig.addTemplate('_baseline/sitemap-core.html', baseContent, {
