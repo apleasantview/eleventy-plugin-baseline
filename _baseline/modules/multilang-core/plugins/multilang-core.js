@@ -4,6 +4,26 @@ import i18nTranslationsFor from '../filters/i18n-translations-for.js';
 import i18nTranslationIn from '../filters/i18n-translation-in.js';
 import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
 
+export function langNormalization(userOptions) {
+	const normalizedLanguages = Array.isArray(userOptions.languages)
+		? Object.fromEntries(
+				userOptions.languages
+					.filter((lang) => typeof lang === 'string' && lang.trim())
+					.map((lang) => [lang.toLowerCase().trim(), {}])
+			)
+		: userOptions.languages && typeof userOptions.languages === 'object'
+			? userOptions.languages
+			: null;
+
+	if (userOptions.verbose && Array.isArray(userOptions.languages)) {
+		const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
+		if (normalizedCount !== userOptions.languages.length) {
+			console.warn('[baseline] Some languages entries were invalid and were dropped.');
+		}
+	}
+	return normalizedLanguages;
+}
+
 /**
  * eleventy-plugin-multilang-core
  *
@@ -31,6 +51,16 @@ export default function multilangCore(eleventyConfig, options = {}) {
 		...options
 	};
 
+	// --- Language normalization ---
+	// Accept languages as array or object; normalize to object map.
+	// Drives collection building, locale data, and sitemap-core language config.
+	userOptions.languages = langNormalization(userOptions);
+
+	const hasLanguages = userOptions.languages && Object.keys(userOptions.languages).length > 0;
+	const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
+
+	if (!isMultilingual) return;
+
 	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {
 		defaultLanguage: userOptions.defaultLanguage,
@@ -38,20 +68,18 @@ export default function multilangCore(eleventyConfig, options = {}) {
 	});
 
 	// Build a set of allowed language codes for validation during collection building.
-	const normalizeLang = (lang) => (lang || '').toLowerCase().trim();
+	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
 	const allowedLanguages = new Set(
-		Array.isArray(userOptions.languages)
-			? userOptions.languages.map(normalizeLang)
-			: Object.keys(userOptions.languages || {}).map(normalizeLang)
+		Object.keys(userOptions.languages).map(normalizeLanguageCode)
 	);
 
 	// Computed locale data: every page gets a page.locale object with its
 	// resolved lang, translationKey, and whether it's the default language.
 	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
 		return (data) => {
-			const lang = normalizeLang(data.lang || data.language || userOptions.defaultLanguage);
+			const lang = normalizeLanguageCode(data.lang || data.language || userOptions.defaultLanguage);
 			const translationKey = data.translationKey;
-			const isDefaultLang = lang === normalizeLang(userOptions.defaultLanguage);
+			const isDefaultLang = lang === normalizeLanguageCode(userOptions.defaultLanguage);
 
 			return {
 				translationKey,

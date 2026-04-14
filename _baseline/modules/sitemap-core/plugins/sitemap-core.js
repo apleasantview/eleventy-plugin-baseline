@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { langNormalization } from '../../multilang-core/plugins/multilang-core.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,9 +14,8 @@ const __dirname = path.dirname(__filename);
  * the sitemap XML. In multilingual mode, produces per-language sitemaps plus
  * a sitemap index. Pages opt out via noindex in data.
  *
- * No cross-module dependencies. Receives multilingual config (languages,
- * multilingual flag) via options at registration time — does not import
- * from multilang-core.
+ * Imports langNormalization from multilang-core for language config.
+ * This is a workaround — dissolves when the site graph exists.
  *
  * Options:
  *  - enableSitemapTemplate (boolean, default true): register virtual sitemap templates.
@@ -24,10 +24,15 @@ const __dirname = path.dirname(__filename);
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function sitemapCore(eleventyConfig, options = {}) {
+	const languages = langNormalization(options);
+	const hasLanguages = languages && Object.keys(languages).length > 0;
+	const isMultilingual = options.multilingual === true && options.defaultLanguage && hasLanguages;
+
 	const userOptions = {
 		enableSitemapTemplate: options.enableSitemapTemplate ?? true,
-		multilingual: options.multilingual,
-		languages: options.languages
+		multilingual: isMultilingual,
+		defaultLanguage: options.defaultLanguage,
+		languages: languages
 	};
 
 	// Computed sitemap data: every page gets a page.sitemap object.
@@ -50,9 +55,8 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 		const baseContent = fs.readFileSync(templatePath, 'utf-8');
 		const indexContent = fs.readFileSync(indexTemplatePath, 'utf-8');
 
-		const languages = userOptions.languages || {};
-		const langKeys = Array.isArray(languages) ? languages : Object.keys(languages);
-		const multilingual = typeof userOptions.multilingual === 'boolean' ? userOptions.multilingual : langKeys.length > 1;
+		const langKeys = Object.keys(userOptions.languages || {});
+		const multilingual = userOptions.multilingual;
 
 		if (multilingual && langKeys.length > 1) {
 			for (const lang of langKeys) {

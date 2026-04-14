@@ -55,31 +55,6 @@ export default function baseline(options = {}) {
 			...options
 		};
 
-		// --- Language normalization ---
-		// Accept languages as array or object; normalize to object map.
-		// Drives multilang-core registration and sitemap-core language config.
-		const normalizedLanguages = Array.isArray(userOptions.languages)
-			? Object.fromEntries(
-					userOptions.languages
-						.filter((lang) => typeof lang === 'string' && lang.trim())
-						.map((lang) => [lang.trim(), {}])
-				)
-			: userOptions.languages && typeof userOptions.languages === 'object'
-				? userOptions.languages
-				: null;
-
-		if (userOptions.verbose && Array.isArray(userOptions.languages)) {
-			const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
-			if (normalizedCount !== userOptions.languages.length) {
-				console.warn('[baseline] Some languages entries were invalid and were dropped.');
-			}
-		}
-
-		userOptions.languages = normalizedLanguages;
-		const languages = normalizedLanguages;
-		const hasLanguages = languages && Object.keys(languages).length > 0;
-		const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
-
 		// --- Core setup ---
 		// Global data, globals registration, static passthrough, drafts preprocessor.
 		eleventyConfig.addGlobalData('_baseline', userOptions);
@@ -100,10 +75,9 @@ export default function baseline(options = {}) {
 		// Registration order matters: multilang first (sets up locale data),
 		// then assets, head, sitemap. Navigator is last (debug only).
 
-		if (isMultilingual) {
+		if (userOptions.multilingual) {
 			eleventyConfig.addPlugin(modules.multilangCore, {
-				defaultLanguage: userOptions.defaultLanguage,
-				languages
+				...userOptions
 			});
 		}
 
@@ -114,9 +88,7 @@ export default function baseline(options = {}) {
 
 		eleventyConfig.addPlugin(modules.headCore);
 		eleventyConfig.addPlugin(modules.sitemapCore, {
-			enableSitemapTemplate: userOptions.enableSitemapTemplate,
-			multilingual: isMultilingual,
-			languages
+			...userOptions
 		});
 
 		// --- Filters ---
