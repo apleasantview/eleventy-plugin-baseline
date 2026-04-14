@@ -1,14 +1,12 @@
 # Eleventy Baseline
 
-_An experimental Swiss army knife for Eleventy._
+Baseline makes the structural decisions that Eleventy leaves open: directory layout, asset pipeline, image handling, SEO, sitemaps.
 
-Eleventy Baseline is a lightweight toolkit built around a simple question:
+If you've started a new Eleventy project and found yourself wiring up the same things for the third time, this is for you. Directory structure, template engine, image formats, meta tags, asset bundling, sitemap — decisions that are individually small but collectively slow you down. Baseline makes them together, so they fit together. You get to skip the setup and start building.
 
-> What if Eleventy had a minimal, optional layer of conventions — just enough to eliminate repetition, but not enough to feel restrictive?
+You still own your site. Baseline handles the infrastructure — the parts that have well-tested answers. Your design, your content, the things that make your site yours — those stay yours.
 
-It explores what a "core" for Eleventy could look like without becoming a framework or theme — small, practical tools rather than sweeping abstractions. If you've ever started a new Eleventy project and found yourself copy-pasting the same asset pipeline, the same head template, the same image shortcode for the third time, this is for you.
-
-This is a practical, evolving baseline. Things might shift, break, or get renamed as the project evolves.
+This is a working plugin, not a finished product. Things might shift, break, or get renamed.
 
 ## Install
 
@@ -28,35 +26,52 @@ Requires Eleventy 3.x and Node >=20.
 
 ## Usage
 
-In your Eleventy config (ESM):
+Add the plugin and re-export the config. The config export sets the directory structure (`src/`, `dist/`, `_includes/`, `_data/`) so Eleventy and Baseline agree on where things live.
 
 ```js
 import baseline, { config as baselineConfig } from '@apleasantview/eleventy-plugin-baseline';
 
 export default function (eleventyConfig) {
-	eleventyConfig.addPlugin(baseline, {
-		// verbose: false,
-		// enableNavigatorTemplate: false,
-		// enableSitemapTemplate: true,
-	});
+	eleventyConfig.addPlugin(baseline);
 }
 
 export const config = baselineConfig;
 ```
 
+Options, if you need them:
+
+```js
+eleventyConfig.addPlugin(baseline, {
+	verbose: false, // extra logging during builds
+	enableNavigatorTemplate: false, // debug page for inspecting template data
+	enableSitemapTemplate: true // XML sitemap generation
+});
+```
+
 ## What's included
 
-When the plugin loads, you get core filters, Nunjucks globals, debugging utilities, and an image shortcode (via eleventy-img) out of the box. On top of that, the plugin is organized into opt-in modules — take what you need:
+The plugin registers everything on load. No setup beyond the config above.
 
-| Module | What it does |
-|---|---|
-| `assets-core` | Shared foundation for the asset pipeline |
-| `assets-esbuild` | JS bundling via esbuild, with an inline injection filter for critical scripts |
-| `assets-postcss` | CSS processing via PostCSS + cssnano, with an inline injection filter for critical styles |
-| `head-core` | Drop `<baseline-head>` into your template and get sensible meta, canonical, og:image, and basic SEO defaults — processed by PostHTML at build time |
-| `multilang-core` | Directory-based multilingual support: per-language collections, hreflang, sitemaps, and language normalization |
-| `navigator-core` | Navigation tree helpers and a `_navigator` Nunjucks global |
-| `sitemap-core` | XML sitemap generation with draft-page support |
+**Core** — always active:
+
+- An image shortcode (via eleventy-img) — AVIF and WebP, responsive widths, lazy loading. Alt text is required — the build warns if you skip it.
+- Filters: `markdownify`, `relatedPosts`, `isString`
+- A date-formatting global
+- Debug filters (`_inspect`, `_json`, `_keys`) for template development, handy when you need them
+- Drafts preprocessor — drafts stay out of production builds automatically
+- Static passthrough (`src/static/` → site root)
+
+**Modules** — opt-in, loaded individually:
+
+| Module           | What it does                                                                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assets-core`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical path assets |
+| `assets-esbuild` | JS bundling via esbuild. Minified, ES2020 target                                                                                                        |
+| `assets-postcss` | CSS processing via PostCSS. Ships a fallback config if you don't have one                                                                               |
+| `head-core`      | `<head>` tags (meta, canonical, Open Graph, title) handled for you by dropping `<baseline-head>` in your layout                                         |
+| `multilang-core` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                         |
+| `navigator-core` | Debug tooling. `_navigator` and `_context` globals for inspecting template data. Optional virtual debug page                                            |
+| `sitemap-core`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                   |
 
 ## Docs
 
