@@ -37,6 +37,7 @@ export default function baseline(options = {}) {
 
 		// --- Options ---
 		// Merge user options with defaults, detect environment capabilities.
+		// The _baseline global below is a curated subset — not the full options object.
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const userOptions = {

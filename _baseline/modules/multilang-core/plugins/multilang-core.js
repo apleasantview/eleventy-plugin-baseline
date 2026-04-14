@@ -4,6 +4,14 @@ import i18nTranslationsFor from '../filters/i18n-translations-for.js';
 import i18nTranslationIn from '../filters/i18n-translation-in.js';
 import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
 
+/**
+ * Normalize language input to an object map.
+ * Accepts an array of language codes or an object keyed by language code.
+ * Returns null if input is invalid or empty.
+ *
+ * @param {Object} userOptions - Options object containing languages and verbose flag.
+ * @returns {Record<string, Object>|null} Normalized language map, or null.
+ */
 export function langNormalization(userOptions) {
 	const normalizedLanguages = Array.isArray(userOptions.languages)
 		? Object.fromEntries(
@@ -33,12 +41,12 @@ export function langNormalization(userOptions) {
  * I18nPlugin with stricter language validation.
  *
  * Depends on: Eleventy I18nPlugin (built-in), @11ty/eleventy-utils (DeepCopy).
- * No cross-module dependencies. Sitemap-core receives language config via
- * options at registration time, not through imports.
+ * Exports langNormalization — imported by sitemap-core (workaround until site graph).
  *
  * Options:
  *  - defaultLanguage (string, default 'en'): fallback language code.
  *  - languages (array|object): allowed languages. Pages with unlisted langs are skipped.
+ *  - multilingual (boolean, default false): enable multilingual mode.
  *  - verbose (boolean, default false): warn on unknown language codes.
  *
  * @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig

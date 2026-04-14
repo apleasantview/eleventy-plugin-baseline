@@ -19,7 +19,8 @@ const __dirname = path.dirname(__filename);
  *
  * Options:
  *  - enableSitemapTemplate (boolean, default true): register virtual sitemap templates.
- *  - multilingual (boolean): force multilingual mode. Auto-detected from languages if omitted.
+ *  - multilingual (boolean): enable multilingual mode. Auto-detected from languages if omitted.
+ *  - defaultLanguage (string): default language code. Required for multilingual mode.
  *  - languages (array|object): language codes. Determines per-language sitemap generation.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
