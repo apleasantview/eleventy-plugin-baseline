@@ -7,8 +7,8 @@ layout: layouts/page.njk
 
 {% block content %}
 	<p>
-		<strong>Eleventy Plugin Baseline</strong> is an experimental Swiss army knife for Eleventy: small, prewired helpers
-		for assets, head/meta, images, and debug so you spend less time wiring the same pieces.
+		<strong>Eleventy Plugin Baseline</strong> makes the structural decisions that Eleventy leaves open: directory
+		layout, asset pipeline, image handling, SEO, sitemaps. You get to skip the setup and start building.
 	</p>
 
 	{% alertBlock "warning" %}
@@ -17,12 +17,16 @@ layout: layouts/page.njk
 
 	<h2>About</h2>
 	<p>
-		This plugin is my attempt to bundle the little things I wish Eleventy shipped into one optional toolkit. It leans
-		heavily on patterns and best practices shared by the Eleventy community, and other projects like Hugo, Astro
-		<small>or even WordPress</small>.
+		If you've started a new Eleventy project and found yourself wiring up the same things for the third time — directory
+		structure, template engine, image formats, meta tags, asset bundling, sitemap — this is for you. Baseline makes
+		those decisions together, so they fit together.
 	</p>
 	<p>
-		The plugin is currently available for preview on npm and a stable release is aimed for
+		You still own your site. Baseline handles the infrastructure. Your design, your content, the things that make your
+		site yours — those stay yours.
+	</p>
+	<p>
+		The plugin is available for preview on npm. A stable release is aimed for
 		<a href="https://github.com/11ty/eleventy/milestone/46">Eleventy 4.0</a>.
 	</p>
 	<p>
