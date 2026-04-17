@@ -1,5 +1,5 @@
 import { test } from 'vitest';
 
 test('Hello World!', () => {
-	console.log(`Schema tests running...`);
+	console.log(`Graph tests running...`);
 });
