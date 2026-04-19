@@ -19,15 +19,15 @@ IFS=$'\n\t'
 
 ## VARIABLES
 cwd=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-packages_dir="${cwd}/../packages"
+packages_dir="${cwd}/packages"
 promote_to_latest="${1:-false}"
 
 ### FUNCTIONS
 main() {
   check_auth
-  bump_version
   preview
   confirm "Tarball looks good? Proceed with publish?" || exit 0
+  bump_version
   pack
   publish
   if [[ "${promote_to_latest}" == "tag" ]]; then
@@ -48,12 +48,14 @@ bump_version() {
 }
 
 preview() {
-  local version
-  version=$(grep '"version"' "${cwd}/package.json" | head -1 | sed 's/.*"version": "\(.*\)".*/\1/')
+  local current next
+  current=$(grep '"version"' "${cwd}/package.json" | head -1 | sed 's/.*"version": "\(.*\)".*/\1/')
+  next="${current%.*}.$((${current##*.} + 1))"
   echo ""
-  echo "Preview of what will be packed for ${version}:"
+  echo "Preview of what will be packed for ${next} (currently ${current}):"
   npm pack --dry-run
   echo ""
+  echo "Pack destination: ${packages_dir}"
 }
 
 confirm() {
@@ -63,7 +65,7 @@ confirm() {
 }
 
 pack() {
-  echo "Packing tarball..."
+  echo "Packing tarball to ${packages_dir}..."
   npm pack --pack-destination "${packages_dir}"
 }
 

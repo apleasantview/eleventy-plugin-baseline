@@ -13,7 +13,9 @@
     "core/**",
     "modules/**",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "!**/__tests__/**",
+    "!**/*.test.js"
   ],
   "engines": {
     "node": ">=20"
