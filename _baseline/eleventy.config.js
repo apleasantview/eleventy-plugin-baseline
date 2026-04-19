@@ -4,6 +4,7 @@ import debug from './core/debug.js';
 import filters from './core/filters.js';
 import modules from './core/modules.js';
 import shortcodes from './core/shortcodes.js';
+import { settingsSchema } from './core/schema.js';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createRequire } from 'node:module';
@@ -11,22 +12,86 @@ const __require = createRequire(import.meta.url);
 
 const { name, version } = __require('./package.json');
 
+const LEGACY_OPTION_KEYS = [
+	'verbose',
+	'enableNavigatorTemplate',
+	'enableSitemapTemplate',
+	'assetsESBuild',
+	'multilingual'
+];
+
+/**
+ * Detect the pre-settings-convention single-arg call shape.
+ * Returns true when the caller passed one object that blends settings + options.
+ * Caller must pass `argsLength` (arguments.length from the outer function) so
+ * default parameter values don't mask a missing second argument.
+ */
+function looksLikeLegacyOptions(firstArg, argsLength) {
+	if (argsLength >= 2) return false;
+	if (!firstArg || typeof firstArg !== 'object') return false;
+	return LEGACY_OPTION_KEYS.some((key) => key in firstArg);
+}
+
+/**
+ * Split a legacy single-object argument into the new (settings, options) pair.
+ */
+function splitLegacyOptions(legacy) {
+	const { defaultLanguage, languages, ...rest } = legacy;
+	return {
+		settings: { defaultLanguage, languages },
+		options: rest
+	};
+}
+
 /**
  * Eleventy Plugin Baseline.
+ *
+ * @typedef {Object} BaselineSettings
+ * @property {string} [title] Site title.
+ * @property {string} [tagline] Site tagline.
+ * @property {string} [url] Site URL.
+ * @property {boolean} [noindex] Opt the whole site out of indexing.
+ * @property {string} [defaultLanguage] IETF/BCP47 default language code.
+ * @property {Record<string, unknown>} [languages] Language definition map.
+ * @property {Object} [head] Head additions (link/script arrays).
  *
  * @typedef {Object} BaselineOptions
  * @property {boolean} [verbose=false] Enable extra logging from the plugin.
  * @property {boolean} [enableNavigatorTemplate=false] Register navigator template/routes.
  * @property {boolean} [enableSitemapTemplate=true] Register sitemap template/routes.
- * @property {boolean} [multilingual=false] Enable multilang core (requires defaultLanguage + languages).
- * @property {string} [defaultLanguage] IETF/BCP47 default language code (used when multilingual=true).
- * @property {Record<string, unknown>} [languages={}] Language definition map (shape not enforced; only presence/keys checked).
+ * @property {boolean} [multilingual] Enable multilang core. Inferred from settings.defaultLanguage + settings.languages when omitted.
  * @property {Object} [assetsESBuild] Options forwarded to assets-esbuild (minify/target).
  *
- * @param {BaselineOptions} [options={}] Custom options for the plugin.
+ * @param {BaselineSettings} [settings={}] Site identity data (title, url, languages, head).
+ * @param {BaselineOptions} [options={}] Plugin behaviour flags.
  * @returns {(eleventyConfig: import("@11ty/eleventy").UserConfig) => Promise<void>}
  */
-export default function baseline(options = {}) {
+export default function baseline(settings = {}, options = {}) {
+	// --- Legacy shim ---
+	// Pre-settings-convention callers passed a single blended object.
+	// Detect that shape and split it, so the new signature is backwards-compatible.
+	// Use arguments.length because default params mask undefined second args.
+	const argsLength = arguments.length;
+	if (looksLikeLegacyOptions(settings, argsLength)) {
+		const split = splitLegacyOptions(settings);
+		if (split.options.verbose) {
+			console.warn(
+				'[eleventy-plugin-baseline] DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.'
+			);
+		}
+		settings = split.settings;
+		options = split.options;
+	}
+
+	// --- Settings validation ---
+	// Structural-only; invalid settings log a warning but do not throw.
+	const parsed = settingsSchema.safeParse(settings);
+	if (!parsed.success && options.verbose) {
+		for (const issue of parsed.error.issues) {
+			console.warn(`[eleventy-plugin-baseline] settings: ${issue.path.join('.')} — ${issue.message}`);
+		}
+	}
+
 	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 	const plugin = async function (eleventyConfig) {
 		try {
@@ -40,13 +105,14 @@ export default function baseline(options = {}) {
 		// The _baseline global below is a curated subset — not the full options object.
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
+		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
 		const userOptions = {
 			verbose: options.verbose ?? false,
 			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
 			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
-			multilingual: options.multilingual ?? false,
-			defaultLanguage: options.defaultLanguage,
-			languages: options.languages,
+			multilingual: options.multilingual ?? inferredMultilingual,
+			defaultLanguage: settings.defaultLanguage,
+			languages: settings.languages,
 			assets: {
 				esbuild: options.assetsESBuild ?? {}
 			}

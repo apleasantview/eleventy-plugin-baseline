@@ -19,7 +19,7 @@ export default async function (eleventyConfig) {
 	// --- Baseline plugin ---
 	eleventyConfig.addPlugin(
 		baseline({
-			verbose: false,
+			verbose: true,
 			enableNavigatorTemplate: true,
 			multilingual: true,
 			defaultLanguage: i18n.defaultLanguage,
