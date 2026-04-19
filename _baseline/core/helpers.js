@@ -34,3 +34,31 @@ export function resolveAssetsDir(inputDir, outputDir, rawDir) {
 	};
 }
 
+/**
+ * Normalize language input to an object map.
+ * Accepts an array of language codes or an object keyed by language code.
+ * Returns null if input is invalid or empty.
+ *
+ * @param {Object} userOptions - Options object containing languages and verbose flag.
+ * @returns {Record<string, Object>|null} Normalized language map, or null.
+ */
+export function langNormalization(userOptions) {
+	const normalizedLanguages = Array.isArray(userOptions.languages)
+		? Object.fromEntries(
+				userOptions.languages
+					.filter((lang) => typeof lang === 'string' && lang.trim())
+					.map((lang) => [lang.toLowerCase().trim(), {}])
+			)
+		: userOptions.languages && typeof userOptions.languages === 'object'
+			? userOptions.languages
+			: null;
+
+	if (userOptions.verbose && Array.isArray(userOptions.languages)) {
+		const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
+		if (normalizedCount !== userOptions.languages.length) {
+			console.warn('[baseline] Some languages entries were invalid and were dropped.');
+		}
+	}
+	return normalizedLanguages;
+}
+

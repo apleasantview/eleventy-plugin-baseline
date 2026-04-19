@@ -1,36 +1,9 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
+import { langNormalization } from '../../../core/helpers.js';
 import i18nTranslationsFor from '../filters/i18n-translations-for.js';
 import i18nTranslationIn from '../filters/i18n-translation-in.js';
 import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
-
-/**
- * Normalize language input to an object map.
- * Accepts an array of language codes or an object keyed by language code.
- * Returns null if input is invalid or empty.
- *
- * @param {Object} userOptions - Options object containing languages and verbose flag.
- * @returns {Record<string, Object>|null} Normalized language map, or null.
- */
-export function langNormalization(userOptions) {
-	const normalizedLanguages = Array.isArray(userOptions.languages)
-		? Object.fromEntries(
-				userOptions.languages
-					.filter((lang) => typeof lang === 'string' && lang.trim())
-					.map((lang) => [lang.toLowerCase().trim(), {}])
-			)
-		: userOptions.languages && typeof userOptions.languages === 'object'
-			? userOptions.languages
-			: null;
-
-	if (userOptions.verbose && Array.isArray(userOptions.languages)) {
-		const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
-		if (normalizedCount !== userOptions.languages.length) {
-			console.warn('[baseline] Some languages entries were invalid and were dropped.');
-		}
-	}
-	return normalizedLanguages;
-}
 
 /**
  * eleventy-plugin-multilang-core
@@ -40,8 +13,8 @@ export function langNormalization(userOptions) {
  * relational filters for cross-language lookups. Wraps Eleventy's built-in
  * I18nPlugin with stricter language validation.
  *
- * Depends on: Eleventy I18nPlugin (built-in), @11ty/eleventy-utils (DeepCopy).
- * Exports langNormalization — imported by sitemap-core (workaround until site graph).
+ * Depends on: Eleventy I18nPlugin (built-in), @11ty/eleventy-utils (DeepCopy),
+ * and the shared langNormalization helper from core/helpers.js.
  *
  * Options:
  *  - defaultLanguage (string, default 'en'): fallback language code.

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { langNormalization } from '../../multilang-core/plugins/multilang-core.js';
+import { langNormalization } from '../../../core/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,8 +14,7 @@ const __dirname = path.dirname(__filename);
  * the sitemap XML. In multilingual mode, produces per-language sitemaps plus
  * a sitemap index. Pages opt out via noindex in data.
  *
- * Imports langNormalization from multilang-core for language config.
- * This is a workaround — dissolves when the site graph exists.
+ * Shares the langNormalization helper with multilang-core via core/helpers.js.
  *
  * Options:
  *  - enableSitemapTemplate (boolean, default true): register virtual sitemap templates.
