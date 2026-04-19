@@ -1,5 +1,5 @@
 {%- set translations = collections.translationsMap[translationKey] %}
-{%- set defaultLang = site.defaultLanguage %}
+{%- set defaultLang = settings.defaultLanguage %}
 {%- for language, item in translations %}
 	<link rel="alternate" hreflang="{{ item.lang }}" href="{{ item.url }}" />
 	{%- if item.isDefaultLang %}
