@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { configSchema, settingsSchema } from '../schema.js';
 import { config } from '../../eleventy.config.js';
+import settings from '../../../src/_data/settings.js';
 
 describe('configSchema', () => {
 	it('parses the real exported config cleanly', () => {
@@ -69,6 +70,11 @@ describe('settingsSchema', () => {
 
 	it('parses a full valid settings object cleanly', () => {
 		const result = settingsSchema.safeParse(validSettings);
+		expect(result.success).toBe(true);
+	});
+
+	it('parses the real exported settings cleanly', () => {
+		const result = settingsSchema.safeParse(settings);
 		expect(result.success).toBe(true);
 	});
 
