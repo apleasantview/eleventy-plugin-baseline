@@ -17,3 +17,18 @@ export const configSchema = z.object({
 			error: 'Baseline requires njk in templateFormats'
 		})
 });
+
+export const settingsSchema = z.object({
+	title: z.string().optional(),
+	tagline: z.string().optional(),
+	url: z.string().optional(),
+	noindex: z.boolean().optional(),
+	defaultLanguage: z.string().optional(),
+	languages: z.record(z.string(), z.looseObject({})).optional(),
+	head: z
+		.object({
+			link: z.array(z.looseObject({})).optional(),
+			script: z.array(z.looseObject({})).optional()
+		})
+		.optional()
+});
