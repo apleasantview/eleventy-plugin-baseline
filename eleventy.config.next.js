@@ -9,8 +9,7 @@
  */
 import 'dotenv/config';
 
-import baseline from './_baseline/eleventy.config.js';
-import { config as _config } from './_baseline/eleventy.config.js';
+import baseline, { config as baselineConfig } from './_baseline/index.js';
 import syntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 
 import settings from './src/_data/settings.js';
@@ -52,4 +51,4 @@ export default async function (eleventyConfig) {
 }
 
 // Re-export directory config from the plugin so Eleventy picks it up.
-export const config = _config;
+export const config = baselineConfig;
