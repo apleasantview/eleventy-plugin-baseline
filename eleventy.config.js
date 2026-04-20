@@ -12,19 +12,17 @@ import baseline from './_baseline/eleventy.config.js';
 import { config as _config } from './_baseline/eleventy.config.js';
 import syntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 
-import i18n from './src/_data/i18n.js';
+import settings from './src/_data/settings.js';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
 	// --- Baseline plugin ---
 	eleventyConfig.addPlugin(
-		baseline({
+		baseline(settings, {
 			verbose: true,
 			enableNavigatorTemplate: true,
 			enableSitemapTemplate: true,
-			multilingual: true,
-			defaultLanguage: i18n.defaultLanguage,
-			languages: i18n.languages
+			multilingual: true
 		})
 	);
 
