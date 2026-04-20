@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import debug from './utils/debug.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +44,7 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 	// --- Virtual debug template ---
 	if (userOptions.enableNavigatorTemplate) {
 		// Read synchronously — Nunjucks virtual template registration is sync-only.
-		const templatePath = path.join(__dirname, '../templates/navigator-core.html');
+		const templatePath = path.join(__dirname, './templates/navigator-core.html');
 		const virtualTemplateContent = fs.readFileSync(templatePath, 'utf-8');
 		eleventyConfig.addTemplate('navigator-core.html', virtualTemplateContent, {
 			permalink: '/navigator-core.html',
@@ -54,4 +55,8 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 			inspectorDepth: userOptions.inspectorDepth
 		});
 	}
+
+	eleventyConfig.addFilter('_inspect', debug.inspect);
+	eleventyConfig.addFilter('_json', debug.json);
+	eleventyConfig.addFilter('_keys', debug.keys);
 }

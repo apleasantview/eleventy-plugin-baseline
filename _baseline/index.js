@@ -1,17 +1,16 @@
 import 'dotenv/config';
+import { createRequire } from 'node:module';
+import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
+
 import globals from './core/globals/index.js';
-import debug from './core/debug.js';
 import filters from './core/filters/index.js';
-import modules from './core/plugins.js';
 import shortcodes from './core/shortcodes/index.js';
+import modules from './core/plugins.js';
 import { settingsSchema } from './core/schema.js';
 import { createLogger } from './core/logging.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
-import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
-import { createRequire } from 'node:module';
 const __require = createRequire(import.meta.url);
-
 const { name, version } = __require('./package.json');
 
 const LEGACY_OPTION_KEYS = [
@@ -204,9 +203,6 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Debug ---
 		// Underscore-prefixed filters and navigator template for inspecting
 		// data at render time. Not part of the public API surface.
-		eleventyConfig.addFilter('_inspect', debug.inspect);
-		eleventyConfig.addFilter('_json', debug.json);
-		eleventyConfig.addFilter('_keys', debug.keys);
 		eleventyConfig.addPlugin(modules.navigatorCore, { enableNavigatorTemplate: userOptions.enableNavigatorTemplate });
 	};
 
