@@ -102,13 +102,13 @@ export default function baseline(settings = {}, options = {}) {
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
-			log.warn('Eleventy plugin compatibility:', e.message);
+			log.error('Eleventy plugin compatibility:', e.message);
 		}
 
 		// One-shot init warning: warn early about missing settings.url so it's
 		// visible without firing per-page during head resolution.
 		if (!settings.url) {
-			log.info('settings.url is not set; canonical URLs will be relative.');
+			log.warn('settings.url is not set; canonical URLs will be relative.');
 		}
 
 		// --- Options ---
