@@ -6,6 +6,7 @@ import modules from './core/modules.js';
 import shortcodes from './core/shortcodes.js';
 import { settingsSchema } from './core/schema.js';
 import { createLogger } from './core/logging.js';
+import { registerVirtualDir } from './core/virtual-dir.js';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createRequire } from 'node:module';
@@ -141,7 +142,23 @@ export default function baseline(settings = {}, options = {}) {
 		});
 
 		globals(eleventyConfig);
-		eleventyConfig.addPassthroughCopy({ './src/static': '/' });
+
+		// Register virtual directories before module plugins run so they can
+		// read eleventyConfig.directories.assets/.public synchronously.
+		// `public` follows the convention used by 11ty (publicDir) and other
+		// SSGs; the on-disk folder is still `static/`.
+		registerVirtualDir(eleventyConfig, {
+			name: 'assets',
+			globalDataKey: '_baseline.assets'
+		});
+		const publicDir = registerVirtualDir(eleventyConfig, {
+			name: 'public',
+			globalDataKey: '_baseline.public',
+			// Passthrough target is the site root, not dist/static/.
+			outputDir: ''
+		});
+
+		eleventyConfig.addPassthroughCopy({ [publicDir.input]: '/' });
 
 		// Drafts preprocessor — skip draft pages during production builds.
 		// Guarded against double-registration; user config wins if already set.
@@ -206,7 +223,8 @@ export const config = {
 		output: 'dist',
 		data: '_data',
 		includes: '_includes',
-		assets: 'assets'
+		assets: 'assets',
+		public: 'static'
 	},
 	htmlTemplateEngine: 'njk',
 	markdownTemplateEngine: 'njk',

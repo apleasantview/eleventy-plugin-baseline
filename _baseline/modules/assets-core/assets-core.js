@@ -1,44 +1,21 @@
 import path from 'node:path';
 import { TemplatePath } from '@11ty/eleventy-utils';
-import { addTrailingSlash, resolveAssetsDir } from '../../core/helpers.js';
+import { addTrailingSlash } from '../../core/helpers.js';
 import { createLogger } from '../../core/logging.js';
 
 import assetsESbuild from '../assets-esbuild/process.js';
 import assetsPostCSS from '../assets-postcss/process.js';
-
-/**
- * Sync the cache object with resolved directory paths.
- * Called once at registration time and again on the eleventy.directories event
- * when Eleventy finalizes its directory config.
- */
-const syncCacheFromDirectories = (cache, dirs, rawDir) => {
-	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
-	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || './');
-	const { assetsDir, assetsOutputDir } = resolveAssetsDir(inputDir, outputDir, rawDir);
-
-	cache.input = addTrailingSlash(inputDir);
-	cache.output = addTrailingSlash(outputDir);
-	cache.assetsInput = assetsDir;
-	cache.assetsOutput = assetsOutputDir;
-};
-
-/**
- * Guard: resolve directories from eleventyConfig.dir if the eleventy.directories
- * event hasn't fired yet (e.g. when global data or watch targets are read early).
- */
-const ensureCache = (cache, eleventyConfig, rawDir, log) => {
-	if (cache.assetsInput) return;
-	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
-	log.info('Fallback directory resolution');
-};
+import { optionsSchema } from './schema.js';
 
 /**
  * eleventy-plugin-assets-core
  *
  * The single assets plugin. Owns all Eleventy wiring for JS and CSS processing:
- * directory resolution, template formats, extensions, compile guards, inline
- * filters, watch targets, and global data. Processing logic lives in the
- * pure functions imported from assets-esbuild and assets-postcss.
+ * template formats, extensions, compile guards, inline filters, and watch
+ * targets. Directory resolution (the virtual `directories.assets` key and the
+ * `_baseline.assets` global) is handled by core/virtual-dir.js, registered at
+ * the plugin entry point. Processing logic lives in the pure functions
+ * imported from assets-esbuild and assets-postcss.
  *
  * Options:
  *  - verbose  (boolean, default false): enable verbose logs. Passed in from the plugin root.
@@ -48,56 +25,27 @@ const ensureCache = (cache, eleventyConfig, rawDir, log) => {
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, options = {}) {
 	const log = createLogger('assets-core', { verbose: options.verbose });
-	const userKey = 'assets';
 
-	// Extract raw directory value from config (can be done early).
-	const rawDir = eleventyConfig.dir?.[userKey] || userKey;
-
-	// Cache holds resolved paths. Initialized as nulls, populated immediately
-	// by syncCacheFromDirectories, then updated when eleventy.directories fires.
-	const cache = {
-		input: null,
-		output: null,
-		assetsInput: null,
-		assetsOutput: null
-	};
-
-	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
-
-	// Update cache when Eleventy finalizes directories, and register a virtual
-	// `directories.assets` key so other code can read the resolved assets path.
-	eleventyConfig.on('eleventy.directories', (directories) => {
-		syncCacheFromDirectories(cache, directories, rawDir);
-
-		// Add a virtual directory key only if not already defined/configurable.
-		const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, userKey);
-		if (existing && existing.configurable === false) {
-			log.info(`directories[${userKey}] already defined; skipping`);
-			return;
+	// Structural-only options check: log on mismatch, do not throw.
+	const parsed = optionsSchema.safeParse(options);
+	if (!parsed.success) {
+		for (const issue of parsed.error.issues) {
+			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
 		}
+	}
 
-		Object.defineProperty(eleventyConfig.directories, userKey, {
-			get() {
-				return cache.assetsInput;
-			},
-			enumerable: true,
-			configurable: false
-		});
-	});
+	// Resolved paths are synthesised by core/virtual-dir.js at entry-time; we
+	// read them off eleventyConfig.directories for synchronous wiring below.
+	const inputDir = addTrailingSlash(TemplatePath.addLeadingDotSlash(eleventyConfig.dir?.input || './'));
+	const assetsInput = eleventyConfig.directories.assets;
 
-	// Expose resolved assets paths as global data for templates.
-	// Templates use _baseline.assets.input to build paths for inline filters.
-	eleventyConfig.addGlobalData('_baseline.assets', () => {
-		ensureCache(cache, eleventyConfig, rawDir, log);
-		return {
-			input: cache.assetsInput,
-			output: cache.assetsOutput
-		};
-	});
+	if (!assetsInput) {
+		log.warn('eleventyConfig.directories.assets is unset; registerVirtualDir must run before this plugin.');
+		return;
+	}
 
 	// Watch common asset formats so edits trigger reloads during --serve.
-	ensureCache(cache, eleventyConfig, rawDir, log);
-	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
+	const watchGlob = TemplatePath.join(assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 	eleventyConfig.addWatchTarget(watchGlob);
 
 	// --- JS (esbuild) ---
@@ -107,7 +55,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// Defaults (minify, target) live in assets-esbuild/process.js.
 
 	const esbuildOptions = options.esbuild || {};
-	const jsDir = `${cache.assetsInput}js/`;
+	const jsDir = `${assetsInput}js/`;
 
 	eleventyConfig.addTemplateFormats('js');
 
@@ -115,7 +63,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// The compile guard below also filters these, but without this ignore
 	// Eleventy still enters them into the template graph (data cascade,
 	// permalink computation) before compile gets a chance to reject them.
-	eleventyConfig.ignores.add(`${cache.input}**/*.11tydata.js`);
+	eleventyConfig.ignores.add(`${inputDir}**/*.11tydata.js`);
 
 	eleventyConfig.addExtension('js', {
 		outputFileExtension: 'js',
@@ -160,7 +108,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// the process function owns its own I/O. Config loading and caching live
 	// in assets-postcss/process.js.
 
-	const cssDir = `${cache.assetsInput}css/`;
+	const cssDir = `${assetsInput}css/`;
 
 	eleventyConfig.addTemplateFormats('css');
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { addTrailingSlash, resolveAssetsDir } from '../helpers.js';
+import { addTrailingSlash, resolveSubdir } from '../helpers.js';
 
 describe('addTrailingSlash', () => {
 	it('adds a trailing slash to a path without one', () => {
@@ -15,26 +15,26 @@ describe('addTrailingSlash', () => {
 	});
 });
 
-describe('resolveAssetsDir', () => {
-	it('returns assetsDir and assetsOutputDir with trailing slashes for typical inputs', () => {
-		const result = resolveAssetsDir('./src/', './dist/', 'assets');
+describe('resolveSubdir', () => {
+	it('returns input and output paths with trailing slashes for typical inputs', () => {
+		const result = resolveSubdir('./src/', './dist/', 'assets');
 		expect(result).toEqual({
-			assetsDir: './src/assets/',
-			assetsOutputDir: './dist/assets/'
+			input: './src/assets/',
+			output: './dist/assets/'
 		});
 	});
 
 	it('falls back to input/output alone when rawDir is falsy', () => {
-		const result = resolveAssetsDir('./src/', './dist/', '');
+		const result = resolveSubdir('./src/', './dist/', '');
 		expect(result).toEqual({
-			assetsDir: './src/',
-			assetsOutputDir: './dist/'
+			input: './src/',
+			output: './dist/'
 		});
 	});
 
 	it('normalises a messy rawDir to the same output as the clean case', () => {
-		const clean = resolveAssetsDir('./src/', './dist/', 'assets');
-		const messy = resolveAssetsDir('./src/', './dist/', './assets/');
+		const clean = resolveSubdir('./src/', './dist/', 'assets');
+		const messy = resolveSubdir('./src/', './dist/', './assets/');
 		expect(messy).toEqual(clean);
 	});
 });
