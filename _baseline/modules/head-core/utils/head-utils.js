@@ -54,7 +54,7 @@ const absoluteUrl = (siteUrl, pathPrefix, url) => {
  * @param {string} url - Canonical URL.
  * @returns {Object} Merged head object.
  */
-const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
+const mergeBaseHead = (site, user, page, title, description, noindex, url, script, link) => {
 	return Merge(
 		{},
 		{
@@ -65,8 +65,8 @@ const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
 				{ name: 'description', content: description },
 				{ name: 'robots', content: noindex ? 'noindex, nofollow' : 'index, follow' }
 			],
-			link: [],
-			script: [],
+			link: [...link],
+			script: [...script],
 			style: [],
 			hreflang: [],
 			openGraph: {
@@ -222,19 +222,22 @@ const buildHead = (data = {}, env = {}) => {
 	const siteTitle = settings.title || '';
 	const pageTitle = pick(data.title, user.title, '');
 	const title = pageTitle
-		? siteTitle && pageTitle !== siteTitle ? `${pageTitle} | ${siteTitle}` : pageTitle
+		? siteTitle && pageTitle !== siteTitle
+			? `${pageTitle} | ${siteTitle}`
+			: pageTitle
 		: siteTitle;
 
 	const description = pick(data.description, user.description, settings.tagline, '');
 	const noindex = pick(data.noindex, page.noindex, user.noindex, settings.noindex, false);
 
-	const canonical = resolveCanonical(
-		{ canonical: user.canonical },
-		page,
-		contentMap,
-		{ ...env, siteUrl: resolvedSiteUrl }
-	);
-	const merged = mergeBaseHead(settings, user, page, title, description, noindex, canonical);
+	const canonical = resolveCanonical({ canonical: user.canonical }, page, contentMap, {
+		...env,
+		siteUrl: resolvedSiteUrl
+	});
+
+	const script = pick(data.settings.head.script);
+	const link = pick(data.settings.head.link);
+	const merged = mergeBaseHead(settings, user, page, title, description, noindex, canonical, script, link);
 	return flattenHead(merged, canonical);
 };
 
