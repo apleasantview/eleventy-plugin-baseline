@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { TemplatePath } from '@11ty/eleventy-utils';
-import { addTrailingSlash, resolveAssetsDir } from '../../../core/helpers.js';
-import { createLogger } from '../../../core/logging.js';
+import { addTrailingSlash, resolveAssetsDir } from '../../core/helpers.js';
+import { createLogger } from '../../core/logging.js';
 
-import assetsESbuild from '../../assets-esbuild/process.js';
-import assetsPostCSS from '../../assets-postcss/process.js';
+import assetsESbuild from '../assets-esbuild/process.js';
+import assetsPostCSS from '../assets-postcss/process.js';
 
 /**
  * Sync the cache object with resolved directory paths.
