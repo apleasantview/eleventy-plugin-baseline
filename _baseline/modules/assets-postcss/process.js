@@ -2,6 +2,9 @@ import fs from 'fs/promises';
 import postcss from 'postcss';
 import loadPostCSSConfig from 'postcss-load-config';
 import fallbackPostCSSConfig from './fallback/postcss.config.js';
+import { createLogger } from '../../core/logging.js';
+
+const log = createLogger('assets-postcss');
 
 // Resolve user PostCSS config from the project root (cwd), not the Eleventy input dir.
 const configRoot = process.cwd();
@@ -42,7 +45,7 @@ export default async function assetsPostCSS(cssFilePath) {
 		// Return raw CSS; markup wrapping is handled in the plugin registration.
 		return result.css;
 	} catch (error) {
-		console.error(error);
+		log.error('PostCSS failed:', error);
 		// Surface a safe CSS string so the caller can decide how to wrap it.
 		return '/* Error processing CSS */';
 	}

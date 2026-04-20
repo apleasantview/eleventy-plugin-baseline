@@ -1,5 +1,7 @@
 import * as esbuild from 'esbuild';
+import { createLogger } from '../../core/logging.js';
 
+const log = createLogger('assets-esbuild');
 const defaultOptions = { minify: true, target: 'es2020' };
 
 /**
@@ -26,7 +28,7 @@ export default async function assetsESbuild(jsFilePath, options = {}) {
 		// Return raw JS; markup wrapping is handled by the plugin registration.
 		return result.outputFiles[0].text;
 	} catch (error) {
-		console.error(error);
+		log.error('esbuild failed:', error);
 		// Surface a safe JS comment so the caller can decide how to wrap it.
 		return '/* Error processing JS */';
 	}

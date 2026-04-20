@@ -1,5 +1,10 @@
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
+import { createLogger } from '../logging.js';
+
+// Module-level logger. Image shortcode only uses `.warn`, which emits regardless
+// of verbose, so we don't thread verbose through the shortcode signature.
+const log = createLogger('image');
 
 const DEFAULT_WIDTHS = [320, 640, 960, 1280, 1920, 'auto'];
 const DEFAULT_FORMATS = ['avif', 'webp'];
@@ -65,7 +70,7 @@ export async function imageShortcode(options = {}) {
 
 	if (!src) throw new Error(`imageShortcode: src is required (received ${JSON.stringify(src)})`);
 	if (alt == null) {
-		console.warn('imageShortcode: alt is required (use empty string for decorative images)');
+		log.warn('alt is required (use empty string for decorative images)');
 	}
 
 	const normalizedCaption = String(caption);
@@ -101,7 +106,7 @@ export async function imageShortcode(options = {}) {
 		});
 	} catch (error) {
 		if (process.env.ELEVENTY_RUN_MODE === 'serve') {
-			console.warn(`imageShortcode: transformOnRequest failed for ${src}, retrying.\n > ${error?.message || error}`);
+			log.warn(`transformOnRequest failed for ${src}, retrying.\n > ${error?.message || error}`);
 			metadata = await Image(resolvedSrc, imageOptions);
 		} else {
 			throw error;

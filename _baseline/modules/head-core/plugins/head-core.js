@@ -1,5 +1,5 @@
 import headElements from '../drivers/posthtml-head-elements.js';
-import { getVerbose, logIfVerbose } from '../../../core/logging.js';
+import { createLogger } from '../../../core/logging.js';
 import { buildHead } from '../utils/head-utils.js';
 
 /**
@@ -15,7 +15,7 @@ import { buildHead } from '../utils/head-utils.js';
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, options = {}) {
-	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
+	const log = createLogger('head-core', { verbose: options.verbose });
 
 	// Internal options — not part of the public API.
 	const userKey = options.dirKey || 'head';
@@ -40,8 +40,7 @@ export default function headCore(eleventyConfig, options = {}) {
 				siteUrl,
 				pathPrefix,
 				contentMap: cachedContentMap,
-				pageUrlOverride: data?.page?.url,
-				verbose
+				pageUrlOverride: data?.page?.url
 			});
 	});
 
@@ -49,7 +48,7 @@ export default function headCore(eleventyConfig, options = {}) {
 	// PostHTML. Replaces the <baseline-head> placeholder tag with real elements.
 	// Falls back to building the spec from context if page.head isn't available.
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
-		logIfVerbose(verbose, 'head-core: injecting head elements for', context?.page?.inputPath || context?.outputPath);
+		log.info('injecting head elements for', context?.page?.inputPath || context?.outputPath);
 
 		const headElementsSpec =
 			context?.page?.head ||
@@ -58,14 +57,14 @@ export default function headCore(eleventyConfig, options = {}) {
 				siteUrl,
 				pathPrefix,
 				contentMap: cachedContentMap,
-				pageUrlOverride: context?.page?.url,
-				verbose
+				pageUrlOverride: context?.page?.url
 			});
 
 		const plugin = headElements({
 			headElements: headElementsSpec,
 			headElementsTag,
-			EOL: eol
+			EOL: eol,
+			logger: log
 		});
 
 		return async function asyncHead(tree) {

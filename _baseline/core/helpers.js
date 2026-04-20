@@ -39,10 +39,11 @@ export function resolveAssetsDir(inputDir, outputDir, rawDir) {
  * Accepts an array of language codes or an object keyed by language code.
  * Returns null if input is invalid or empty.
  *
- * @param {Object} userOptions - Options object containing languages and verbose flag.
+ * @param {Object} userOptions - Options object containing languages.
+ * @param {import('./logging.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
  * @returns {Record<string, Object>|null} Normalized language map, or null.
  */
-export function langNormalization(userOptions) {
+export function langNormalization(userOptions, logger) {
 	const normalizedLanguages = Array.isArray(userOptions.languages)
 		? Object.fromEntries(
 				userOptions.languages
@@ -53,10 +54,10 @@ export function langNormalization(userOptions) {
 			? userOptions.languages
 			: null;
 
-	if (userOptions.verbose && Array.isArray(userOptions.languages)) {
+	if (logger && Array.isArray(userOptions.languages)) {
 		const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
 		if (normalizedCount !== userOptions.languages.length) {
-			console.warn('[baseline] Some languages entries were invalid and were dropped.');
+			logger.info('Some languages entries were invalid and were dropped.');
 		}
 	}
 	return normalizedLanguages;

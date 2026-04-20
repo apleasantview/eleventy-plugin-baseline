@@ -1,61 +1,70 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getVerbose, logIfVerbose, warnIfVerbose } from '../logging.js';
+import { createLogger } from '../logging.js';
 
-describe('getVerbose', () => {
-	it('returns true when globalData._baseline.verbose is truthy', () => {
-		const config = { globalData: { _baseline: { verbose: true } } };
-		expect(getVerbose(config)).toBe(true);
-	});
+// kleur auto-disables colour in non-TTY environments (Vitest's default runner),
+// so prefixes are plain strings in these assertions.
 
-	it('returns false when verbose is false', () => {
-		const config = { globalData: { _baseline: { verbose: false } } };
-		expect(getVerbose(config)).toBe(false);
-	});
-
-	it('returns false when the optional chain bottoms out', () => {
-		expect(getVerbose({})).toBe(false);
-		expect(getVerbose({ globalData: {} })).toBe(false);
-	});
-});
-
-describe('logIfVerbose', () => {
+describe('createLogger', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
 
-	it('calls console.log with the INFO prefix when verbose is true', () => {
-		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-		logIfVerbose(true, 'hello', 'extra');
-		expect(spy).toHaveBeenCalledWith(
-			'[eleventy-plugin-baseline] INFO hello',
-			'extra'
-		);
+	it('uses the root [baseline] prefix when namespace is null', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger(null);
+		log.warn('hello');
+		expect(spy).toHaveBeenCalledWith('[baseline]', 'hello');
 	});
 
-	it('does not call console.log when verbose is false', () => {
+	it('uses [baseline:namespace] prefix when a namespace is provided', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger('head-core');
+		log.warn('hello');
+		expect(spy).toHaveBeenCalledWith('[baseline:head-core]', 'hello');
+	});
+
+	it('info is silent when verbose is false', () => {
 		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-		logIfVerbose(false, 'hello');
+		const log = createLogger(null, { verbose: false });
+		log.info('hello');
 		expect(spy).not.toHaveBeenCalled();
 	});
-});
 
-describe('warnIfVerbose', () => {
-	afterEach(() => {
-		vi.restoreAllMocks();
+	it('info emits console.log when verbose is true', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+		const log = createLogger(null, { verbose: true });
+		log.info('hello', 'extra');
+		expect(spy).toHaveBeenCalledWith('[baseline]', 'hello', 'extra');
 	});
 
-	it('calls console.warn with the WARN prefix when verbose is true', () => {
+	it('warn emits console.warn regardless of verbose', () => {
 		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-		warnIfVerbose(true, 'watch out', 'extra');
-		expect(spy).toHaveBeenCalledWith(
-			'[eleventy-plugin-baseline] WARN watch out',
-			'extra'
-		);
+		const log = createLogger(null, { verbose: false });
+		log.warn('watch out');
+		expect(spy).toHaveBeenCalledWith('[baseline]', 'watch out');
 	});
 
-	it('does not call console.warn when verbose is false', () => {
+	it('error emits console.error regardless of verbose', () => {
+		const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+		const log = createLogger(null, { verbose: false });
+		log.error('boom');
+		expect(spy).toHaveBeenCalledWith('[baseline]', 'boom');
+	});
+
+	it('passes variadic args through verbatim', () => {
 		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-		warnIfVerbose(false, 'watch out');
-		expect(spy).not.toHaveBeenCalled();
+		const log = createLogger('mod');
+		const payload = { a: 1 };
+		log.warn('got', payload, 42);
+		expect(spy).toHaveBeenCalledWith('[baseline:mod]', 'got', payload, 42);
+	});
+
+	it('prefix is the first argument, not concatenated', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger('mod');
+		log.warn('hello');
+		const [first, second] = spy.mock.calls[0];
+		expect(first).toBe('[baseline:mod]');
+		expect(second).toBe('hello');
 	});
 });

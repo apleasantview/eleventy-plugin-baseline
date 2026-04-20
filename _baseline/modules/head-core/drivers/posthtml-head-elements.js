@@ -3,6 +3,7 @@
 // Adapted for Baseline head-core.
 
 import { createRequire } from 'node:module';
+import { createLogger } from '../../../core/logging.js';
 
 const require = createRequire(import.meta.url);
 
@@ -16,34 +17,34 @@ function nonArray(type, content) {
 	return { tag: type, content: [content] };
 }
 
-function findElmType(type, objectData) {
+function findElmType(type, objectData, log) {
 	const elementType = {
 		meta: function () {
 			if (Array.isArray(objectData)) {
 				return nonString(type, objectData);
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a meta element');
+				log.warn('invalid <meta> element syntax');
 			}
 		},
 		title: function () {
 			if (typeof objectData === 'string') {
 				return nonArray('title', objectData);
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a title element');
+				log.warn('invalid <title> element syntax');
 			}
 		},
 		link: function () {
 			if (Array.isArray(objectData)) {
 				return nonString(type, objectData);
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a link element');
+				log.warn('invalid <link> element syntax');
 			}
 		},
 		linkCanonical: function () {
 			if (Array.isArray(objectData)) {
 				return nonString('link', objectData);
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a linkCanonical element');
+				log.warn('invalid canonical <link> element syntax');
 			}
 		},
 		script: function () {
@@ -53,7 +54,7 @@ function findElmType(type, objectData) {
 					return content !== undefined ? { tag: 'script', attrs, content: [content] } : { tag: 'script', attrs };
 				});
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a script element');
+				log.warn('invalid <script> element syntax');
 			}
 		},
 		style: function () {
@@ -63,18 +64,18 @@ function findElmType(type, objectData) {
 					return content !== undefined ? { tag: 'style', attrs, content: [content] } : { tag: 'style', attrs };
 				});
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a style element');
+				log.warn('invalid <style> element syntax');
 			}
 		},
 		base: function () {
 			if (Array.isArray(objectData)) {
 				return nonString(type, objectData);
 			} else {
-				console.warn('posthtml-head-elements: Please use the correct syntax for a base element');
+				log.warn('invalid <base> element syntax');
 			}
 		},
 		default: function () {
-			console.warn('posthtml-head-elements: Please make sure the HTML head type is correct');
+			log.warn('unrecognised head element type');
 		}
 	};
 
@@ -85,11 +86,11 @@ function findElmType(type, objectData) {
 	return elementType[type]() || elementType['default']();
 }
 
-function buildNewTree(headElements, EOL) {
+function buildNewTree(headElements, EOL, log) {
 	const newHeadElements = [];
 
 	Object.keys(headElements).forEach(function (value) {
-		newHeadElements.push(findElmType(value, headElements[value]));
+		newHeadElements.push(findElmType(value, headElements[value], log));
 	});
 
 	function cnct(arr) {
@@ -106,11 +107,11 @@ function buildNewTree(headElements, EOL) {
 export default function (options) {
 	options = options || {};
 	options.headElementsTag = options.headElementsTag || 'posthtml-head-elements';
+	// Fall back to a silent-info logger so this driver works standalone.
+	const log = options.logger || createLogger('head-core');
 
 	if (!options.headElements) {
-		console.warn(
-			"posthtml-head-elements: Don't forget to add a link to the JSON file containing the head elements to insert"
-		);
+		log.warn('missing headElements option (provide the object or a path to a JSON file)');
 	}
 	const jsonOne = typeof options.headElements !== 'string' ? options.headElements : require(options.headElements);
 
@@ -118,7 +119,7 @@ export default function (options) {
 		tree.match({ tag: options.headElementsTag }, function () {
 			return {
 				tag: false, // delete this node, safe content
-				content: buildNewTree(jsonOne, options.EOL || '\n')
+				content: buildNewTree(jsonOne, options.EOL || '\n', log)
 			};
 		});
 

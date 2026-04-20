@@ -5,6 +5,7 @@ import filters from './core/filters.js';
 import modules from './core/modules.js';
 import shortcodes from './core/shortcodes.js';
 import { settingsSchema } from './core/schema.js';
+import { createLogger } from './core/logging.js';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createRequire } from 'node:module';
@@ -72,23 +73,27 @@ export default function baseline(settings = {}, options = {}) {
 	// Detect that shape and split it, so the new signature is backwards-compatible.
 	// Use arguments.length because default params mask undefined second args.
 	const argsLength = arguments.length;
-	if (looksLikeLegacyOptions(settings, argsLength)) {
+	const wasLegacy = looksLikeLegacyOptions(settings, argsLength);
+	if (wasLegacy) {
 		const split = splitLegacyOptions(settings);
-		if (split.options.verbose) {
-			console.warn(
-				'[eleventy-plugin-baseline] DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.'
-			);
-		}
 		settings = split.settings;
 		options = split.options;
+	}
+
+	// --- Root logger ---
+	// Created after the legacy shim so it reads the resolved verbose flag.
+	const log = createLogger(null, { verbose: options.verbose });
+
+	if (wasLegacy) {
+		log.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
 	}
 
 	// --- Settings validation ---
 	// Structural-only; invalid settings log a warning but do not throw.
 	const parsed = settingsSchema.safeParse(settings);
-	if (!parsed.success && options.verbose) {
+	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			console.warn(`[eleventy-plugin-baseline] settings: ${issue.path.join('.')} — ${issue.message}`);
+			log.info('settings:', `${issue.path.join('.')} — ${issue.message}`);
 		}
 	}
 
@@ -97,7 +102,13 @@ export default function baseline(settings = {}, options = {}) {
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
-			console.log(`[eleventy-plugin-baseline] WARN Eleventy plugin compatibility: ${e.message}`);
+			log.warn('Eleventy plugin compatibility:', e.message);
+		}
+
+		// One-shot init warning: warn early about missing settings.url so it's
+		// visible without firing per-page during head resolution.
+		if (!settings.url) {
+			log.info('settings.url is not set; canonical URLs will be relative.');
 		}
 
 		// --- Options ---
@@ -120,12 +131,11 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Global data ---
 		// Curated public surface — only what templates and shortcodes need.
-		// `verbose` and `hasImageTransformPlugin` stay until getVerbose rework
-		// and image shortcode refactor remove the need to read them from global data.
+		// `hasImageTransformPlugin` stays until the image shortcode refactor
+		// removes the need to read it from global data.
 		eleventyConfig.addGlobalData('_baseline', {
 			version,
 			name,
-			verbose: userOptions.verbose,
 			hasImageTransformPlugin
 		});
 
@@ -154,9 +164,9 @@ export default function baseline(settings = {}, options = {}) {
 		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
 			baseHref: process.env.URL || eleventyConfig.pathPrefix
 		});
-		eleventyConfig.addPlugin(modules.assetsCore, { esbuild: userOptions.assets.esbuild });
+		eleventyConfig.addPlugin(modules.assetsCore, { verbose: userOptions.verbose, esbuild: userOptions.assets.esbuild });
 
-		eleventyConfig.addPlugin(modules.headCore);
+		eleventyConfig.addPlugin(modules.headCore, { verbose: userOptions.verbose });
 		eleventyConfig.addPlugin(modules.sitemapCore, {
 			...userOptions
 		});

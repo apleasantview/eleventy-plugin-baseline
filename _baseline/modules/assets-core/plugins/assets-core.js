@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { TemplatePath } from '@11ty/eleventy-utils';
 import { addTrailingSlash, resolveAssetsDir } from '../../../core/helpers.js';
-import { warnIfVerbose, getVerbose } from '../../../core/logging.js';
+import { createLogger } from '../../../core/logging.js';
 
 import assetsESbuild from '../../assets-esbuild/process.js';
 import assetsPostCSS from '../../assets-postcss/process.js';
@@ -26,10 +26,10 @@ const syncCacheFromDirectories = (cache, dirs, rawDir) => {
  * Guard: resolve directories from eleventyConfig.dir if the eleventy.directories
  * event hasn't fired yet (e.g. when global data or watch targets are read early).
  */
-const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
+const ensureCache = (cache, eleventyConfig, rawDir, log) => {
 	if (cache.assetsInput) return;
 	syncCacheFromDirectories(cache, eleventyConfig.dir || {}, rawDir);
-	warnIfVerbose(verbose, 'Fallback directory resolution');
+	log.info('Fallback directory resolution');
 };
 
 /**
@@ -41,13 +41,13 @@ const ensureCache = (cache, eleventyConfig, rawDir, verbose) => {
  * pure functions imported from assets-esbuild and assets-postcss.
  *
  * Options:
- *  - verbose  (boolean, default global baseline verbose): enable verbose logs.
+ *  - verbose  (boolean, default false): enable verbose logs. Passed in from the plugin root.
  *  - esbuild  (object): options forwarded to esbuild (minify, target).
  *    Defaults live in assets-esbuild/process.js — pass only overrides.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, options = {}) {
-	const verbose = getVerbose(eleventyConfig) || options.verbose || false;
+	const log = createLogger('assets-core', { verbose: options.verbose });
 	const userKey = 'assets';
 
 	// Extract raw directory value from config (can be done early).
@@ -72,7 +72,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		// Add a virtual directory key only if not already defined/configurable.
 		const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, userKey);
 		if (existing && existing.configurable === false) {
-			warnIfVerbose(verbose, `directories[${userKey}] already defined; skipping`);
+			log.info(`directories[${userKey}] already defined; skipping`);
 			return;
 		}
 
@@ -88,7 +88,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// Expose resolved assets paths as global data for templates.
 	// Templates use _baseline.assets.input to build paths for inline filters.
 	eleventyConfig.addGlobalData('_baseline.assets', () => {
-		ensureCache(cache, eleventyConfig, rawDir, verbose);
+		ensureCache(cache, eleventyConfig, rawDir, log);
 		return {
 			input: cache.assetsInput,
 			output: cache.assetsOutput
@@ -96,7 +96,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	});
 
 	// Watch common asset formats so edits trigger reloads during --serve.
-	ensureCache(cache, eleventyConfig, rawDir, verbose);
+	ensureCache(cache, eleventyConfig, rawDir, log);
 	const watchGlob = TemplatePath.join(cache.assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 	eleventyConfig.addWatchTarget(watchGlob);
 
