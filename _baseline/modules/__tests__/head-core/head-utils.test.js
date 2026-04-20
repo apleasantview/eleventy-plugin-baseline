@@ -178,7 +178,7 @@ describe('buildHead', () => {
 	it('composes page title and site title with a pipe separator', () => {
 		const data = {
 			title: 'About',
-			site: { title: 'Example Site' },
+			settings: { title: 'Example Site' },
 			page: { url: '/about/' }
 		};
 		const result = buildHead(data, env);
@@ -189,7 +189,7 @@ describe('buildHead', () => {
 		const data = {
 			title: 'From data',
 			head: { title: 'From user' },
-			site: { title: 'From site' },
+			settings: { title: 'From site' },
 			page: { url: '/' }
 		};
 		const result = buildHead(data, env);
@@ -199,7 +199,7 @@ describe('buildHead', () => {
 	it('falls back to data.title composed with site.title when no user.title', () => {
 		const data = {
 			title: 'From data',
-			site: { title: 'From site' },
+			settings: { title: 'From site' },
 			page: { url: '/' }
 		};
 		const result = buildHead(data, env);

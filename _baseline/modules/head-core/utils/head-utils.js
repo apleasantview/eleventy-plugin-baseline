@@ -95,25 +95,16 @@ const mergeBaseHead = (site, user, page, title, description, noindex, url) => {
  * @param {Object} head - Head data (may contain a canonical property).
  * @param {Object} page - Eleventy page object.
  * @param {Object} contentMap - Cached inputPathToUrl / urlToInputPath maps.
- * @param {Object} [env] - Environment options (siteUrl, pathPrefix, verbose).
+ * @param {Object} [env] - Environment options (siteUrl, pathPrefix).
  * @returns {string|undefined} Absolute canonical URL, or undefined if unresolvable.
  */
 const resolveCanonical = (head, page, contentMap, env = {}) => {
-	const { siteUrl, pathPrefix = '', pageUrlOverride, verbose } = env;
+	const { siteUrl, pathPrefix = '', pageUrlOverride } = env;
 	const explicit = pick(head.canonical);
-	if (explicit) {
-		if (!siteUrl && verbose) {
-			console.warn('[baseline] site.url is missing; canonical will be relative.');
-		}
-		return absoluteUrl(siteUrl, pathPrefix, explicit);
-	}
+	if (explicit) return absoluteUrl(siteUrl, pathPrefix, explicit);
 
 	const url = pick(pageUrlOverride, page?.url, page?.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
 	if (!url) return undefined;
-
-	if (!siteUrl && verbose) {
-		console.warn('[baseline] site.url is missing; canonical will be relative.');
-	}
 
 	return absoluteUrl(siteUrl, pathPrefix, url);
 };
@@ -217,7 +208,7 @@ const flattenHead = (head = {}, canonical) => {
  * resolves title, description, canonical, merges everything, and flattens.
  * Called from both the computed global data and the PostHTML transform fallback.
  * @param {Object} [data={}] - Full Eleventy data cascade for the page.
- * @param {Object} [env={}] - Environment options (userKey, contentMap, siteUrl, pathPrefix, verbose).
+ * @param {Object} [env={}] - Environment options (userKey, contentMap, siteUrl, pathPrefix).
  * @returns {Object} Flat head spec ready for posthtml-head-elements.
  */
 const buildHead = (data = {}, env = {}) => {
@@ -229,18 +220,19 @@ const buildHead = (data = {}, env = {}) => {
 		siteUrl || settings.url || process.env.URL || process.env.DEPLOY_URL || process.env.DEPLOY_PRIME_URL;
 
 	const siteTitle = settings.title || '';
-	const pageTitle = pick(data.title, user.title, settings.title, '');
-	const title =
-		siteTitle && pageTitle && siteTitle !== pageTitle ? `${pageTitle} | ${siteTitle}` : pageTitle || siteTitle || '';
+	const pageTitle = pick(data.title, user.title, '');
+	const title = pageTitle
+		? siteTitle && pageTitle !== siteTitle ? `${pageTitle} | ${siteTitle}` : pageTitle
+		: siteTitle;
 
 	const description = pick(data.description, user.description, settings.tagline, '');
 	const noindex = pick(data.noindex, page.noindex, user.noindex, settings.noindex, false);
 
 	const canonical = resolveCanonical(
-		{ canonical: absoluteUrl(resolvedSiteUrl, pathPrefix, user.canonical) },
+		{ canonical: user.canonical },
 		page,
 		contentMap,
-		{ ...env, siteUrl: resolvedSiteUrl, verbose: env.verbose }
+		{ ...env, siteUrl: resolvedSiteUrl }
 	);
 	const merged = mergeBaseHead(settings, user, page, title, description, noindex, canonical);
 	return flattenHead(merged, canonical);
