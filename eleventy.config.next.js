@@ -1,5 +1,6 @@
 /**
- * Docs site config.
+ * Parallel docs site config.
+ * `next` config left in place until it's clearly dead weight.
  *
  * This is the documentation site for @apleasantview/eleventy-plugin-baseline.
  * It uses the plugin it documents — the live demo is the docs themselves.

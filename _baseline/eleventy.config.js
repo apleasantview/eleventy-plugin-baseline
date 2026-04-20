@@ -72,6 +72,7 @@ export default function baseline(settings = {}, options = {}) {
 	// Pre-settings-convention callers passed a single blended object.
 	// Detect that shape and split it, so the new signature is backwards-compatible.
 	// Use arguments.length because default params mask undefined second args.
+	// NOTE: Shim remains in place until it's clearly dead weight.
 	const argsLength = arguments.length;
 	const wasLegacy = looksLikeLegacyOptions(settings, argsLength);
 	if (wasLegacy) {
