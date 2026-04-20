@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import globals from './core/globals.js';
+import globals from './core/globals/index.js';
 import debug from './core/debug.js';
-import filters from './core/filters.js';
-import modules from './core/modules.js';
-import shortcodes from './core/shortcodes.js';
+import filters from './core/filters/index.js';
+import modules from './core/plugins.js';
+import shortcodes from './core/shortcodes/index.js';
 import { settingsSchema } from './core/schema.js';
 import { createLogger } from './core/logging.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
