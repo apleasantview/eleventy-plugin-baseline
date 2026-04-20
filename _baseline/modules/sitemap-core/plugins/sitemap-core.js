@@ -39,7 +39,7 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 	// Pages set noindex in frontmatter or site data to be excluded.
 	eleventyConfig.addGlobalData('eleventyComputed.page.sitemap', () => {
 		return (data) => ({
-			ignore: data.noindex ?? data.page?.noindex ?? data.site?.noindex ?? false,
+			ignore: data.noindex ?? data.page?.noindex ?? data.settings?.noindex ?? false,
 			changefreq: '',
 			priority: -1
 		});

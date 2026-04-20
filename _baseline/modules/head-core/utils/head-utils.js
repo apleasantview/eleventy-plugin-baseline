@@ -222,19 +222,19 @@ const flattenHead = (head = {}, canonical) => {
  */
 const buildHead = (data = {}, env = {}) => {
 	const { userKey = 'head', contentMap = {}, siteUrl, pathPrefix } = env;
-	const site = data.site || {};
+	const settings = data.settings || {};
 	const user = userKey ? data[userKey] || {} : {};
 	const page = data.page || {};
 	const resolvedSiteUrl =
-		siteUrl || site.url || process.env.URL || process.env.DEPLOY_URL || process.env.DEPLOY_PRIME_URL;
+		siteUrl || settings.url || process.env.URL || process.env.DEPLOY_URL || process.env.DEPLOY_PRIME_URL;
 
-	const siteTitle = site.title || '';
-	const pageTitle = pick(data.title, user.title, site.title, '');
+	const siteTitle = settings.title || '';
+	const pageTitle = pick(data.title, user.title, settings.title, '');
 	const title =
 		siteTitle && pageTitle && siteTitle !== pageTitle ? `${pageTitle} | ${siteTitle}` : pageTitle || siteTitle || '';
 
-	const description = pick(data.description, user.description, site.tagline, '');
-	const noindex = pick(data.noindex, page.noindex, user.noindex, site.noindex, false);
+	const description = pick(data.description, user.description, settings.tagline, '');
+	const noindex = pick(data.noindex, page.noindex, user.noindex, settings.noindex, false);
 
 	const canonical = resolveCanonical(
 		{ canonical: absoluteUrl(resolvedSiteUrl, pathPrefix, user.canonical) },
@@ -242,7 +242,7 @@ const buildHead = (data = {}, env = {}) => {
 		contentMap,
 		{ ...env, siteUrl: resolvedSiteUrl, verbose: env.verbose }
 	);
-	const merged = mergeBaseHead(site, user, page, title, description, noindex, canonical);
+	const merged = mergeBaseHead(settings, user, page, title, description, noindex, canonical);
 	return flattenHead(merged, canonical);
 };
 
