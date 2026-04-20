@@ -1,6 +1,6 @@
-import headElements from '../drivers/posthtml-head-elements.js';
-import { createLogger } from '../../../core/logging.js';
-import { buildHead } from '../utils/head-utils.js';
+import headElements from './drivers/posthtml-head-elements.js';
+import { createLogger } from '../../core/logging.js';
+import { buildHead } from './utils/head-utils.js';
 
 /**
  * eleventy-plugin-head-core
