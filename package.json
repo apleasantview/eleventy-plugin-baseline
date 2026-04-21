@@ -53,6 +53,7 @@
     "@11ty/eleventy": "3.1.5",
     "@11ty/eleventy-img": "^6.0.4",
     "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.2",
+    "@rviscomi/capo.js": "^2.1.0",
     "cross-env": "^10.1.0",
     "cssnano": "^7.1.3",
     "dotenv": "^17.3.1",
