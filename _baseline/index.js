@@ -2,13 +2,15 @@ import 'dotenv/config';
 import { createRequire } from 'node:module';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
+import { createContentMapStore } from './core/store.js';
+import { createLogger } from './core/logging.js';
+import { registerVirtualDir } from './core/virtual-dir.js';
+import { settingsSchema } from './core/schema.js';
+
 import globals from './core/globals/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
 import modules from './core/plugins.js';
-import { settingsSchema } from './core/schema.js';
-import { createLogger } from './core/logging.js';
-import { registerVirtualDir } from './core/virtual-dir.js';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
@@ -75,6 +77,7 @@ export default function baseline(settings = {}, options = {}) {
 	// NOTE: Shim remains in place until it's clearly dead weight.
 	const argsLength = arguments.length;
 	const wasLegacy = looksLikeLegacyOptions(settings, argsLength);
+
 	if (wasLegacy) {
 		const split = splitLegacyOptions(settings);
 		settings = split.settings;
@@ -84,6 +87,19 @@ export default function baseline(settings = {}, options = {}) {
 	// --- Root logger ---
 	// Created after the legacy shim so it reads the resolved verbose flag.
 	const log = createLogger(null, { verbose: options.verbose });
+
+	// --- Content store ---
+	const contentMapStore = createContentMapStore();
+
+	function getContentMap() {
+		const map = contentMapStore.get();
+		if (!map) {
+			throw new Error(
+				'[eleventy-plugin-baseline] contentMap not ready yet — ensure this runs after Eleventy contentMap event'
+			);
+		}
+		return map;
+	}
 
 	if (wasLegacy) {
 		log.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
@@ -100,35 +116,25 @@ export default function baseline(settings = {}, options = {}) {
 
 	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 	const plugin = async function (eleventyConfig) {
+		// --- Init ---
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
 			log.error('Eleventy plugin compatibility:', e.message);
 		}
 
-		// One-shot init warning: warn early about missing settings.url so it's
+		// One-shot warning: warn early about missing settings.url so it's
 		// visible without firing per-page during head resolution.
 		if (!settings.url) {
 			log.warn('settings.url is not set; canonical URLs will be relative.');
 		}
 
-		// --- Options ---
-		// Merge user options with defaults, detect environment capabilities.
-		// The _baseline global below is a curated subset — not the full options object.
-		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
+		// TODO: Maybe set from settings instead of config?
+		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
+			baseHref: process.env.URL || eleventyConfig.pathPrefix
+		});
 
-		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
-		const userOptions = {
-			verbose: options.verbose ?? false,
-			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
-			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
-			multilingual: options.multilingual ?? inferredMultilingual,
-			defaultLanguage: settings.defaultLanguage,
-			languages: settings.languages,
-			assets: {
-				esbuild: options.assetsESBuild ?? {}
-			}
-		};
+		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		// --- Global data ---
 		// Curated public surface — only what templates and shortcodes need.
@@ -142,6 +148,23 @@ export default function baseline(settings = {}, options = {}) {
 
 		globals(eleventyConfig);
 
+		// --- Options ---
+		// Merge user options with defaults, detect environment capabilities.
+		// The _baseline global below is a curated subset — not the full options object.
+		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
+
+		const userOptions = {
+			verbose: options.verbose ?? false,
+			enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
+			enableSitemapTemplate: options.enableSitemapTemplate ?? true,
+			multilingual: options.multilingual ?? inferredMultilingual,
+			defaultLanguage: settings.defaultLanguage,
+			languages: settings.languages,
+			assets: {
+				esbuild: options.assetsESBuild ?? {}
+			}
+		};
+
 		// Register virtual directories before module plugins run so they can
 		// read eleventyConfig.directories.assets/.public synchronously.
 		// `public` follows the convention used by 11ty (publicDir) and other
@@ -150,6 +173,7 @@ export default function baseline(settings = {}, options = {}) {
 			name: 'assets',
 			globalDataKey: '_baseline.assets'
 		});
+
 		const publicDir = registerVirtualDir(eleventyConfig, {
 			name: 'public',
 			globalDataKey: '_baseline.public',
@@ -157,6 +181,7 @@ export default function baseline(settings = {}, options = {}) {
 			outputDir: ''
 		});
 
+		// --- Content ---
 		eleventyConfig.addPassthroughCopy({ [publicDir.input]: '/' });
 
 		// Drafts preprocessor — skip draft pages during production builds.
@@ -169,6 +194,20 @@ export default function baseline(settings = {}, options = {}) {
 			});
 		}
 
+		// ContentMap event MUST be registered before modules
+		// Cache the content map so modules can resolve inputPath → URL.
+		eleventyConfig.on('eleventy.contentMap', (data) => {
+			contentMapStore.set(data);
+		});
+
+		// TODO: Shared modules context
+		const context = {
+			contentMap: {
+				get: getContentMap
+			},
+			options: userOptions
+		};
+
 		// --- Modules ---
 		// Registration order matters: multilang first (sets up locale data),
 		// then assets, head, sitemap. Navigator is last (debug only).
@@ -178,9 +217,6 @@ export default function baseline(settings = {}, options = {}) {
 			});
 		}
 
-		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
-			baseHref: process.env.URL || eleventyConfig.pathPrefix
-		});
 		eleventyConfig.addPlugin(modules.assetsCore, { verbose: userOptions.verbose, esbuild: userOptions.assets.esbuild });
 
 		eleventyConfig.addPlugin(modules.headCore, { verbose: userOptions.verbose });
