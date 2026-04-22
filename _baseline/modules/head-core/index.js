@@ -1,5 +1,4 @@
 import headElements from './drivers/posthtml-head-elements.js';
-import { createLogger } from '../../core/logging.js';
 import { buildHead } from './utils/head-utils.js';
 
 /**
@@ -14,22 +13,20 @@ import { buildHead } from './utils/head-utils.js';
  * No cross-module dependencies.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function headCore(eleventyConfig, options = {}) {
-	const log = createLogger('head-core', { verbose: options.verbose });
+export default function headCore(eleventyConfig, moduleContext) {
+	const { state, runtime, directories, log, site } = moduleContext;
+	const options = state.options;
+	const siteUrl = site.canonicalUrl;
+	const pathPrefix = site.pathPrefix;
 
 	// Internal options — not part of the public API.
 	const userKey = options.dirKey || 'head';
 	const headElementsTag = options.headElementsTag || 'baseline-head';
 	const eol = options.EOL || '\n';
-	const pathPrefix = options.pathPrefix ?? eleventyConfig?.pathPrefix ?? '';
-	const siteUrl = options.siteUrl;
 
 	// Cache the content map so canonical URLs can resolve inputPath → URL.
 	// Updated each build when Eleventy emits the contentMap event.
-	let cachedContentMap = {};
-	eleventyConfig.on('eleventy.contentMap', ({ inputPathToUrl, urlToInputPath }) => {
-		cachedContentMap = { inputPathToUrl, urlToInputPath };
-	});
+	// let cachedContentMap = runtime.contentMap;
 
 	// Computed global data: build the head spec for every page through the
 	// data cascade. Templates access the result via `page.head`.
@@ -39,7 +36,7 @@ export default function headCore(eleventyConfig, options = {}) {
 				userKey,
 				siteUrl,
 				pathPrefix,
-				contentMap: cachedContentMap,
+				contentMap: runtime.contentMap,
 				pageUrlOverride: data?.page?.url
 			});
 	});
@@ -56,7 +53,7 @@ export default function headCore(eleventyConfig, options = {}) {
 				userKey,
 				siteUrl,
 				pathPrefix,
-				contentMap: cachedContentMap,
+				contentMap: runtime.contentMap,
 				pageUrlOverride: context?.page?.url
 			});
 

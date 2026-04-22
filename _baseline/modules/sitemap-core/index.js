@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { langNormalization } from '../../../core/helpers.js';
+import { langNormalization } from '../../core/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,15 +23,18 @@ const __dirname = path.dirname(__filename);
  *  - languages (array|object): language codes. Determines per-language sitemap generation.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function sitemapCore(eleventyConfig, options = {}) {
-	const languages = langNormalization(options);
+export default function sitemapCore(eleventyConfig, moduleContext) {
+	const { state, log } = moduleContext;
+	const settings = state.settings;
+	const options = state.options;
+	const languages = langNormalization(settings, log);
 	const hasLanguages = languages && Object.keys(languages).length > 0;
-	const isMultilingual = options.multilingual === true && options.defaultLanguage && hasLanguages;
+	const isMultilingual = options.multilingual === true && settings.defaultLanguage && hasLanguages;
 
-	const userOptions = {
+	const moduleOptions = {
 		enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 		multilingual: isMultilingual,
-		defaultLanguage: options.defaultLanguage,
+		defaultLanguage: settings.defaultLanguage,
 		languages: languages
 	};
 
@@ -49,14 +52,14 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 	// Read template sources synchronously (same constraint as navigator-core).
 	// In multilingual mode: one sitemap per language + a sitemap index.
 	// In single-language mode: one flat sitemap at /sitemap.xml.
-	if (userOptions.enableSitemapTemplate) {
-		const templatePath = path.join(__dirname, '../templates/sitemap-core.html');
-		const indexTemplatePath = path.join(__dirname, '../templates/sitemap-index.html');
+	if (moduleOptions.enableSitemapTemplate) {
+		const templatePath = path.join(__dirname, './templates/sitemap-core.html');
+		const indexTemplatePath = path.join(__dirname, './templates/sitemap-index.html');
 		const baseContent = fs.readFileSync(templatePath, 'utf-8');
 		const indexContent = fs.readFileSync(indexTemplatePath, 'utf-8');
 
-		const langKeys = Object.keys(userOptions.languages || {});
-		const multilingual = userOptions.multilingual;
+		const langKeys = Object.keys(moduleOptions.languages || {});
+		const multilingual = moduleOptions.multilingual;
 
 		if (multilingual && langKeys.length > 1) {
 			for (const lang of langKeys) {
@@ -78,7 +81,7 @@ export default function sitemapCore(eleventyConfig, options = {}) {
 				layout: null,
 				eleventyExcludeFromCollections: true,
 				isMultilingual: multilingual,
-				languages: userOptions.languages
+				languages: moduleOptions.languages
 			});
 		} else {
 			eleventyConfig.addTemplate('_baseline/sitemap-core.html', baseContent, {

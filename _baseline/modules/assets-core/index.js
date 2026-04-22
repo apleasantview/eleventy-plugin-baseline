@@ -1,11 +1,9 @@
 import path from 'node:path';
 import { TemplatePath } from '@11ty/eleventy-utils';
-import { addTrailingSlash } from '../../core/helpers.js';
-import { createLogger } from '../../core/logging.js';
 
+import { optionsSchema } from './schema.js';
 import assetsESbuild from '../assets-esbuild/process.js';
 import assetsPostCSS from '../assets-postcss/process.js';
-import { optionsSchema } from './schema.js';
 
 /**
  * eleventy-plugin-assets-core
@@ -23,29 +21,33 @@ import { optionsSchema } from './schema.js';
  *    Defaults live in assets-esbuild/process.js — pass only overrides.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function assetsCore(eleventyConfig, options = {}) {
-	const log = createLogger('assets-core', { verbose: options.verbose });
+export default function assetsCore(eleventyConfig, moduleContext) {
+	const { state, directories, log } = moduleContext;
+	const options = state.options;
+	const parsed = optionsSchema.safeParse(options);
 
 	// Structural-only options check: log on mismatch, do not throw.
-	const parsed = optionsSchema.safeParse(options);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
 			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
 		}
 	}
 
-	// Resolved paths are synthesised by core/virtual-dir.js at entry-time; we
-	// read them off eleventyConfig.directories for synchronous wiring below.
-	const inputDir = addTrailingSlash(TemplatePath.addLeadingDotSlash(eleventyConfig.dir?.input || './'));
-	const assetsInput = eleventyConfig.directories.assets;
+	const inputDirectory = directories.input;
+	const assetsDirectory = directories.assets;
+	const jsDirectory = `${assetsDirectory}js/`;
+	const cssDirectory = `${assetsDirectory}css/`;
 
-	if (!assetsInput) {
+	const esbuildOptions = options.assets.esbuild || {};
+	const dataFiles = `${inputDirectory}**/*.11tydata.js`;
+	const watchGlob = TemplatePath.join(assetsDirectory, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
+
+	if (!assetsDirectory) {
 		log.warn('eleventyConfig.directories.assets is unset; registerVirtualDir must run before this plugin.');
 		return;
 	}
 
 	// Watch common asset formats so edits trigger reloads during --serve.
-	const watchGlob = TemplatePath.join(assetsInput, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 	eleventyConfig.addWatchTarget(watchGlob);
 
 	// --- JS (esbuild) ---
@@ -54,16 +56,13 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// by the compile guard. The inline filter wraps the same process function.
 	// Defaults (minify, target) live in assets-esbuild/process.js.
 
-	const esbuildOptions = options.esbuild || {};
-	const jsDir = `${assetsInput}js/`;
-
 	eleventyConfig.addTemplateFormats('js');
 
 	// Prevent Eleventy from processing 11tydata.js files as templates.
 	// The compile guard below also filters these, but without this ignore
 	// Eleventy still enters them into the template graph (data cascade,
 	// permalink computation) before compile gets a chance to reject them.
-	eleventyConfig.ignores.add(`${inputDir}**/*.11tydata.js`);
+	eleventyConfig.ignores.add(dataFiles);
 
 	eleventyConfig.addExtension('js', {
 		outputFileExtension: 'js',
@@ -78,7 +77,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		compile: async function (_inputContent, inputPath) {
 			if (
 				inputPath.includes('11tydata.js') ||
-				!inputPath.startsWith(jsDir) ||
+				!inputPath.startsWith(jsDirectory) ||
 				path.basename(inputPath) !== 'index.js'
 			) {
 				return;
@@ -108,8 +107,6 @@ export default function assetsCore(eleventyConfig, options = {}) {
 	// the process function owns its own I/O. Config loading and caching live
 	// in assets-postcss/process.js.
 
-	const cssDir = `${assetsInput}css/`;
-
 	eleventyConfig.addTemplateFormats('css');
 
 	eleventyConfig.addExtension('css', {
@@ -122,7 +119,7 @@ export default function assetsCore(eleventyConfig, options = {}) {
 		},
 		// Compile guard: only process index.css files under the assets css directory.
 		compile: async function (_inputContent, inputPath) {
-			if (!inputPath.startsWith(cssDir) || path.basename(inputPath) !== 'index.css') {
+			if (!inputPath.startsWith(cssDirectory) || path.basename(inputPath) !== 'index.css') {
 				return;
 			}
 
