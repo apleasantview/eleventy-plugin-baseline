@@ -7,20 +7,98 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * eleventy-plugin-sitemap-core
+ * Sitemap Core (Eleventy Module)
  *
- * Generates XML sitemaps. Adds a computed page.sitemap object to every page
- * (with ignore/changefreq/priority), then registers virtual templates for
- * the sitemap XML. In multilingual mode, produces per-language sitemaps plus
- * a sitemap index. Pages opt out via noindex in data.
+ * This module is responsible for sitemap generation and sitemap-related
+ * page metadata enrichment within the baseline system.
  *
- * Shares the langNormalization helper with multilang-core via core/helpers.js.
+ * It operates as a structural layer on top of Eleventy collections,
+ * not as a standalone rendering system.
  *
- * Options:
- *  - enableSitemapTemplate (boolean, default true): register virtual sitemap templates.
- *  - multilingual (boolean): enable multilingual mode. Auto-detected from languages if omitted.
- *  - defaultLanguage (string): default language code. Required for multilingual mode.
- *  - languages (array|object): language codes. Determines per-language sitemap generation.
+ * ------------------------------------------------------------
+ *
+ * Responsibilities
+ * ------------------------------------------------------------
+ * 1. Inject computed sitemap metadata into all pages
+ * 2. Register sitemap XML output templates
+ * 3. Support optional multilingual sitemap partitioning
+ * 4. Generate sitemap index when multilingual mode is active
+ *
+ * ------------------------------------------------------------
+ *
+ * Sitemap Data Model
+ * ------------------------------------------------------------
+ *
+ * Each page is enriched with a computed `page.sitemap` object:
+ *
+ * {
+ *   ignore: boolean,
+ *   changefreq: string,
+ *   priority: number
+ * }
+ *
+ * A page is excluded when:
+ * - data.noindex is true
+ * - or noindex is inherited from upstream data cascade
+ *
+ * ------------------------------------------------------------
+ *
+ * Activation Rules
+ * ------------------------------------------------------------
+ *
+ * Multilingual mode is enabled when:
+ * - options.multilingual is true
+ * - settings.defaultLanguage is defined
+ * - a normalized language map exists
+ *
+ * Otherwise, the system falls back to single-sitemap mode.
+ *
+ * ------------------------------------------------------------
+ *
+ * Outputs
+ * ------------------------------------------------------------
+ *
+ * Single-language mode:
+ * - /sitemap.xml
+ *
+ * Multilingual mode:
+ * - /{lang}/sitemap.xml (per language)
+ * - /sitemap.xml (sitemap index)
+ *
+ * ------------------------------------------------------------
+ *
+ * Options
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} SitemapOptions
+ *
+ * @property {boolean} [enableSitemapTemplate=true]
+ * Controls registration of virtual sitemap templates.
+ *
+ * @property {boolean} [multilingual]
+ * Enables multilingual sitemap generation.
+ * If omitted, derived from baseline state.
+ *
+ * @property {string} [defaultLanguage]
+ * Default language used in multilingual sitemap resolution.
+ *
+ * @property {Object|Array} [languages]
+ * Language definitions used to partition sitemap output.
+ *
+ * ------------------------------------------------------------
+ *
+ * Module Context
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} SitemapContext
+ *
+ * Shared module boundary contract.
+ *
+ * @property {Object} state
+ * Resolved baseline state (settings + options).
+ *
+ * @property {Object} log
+ * Scoped logger instance for module diagnostics.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function sitemapCore(eleventyConfig, moduleContext) {

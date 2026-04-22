@@ -11,6 +11,7 @@ import globals from './core/globals/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
 import modules from './core/plugins.js';
+import { tr } from 'zod/v4/locales';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
@@ -210,7 +211,7 @@ export default function baseline(settings = {}, options = {}) {
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
-
+		const inferredSitemap = Boolean(options.sitemap || options.enableSitemapTemplate || true);
 		const inferredNavigator = Boolean(options.navigator || isDev);
 
 		const state = {
@@ -225,9 +226,9 @@ export default function baseline(settings = {}, options = {}) {
 
 			options: {
 				verbose: options.verbose ?? false,
-				navigator: options.navigator ?? inferredNavigator,
-				enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 				multilingual: options.multilingual ?? inferredMultilingual,
+				sitemap: options.sitemap ?? inferredSitemap,
+				navigator: options.navigator ?? inferredNavigator,
 				assets: {
 					esbuild: options.assetsESBuild ?? {}
 				}
@@ -311,8 +312,8 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Module registry ---
 		const features = {
 			multilang: inferredMultilingual,
-			navigator: inferredNavigator,
-			sitemap: state.options.enableSitemapTemplate
+			sitemap: inferredSitemap,
+			navigator: inferredNavigator
 		};
 
 		const moduleRegistry = [
