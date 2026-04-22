@@ -11,10 +11,11 @@ import globals from './core/globals/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
 import modules from './core/plugins.js';
-import { log } from 'node:console';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
+
+const isDev = process.env.ELEVENTY_ENV === 'development';
 
 const LEGACY_OPTION_KEYS = [
 	'verbose',
@@ -27,8 +28,9 @@ const LEGACY_OPTION_KEYS = [
 /**
  * Detect legacy single-object plugin invocation.
  *
- * Before the current (settings, options) API, callers passed a merged object.
- * This shim detects that shape and splits it safely.
+ * The original plugin API accepted a single merged configuration object.
+ * This helper detects that shape and enables safe normalization into
+ * the current (settings, options) contract.
  *
  * NOTE: arguments.length is required because default parameters mask arity.
  */
@@ -39,9 +41,10 @@ function looksLikeLegacyOptions(firstArg, argsLength) {
 }
 
 /**
- * Normalize legacy plugin input into structured shape:
- * - settings: site identity (content semantics)
- * - options: plugin behavior flags (runtime behavior)
+ * Normalize legacy plugin input into the current structured contract.
+ *
+ * - settings → site identity (content + SEO concerns)
+ * - options  → runtime behavior flags
  */
 function splitLegacyOptions(legacy) {
 	const { defaultLanguage, languages, ...rest } = legacy;
@@ -52,83 +55,89 @@ function splitLegacyOptions(legacy) {
 }
 
 /**
- * Eleventy Plugin Baseline.
+ * Eleventy Plugin: baseline
  *
- * Architecture overview:
+ * This plugin establishes a structured runtime layer on top of Eleventy.
  *
- * This plugin is structured into three distinct layers:
+ * Architecture
+ * --------------------------------------------------
  *
- * 1. seeds
- *    → Pure user-provided input (settings + options merged + normalized)
+ * The system is organized into three layers:
  *
- * 2. state (formerly "config")
- *    → Fully resolved internal representation used by modules
+ * 1. state
+ *    → normalized user configuration (settings + options)
  *
- * 3. runtime
- *    → Live Eleventy/environment bindings (contentMap, baseHref, etc.)
+ * 2. runtime
+ *    → lazy access layer over Eleventy lifecycle state
+ *      (contentMap, environment bindings, derived values)
  *
- * This separation prevents coupling between:
- * - Eleventy runtime state
- * - user configuration
- * - derived plugin behavior
+ * 3. modules
+ *    → feature plugins registered via a declarative registry
+ *
+ * This structure enforces a strict boundary between:
+ * - configuration (user input)
+ * - runtime state (Eleventy lifecycle)
+ * - feature implementation (modules)
+ *
+ * and prevents implicit coupling across those domains.
  *
  * ------------------------------------------------------------
  *
  * @typedef {Object} BaselineSettings
- * @property {string} [title] Site title.
- * @property {string} [tagline] Site tagline.
- * @property {string} [url] Canonical site URL.
- * @property {boolean} [noindex] Opt out of indexing.
- * @property {string} [defaultLanguage] IETF/BCP47 language code.
- * @property {Record<string, unknown>} [languages] Language map.
- * @property {Object} [head] Global head seeds (meta/link/script).
+ * Site identity and SEO configuration.
+ *
+ * @property {string} [title]
+ * @property {string} [tagline]
+ * @property {string} [url]
+ * @property {boolean} [noindex]
+ * @property {string} [defaultLanguage]
+ * @property {Record<string, unknown>} [languages]
+ * @property {Object} [head]
  *
  * @typedef {Object} BaselineOptions
- * @property {boolean} [verbose=false] Enable debug logging.
- * @property {boolean} [enableNavigatorTemplate=false] Enable navigator tooling.
- * @property {boolean} [enableSitemapTemplate=true] Enable sitemap generation.
- * @property {boolean} [multilingual] Force multilingual mode (otherwise inferred).
- * @property {Object} [assetsESBuild] ESBuild pipeline options.
+ * Runtime feature flags and behavior configuration.
+ *
+ * @property {boolean} [verbose]
+ * Enables structured debug logging across modules.
+ *
+ * @property {boolean|Object} [navigator]
+ * Controls navigator tooling.
+ * If not explicitly set, it may be inferred from environment (e.g. dev mode).
+ *
+ * @property {boolean} [enableSitemapTemplate]
+ * Enables sitemap generation module (default: true).
+ *
+ * @property {boolean} [multilingual]
+ * Forces multilingual mode. If omitted, it is inferred from settings.
+ *
+ * @property {Object} [assetsESBuild]
+ * ESBuild pipeline configuration for assets system.
  *
  * ------------------------------------------------------------
  *
  * @typedef {Object} BaselineState
  * Fully resolved internal plugin state.
- * This replaces the ambiguous "config" naming.
  *
- * @property {Object} settings Normalized site settings (title, url, languages, etc.)
- * @property {Object} options Normalized runtime options (verbose, flags, assets, etc.)
+ * @property {Object} settings
+ * @property {Object} options
  *
  * ------------------------------------------------------------
  *
  * @typedef {Object} BaselineContext
- * Shared dependency boundary passed into modules.
+ * Shared module boundary contract.
+ *
+ * This context is the only supported interface between:
+ * - Eleventy configuration runtime
+ * - baseline core
+ * - feature modules
  *
  * @property {BaselineState} state
- *
  * @property {Object} runtime
- *
  * @property {Object} runtime.contentMap
- * @property {Function} runtime.contentMap.get
- * Returns Eleventy contentMap snapshot (throws if not ready).
- *
  * @property {Object} runtime.site
- * @property {Function} runtime.site.canonicalUrl
- * Canonical URL derived from settings.url (nullable).
- * @property {Function} runtime.site.baseHref
- * Base href derived from environment (URL → pathPrefix fallback).
- *
- * ------------------------------------------------------------
- *
- * @param {BaselineSettings} [settings={}] Site identity + SEO configuration.
- * @param {BaselineOptions} [options={}] Plugin behavior flags.
- *
- * @returns {(eleventyConfig: import("@11ty/eleventy").UserConfig) => Promise<void>}
- * Eleventy plugin initializer.
  */
 export default function baseline(settings = {}, options = {}) {
 	// --- Legacy compatibility layer ---
-	// Supports pre-refactor single-object plugin signature.
 	const argsLength = arguments.length;
 	const wasLegacy = looksLikeLegacyOptions(settings, argsLength);
 
@@ -138,7 +147,7 @@ export default function baseline(settings = {}, options = {}) {
 		options = split.options;
 	}
 
-	// Logger initialized after options normalization so verbosity is correct.
+	// Logger is initialized after normalization to ensure correct verbosity.
 	const baseLog = createLogger(null, { verbose: options.verbose });
 
 	function scopedLog(name) {
@@ -149,22 +158,18 @@ export default function baseline(settings = {}, options = {}) {
 		};
 	}
 
-	// Shared content map store (populated post-Eleventy initialization event)
+	// Content map is populated asynchronously via Eleventy lifecycle events.
 	const contentMapStore = createContentMapStore();
 
 	function resolveContentMap() {
-		const map = contentMapStore.get();
-		// if (!map) {
-		// 	throw new Error('[eleventy-plugin-baseline] contentMap not ready — ensure Eleventy contentMap event has fired');
-		// }
-		return map;
+		return contentMapStore.get();
 	}
 
 	if (wasLegacy) {
 		baseLog.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
 	}
 
-	// Validate only structural correctness of settings (non-fatal)
+	// Validate configuration shape (non-fatal).
 	const parsed = settingsSchema.safeParse(settings);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
@@ -172,7 +177,12 @@ export default function baseline(settings = {}, options = {}) {
 		}
 	}
 
-	/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
+	/**
+	 * Eleventy plugin initializer.
+	 *
+	 * This function is executed during Eleventy configuration time and
+	 * composes global APIs, filters, shortcodes, and feature modules.
+	 */
 	const plugin = async function (eleventyConfig) {
 		// --- Eleventy compatibility check ---
 		try {
@@ -181,13 +191,11 @@ export default function baseline(settings = {}, options = {}) {
 			baseLog.error('Eleventy version mismatch:', e.message);
 		}
 
-		// Early warning for missing canonical domain configuration
 		if (!settings.url) {
 			baseLog.warn('settings.url missing — canonical URLs will be relative');
 		}
 
-		// --- BaseHref resolution (build-time routing concern) ---
-		// This is NOT site identity. It is output path correction logic.
+		// BaseHref is a build-time routing concern, not site identity.
 		function resolveBaseHref(eleventyConfig) {
 			return process.env.URL || eleventyConfig.pathPrefix;
 		}
@@ -198,12 +206,12 @@ export default function baseline(settings = {}, options = {}) {
 
 		globals(eleventyConfig);
 
-		// --- Config layer (authoritative input state) ---
-		// This is the single source of truth for:
-		// - site identity (settings)
-		// - plugin behavior (options)
+		// --- State layer (authoritative configuration) ---
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
+
 		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
+
+		const inferredNavigator = Boolean(options.navigator || isDev);
 
 		const state = {
 			settings: {
@@ -217,7 +225,7 @@ export default function baseline(settings = {}, options = {}) {
 
 			options: {
 				verbose: options.verbose ?? false,
-				enableNavigatorTemplate: options.enableNavigatorTemplate ?? false,
+				navigator: options.navigator ?? inferredNavigator,
 				enableSitemapTemplate: options.enableSitemapTemplate ?? true,
 				multilingual: options.multilingual ?? inferredMultilingual,
 				assets: {
@@ -226,12 +234,11 @@ export default function baseline(settings = {}, options = {}) {
 			}
 		};
 
+		// --- Site helpers (derived state) ---
 		const site = {
-			// Build-time output base (path resolution, not identity) derived from runtime environment.
 			get baseHref() {
 				return resolveBaseHref(eleventyConfig);
 			},
-			// Canonical identity (SEO / metadata) derived from state.
 			get canonicalUrl() {
 				return state.settings.url ?? null;
 			},
@@ -240,10 +247,8 @@ export default function baseline(settings = {}, options = {}) {
 			}
 		};
 
-		// --- Virtual filesystem mapping ---
-		// Must be registered early so downstream modules can rely on it synchronously.
-		// Also registers `_baseline.*` as global data for template use
-		const assets = registerVirtualDir(eleventyConfig, {
+		// --- Virtual directories ---
+		registerVirtualDir(eleventyConfig, {
 			name: 'assets',
 			globalDataKey: '_baseline.assets'
 		});
@@ -259,16 +264,13 @@ export default function baseline(settings = {}, options = {}) {
 			output: eleventyConfig.directories?.output,
 			includes: eleventyConfig.directories?.includes,
 			data: eleventyConfig.directories?.data,
-
-			// virtual dirs (your system)
 			assets: eleventyConfig.directories?.assets,
 			public: eleventyConfig.directories?.public
 		};
 
 		eleventyConfig.addPassthroughCopy({ [publicDir.input]: '/' });
 
-		// --- Global surface (minimal computed data for templates) ---
-		// This is intentionally small and does NOT duplicate config or runtime.
+		// --- Global surface (minimal computed output) ---
 		eleventyConfig.addGlobalData('_baseline', {
 			version,
 			name,
@@ -281,8 +283,6 @@ export default function baseline(settings = {}, options = {}) {
 		});
 
 		// --- Draft filtering (build-time concern) ---
-		// Prevents drafts from entering production builds and
-		// guards against double-registration; user config wins if already set.
 		if (!eleventyConfig.preprocessors.drafts) {
 			eleventyConfig.addPreprocessor('drafts', '*', (data) => {
 				if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
@@ -291,18 +291,12 @@ export default function baseline(settings = {}, options = {}) {
 			});
 		}
 
-		// --- Content map runtime bridge ---
-		// Eleventy emits this event after collection resolution.
-		// We cache it so runtime modules can resolve URLs from input paths.
+		// --- Eleventy runtime bridge ---
 		eleventyConfig.on('eleventy.contentMap', (data) => {
 			contentMapStore.set(data);
 		});
 
 		// --- Runtime context (lazy access layer) ---
-		// This is the ONLY layer allowed to:
-		// - touch Eleventy runtime state
-		// - expose derived values
-		// - resolve config into behavior
 		const runtimeContext = {
 			state,
 			runtime: {
@@ -314,9 +308,10 @@ export default function baseline(settings = {}, options = {}) {
 			directories
 		};
 
-		// --- Module registration (ordered by dependency graph) ---
+		// --- Module registry ---
 		const features = {
 			multilang: inferredMultilingual,
+			navigator: inferredNavigator,
 			sitemap: state.options.enableSitemapTemplate
 		};
 
@@ -324,18 +319,17 @@ export default function baseline(settings = {}, options = {}) {
 			{ when: features.multilang, name: 'multilang-core', plugin: modules.multilangCore },
 			{ name: 'assets-core', plugin: modules.assetsCore },
 			{ name: 'head-core', plugin: modules.headCore },
-			{ when: features.sitemap, name: 'sitemap-core', plugin: modules.sitemapCore }
+			{ when: features.sitemap, name: 'sitemap-core', plugin: modules.sitemapCore },
+			{ when: features.navigator, name: 'navigator-core', plugin: modules.navigatorCore }
 		];
 
 		for (const { when = true, name, plugin } of moduleRegistry) {
 			if (!when) continue;
 
-			const moduleContext = {
+			eleventyConfig.addPlugin(plugin, {
 				...runtimeContext,
 				log: scopedLog(name)
-			};
-
-			eleventyConfig.addPlugin(plugin, moduleContext);
+			});
 		}
 
 		// --- Filters ---
@@ -348,13 +342,6 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Dev image pipeline ---
 		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);
-
-		// --- Debug tooling (non-public API surface) ---
-		const debugContext = {
-			...runtimeContext,
-			log: scopedLog('navigator-core')
-		};
-		eleventyConfig.addPlugin(modules.navigatorCore, debugContext);
 	};
 
 	// Set a named function identity so eleventyConfig.hasPlugin() can detect this plugin.
@@ -362,7 +349,11 @@ export default function baseline(settings = {}, options = {}) {
 	return plugin;
 }
 
-// --- Eleventy directory configuration (external contract) ---
+/**
+ * Eleventy directory configuration (external contract)
+ *
+ * Defines input/output structure for the build system.
+ */
 export const config = {
 	dir: {
 		input: 'src',
