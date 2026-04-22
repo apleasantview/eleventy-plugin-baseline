@@ -6,19 +6,97 @@ import assetsESbuild from '../assets-esbuild/process.js';
 import assetsPostCSS from '../assets-postcss/process.js';
 
 /**
- * eleventy-plugin-assets-core
+ * Assets Core (Eleventy Module)
  *
- * The single assets plugin. Owns all Eleventy wiring for JS and CSS processing:
- * template formats, extensions, compile guards, inline filters, and watch
- * targets. Directory resolution (the virtual `directories.assets` key and the
- * `_baseline.assets` global) is handled by core/virtual-dir.js, registered at
- * the plugin entry point. Processing logic lives in the pure functions
- * imported from assets-esbuild and assets-postcss.
+ * This module owns asset pipeline integration within the baseline system.
  *
- * Options:
- *  - verbose  (boolean, default false): enable verbose logs. Passed in from the plugin root.
- *  - esbuild  (object): options forwarded to esbuild (minify, target).
- *    Defaults live in assets-esbuild/process.js — pass only overrides.
+ * It is responsible for wiring Eleventy’s template system to external
+ * asset processors (ESBuild, PostCSS) and enforcing a constrained
+ * entrypoint-based compilation model.
+ *
+ * ------------------------------------------------------------
+ *
+ * Responsibilities
+ * ------------------------------------------------------------
+ * 1. Register asset template formats (js, css)
+ * 2. Define compile guards for asset entrypoints
+ * 3. Delegate processing to external pipeline functions
+ * 4. Register inline asset filters for templates
+ * 5. Configure watch targets for asset changes
+ *
+ * ------------------------------------------------------------
+ *
+ * Asset Model
+ * ------------------------------------------------------------
+ *
+ * The module enforces an entrypoint-based structure:
+ *
+ * - JS:  /assets/js/index.js
+ * - CSS: /assets/css/index.css
+ *
+ * Only these entry files are compiled.
+ * All other files are ignored at the Eleventy template layer.
+ *
+ * Processing is delegated to:
+ * - ESBuild (JavaScript)
+ * - PostCSS (CSS)
+ *
+ * ------------------------------------------------------------
+ *
+ * Activation Rules
+ * ------------------------------------------------------------
+ *
+ * The module is always registered.
+ *
+ * Compilation behavior depends on:
+ * - presence of assets directory (required)
+ * - availability of processor configuration (optional)
+ *
+ * If the assets directory is not defined, the module exits early.
+ *
+ * ------------------------------------------------------------
+ *
+ * Outputs
+ * ------------------------------------------------------------
+ *
+ * - Compiled JS and CSS assets emitted via Eleventy template pipeline
+ * - Inline asset filters:
+ *   - inlineESbuild → <script> bundle
+ *   - inlinePostCSS → <style> output
+ * - Watch targets for asset file changes
+ *
+ * ------------------------------------------------------------
+ *
+ * Options
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} AssetsOptions
+ *
+ * @property {Object} [assets]
+ * Asset system configuration.
+ *
+ * @property {Object} [assets.esbuild]
+ * ESBuild configuration passed to the JS processing pipeline.
+ *
+ * Defaults are defined in the processor layer and are not duplicated here.
+ *
+ * ------------------------------------------------------------
+ *
+ * Module Context
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} moduleContext
+ *
+ * Shared module boundary contract.
+ *
+ * @property {Object} state
+ * Resolved baseline state (settings + options).
+ *
+ * @property {Object} directories
+ * Resolved directory map (Eleventy + virtual).
+ *
+ * @property {Object} log
+ * Scoped logger instance for module diagnostics.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, moduleContext) {

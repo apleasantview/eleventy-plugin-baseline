@@ -2,15 +2,112 @@ import headElements from './drivers/posthtml-head-elements.js';
 import { buildHead } from './utils/head-utils.js';
 
 /**
- * eleventy-plugin-head-core
+ * Head Core (Eleventy Module)
  *
- * Manages the <head> for every page. Merges site-level defaults, page-level
- * overrides, and computed values (canonical URL, open graph, structured data)
- * into a single head spec, then injects the result into HTML via a PostHTML
- * transform. Pages control their head through a `head` data key.
+ * This module manages document <head> generation for all pages.
  *
- * Depends on: core/logging, head-core/utils/head-utils, head-core/drivers/posthtml-head-elements.
- * No cross-module dependencies.
+ * It composes a normalized head specification from site-level defaults,
+ * page-level overrides, and runtime-derived values, then injects the
+ * resulting elements into HTML output via a PostHTML transform.
+ *
+ * ------------------------------------------------------------
+ *
+ * Responsibilities
+ * ------------------------------------------------------------
+ * 1. Build a unified head specification per page
+ * 2. Merge site defaults with page-level head configuration
+ * 3. Resolve runtime-derived values (canonical URL, metadata)
+ * 4. Expose computed head data to the template layer
+ * 5. Inject head elements into final HTML output
+ *
+ * ------------------------------------------------------------
+ *
+ * Head Model
+ * ------------------------------------------------------------
+ *
+ * The module operates on a normalized "head spec" object.
+ *
+ * Inputs:
+ * - site configuration (state.settings)
+ * - page data (data cascade)
+ * - runtime context (contentMap, URLs)
+ *
+ * Output:
+ * - page.head → structured representation of all head elements
+ *
+ * This spec is later transformed into actual HTML elements.
+ *
+ * ------------------------------------------------------------
+ *
+ * Injection Model
+ * ------------------------------------------------------------
+ *
+ * Head elements are injected via a PostHTML transform.
+ *
+ * Templates define a placeholder tag:
+ *   <baseline-head></baseline-head>
+ *
+ * This module replaces that tag with generated head elements.
+ *
+ * If page.head is not precomputed, it is derived at transform time.
+ *
+ * ------------------------------------------------------------
+ *
+ * Activation Rules
+ * ------------------------------------------------------------
+ *
+ * The module is always active.
+ *
+ * It does not depend on feature flags and runs for all HTML output.
+ *
+ * ------------------------------------------------------------
+ *
+ * Outputs
+ * ------------------------------------------------------------
+ *
+ * Global computed data:
+ * - page.head
+ *   → normalized head specification
+ *
+ * HTML transform:
+ * - Replaces <baseline-head> with rendered head elements
+ *
+ * ------------------------------------------------------------
+ *
+ * Options (Internal)
+ * ------------------------------------------------------------
+ *
+ * These options are not part of the public API and are subject to change.
+ *
+ * @property {string} [dirKey="head"]
+ * Data key used for user-provided head configuration.
+ *
+ * @property {string} [headElementsTag="baseline-head"]
+ * Placeholder tag used in templates for injection.
+ *
+ * @property {string} [EOL="\n"]
+ * Line separator used when rendering head output.
+ *
+ * ------------------------------------------------------------
+ *
+ * Module Context
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} moduleContext
+ *
+ * Shared module boundary contract.
+ *
+ * @property {Object} state
+ * Resolved baseline state (settings + options).
+ *
+ * @property {Object} runtime
+ * Provides access to runtime bindings (contentMap).
+ *
+ * @property {Object} site
+ * Derived site helpers (canonicalUrl, pathPrefix).
+ *
+ * @property {Object} log
+ * Scoped logger instance for module diagnostics.
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, moduleContext) {

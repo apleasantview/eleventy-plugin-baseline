@@ -7,24 +7,123 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
 import { set } from 'zod';
 
 /**
- * eleventy-plugin-multilang-core
+ * Multilang Core (Eleventy Module)
  *
- * Language infrastructure for multilingual sites. Normalizes language metadata,
- * builds a translations map keyed by translationKey + lang, and exposes
- * relational filters for cross-language lookups. Wraps Eleventy's built-in
- * I18nPlugin with stricter language validation.
+ * This module provides language infrastructure for multilingual sites.
  *
- * Depends on: Eleventy I18nPlugin (built-in), @11ty/eleventy-utils (DeepCopy),
- * and the shared langNormalization helper from core/helpers.js.
+ * It normalizes language configuration, builds translation relationships
+ * across pages, and exposes filters for cross-language lookups.
  *
- * Options:
- *  - defaultLanguage (string, default 'en'): fallback language code.
- *  - languages (array|object): allowed languages. Pages with unlisted langs are skipped.
- *  - multilingual (boolean, default false): enable multilingual mode.
- *  - verbose (boolean, default false): warn on unknown language codes.
+ * It also integrates with Eleventy’s I18nPlugin for locale-aware routing.
  *
- * @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig
+ * ------------------------------------------------------------
+ *
+ * Responsibilities
+ * ------------------------------------------------------------
+ * 1. Normalize language configuration (settings.languages)
+ * 2. Validate and resolve page-level language metadata
+ * 3. Build translation collections (map + flat list)
+ * 4. Attach computed locale data to every page
+ * 5. Register relational i18n filters for templates
+ *
+ * ------------------------------------------------------------
+ *
+ * Language Model
+ * ------------------------------------------------------------
+ *
+ * The module operates on two core concepts:
+ *
+ * - language
+ *   → resolved per-page language code
+ *
+ * - translationKey
+ *   → shared identifier linking translated pages
+ *
+ * Each page is mapped as:
+ * translationKey → lang → page metadata
+ *
+ * ------------------------------------------------------------
+ *
+ * Activation Rules
+ * ------------------------------------------------------------
+ *
+ * The module is conditionally active.
+ *
+ * It requires:
+ * - options.multilingual === true
+ * - settings.defaultLanguage
+ * - a valid languages configuration
+ *
+ * If any of these are missing, the module exits early.
+ *
+ * ------------------------------------------------------------
+ *
+ * Outputs
+ * ------------------------------------------------------------
+ *
+ * Global computed data:
+ * - page.locale
+ *   → { translationKey, lang, isDefaultLang }
+ *
+ * Collections:
+ * - translationsMap
+ *   → { [translationKey]: { [lang]: pageMeta } }
+ *
+ * - translations
+ *   → flat list of localized pages with locale data
+ *
+ * Filters:
+ * - i18nTranslationsFor
+ * - i18nTranslationIn
+ * - i18nDefaultTranslation
+ *
+ * ------------------------------------------------------------
+ *
+ * Integration
+ * ------------------------------------------------------------
+ *
+ * Wraps Eleventy’s I18nPlugin to provide:
+ * - locale-aware URL resolution
+ * - fallback handling for missing translations
+ *
+ * Language normalization is shared with other modules
+ * (e.g. sitemap-core) via core/helpers.js.
+ *
+ * ------------------------------------------------------------
+ *
+ * Options
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} MultilangOptions
+ *
+ * @property {boolean} [multilingual]
+ * Enables multilingual mode.
+ *
+ * @property {string} [defaultLanguage]
+ * Default language code.
+ *
+ * @property {Record<string, unknown>|string[]} [languages]
+ * Supported language definitions.
+ *
+ * @property {boolean} [verbose]
+ * Enables logging for invalid or unknown language codes.
+ *
+ * ------------------------------------------------------------
+ *
+ * Module Context
+ * ------------------------------------------------------------
+ *
+ * @typedef {Object} moduleContext
+ *
+ * Shared module boundary contract.
+ *
+ * @property {Object} state
+ * Resolved baseline state (settings + options).
+ *
+ * @property {Object} log
+ * Scoped logger instance for module diagnostics.
  */
+/** @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig */
 export default function multilangCore(eleventyConfig, moduleContext) {
 	const { state, log } = moduleContext;
 	const settings = state.settings;
