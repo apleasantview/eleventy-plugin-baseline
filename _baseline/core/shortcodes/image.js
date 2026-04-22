@@ -64,7 +64,7 @@ export async function imageShortcode(options = {}) {
 	} = options;
 	// Read from global data set during plugin init. When true, `eleventy:ignore`
 	// is added to the <img> (line 140) to prevent double-processing.
-	const hasImageTransformPlugin = this.ctx._baseline.hasImageTransformPlugin;
+	const hasImageTransformPlugin = this.ctx._baseline.features.hasImageTransformPlugin;
 
 	// --- Validation and normalization ---
 

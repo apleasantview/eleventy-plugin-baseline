@@ -1,10 +1,10 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
-import { langNormalization } from '../../../core/helpers.js';
-import { createLogger } from '../../../core/logging.js';
-import i18nTranslationsFor from '../filters/i18n-translations-for.js';
-import i18nTranslationIn from '../filters/i18n-translation-in.js';
-import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
+import { langNormalization } from '../../core/helpers.js';
+import i18nTranslationsFor from './filters/i18n-translations-for.js';
+import i18nTranslationIn from './filters/i18n-translation-in.js';
+import i18nDefaultTranslation from './filters/i18n-default-translation.js';
+import { set } from 'zod';
 
 /**
  * eleventy-plugin-multilang-core
@@ -25,44 +25,44 @@ import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
  *
  * @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig
  */
-export default function multilangCore(eleventyConfig, options = {}) {
-	const userOptions = {
-		defaultLanguage: 'en',
-		languages: [],
-		verbose: false,
-		...options
+export default function multilangCore(eleventyConfig, moduleContext) {
+	const { state, log } = moduleContext;
+	const settings = state.settings;
+	const options = state.options;
+
+	const moduleOptions = {
+		verbose: options.verbose,
+		multilingual: options.multilingual,
+		defaultLanguage: settings.defaultLanguage,
+		languages: settings.languages
 	};
-	const log = createLogger('multilang-core', { verbose: userOptions.verbose });
 
 	// --- Language normalization ---
 	// Accept languages as array or object; normalize to object map.
 	// Drives collection building, locale data, and sitemap-core language config.
-	userOptions.languages = langNormalization(userOptions, log);
-
-	const hasLanguages = userOptions.languages && Object.keys(userOptions.languages).length > 0;
-	const isMultilingual = userOptions.multilingual === true && userOptions.defaultLanguage && hasLanguages;
+	moduleOptions.languages = langNormalization(moduleOptions, log);
+	const hasLanguages = moduleOptions.languages && Object.keys(moduleOptions.languages).length > 0;
+	const isMultilingual = moduleOptions.multilingual === true && moduleOptions.defaultLanguage && hasLanguages;
 
 	if (!isMultilingual) return;
 
 	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {
-		defaultLanguage: userOptions.defaultLanguage,
+		defaultLanguage: moduleOptions.defaultLanguage,
 		errorMode: 'allow-fallback'
 	});
 
 	// Build a set of allowed language codes for validation during collection building.
 	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
-	const allowedLanguages = new Set(
-		Object.keys(userOptions.languages).map(normalizeLanguageCode)
-	);
+	const allowedLanguages = new Set(Object.keys(moduleOptions.languages).map(normalizeLanguageCode));
 
 	// Computed locale data: every page gets a page.locale object with its
 	// resolved lang, translationKey, and whether it's the default language.
 	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
 		return (data) => {
-			const lang = normalizeLanguageCode(data.lang || data.language || userOptions.defaultLanguage);
+			const lang = normalizeLanguageCode(data.lang || data.language || moduleOptions.defaultLanguage);
 			const translationKey = data.translationKey;
-			const isDefaultLang = lang === normalizeLanguageCode(userOptions.defaultLanguage);
+			const isDefaultLang = lang === normalizeLanguageCode(moduleOptions.defaultLanguage);
 
 			return {
 				translationKey,
@@ -82,7 +82,7 @@ export default function multilangCore(eleventyConfig, options = {}) {
 			const translationKey = page.data.translationKey;
 			if (!translationKey) continue;
 
-			const lang = page.data.lang || page.data.language || userOptions.defaultLanguage;
+			const lang = page.data.lang || page.data.language || moduleOptions.defaultLanguage;
 			if (!lang) continue;
 
 			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
@@ -90,7 +90,7 @@ export default function multilangCore(eleventyConfig, options = {}) {
 				continue;
 			}
 
-			const locale = { locale: { translationKey, lang, isDefaultLang: lang === userOptions.defaultLanguage } };
+			const locale = { locale: { translationKey, lang, isDefaultLang: lang === moduleOptions.defaultLanguage } };
 			const safeCopy = DeepCopy(page, locale);
 			list.push(safeCopy);
 
@@ -99,7 +99,7 @@ export default function multilangCore(eleventyConfig, options = {}) {
 				title: page.data.title,
 				url: page.url,
 				lang,
-				isDefaultLang: lang === userOptions.defaultLanguage,
+				isDefaultLang: lang === moduleOptions.defaultLanguage,
 				data: page.data
 			};
 		}

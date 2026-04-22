@@ -21,12 +21,14 @@ const __dirname = path.dirname(__filename);
  *    Pass [true, depth] to control inspector depth (default 2).
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default function navigatorCore(eleventyConfig, options = {}) {
+export default function navigatorCore(eleventyConfig, moduleContext) {
+	const { state, log } = moduleContext;
+	const settings = state.settings;
+	const options = state.options;
 	const raw = options.enableNavigatorTemplate;
 	const [enableNavigatorTemplate, inspectorDepth] = Array.isArray(raw) ? [raw[0], raw[1]] : [raw, undefined];
 
-	const userOptions = {
-		...options,
+	const moduleOptions = {
 		enableNavigatorTemplate: enableNavigatorTemplate ?? false,
 		inspectorDepth: inspectorDepth ?? 2
 	};
@@ -42,7 +44,7 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 	});
 
 	// --- Virtual debug template ---
-	if (userOptions.enableNavigatorTemplate) {
+	if (moduleOptions.enableNavigatorTemplate) {
 		// Read synchronously — Nunjucks virtual template registration is sync-only.
 		const templatePath = path.join(__dirname, './templates/navigator-core.html');
 		const virtualTemplateContent = fs.readFileSync(templatePath, 'utf-8');
@@ -52,7 +54,7 @@ export default function navigatorCore(eleventyConfig, options = {}) {
 			description: '',
 			layout: null,
 			eleventyExcludeFromCollections: true,
-			inspectorDepth: userOptions.inspectorDepth
+			inspectorDepth: moduleOptions.inspectorDepth
 		});
 	}
 
