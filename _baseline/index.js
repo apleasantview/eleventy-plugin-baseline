@@ -2,16 +2,16 @@ import 'dotenv/config';
 import { createRequire } from 'node:module';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
-import { createContentMapStore } from './core/store.js';
 import { createLogger } from './core/logging.js';
+import { createContentMapStore } from './core/store.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
+import { registerPageContext } from './core/page-context.js';
 import { settingsSchema } from './core/schema.js';
 
 import globals from './core/globals/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
 import modules from './core/plugins.js';
-import { tr } from 'zod/v4/locales';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
@@ -211,8 +211,9 @@ export default function baseline(settings = {}, options = {}) {
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
 		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
-		const inferredSitemap = Boolean(options.sitemap || options.enableSitemapTemplate || true);
-		const inferredNavigator = Boolean(options.navigator || isDev);
+		const inferredHead = options.head?.driver || 'default';
+		const inferredSitemap = options.sitemap ?? options.enableSitemapTemplate ?? true;
+		const inferredNavigator = Boolean(isDev || options.navigator || options.enableNavigatorTemplate);
 
 		const state = {
 			settings: {
@@ -227,8 +228,13 @@ export default function baseline(settings = {}, options = {}) {
 			options: {
 				verbose: options.verbose ?? false,
 				multilingual: options.multilingual ?? inferredMultilingual,
-				sitemap: options.sitemap ?? inferredSitemap,
-				navigator: options.navigator ?? inferredNavigator,
+				head: {
+					driver: options.head?.driver ?? inferredHead
+				},
+				sitemap: inferredSitemap,
+				navigator: {
+					template: options.navigator ?? inferredNavigator
+				},
 				assets: {
 					esbuild: options.assetsESBuild ?? {}
 				}
@@ -297,8 +303,8 @@ export default function baseline(settings = {}, options = {}) {
 			contentMapStore.set(data);
 		});
 
-		// --- Runtime context (lazy access layer) ---
-		const runtimeContext = {
+		// --- Core context (lazy access layer) ---
+		const coreContext = {
 			state,
 			runtime: {
 				get contentMap() {
@@ -308,6 +314,9 @@ export default function baseline(settings = {}, options = {}) {
 			site,
 			directories
 		};
+
+		// Page context factory
+		const getPageContext = registerPageContext(eleventyConfig, coreContext);
 
 		// --- Module registry ---
 		const features = {
@@ -319,18 +328,26 @@ export default function baseline(settings = {}, options = {}) {
 		const moduleRegistry = [
 			{ when: features.multilang, name: 'multilang-core', plugin: modules.multilangCore },
 			{ name: 'assets-core', plugin: modules.assetsCore },
-			{ name: 'head-core', plugin: modules.headCore },
+			{ name: 'head-core', plugin: modules.headCore, consumes: { pageContext: true } },
 			{ when: features.sitemap, name: 'sitemap-core', plugin: modules.sitemapCore },
-			{ when: features.navigator, name: 'navigator-core', plugin: modules.navigatorCore }
+			{
+				when: features.navigator,
+				name: 'navigator-core',
+				plugin: modules.navigatorCore,
+				consumes: { pageContext: true }
+			}
 		];
 
-		for (const { when = true, name, plugin } of moduleRegistry) {
+		for (const entry of moduleRegistry) {
+			const { when = true, name, plugin, consumes = {} } = entry;
 			if (!when) continue;
+			const moduleContext = {
+				...coreContext,
+				log: scopedLog(name),
+				resolvePageContext: consumes.pageContext ? getPageContext : null
+			};
 
-			eleventyConfig.addPlugin(plugin, {
-				...runtimeContext,
-				log: scopedLog(name)
-			});
+			eleventyConfig.addPlugin(plugin, moduleContext);
 		}
 
 		// --- Filters ---
