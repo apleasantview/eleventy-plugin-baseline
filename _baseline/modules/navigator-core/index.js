@@ -103,6 +103,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 			title: 'Navigator Core',
 			layout: null,
 			eleventyExcludeFromCollections: true,
+			_internal: true,
 
 			// Debug control surface
 			inspectorDepth

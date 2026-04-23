@@ -148,7 +148,8 @@ export default function sitemapCore(eleventyConfig, moduleContext) {
 					layout: null,
 					eleventyExcludeFromCollections: true,
 					isMultilingual: multilingual,
-					sitemapLang: lang
+					sitemapLang: lang,
+					_internal: true
 				});
 			}
 
@@ -159,7 +160,8 @@ export default function sitemapCore(eleventyConfig, moduleContext) {
 				layout: null,
 				eleventyExcludeFromCollections: true,
 				isMultilingual: multilingual,
-				languages: moduleOptions.languages
+				languages: moduleOptions.languages,
+				_internal: true
 			});
 		} else {
 			eleventyConfig.addTemplate('_baseline/sitemap-core.html', baseContent, {
@@ -167,7 +169,8 @@ export default function sitemapCore(eleventyConfig, moduleContext) {
 				title: '',
 				description: '',
 				layout: null,
-				eleventyExcludeFromCollections: true
+				eleventyExcludeFromCollections: true,
+				_internal: true
 			});
 		}
 	}
