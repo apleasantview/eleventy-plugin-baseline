@@ -111,15 +111,47 @@ import { buildHead } from './utils/head-utils.js';
  */
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, moduleContext) {
-	const { state, runtime, directories, log, site } = moduleContext;
-	const options = state.options;
-	const siteUrl = site.canonicalUrl;
-	const pathPrefix = site.pathPrefix;
+	const { state, site, runtime, log } = moduleContext;
+	const { settings, options } = state;
+	const { canonicalUrl, pathPrefix } = site;
+	const { contentMap } = runtime;
 
-	// Internal options — not part of the public API.
-	const userKey = options.dirKey || 'head';
-	const headElementsTag = options.headElementsTag || 'baseline-head';
-	const eol = options.EOL || '\n';
+	const pageContext = moduleContext.resolvePageContext;
+
+	const moduleOptions = {
+		driver: options.head.driver,
+		canonicalUrl,
+		pathPrefix,
+		userKey: 'head',
+		eol: '\n'
+	};
+
+	// Some stats.
+	const headStats = {
+		pages: new Set()
+	};
+
+	debugger;
+
+	eleventyConfig.on('eleventy.after', () => {
+		log.info({
+			message: 'Head injection summary',
+			totalPages: headStats.pages.size,
+			sample: Array.from(headStats.pages).slice(0, 10)
+		});
+
+		// Reset for next build (important in watch mode).
+		headStats.pages.clear();
+	});
+
+	const builder = (data) =>
+		buildHead(data, {
+			userKey: moduleOptions.userKey,
+			canonicalUrl: moduleOptions.canonicalUrl,
+			pathPrefix: moduleOptions.pathPrefix,
+			pageUrlOverride: data?.page?.url,
+			contentMap
+		});
 
 	// Cache the content map so canonical URLs can resolve inputPath → URL.
 	// Updated each build when Eleventy emits the contentMap event.
@@ -128,36 +160,23 @@ export default function headCore(eleventyConfig, moduleContext) {
 	// Computed global data: build the head spec for every page through the
 	// data cascade. Templates access the result via `page.head`.
 	eleventyConfig.addGlobalData('eleventyComputed.page.head', () => {
-		return (data) =>
-			buildHead(data, {
-				userKey,
-				siteUrl,
-				pathPrefix,
-				contentMap: runtime.contentMap,
-				pageUrlOverride: data?.page?.url
-			});
+		return (data) => builder(data);
 	});
 
 	// HTML transform: inject the head spec into the document <head> using
 	// PostHTML. Replaces the <baseline-head> placeholder tag with real elements.
 	// Falls back to building the spec from context if page.head isn't available.
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
-		log.info('injecting head elements for', context?.page?.inputPath || context?.outputPath);
+		const ctx = pageContext;
+		debugger;
+		headStats.pages.add(context?.page?.inputPath || context?.outputPath);
 
-		const headElementsSpec =
-			context?.page?.head ||
-			buildHead(context, {
-				userKey,
-				siteUrl,
-				pathPrefix,
-				contentMap: runtime.contentMap,
-				pageUrlOverride: context?.page?.url
-			});
+		const headElementsSpec = context?.page?.head || builder(ctx);
 
 		const plugin = headElements({
 			headElements: headElementsSpec,
-			headElementsTag,
-			EOL: eol,
+			headElementsTag: 'baseline-head',
+			EOL: moduleOptions.eol,
 			logger: log
 		});
 
