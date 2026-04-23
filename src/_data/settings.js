@@ -35,5 +35,7 @@ export default {
 			{ src: '/assets/js/index.js', defer: true },
 			{ src: '/assets/js/vendor/index.js', defer: true }
 		]
-	}
+	},
+
+	seo: {}
 };

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { configSchema, settingsSchema } from '../schema.js';
-import { config } from '../../eleventy.config.js';
+import { config } from '../../index.js';
 import settings from '../../../src/_data/settings.js';
 
 describe('configSchema', () => {
