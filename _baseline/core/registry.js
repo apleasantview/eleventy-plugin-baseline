@@ -1,13 +1,13 @@
-const scopesByConfig = new WeakMap();
+const roots = new WeakMap();
 
 /**
  * Get or create the per-eleventyConfig root that holds all named scopes.
  */
-function getScopeRoot(eleventyConfig) {
-	let root = scopesByConfig.get(eleventyConfig);
+function getRoot(eleventyConfig) {
+	let root = roots.get(eleventyConfig);
 	if (!root) {
 		root = new Map();
-		scopesByConfig.set(eleventyConfig, root);
+		roots.set(eleventyConfig, root);
 	}
 	return root;
 }
@@ -24,7 +24,7 @@ function getScopeRoot(eleventyConfig) {
  * @returns {{cache: WeakMap, values: Map, listeners: Set<string>}}
  */
 export function getScope(eleventyConfig, name) {
-	const root = getScopeRoot(eleventyConfig);
+	const root = getRoot(eleventyConfig);
 
 	if (!root.has(name)) {
 		root.set(name, {

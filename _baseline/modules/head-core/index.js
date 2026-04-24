@@ -112,7 +112,7 @@ import { buildHead } from './utils/head-utils.js';
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function headCore(eleventyConfig, moduleContext) {
 	const { state, site, runtime, log } = moduleContext;
-	const { settings, options } = state;
+	const { options } = state;
 	const { canonicalUrl, pathPrefix } = site;
 	const { contentMap } = runtime;
 
@@ -131,8 +131,6 @@ export default function headCore(eleventyConfig, moduleContext) {
 		pages: new Set()
 	};
 
-	debugger;
-
 	eleventyConfig.on('eleventy.after', () => {
 		log.info({
 			message: 'Head injection summary',
@@ -144,18 +142,17 @@ export default function headCore(eleventyConfig, moduleContext) {
 		headStats.pages.clear();
 	});
 
+	// contentMap is read through the getter on every call so it reflects
+	// state after `eleventy.contentMap` fires. Capturing it at module-init
+	// time would freeze it at null.
 	const builder = (data) =>
 		buildHead(data, {
 			userKey: moduleOptions.userKey,
 			canonicalUrl: moduleOptions.canonicalUrl,
 			pathPrefix: moduleOptions.pathPrefix,
 			pageUrlOverride: data?.page?.url,
-			contentMap
+			contentMap: runtime.contentMap
 		});
-
-	// Cache the content map so canonical URLs can resolve inputPath → URL.
-	// Updated each build when Eleventy emits the contentMap event.
-	// let cachedContentMap = runtime.contentMap;
 
 	// Computed global data: build the head spec for every page through the
 	// data cascade. Templates access the result via `page.head`.
@@ -165,10 +162,9 @@ export default function headCore(eleventyConfig, moduleContext) {
 
 	// HTML transform: inject the head spec into the document <head> using
 	// PostHTML. Replaces the <baseline-head> placeholder tag with real elements.
-	// Falls back to building the spec from context if page.head isn't available.
+	// Falls back to building the spec from the posthtml page data if
+	// page.head isn't precomputed.
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
-		const ctx = pageContext;
-		debugger;
 		headStats.pages.add(context?.page?.inputPath || context?.outputPath);
 
 		const headElementsSpec = context?.page?.head || builder(ctx);

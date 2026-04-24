@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
  * and inspection purposes.
  *
  * It is intentionally isolated from other baseline modules and does not
- * introduce runtime dependencies beyond Eleventy’s config API.
+ * introduce runtime dependencies beyond Eleventy's config API.
  *
  * ------------------------------------------------------------
  *
@@ -30,9 +30,14 @@ const __dirname = path.dirname(__filename);
  * ------------------------------------------------------------
  * - _navigator → full Nunjucks runtime environment (env + ctx)
  * - _context   → raw template context (this.ctx)
+ * - _debug     → runtime snapshots (contentMap, pageContext inspection map)
  *
  * These are strictly development tools and should not be relied on
  * for production rendering logic.
+ *
+ * Note: _debug.contentMap resolves to null on the virtual navigator
+ * template because that template renders before `eleventy.contentMap`
+ * fires. View _debug from any ordinary page for a populated contentMap.
  *
  * ------------------------------------------------------------
  *
@@ -55,16 +60,19 @@ const __dirname = path.dirname(__filename);
  *
  * @param {Object} moduleContext.state
  * Resolved plugin state (settings + options).
+ *
+ * @param {Object} moduleContext.snapshots
+ * Thunks returning current runtime state: { contentMap, pageContext }.
  */
 export default function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, snapshots } = moduleContext;
-	const { settings, options } = state;
+	const { options } = state;
 	const renderTemplate = options.navigator?.template ?? false;
 	const inspectorDepth = options.navigator?.inspectorDepth ?? 2;
 
 	// The navigator template shows per-page context fine; contentMap is inspectable from any .md or layout.
 	eleventyConfig.addGlobalData('eleventyComputed._debug', () => {
-		return (data) => ({
+		return () => ({
 			contentMap: snapshots.contentMap(),
 			pageContext: snapshots.pageContext()
 		});
@@ -109,6 +117,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 		eleventyConfig.addTemplate('navigator-core.html', virtualTemplateContent, {
 			permalink: '/navigator-core.html',
 			title: 'Navigator Core',
+			description: 'Eleventy + Baseline internals',
 			layout: null,
 			eleventyExcludeFromCollections: true,
 			_internal: false,

@@ -312,15 +312,16 @@ export default function baseline(settings = {}, options = {}) {
 				}
 			},
 			site,
-			directories,
-			snapshots: {
-				contentMap: () => contentMapStore.snapshot(),
-				pageContext: () => pageContextRegistry.snapshot()
-			}
+			directories
 		};
 
 		// Page context registry
 		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
+
+		coreContext.snapshots = {
+			contentMap: () => contentMapStore.snapshot(),
+			pageContext: () => pageContextRegistry.snapshot()
+		};
 
 		// --- Module registry ---
 		const features = {
@@ -337,8 +338,7 @@ export default function baseline(settings = {}, options = {}) {
 			{
 				when: features.navigator,
 				name: 'navigator-core',
-				plugin: modules.navigatorCore,
-				consumes: { pageContext: true }
+				plugin: modules.navigatorCore
 			}
 		];
 
