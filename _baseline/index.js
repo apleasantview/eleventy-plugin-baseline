@@ -11,7 +11,7 @@ import { settingsSchema } from './core/schema.js';
 import globals from './core/globals/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
-import modules from './core/plugins.js';
+import modules from './core/modules.js';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
