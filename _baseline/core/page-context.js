@@ -1,6 +1,7 @@
 import { createLogger } from './logging.js';
 
 const cache = new WeakMap();
+const inspectionMap = new Map();
 
 /**
  * Page Context Registry
@@ -22,7 +23,8 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	 */
 	function createPageContext(data) {
 		if (data._internal) return;
-		return {
+
+		const context = {
 			page: {
 				url: data.page?.url ?? null,
 				inputPath: data.page?.inputPath ?? null,
@@ -30,23 +32,21 @@ export function registerPageContext(eleventyConfig, coreContext) {
 				date: data.page?.date ?? null,
 				outputFileExtension: data.page.outputFileExtension ?? null
 			},
-
 			content: {
 				title: data.title ?? null,
 				description: data.description ?? null
 			},
-
 			site: site,
-
 			state: {
 				settings: state.settings,
 				options: state.options
-			},
-
-			runtime: {
-				contentMap: runtime.contentMap
 			}
 		};
+
+		const key = context.page.url ?? context.page.inputPath;
+		if (key) inspectionMap.set(key, context);
+
+		return context;
 	}
 
 	/**
@@ -66,7 +66,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	/**
 	 * Eleventy hook: only place where raw page data exists
 	 */
-	eleventyConfig.addGlobalData('eleventyComputed._pageContext', (data) => {
+	eleventyConfig.addGlobalData('eleventyComputed._pageContext', () => {
 		return (data) => getPageContext(data);
 	});
 
@@ -76,6 +76,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	 * Optional module API (if anything wants direct access)
 	 */
 	return {
-		get: (data) => cache.get(data)
+		get: (data) => cache.get(data),
+		snapshot: () => Object.fromEntries(inspectionMap)
 	};
 }

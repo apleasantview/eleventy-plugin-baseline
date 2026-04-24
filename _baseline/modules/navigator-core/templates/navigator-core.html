@@ -38,6 +38,12 @@ permalink: /navigator-core.html
 		<div class="_navigator__wrapper">
 			<p><a id="go-back" href=""><span style="vertical-align: text-bottom;">&#8592;</span>&nbsp;Go back</a></p>
 			<h2><u>Navigator</u></h2>
+			<details>
+				<summary><strong>Page Context</strong></summary>
+				<pre>
+					{{- _snapshots.pageContext | _inspect({ depth: 4 }) -}}
+				</pre>
+			</details>
 			{% for key, value in _navigator() %}
 			<details>
 				<summary><strong>{{ key }}</strong></summary>

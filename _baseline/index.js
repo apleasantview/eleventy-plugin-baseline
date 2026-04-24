@@ -312,11 +312,15 @@ export default function baseline(settings = {}, options = {}) {
 				}
 			},
 			site,
-			directories
+			directories,
+			snapshots: {
+				contentMap: () => contentMapStore.snapshot(),
+				pageContext: () => pageContextRegistry.snapshot()
+			}
 		};
 
-		// Page context factory
-		const getPageContext = registerPageContext(eleventyConfig, coreContext);
+		// Page context registry
+		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
 
 		// --- Module registry ---
 		const features = {
@@ -344,7 +348,7 @@ export default function baseline(settings = {}, options = {}) {
 			const moduleContext = {
 				...coreContext,
 				log: scopedLog(name),
-				resolvePageContext: consumes.pageContext ? getPageContext : null
+				resolvePageContext: consumes.pageContext ? pageContextRegistry : null
 			};
 
 			eleventyConfig.addPlugin(plugin, moduleContext);

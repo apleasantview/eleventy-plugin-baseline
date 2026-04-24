@@ -57,10 +57,18 @@ const __dirname = path.dirname(__filename);
  * Resolved plugin state (settings + options).
  */
 export default function navigatorCore(eleventyConfig, moduleContext) {
-	const { state } = moduleContext;
-	const options = state.options;
+	const { state, snapshots } = moduleContext;
+	const { settings, options } = state;
 	const renderTemplate = options.navigator?.template ?? false;
 	const inspectorDepth = options.navigator?.inspectorDepth ?? 2;
+
+	// The navigator template shows per-page context fine; contentMap is inspectable from any .md or layout.
+	eleventyConfig.addGlobalData('eleventyComputed._snapshots', () => {
+		return (data) => ({
+			contentMap: snapshots.contentMap(),
+			pageContext: snapshots.pageContext()
+		});
+	});
 
 	/**
 	 * Nunjucks Global: _navigator
@@ -103,7 +111,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 			title: 'Navigator Core',
 			layout: null,
 			eleventyExcludeFromCollections: true,
-			_internal: true,
+			_internal: false,
 
 			// Debug control surface
 			inspectorDepth

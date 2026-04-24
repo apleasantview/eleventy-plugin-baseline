@@ -7,6 +7,9 @@ export function createContentMapStore() {
 		},
 		get() {
 			return map;
+		},
+		snapshot() {
+			return map;
 		}
 	};
 }
