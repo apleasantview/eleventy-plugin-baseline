@@ -1,6 +1,7 @@
 import { TemplatePath } from '@11ty/eleventy-utils';
 import { resolveSubdir } from './helpers.js';
 import { createLogger } from './logging.js';
+import { getScope, addScopeListener, setEntry } from './registry.js';
 
 // Eleventy's ProjectDirectories.setViaConfigObject() only honours input,
 // output, data, includes, and layouts; extra dir.* keys are silently ignored,
@@ -9,7 +10,7 @@ import { createLogger } from './logging.js';
 // them in sync when Eleventy finalises its directories, and optionally
 // publishes the resolved paths as global data.
 
-const registries = new WeakMap();
+const SCOPE_NAME = 'core/virtual-dir';
 
 /**
  * Register a virtual directory on eleventyConfig.directories.
@@ -29,8 +30,8 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 		throw new Error('registerVirtualDir: `name` is required');
 	}
 
-	const log = createLogger('virtual-dir');
-	const registry = getRegistry(eleventyConfig);
+	const log = createLogger(SCOPE_NAME);
+	const scope = getScope(eleventyConfig, SCOPE_NAME);
 	const rawDir = eleventyConfig.dir?.[name] || name;
 	const rawOutputDir = outputDir ?? rawDir;
 	const cache = { input: null, output: null };
@@ -39,7 +40,7 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 	// time (watch globs, ignores, compile-guard prefixes) see a valid path.
 	syncCache(cache, eleventyConfig.dir || {}, rawDir, rawOutputDir);
 
-	registry.entries.set(name, { rawDir, rawOutputDir, cache });
+	setEntry(scope, name, { rawDir, rawOutputDir, cache });
 
 	// Define the virtual key once. The getter reads the live cache, which the
 	// shared listener below refreshes when Eleventy emits its final directories.
@@ -57,14 +58,13 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 	}
 
 	// One listener services all virtual dirs registered on this config.
-	if (!registry.listenerAttached) {
-		registry.listenerAttached = true;
-		eleventyConfig.on('eleventy.directories', (dirs) => {
-			for (const entry of registry.entries.values()) {
-				syncCache(entry.cache, dirs, entry.rawDir, entry.rawOutputDir);
-			}
-		});
-	}
+	// addScopeListener dedupes on ('eleventy.directories', 'sync'), so
+	// subsequent registerVirtualDir calls don't stack handlers.
+	addScopeListener(eleventyConfig, SCOPE_NAME, 'eleventy.directories', 'sync', (scope, dirs) => {
+		for (const entry of scope.values.values()) {
+			syncCache(entry.cache, dirs, entry.rawDir, entry.rawOutputDir);
+		}
+	});
 
 	if (globalDataKey) {
 		eleventyConfig.addGlobalData(globalDataKey, () => ({
@@ -76,18 +76,10 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 	return cache;
 }
 
-function getRegistry(eleventyConfig) {
-	let registry = registries.get(eleventyConfig);
-	if (!registry) {
-		registry = { entries: new Map(), listenerAttached: false };
-		registries.set(eleventyConfig, registry);
-	}
-	return registry;
-}
-
 function syncCache(cache, dirs, rawDir, rawOutputDir) {
 	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
 	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || './');
+
 	// resolveSubdir symmetrically resolves against input and output; call twice
 	// so input and output subdirs can differ (e.g. `public` copies to root).
 	cache.input = resolveSubdir(inputDir, outputDir, rawDir).input;
