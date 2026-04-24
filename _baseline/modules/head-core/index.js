@@ -114,7 +114,6 @@ export default function headCore(eleventyConfig, moduleContext) {
 	const { state, site, runtime, log } = moduleContext;
 	const { options } = state;
 	const { canonicalUrl, pathPrefix } = site;
-	const { contentMap } = runtime;
 
 	const pageContext = moduleContext.resolvePageContext;
 

@@ -1,6 +1,9 @@
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
+const SCOPE_NAME = 'core/page-context';
+const COMPUTED_KEY = 'eleventyComputed._pageContext';
+
 /**
  * Page Context Registry
  *
@@ -10,10 +13,9 @@ import { getScope, memoize, setEntry } from './registry.js';
 export function registerPageContext(eleventyConfig, coreContext) {
 	const { state, runtime, site } = coreContext;
 	const { settings, options } = state;
-	const name = 'core/page-context';
-	const log = createLogger(name, { verbose: options.verbose });
+	const log = createLogger(SCOPE_NAME, { verbose: options.verbose });
 
-	const scope = getScope(eleventyConfig, name);
+	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
 	function shouldSkip(data) {
 		if (data._internal) return true;
@@ -52,10 +54,10 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		return context;
 	}
 
-	eleventyConfig.addGlobalData('eleventyComputed._pageContext', () => {
+	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
 		return (data) => {
 			if (shouldSkip(data)) return null;
-			memoize(scope, data, buildPageContext);
+			return memoize(scope, data, buildPageContext);
 		};
 	});
 

@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createLogger } from './core/logging.js';
-import { createContentMapStore } from './core/store.js';
+import { createContentMapStore } from './core/content-map-store.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { settingsSchema } from './core/schema.js';
@@ -159,13 +159,6 @@ export default function baseline(settings = {}, options = {}) {
 		};
 	}
 
-	// Content map is populated asynchronously via Eleventy lifecycle events.
-	const contentMapStore = createContentMapStore();
-
-	function resolveContentMap() {
-		return contentMapStore.get();
-	}
-
 	if (wasLegacy) {
 		baseLog.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
 	}
@@ -298,17 +291,15 @@ export default function baseline(settings = {}, options = {}) {
 			});
 		}
 
-		// --- Eleventy runtime bridge ---
-		eleventyConfig.on('eleventy.contentMap', (data) => {
-			contentMapStore.set(data);
-		});
+		// --- Runtime stores (self-attach their lifecycle listeners) ---
+		const contentMapStore = createContentMapStore(eleventyConfig);
 
 		// --- Core context (lazy access layer) ---
 		const coreContext = {
 			state,
 			runtime: {
 				get contentMap() {
-					return resolveContentMap();
+					return contentMapStore.get();
 				}
 			},
 			site,

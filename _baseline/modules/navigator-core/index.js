@@ -70,7 +70,6 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	const renderTemplate = options.navigator?.template ?? false;
 	const inspectorDepth = options.navigator?.inspectorDepth ?? 2;
 
-	// The navigator template shows per-page context fine; contentMap is inspectable from any .md or layout.
 	eleventyConfig.addGlobalData('eleventyComputed._debug', () => {
 		return () => ({
 			contentMap: snapshots.contentMap(),
