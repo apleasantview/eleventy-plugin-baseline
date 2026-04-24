@@ -1,28 +1,40 @@
 {
-	// Use IntelliSense to learn about possible attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"command": "npm run dryrun",
-			"name": "Debug 11ty",
+			"name": "Debug 11ty (dryrun)",
 			"request": "launch",
 			"type": "node-terminal",
-			"cwd": "${workspaceFolder}"
+			"command": "npm run dryrun",
+			"cwd": "${workspaceFolder}",
+			"env": {
+				"ELEVENTY_ENV": "development",
+				"URL": "http://localhost:8080/"
+			}
 		},
 		{
-			"command": "npm run debug:log",
+			"name": "Debug 11ty (serve)",
+			"request": "launch",
+			"type": "node-terminal",
+			"command": "npm run dev",
+			"cwd": "${workspaceFolder}",
+			"env": {
+				"ELEVENTY_ENV": "development",
+				"URL": "http://localhost:8080/"
+			}
+		},
+		{
 			"name": "Logged debug 11ty",
 			"request": "launch",
 			"type": "node-terminal",
+			"command": "npm run debug:log",
 			"cwd": "${workspaceFolder}"
 		},
 		{
-			"command": "npm test",
 			"name": "Run tests",
 			"request": "launch",
 			"type": "node-terminal",
+			"command": "npm test",
 			"cwd": "${workspaceFolder}"
 		}
 	]
