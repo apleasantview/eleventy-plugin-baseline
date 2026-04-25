@@ -66,11 +66,15 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 		}
 	});
 
+	// if (globalDataKey) {
+	// 	eleventyConfig.addGlobalData(globalDataKey, () => ({
+	// 		input: cache.input,
+	// 		output: cache.output
+	// 	}));
+	// }
+
 	if (globalDataKey) {
-		eleventyConfig.addGlobalData(globalDataKey, () => ({
-			input: cache.input,
-			output: cache.output
-		}));
+		eleventyConfig.addGlobalData(globalDataKey, {});
 	}
 
 	return cache;

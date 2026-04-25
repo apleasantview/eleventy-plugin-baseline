@@ -48,7 +48,7 @@ const __dirname = path.dirname(__filename);
  *     Enables virtual debug page generation.
  *
  *   inspectorDepth: number
- *     Controls depth of inspected object output (default: 2)
+ *     Controls depth of inspected object output (default: 4)
  *
  * ------------------------------------------------------------
  *
@@ -68,7 +68,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, snapshots } = moduleContext;
 	const { options } = state;
 	const renderTemplate = options.navigator?.template ?? false;
-	const inspectorDepth = options.navigator?.inspectorDepth ?? 2;
+	const inspectorDepth = options.navigator?.inspectorDepth ?? 4;
 
 	eleventyConfig.addGlobalData('eleventyComputed._debug', () => {
 		return () => ({

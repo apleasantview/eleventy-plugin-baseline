@@ -10,7 +10,13 @@ const debugOptions = { space: 0 };
  * @returns {string}
  */
 function inspect(obj, options = {}) {
-	return utilInspect(obj, options);
+	return utilInspect(obj, {
+		depth: 4,
+		maxArrayLength: 10,
+		breakLength: 80,
+		compact: true,
+		...options
+	});
 }
 
 /**

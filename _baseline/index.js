@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import { createRequire } from 'node:module';
+
+import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createLogger } from './core/logging.js';
@@ -8,7 +10,7 @@ import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { settingsSchema } from './core/schema.js';
 
-import globals from './core/globals/index.js';
+import globalFunctions from './core/global-functions/index.js';
 import filters from './core/filters/index.js';
 import shortcodes from './core/shortcodes/index.js';
 import modules from './core/modules.js';
@@ -25,6 +27,10 @@ const LEGACY_OPTION_KEYS = [
 	'assetsESBuild',
 	'multilingual'
 ];
+
+// Whitelist of global data keys used internally across the plugin.
+// Positive side effect is they all get listed in order and data to the same key gets merged.
+const INTERNAL_KEYS = ['_baseline', '_assets', '_head', '_pageContext', '_debug'];
 
 /**
  * Detect legacy single-object plugin invocation.
@@ -185,20 +191,24 @@ export default function baseline(settings = {}, options = {}) {
 			baseLog.error('Eleventy version mismatch:', e.message);
 		}
 
+		INTERNAL_KEYS.forEach((key) => {
+			eleventyConfig.addGlobalData(key, {});
+		});
+
+		eleventyConfig.addGlobalData('_baseline', {
+			version,
+			name
+		});
+
 		if (!settings.url) {
 			baseLog.warn('settings.url missing — canonical URLs will be relative');
 		}
 
-		// BaseHref is a build-time routing concern, not site identity.
-		function resolveBaseHref(eleventyConfig) {
-			return process.env.URL || eleventyConfig.pathPrefix;
-		}
+		globalFunctions(eleventyConfig);
 
-		eleventyConfig.addPlugin(modules.EleventyHtmlBasePlugin, {
-			baseHref: resolveBaseHref(eleventyConfig)
+		eleventyConfig.addPlugin(HtmlBasePlugin, {
+			baseHref: process.env.URL || eleventyConfig.pathPrefix
 		});
-
-		globals(eleventyConfig);
 
 		// --- State layer (authoritative configuration) ---
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
@@ -234,6 +244,12 @@ export default function baseline(settings = {}, options = {}) {
 			}
 		};
 
+		eleventyConfig.addGlobalData('_baseline', {
+			features: {
+				...state.options
+			}
+		});
+
 		// --- Site helpers (derived state) ---
 		const site = {
 			get baseHref() {
@@ -250,12 +266,12 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Virtual directories ---
 		registerVirtualDir(eleventyConfig, {
 			name: 'assets',
-			globalDataKey: '_baseline.assets'
+			globalDataKey: '_assets'
 		});
 
 		const publicDir = registerVirtualDir(eleventyConfig, {
 			name: 'public',
-			globalDataKey: '_baseline.public',
+			globalDataKey: '',
 			outputDir: ''
 		});
 
@@ -270,13 +286,8 @@ export default function baseline(settings = {}, options = {}) {
 
 		eleventyConfig.addPassthroughCopy({ [publicDir.input]: '/' });
 
-		// --- Global surface (minimal computed output) ---
+		// Add paths to global.
 		eleventyConfig.addGlobalData('_baseline', {
-			version,
-			name,
-			features: {
-				hasImageTransformPlugin
-			},
 			paths: {
 				...directories
 			}

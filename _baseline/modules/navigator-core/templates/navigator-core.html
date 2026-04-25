@@ -41,7 +41,7 @@ permalink: /navigator-core.html
 			<details>
 				<summary><strong>Page Context</strong></summary>
 				<pre>
-					{{- _debug.pageContext | _inspect({ depth: 4 }) -}}
+					{{- _debug.pageContext | _inspect({ depth: null }) -}}
 				</pre>
 			</details>
 			{% for key, value in _navigator() %}
