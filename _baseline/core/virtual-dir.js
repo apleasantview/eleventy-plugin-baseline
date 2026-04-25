@@ -1,5 +1,5 @@
 import { TemplatePath } from '@11ty/eleventy-utils';
-import { resolveSubdir } from './helpers.js';
+import { resolveSubdir } from './utils/helpers.js';
 import { createLogger } from './logging.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 

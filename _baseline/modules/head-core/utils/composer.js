@@ -1,7 +1,7 @@
 import { getWeight, ElementWeights } from '@rviscomi/capo.js';
 import { capoPosthtmlAdapter as adapter } from '../drivers/capo-adapter.js';
 import { dedupeMeta, dedupeLink } from './dedupe.js';
-import pick from './pick.js';
+import pick from '../../../core/utils/pick.js';
 
 // Robots defaults — seo-graph style, kept in one place.
 const ROBOTS_DEFAULT = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';

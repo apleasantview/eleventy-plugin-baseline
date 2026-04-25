@@ -36,7 +36,7 @@ export function resolveSubdir(inputDir, outputDir, rawDir) {
  * Returns null if input is invalid or empty.
  *
  * @param {Object} userOptions - Options object containing languages.
- * @param {import('./logging.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
+ * @param {import('../logging.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
  * @returns {Record<string, Object>|null} Normalized language map, or null.
  */
 export function langNormalization(userOptions, logger) {
@@ -58,4 +58,3 @@ export function langNormalization(userOptions, logger) {
 	}
 	return normalizedLanguages;
 }
-

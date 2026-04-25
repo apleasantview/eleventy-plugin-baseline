@@ -1,5 +1,4 @@
-import pick from './pick.js';
-
+import pick from '../../../core/utils/pick.js';
 const COMPUTED_KEY = 'eleventyComputed._head';
 
 /**
