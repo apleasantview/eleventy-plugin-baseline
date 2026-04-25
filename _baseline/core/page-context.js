@@ -34,18 +34,19 @@ export function registerPageContext(eleventyConfig, coreContext) {
 				inputPath: data.page.inputPath ?? null,
 				fileSlug: data.page.fileSlug ?? null,
 				date: data.page.date ?? null,
-				outputFileExtension: data.page.outputFileExtension ?? null
+				outputFileExtension: data.page.outputFileExtension ?? null,
+				lang: data.page.lang ?? null
 			},
 			content: {
 				title: data.title ?? null,
-				description: data.description ?? null
+				description: data.description ?? null,
+				noindex: data.noindex
 			},
 			site,
 			state: {
 				settings,
 				options
-			},
-			runtime: { contentMap: runtime.contentMap }
+			}
 		};
 
 		const inspectionKey = context.page.url ?? context.page.inputPath;
@@ -65,6 +66,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	return {
 		get: (data) => scope.cache.get(data),
+		getByKey: (key) => scope.values.get(key),
 		snapshot: () => Object.fromEntries(scope.values)
 	};
 }
