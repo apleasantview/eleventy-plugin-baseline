@@ -1,5 +1,5 @@
+import { renderHead } from './drivers/posthtml-head-elements.js';
 import { collectHeadSeeds } from './utils/collector.js';
-import { composeHead } from './utils/composer.js';
 
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
@@ -64,7 +64,7 @@ export default function headCore(eleventyConfig, moduleContext) {
 			return (tree) => tree;
 		}
 
-		return composeHead({
+		return renderHead({
 			seeds,
 			options: headOptions,
 			placeholderTag: PLACEHOLDER_TAG,

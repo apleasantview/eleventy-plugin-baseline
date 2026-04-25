@@ -225,7 +225,8 @@ export default function baseline(settings = {}, options = {}) {
 				url: settings.url,
 				noindex: settings.noindex ?? false,
 				defaultLanguage: settings.defaultLanguage,
-				languages: settings.languages
+				languages: settings.languages,
+				head: settings.head
 			},
 
 			options: {
