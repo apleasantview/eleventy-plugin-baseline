@@ -34,7 +34,8 @@ export default {
 		script: [
 			{ src: '/assets/js/index.js', defer: true },
 			{ src: '/assets/js/vendor/index.js', defer: true }
-		]
+		],
+		meta: [{ name: 'color-scheme', content: 'light dark' }]
 	},
 
 	seo: {}

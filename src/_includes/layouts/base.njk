@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ lang | default(settings.defaultLanguage) }}">
-	<head>
-		<baseline-head></baseline-head>
-		{%- include "partials/head-languages.njk" %}
-		<meta name="color-scheme" content="light dark" />
-		<meta name="generator" content="{{ eleventy.generator }}" />
-	</head>
+	<baseline-head></baseline-head>
 	<body>
 		<a href="#main" class="skip-link"> Skip to main content </a>
 		{%- include "components/header.njk" %}

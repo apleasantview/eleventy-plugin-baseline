@@ -12,7 +12,7 @@ export function renderHead({ seeds, options, placeholderTag, eol, log }) {
 	return function rendererPlugin(tree) {
 		log.info('injecting head for', seeds.page.inputPath || seeds.page.url);
 		tree.match({ tag: placeholderTag }, () => ({
-			tag: false,
+			tag: 'head',
 			content: interleaveEOL(sorted, eol)
 		}));
 		return tree;

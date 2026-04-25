@@ -1,5 +1,8 @@
 import { renderHead } from './drivers/posthtml-head-elements.js';
-import { collectHeadSeeds } from './utils/collector.js';
+
+import { writeFileSync } from 'node:fs';
+import { inspect } from 'node:util';
+const SNAPSHOT_FILE_DESCRIPTOR = './_seed-snapshot.log';
 
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
@@ -49,9 +52,6 @@ export default function headCore(eleventyConfig, moduleContext) {
 		});
 		headStats.pages.clear();
 	});
-
-	// --- Cascade-time: populate page._head seed bag. ---
-	collectHeadSeeds(eleventyConfig, { state, runtime });
 
 	// --- Transform-time: compose and inject. ---
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
