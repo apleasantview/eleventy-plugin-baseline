@@ -2,6 +2,10 @@ import pick from './utils/pick.js';
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
+import { writeFileSync } from 'node:fs';
+import { inspect } from 'node:util';
+const SNAPSHOT_FILE_DESCRIPTOR = './_pageContext-snapshot.log';
+
 const SCOPE_NAME = 'core/page-context';
 const COMPUTED_KEY = 'eleventyComputed._pageContext';
 
@@ -45,24 +49,29 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		);
 
 	// --- Builders ---
-	function buildSite(lang) {
-		const langEntry = lang ? settings.languages?.[lang] : undefined;
+	function buildSite(lang, userSettings) {
+		const langEntry = lang ? userSettings.languages?.[lang] : undefined;
 		return {
-			title: langEntry?.title ?? settings.title ?? '',
-			tagline: langEntry?.tagline ?? settings.tagline ?? '',
-			url: settings.url ?? '',
-			noindex: settings.noindex === true
+			title: langEntry?.title ?? userSettings.title ?? '',
+			tagline: langEntry?.tagline ?? userSettings.tagline ?? '',
+			url: userSettings.url ?? '',
+			noindex: userSettings.noindex === true
 		};
 	}
 
 	function buildPage(pageInput) {
 		return {
-			url: pageInput?.url ?? null,
 			inputPath: pageInput?.inputPath ?? null,
 			fileSlug: pageInput?.fileSlug ?? null,
-			date: pageInput?.date ?? null,
+			filePathStem: pageInput?.filePathStem ?? null,
 			outputFileExtension: pageInput?.outputFileExtension ?? null,
-			lang: pageInput?.lang ?? null
+			templateSyntax: pageInput?.templateSyntax ?? null,
+			date: pageInput?.date ?? null,
+			url: pageInput?.url ?? null,
+			outputPath: pageInput?.outputPath ?? null,
+			lang: pageInput?.lang ?? null,
+			locale: pageInput?.locale ?? null,
+			sitemap: pageInput?.sitemap ?? null
 		};
 	}
 
@@ -119,18 +128,31 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	}
 
+	function buildAlternates(data) {
+		const translationKey = data?.page?.locale?.translationKey;
+		if (!translationKey) return [];
+		const variants = data?.collections?.translationsMap?.[translationKey];
+		if (!variants) return [];
+		return Object.values(variants).flatMap((entry) => {
+			if (!entry?.url) return [];
+			const link = { rel: 'alternate', hreflang: entry.lang, href: entry.url };
+			return entry.isDefaultLang ? [link, { ...link, hreflang: 'x-default' }] : [link];
+		});
+	}
+
 	// HEAD (global + page-level merge + dedupe)
-	function buildHead({ settings, data }) {
-		const globalHead = settings.head ?? {};
+	function buildHead({ userSettings, data }) {
+		const userHead = userSettings.head ?? {};
 		const pageHead = data?.head ?? {};
+		const alternates = buildAlternates(data);
 
-		const link = uniqueBy([...(globalHead.link ?? []), ...(pageHead.link ?? [])], 'href');
+		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? []), ...alternates], 'href');
 
-		const script = uniqueBy([...(globalHead.script ?? []), ...(pageHead.script ?? [])], 'src');
+		const script = uniqueBy([...(userHead.script ?? []), ...(pageHead.script ?? [])], 'src');
 
-		const style = uniqueBy([...(globalHead.style ?? []), ...(pageHead.style ?? [])], 'href');
+		const style = uniqueBy([...(userHead.style ?? []), ...(pageHead.style ?? [])], 'href');
 
-		const meta = uniqueBy([...(globalHead.meta ?? []), ...(pageHead.meta ?? [])], 'name');
+		const meta = uniqueBy([...(userHead.meta ?? []), ...(pageHead.meta ?? [])], 'name');
 
 		return {
 			link,
@@ -146,14 +168,15 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	 */
 	function buildPageContext(data) {
 		const pageInput = data.page ?? {};
+		const userSettings = data.settings ?? settings;
 
 		const page = buildPage(pageInput);
-		const site = buildSite(page.lang);
+		const site = buildSite(page.lang, userSettings);
 		const entry = buildEntry(data);
 		const query = buildQuery({ entry, page });
 		const meta = buildMeta({ data, site, page, query });
 		const render = buildRender(data);
-		const head = buildHead({ settings, data });
+		const head = buildHead({ userSettings, data });
 
 		const context = {
 			site,
@@ -168,6 +191,11 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 		const inspectionKey = context.page.url ?? context.page.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
+
+		writeFileSync(
+			SNAPSHOT_FILE_DESCRIPTOR,
+			inspect(context, { depth: null, colors: false, maxArrayLength: null, maxStringLength: null })
+		);
 
 		return context;
 	}
