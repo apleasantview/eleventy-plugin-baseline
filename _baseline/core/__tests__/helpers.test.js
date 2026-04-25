@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { addTrailingSlash, resolveSubdir } from '../helpers.js';
+import { addTrailingSlash, resolveSubdir } from '../utils/helpers.js';
 
 describe('addTrailingSlash', () => {
 	it('adds a trailing slash to a path without one', () => {
