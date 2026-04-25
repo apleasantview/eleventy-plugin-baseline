@@ -2,10 +2,6 @@ import pick from './utils/pick.js';
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
-import { writeFileSync } from 'node:fs';
-import { inspect } from 'node:util';
-const SNAPSHOT_FILE_DESCRIPTOR = './_pageContext-snapshot.log';
-
 const SCOPE_NAME = 'core/page-context';
 const COMPUTED_KEY = 'eleventyComputed._pageContext';
 
@@ -191,11 +187,6 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 		const inspectionKey = context.page.url ?? context.page.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
-
-		writeFileSync(
-			SNAPSHOT_FILE_DESCRIPTOR,
-			inspect(context, { depth: null, colors: false, maxArrayLength: null, maxStringLength: null })
-		);
 
 		return context;
 	}

@@ -1,9 +1,5 @@
 import { renderHead } from './drivers/posthtml-head-elements.js';
 
-import { writeFileSync } from 'node:fs';
-import { inspect } from 'node:util';
-const SNAPSHOT_FILE_DESCRIPTOR = './_seed-snapshot.log';
-
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
 const EOL = '\n';
