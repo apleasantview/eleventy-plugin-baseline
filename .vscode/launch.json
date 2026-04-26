@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Debug 11ty (dryrun)",
+			"name": "Debug 11ty (dev)",
 			"request": "launch",
 			"type": "node-terminal",
 			"command": "npm run dryrun",
@@ -13,13 +13,13 @@
 			}
 		},
 		{
-			"name": "Debug 11ty (serve)",
+			"name": "Debug 11ty (prod)",
 			"request": "launch",
 			"type": "node-terminal",
-			"command": "npm run dev",
+			"command": "npm run dryrun",
 			"cwd": "${workspaceFolder}",
 			"env": {
-				"ELEVENTY_ENV": "development",
+				"ELEVENTY_ENV": "production",
 				"URL": "http://localhost:8080/"
 			}
 		},
