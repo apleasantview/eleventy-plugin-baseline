@@ -31,6 +31,8 @@ fi
 main() {
   if [[ "${local_only}" == true ]]; then
     echo "Running in local mode (no auth, no publish, no version bump)..."
+    preview
+    bump_version
     pack
     exit 0
   fi
