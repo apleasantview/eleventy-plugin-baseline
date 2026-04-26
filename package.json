@@ -35,8 +35,9 @@
     "format:plugin": "prettier ./_baseline --check --debug-check",
     "format:plugin-fix": "prettier ./_baseline --write",
     "baseline": "npx @11ty/eleventy --config _baseline/eleventy.config.js --serve",
-    "release": "bash ./_baseline/release.sh",
-    "release:tag": "bash ./_baseline/release.sh tag"
+    "release": "bash _baseline/release.sh",
+    "release:tag": "bash _baseline/release.sh tag",
+    "release:local": "bash _baseline/release.sh local"
   },
   "author": "Cristovao Verstraeten",
   "license": "ISC",

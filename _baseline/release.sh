@@ -3,7 +3,7 @@
 #description    :Bump, pack and publish a new pre-release of eleventy-plugin-baseline
 #author         :Cristovao Verstraeten
 #date           :20260329
-#version        :2026.03.29
+#version        :2026.04.26
 #usage          :./release.sh [tag]
 #example        :cd _baseline && ./release.sh        # bump, pack and publish as next
 #               :./_baseline/release.sh              # same, called from repo root
@@ -21,9 +21,20 @@ IFS=$'\n\t'
 cwd=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 packages_dir="${cwd}/packages"
 promote_to_latest="${1:-false}"
+local_only=false
+
+if [[ "${1:-}" == "local" ]]; then
+  local_only=true
+fi
 
 ### FUNCTIONS
 main() {
+  if [[ "${local_only}" == true ]]; then
+    echo "Running in local mode (no auth, no publish, no version bump)..."
+    pack
+    exit 0
+  fi
+
   check_auth
   preview
   confirm "Tarball looks good? Proceed with publish?" || exit 0
