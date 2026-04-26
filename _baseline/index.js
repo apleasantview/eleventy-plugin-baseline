@@ -259,19 +259,6 @@ export default function baseline(settings = {}, options = {}) {
 			}
 		});
 
-		// --- Site helpers (derived state) ---
-		const site = {
-			get baseHref() {
-				return resolveBaseHref(eleventyConfig);
-			},
-			get canonicalUrl() {
-				return state.settings.url ?? null;
-			},
-			get pathPrefix() {
-				return eleventyConfig.pathPrefix;
-			}
-		};
-
 		// --- Virtual directories ---
 		registerVirtualDir(eleventyConfig, {
 			name: 'assets'
@@ -313,8 +300,22 @@ export default function baseline(settings = {}, options = {}) {
 		const contentMapStore = createContentMapStore(eleventyConfig);
 		const translationMapStore = createTranslationMapStore(eleventyConfig);
 
+		// --- Site helpers (derived state) ---
+		const helpers = {
+			get baseHref() {
+				return resolveBaseHref(eleventyConfig);
+			},
+			get canonicalUrl() {
+				return state.settings.url ?? null;
+			},
+			get pathPrefix() {
+				return eleventyConfig.pathPrefix;
+			}
+		};
+
 		// --- Core context (lazy access layer) ---
 		const coreContext = {
+			env,
 			state,
 			runtime: {
 				get contentMap() {
@@ -322,8 +323,8 @@ export default function baseline(settings = {}, options = {}) {
 				},
 				translationMap: translationMapStore
 			},
-			site,
-			directories
+			directories,
+			helpers
 		};
 
 		// Page context registry
