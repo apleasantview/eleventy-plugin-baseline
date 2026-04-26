@@ -65,7 +65,7 @@ export default function headCore(eleventyConfig, moduleContext) {
 		const alternates = buildAlternates(
 			seeds.page?.locale?.translationKey,
 			runtime.translationMap.get(),
-			state.settings.url
+			seeds.settings.url
 		);
 
 		return renderHead({
