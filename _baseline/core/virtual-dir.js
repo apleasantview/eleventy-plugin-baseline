@@ -10,7 +10,7 @@ import { getScope, addScopeListener, setEntry } from './registry.js';
 // them in sync when Eleventy finalises its directories, and optionally
 // publishes the resolved paths as global data.
 
-const SCOPE_NAME = 'core/virtual-dir';
+const SCOPE_NAME = 'core:virtual-dir';
 
 /**
  * Register a virtual directory on eleventyConfig.directories.
@@ -64,6 +64,8 @@ export function registerVirtualDir(eleventyConfig, { name, outputDir } = {}) {
 			syncCache(entry.cache, dirs, entry.rawDir, entry.rawOutputDir);
 		}
 	});
+
+	log.info('Virtual directories mounted');
 
 	return cache;
 }

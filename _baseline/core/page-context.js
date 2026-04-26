@@ -2,7 +2,7 @@ import pick from './utils/pick.js';
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
-const SCOPE_NAME = 'core/page-context';
+const SCOPE_NAME = 'core:page-context';
 const COMPUTED_KEY = 'eleventyComputed._pageContext';
 
 /**

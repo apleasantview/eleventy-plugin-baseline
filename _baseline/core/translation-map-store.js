@@ -1,6 +1,6 @@
 import { getScope, setEntry, getEntry } from './registry.js';
 
-const SCOPE_NAME = 'core/translation-map-store';
+const SCOPE_NAME = 'core:translation-map-store';
 const KEY = 'translationMap';
 
 /**

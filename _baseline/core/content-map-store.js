@@ -1,6 +1,6 @@
 import { getScope, addScopeListener, setEntry, getEntry } from './registry.js';
 
-const SCOPE_NAME = 'core/content-map-store';
+const SCOPE_NAME = 'core:content-map-store';
 const KEY = 'contentMap';
 
 /**
