@@ -158,9 +158,10 @@ export default function baseline(settings = {}, options = {}) {
 		options = split.options;
 	}
 
-	// Logger is initialized after normalization to ensure correct verbosity.
+	// Base logger outputs regardless of options.
 	const baseLog = createLogger(null, { verbose: true });
 
+	// Scoped logging.
 	function scopedLog(name) {
 		return createLogger(name, { verbose: options.verbose });
 	}
@@ -248,14 +249,15 @@ export default function baseline(settings = {}, options = {}) {
 					template: options.navigator ?? inferredNavigator
 				},
 				assets: {
-					esbuild: options.assetsESBuild ?? {}
+					esbuild: options.assetsESBuild ?? options.assets?.esbuild ?? {}
 				}
 			}
 		};
 
 		eleventyConfig.addGlobalData('_baseline', {
 			features: {
-				...state.options
+				...state.options,
+				hasImageTransformPlugin
 			}
 		});
 
@@ -300,18 +302,8 @@ export default function baseline(settings = {}, options = {}) {
 		const contentMapStore = createContentMapStore(eleventyConfig);
 		const translationMapStore = createTranslationMapStore(eleventyConfig);
 
-		// --- Site helpers (derived state) ---
-		const helpers = {
-			get baseHref() {
-				return resolveBaseHref(eleventyConfig);
-			},
-			get canonicalUrl() {
-				return state.settings.url ?? null;
-			},
-			get pathPrefix() {
-				return eleventyConfig.pathPrefix;
-			}
-		};
+		// --- Module helpers (derived state) ---
+		const helpers = {};
 
 		// --- Core context (lazy access layer) ---
 		const coreContext = {
@@ -335,13 +327,14 @@ export default function baseline(settings = {}, options = {}) {
 			pageContext: () => pageContextRegistry.snapshot()
 		};
 
-		// --- Module registry ---
+		// --- Module features ---
 		const features = {
 			multilang: inferredMultilingual,
 			sitemap: inferredSitemap,
 			navigator: inferredNavigator
 		};
 
+		// --- Module registry ---
 		const moduleRegistry = [
 			{ when: features.multilang, name: 'multilang', plugin: modules.multilangCore },
 			{ name: 'assets', plugin: modules.assetsCore },
