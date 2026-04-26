@@ -1,5 +1,5 @@
 import * as esbuild from 'esbuild';
-import { createLogger } from '../../core/logging.js';
+import { createLogger } from '../../../core/logging.js';
 
 const log = createLogger('assets-esbuild');
 const defaultOptions = { minify: true, target: 'es2020' };

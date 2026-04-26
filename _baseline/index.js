@@ -159,7 +159,7 @@ export default function baseline(settings = {}, options = {}) {
 	}
 
 	// Logger is initialized after normalization to ensure correct verbosity.
-	const baseLog = createLogger('core', { verbose: true });
+	const baseLog = createLogger(null, { verbose: true });
 
 	function scopedLog(name) {
 		return createLogger(name, { verbose: options.verbose });
@@ -342,13 +342,13 @@ export default function baseline(settings = {}, options = {}) {
 		};
 
 		const moduleRegistry = [
-			{ when: features.multilang, name: 'multilang-core', plugin: modules.multilangCore },
-			{ name: 'assets-core', plugin: modules.assetsCore },
-			{ name: 'head-core', plugin: modules.headCore, consumes: { pageContext: true } },
-			{ when: features.sitemap, name: 'sitemap-core', plugin: modules.sitemapCore },
+			{ when: features.multilang, name: 'multilang', plugin: modules.multilangCore },
+			{ name: 'assets', plugin: modules.assetsCore },
+			{ name: 'head', plugin: modules.headCore, consumes: { pageContext: true } },
+			{ when: features.sitemap, name: 'sitemap', plugin: modules.sitemapCore },
 			{
 				when: features.navigator,
-				name: 'navigator-core',
+				name: 'navigator',
 				plugin: modules.navigatorCore
 			}
 		];

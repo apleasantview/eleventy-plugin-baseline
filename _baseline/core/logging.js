@@ -17,7 +17,7 @@ import chalk from 'kleur';
  * @returns {BaselineLogger}
  */
 export function createLogger(namespace, { verbose = false } = {}) {
-	const label = namespace ? `[baseline:${namespace}]` : '[baseline]';
+	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
 	return {
 		info: (...args) => {
 			if (verbose) console.log(chalk.gray(label), ...args);

@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import postcss from 'postcss';
 import loadPostCSSConfig from 'postcss-load-config';
-import fallbackPostCSSConfig from './fallback/postcss.config.js';
-import { createLogger } from '../../core/logging.js';
+import fallbackPostCSSConfig from '../configs/postcss.config.js';
+import { createLogger } from '../../../core/logging.js';
 
 const log = createLogger('assets-postcss');
 

@@ -2,8 +2,8 @@ import path from 'node:path';
 import { TemplatePath } from '@11ty/eleventy-utils';
 
 import { optionsSchema } from './schema.js';
-import assetsESbuild from '../assets-esbuild/process.js';
-import assetsPostCSS from '../assets-postcss/process.js';
+import assetsESbuild from './processors/esbuild-process.js';
+import assetsPostCSS from './processors/postcss-process.js';
 
 /**
  * Assets Core (Eleventy Module)

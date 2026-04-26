@@ -18,9 +18,9 @@ describe('createLogger', () => {
 
 	it('uses [baseline:namespace] prefix when a namespace is provided', () => {
 		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-		const log = createLogger('head-core');
+		const log = createLogger('head');
 		log.warn('hello');
-		expect(spy).toHaveBeenCalledWith('[baseline:head-core]', 'hello');
+		expect(spy).toHaveBeenCalledWith('[baseline/head]', 'hello');
 	});
 
 	it('info is silent when verbose is false', () => {
@@ -56,7 +56,7 @@ describe('createLogger', () => {
 		const log = createLogger('mod');
 		const payload = { a: 1 };
 		log.warn('got', payload, 42);
-		expect(spy).toHaveBeenCalledWith('[baseline:mod]', 'got', payload, 42);
+		expect(spy).toHaveBeenCalledWith('[baseline/mod]', 'got', payload, 42);
 	});
 
 	it('prefix is the first argument, not concatenated', () => {
@@ -64,7 +64,7 @@ describe('createLogger', () => {
 		const log = createLogger('mod');
 		log.warn('hello');
 		const [first, second] = spy.mock.calls[0];
-		expect(first).toBe('[baseline:mod]');
+		expect(first).toBe('[baseline/mod]');
 		expect(second).toBe('hello');
 	});
 });
