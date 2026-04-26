@@ -19,7 +19,9 @@ import modules from './core/modules.js';
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
 
+const mode = process.env.ELEVENTY_ENV;
 const isDev = process.env.ELEVENTY_ENV === 'development';
+const isProd = process.env.ELEVENTY_ENV === 'production';
 
 const LEGACY_OPTION_KEYS = [
 	'verbose',
@@ -29,9 +31,10 @@ const LEGACY_OPTION_KEYS = [
 	'multilingual'
 ];
 
-// Whitelist of global data keys used internally across the plugin.
-// Positive side effect is they all get listed in order and data to the same key gets merged.
-const INTERNAL_KEYS = ['_baseline', '_assets', '_head', '_pageContext', '_debug'];
+// Whitelist of reserved global data keys used internally across the plugin.
+// Positive side effect is they all get listed in order and merge data to the same key.
+// Also prevents name collision with filters.
+const INTERNAL_KEYS = ['_baseline', '_assets', '_head', '_multilang', '_sitemap', '_snapshot', '_pageContext'];
 
 /**
  * Detect legacy single-object plugin invocation.
@@ -194,9 +197,15 @@ export default function baseline(settings = {}, options = {}) {
 			eleventyConfig.addGlobalData(key, {});
 		});
 
-		eleventyConfig.addGlobalData('_baseline', {
+		const env = {
+			name: 'Eleventy Baseline',
+			package: name,
 			version,
-			name
+			mode
+		};
+
+		eleventyConfig.addGlobalData('_baseline', {
+			env
 		});
 
 		if (!settings.url) {

@@ -41,10 +41,10 @@ permalink: /navigator-core.html
 			<details>
 				<summary><strong>Page Context</strong></summary>
 				<pre>
-					{{- _debug.pageContext | _inspect({ depth: null }) -}}
+					{{- _snapshot.pageContext | _inspect({ depth: null }) -}}
 				</pre>
 			</details>
-			{% for key, value in _navigator() %}
+			{% for key, value in _runtime() %}
 			<details>
 				<summary><strong>{{ key }}</strong></summary>
 				{% if value | isString %}

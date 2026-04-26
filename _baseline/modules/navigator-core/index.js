@@ -30,14 +30,14 @@ const __dirname = path.dirname(__filename);
  * ------------------------------------------------------------
  * - _navigator → full Nunjucks runtime environment (env + ctx)
  * - _context   → raw template context (this.ctx)
- * - _debug     → runtime snapshots (contentMap, pageContext inspection map)
+ * - _snapshot     → runtime snapshots (contentMap, pageContext inspection map)
  *
  * These are strictly development tools and should not be relied on
  * for production rendering logic.
  *
- * Note: _debug.contentMap resolves to null on the virtual navigator
+ * Note: _snapshot.contentMap resolves to null on the virtual navigator
  * template because that template renders before `eleventy.contentMap`
- * fires. View _debug from any ordinary page for a populated contentMap.
+ * fires. View _snapshot from any ordinary page for a populated contentMap.
  *
  * ------------------------------------------------------------
  *
@@ -70,7 +70,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	const renderTemplate = options.navigator?.template ?? false;
 	const inspectorDepth = options.navigator?.inspectorDepth ?? 4;
 
-	eleventyConfig.addGlobalData('eleventyComputed._debug', () => {
+	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
 		return () => ({
 			contentMap: snapshots.contentMap(),
 			pageContext: snapshots.pageContext()
@@ -85,7 +85,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	 * - ctx  → current render context
 	 * - globals → registered global values
 	 */
-	eleventyConfig.addNunjucksGlobal('_navigator', function () {
+	eleventyConfig.addNunjucksGlobal('_runtime', function () {
 		return {
 			env: this.env,
 			ctx: this.ctx,
@@ -99,7 +99,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	 * Direct reference to the template execution context.
 	 * Useful for debugging data shape at render time.
 	 */
-	eleventyConfig.addNunjucksGlobal('_context', function () {
+	eleventyConfig.addNunjucksGlobal('_ctx', function () {
 		return this.ctx;
 	});
 
