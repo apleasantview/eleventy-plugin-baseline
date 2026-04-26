@@ -32,20 +32,33 @@ Add the plugin and re-export the config. The config export sets the directory st
 import baseline, { config as baselineConfig } from '@apleasantview/eleventy-plugin-baseline';
 
 export default function (eleventyConfig) {
-	eleventyConfig.addPlugin(baseline);
+	eleventyConfig.addPlugin(baseline());
 }
 
 export const config = baselineConfig;
 ```
 
-Options, if you need them:
+The plugin takes two arguments: `settings` (site identity — title, url, languages, head extras) and `options` (runtime behavior — verbose, sitemap, navigator).
 
 ```js
-eleventyConfig.addPlugin(baseline, {
-	verbose: false, // extra logging during builds
-	enableNavigatorTemplate: false, // debug page for inspecting template data
-	enableSitemapTemplate: true // XML sitemap generation
-});
+const settings = {
+	title: 'My Site',
+	tagline: 'Built with Baseline',
+	url: 'https://www.example.com/',
+	defaultLanguage: 'en',
+	languages: {
+		en: { title: 'My Site' },
+		nl: { title: 'Mijn Site' }
+	}
+};
+
+eleventyConfig.addPlugin(
+	baseline(settings, {
+		verbose: false, // extra logging during builds
+		sitemap: true, // XML sitemap generation
+		navigator: false // debug page for inspecting template data
+	})
+);
 ```
 
 ## What's included
@@ -57,21 +70,18 @@ The plugin registers everything on load. No setup beyond the config above.
 - An image shortcode (via eleventy-img) — AVIF and WebP, responsive widths, lazy loading. Alt text is required — the build warns if you skip it.
 - Filters: `markdownify`, `relatedPosts`, `isString`
 - A date-formatting global
-- Debug filters (`_inspect`, `_json`, `_keys`) for template development, handy when you need them
 - Drafts preprocessor — drafts stay out of production builds automatically
 - Static passthrough (`src/static/` → site root)
 
 **Modules** — opt-in, loaded individually:
 
-| Module           | What it does                                                                                                                                            |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `assets-core`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical path assets |
-| `assets-esbuild` | JS bundling via esbuild. Minified, ES2020 target                                                                                                        |
-| `assets-postcss` | CSS processing via PostCSS. Ships a fallback config if you don't have one                                                                               |
-| `head-core`      | `<head>` tags (meta, canonical, Open Graph, title) handled for you by dropping `<baseline-head>` in your layout                                         |
-| `multilang-core` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                         |
-| `navigator-core` | Debug tooling. `_navigator` and `_context` globals for inspecting template data. Optional virtual debug page                                            |
-| `sitemap-core`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                   |
+| Module      | What it does                                                                                                                                                                        |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assets`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Bundles JS via esbuild and processes CSS via PostCSS. Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical-path assets |
+| `head`      | `<head>` tags (charset, viewport, title, description, robots, canonical, hreflang) handled for you by dropping `<baseline-head>` in your layout                                     |
+| `multilang` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                                                     |
+| `navigator` | Debug tooling. Globals for inspecting template data, plus debug filters (`_inspect`, `_json`, `_keys`). Optional virtual debug page                                                 |
+| `sitemap`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                                               |
 
 ## Docs
 

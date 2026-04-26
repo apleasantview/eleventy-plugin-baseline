@@ -18,6 +18,13 @@ This is a working plugin, not a finished product. Things might shift, break, or 
 
 The repo serves dual purposes. `_baseline/` is the plugin itself — what gets published to npm. `src/` is the documentation site, which is built with the plugin it documents. Every feature lives alongside a working example of that feature in production. It eats its own cooking.
 
+```tree
+/
+├── _baseline/            # The plugin (published to npm)
+├── src/                  # The docs site sources (built with the plugin)
+└── eleventy.config.js    # Docs site config — wires the plugin in
+```
+
 ## Install
 
 If you already have Eleventy and eleventy-img installed:
@@ -42,20 +49,33 @@ Add the plugin and re-export the config. The config export sets the directory st
 import baseline, { config as baselineConfig } from '@apleasantview/eleventy-plugin-baseline';
 
 export default function (eleventyConfig) {
-	eleventyConfig.addPlugin(baseline);
+	eleventyConfig.addPlugin(baseline());
 }
 
 export const config = baselineConfig;
 ```
 
-Options, if you need them:
+The plugin takes two arguments: `settings` (site identity — title, url, languages, head extras) and `options` (runtime behavior — verbose, sitemap, navigator).
 
 ```js
-eleventyConfig.addPlugin(baseline, {
-	verbose: false, // extra logging during builds
-	enableNavigatorTemplate: false, // debug page for inspecting template data
-	enableSitemapTemplate: true // XML sitemap generation
-});
+const settings = {
+	title: 'My Site',
+	tagline: 'Built with Baseline',
+	url: 'https://www.example.com/',
+	defaultLanguage: 'en',
+	languages: {
+		en: { title: 'My Site' },
+		nl: { title: 'Mijn Site' }
+	}
+};
+
+eleventyConfig.addPlugin(
+	baseline(settings, {
+		verbose: false, // extra logging during builds
+		sitemap: true, // XML sitemap generation
+		navigator: false // debug page for inspecting template data
+	})
+);
 ```
 
 ## What's included
@@ -67,21 +87,18 @@ The plugin registers everything on load. No setup beyond the config above.
 - An image shortcode (via eleventy-img) — AVIF and WebP, responsive widths, lazy loading. Alt text is required — the build warns if you skip it.
 - Filters: `markdownify`, `relatedPosts`, `isString`
 - A date-formatting global
-- Debug filters (`_inspect`, `_json`, `_keys`) for template development, handy when you need them
 - Drafts preprocessor — drafts stay out of production builds automatically
 - Static passthrough (`src/static/` → site root)
 
 **Modules** — opt-in, loaded individually:
 
-| Module           | What it does                                                                                                                                            |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `assets-core`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical path assets |
-| `assets-esbuild` | JS bundling via esbuild. Minified, ES2020 target                                                                                                        |
-| `assets-postcss` | CSS processing via PostCSS. Ships a fallback config if you don't have one                                                                               |
-| `head-core`      | `<head>` tags (meta, canonical, Open Graph, title) handled for you by dropping `<baseline-head>` in your layout                                         |
-| `multilang-core` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                         |
-| `navigator-core` | Debug tooling. `_navigator` and `_context` globals for inspecting template data. Optional virtual debug page                                            |
-| `sitemap-core`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                   |
+| Module      | What it does                                                                                                                                                                        |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assets`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Bundles JS via esbuild and processes CSS via PostCSS. Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical-path assets |
+| `head`      | `<head>` tags (charset, viewport, title, description, robots, canonical, hreflang) handled for you by dropping `<baseline-head>` in your layout                                     |
+| `multilang` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                                                     |
+| `navigator` | Debug tooling. Globals for inspecting template data, plus debug filters (`_inspect`, `_json`, `_keys`). Optional virtual debug page                                                 |
+| `sitemap`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                                               |
 
 ## Docs
 
@@ -97,40 +114,44 @@ project root and under `src/`. Both share the same `package.json` and `node_modu
 
 ```tree
 /
-├── _baseline/               # The plugin package (what gets published to npm)
-│   ├── eleventy.config.js   # Plugin entry point
-│   ├── core/                # Internal helpers, filters, globals, shortcodes
-│   │   ├── filters/
-│   │   ├── globals/
-│   │   ├── shortcodes/
-│   │   ├── helpers.js
+├── _baseline/                    # The plugin package (what gets published to npm)
+│   ├── index.js                  # Plugin entry point
+│   ├── core/                     # Internal helpers, filters, globals, shortcodes
+│   │   ├── filters/              # markdownify, relatedPosts, isString
+│   │   ├── global-functions/     # date
+│   │   ├── shortcodes/           # image
+│   │   ├── utils/                # helpers, pick
+│   │   ├── content-map-store.js  # Eleventy contentMap accessor
+│   │   ├── translation-map-store.js
+│   │   ├── page-context.js       # Per-page normalised context registry
+│   │   ├── registry.js           # Per-config scoped state primitive
+│   │   ├── virtual-dir.js        # Synthesised dir keys (assets, public)
+│   │   ├── schema.js             # Zod schemas for settings/config
 │   │   ├── logging.js
-│   │   └── modules.js
-│   └── modules/             # Optional feature modules
-│       ├── assets-core/     # Assets pipeline orchestrator
-│       ├── assets-esbuild/  # JS bundling function
-│       ├── assets-postcss/  # CSS processing function
-│       ├── head-core/       # HTML head/meta injection via PostHTML
-│       ├── multilang-core/  # Directory-based multilingual support
-│       ├── navigator-core/  # Debug tooling & template inspector
-│       └── sitemap-core/    # Sitemap generation
+│   │   └── modules.js            # Modules barrel
+│   └── modules/                  # Optional feature modules
+│       ├── assets/               # Asset pipeline (esbuild + PostCSS)
+│       ├── head/                 # <head> injection via PostHTML
+│       ├── multilang/            # Multilingual support, hreflang, i18n filters
+│       ├── navigator/            # Debug tooling and template inspector
+│       └── sitemap/              # Sitemap generation
 │
-├── src/                     # Documentation website sources
-│   ├── _data/               # Global site data
-│   ├── _includes/           # Nunjucks layouts and components
-│   ├── assets/              # CSS, JS, media for docs site
-│   ├── content/             # Markdown documentation pages
-│   │   ├── en/              # English content
-│   │   ├── nl/              # Dutch content
-│   │   └── fr/              # French content
-│   └── static/              # Static passthrough assets
+├── src/                          # Documentation website sources
+│   ├── _data/                    # Global site data
+│   ├── _includes/                # Nunjucks layouts and components
+│   ├── assets/                   # CSS, JS, media for docs site
+│   ├── content/                  # Markdown documentation pages
+│   │   ├── en/                   # English content
+│   │   ├── nl/                   # Dutch content
+│   │   └── fr/                   # French content
+│   └── static/                   # Static passthrough assets
 │
-├── packages/                # Local npm tarballs for testing pre-release builds
-├── dist/                    # Built site output (Eleventy output dir)
-├── eleventy.config.js       # Docs site Eleventy config
-├── postcss.config.js        # PostCSS config
-├── netlify.toml             # Netlify deployment config
-└── package.json             # Root workspace config (docs site)
+├── packages/                     # Local npm tarballs for testing pre-release builds
+├── dist/                         # Built site output (Eleventy output dir)
+├── eleventy.config.js            # Docs site Eleventy config
+├── postcss.config.js             # PostCSS config
+├── netlify.toml                  # Netlify deployment config
+└── package.json                  # Root workspace config (docs site)
 ```
 
 ## Contributing
