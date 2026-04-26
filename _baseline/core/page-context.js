@@ -124,25 +124,12 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	}
 
-	function buildAlternates(data) {
-		const translationKey = data?.page?.locale?.translationKey;
-		if (!translationKey) return [];
-		const variants = data?.collections?.translationsMap?.[translationKey];
-		if (!variants) return [];
-		return Object.values(variants).flatMap((entry) => {
-			if (!entry?.url) return [];
-			const link = { rel: 'alternate', hreflang: entry.lang, href: entry.url };
-			return entry.isDefaultLang ? [link, { ...link, hreflang: 'x-default' }] : [link];
-		});
-	}
-
 	// HEAD (global + page-level merge + dedupe)
 	function buildHead({ userSettings, data }) {
 		const userHead = userSettings.head ?? {};
 		const pageHead = data?.head ?? {};
-		const alternates = buildAlternates(data);
 
-		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? []), ...alternates], 'href');
+		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], 'href');
 
 		const script = uniqueBy([...(userHead.script ?? []), ...(pageHead.script ?? [])], 'src');
 

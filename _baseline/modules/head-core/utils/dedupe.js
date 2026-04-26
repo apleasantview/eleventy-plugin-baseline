@@ -4,41 +4,44 @@
  * @param {Array<Object>} [arr=[]] - Array of meta tag objects.
  * @returns {Array<Object>}
  */
+function metaKey(meta) {
+	if (meta.charset) return 'charset';
+	if (meta.name) return `name:${meta.name}`;
+	if (meta.property) return `prop:${meta.property}`;
+	if (meta['http-equiv']) return `http:${meta['http-equiv']}`;
+	return null;
+}
+
 export const dedupeMeta = (arr = []) => {
 	const seen = new Set();
 	const out = [];
+
 	for (let i = arr.length - 1; i >= 0; i--) {
-		const m = arr[i];
-		const key = m.charset
-			? 'charset'
-			: m.name
-				? `name:${m.name}`
-				: m.property
-					? `prop:${m.property}`
-					: m['http-equiv']
-						? `http:${m['http-equiv']}`
-						: null;
+		const key = metaKey(arr[i]);
 		if (!key || seen.has(key)) continue;
 		seen.add(key);
-		out.push(m);
+		out.push(arr[i]);
 	}
+
 	return out.reverse();
 };
 
 /**
- * Deduplicate link tags by rel+href. Last-wins, preserves insertion order.
+ * Deduplicate link tags by rel+hreflang+href. Last-wins, preserves insertion order.
  * @param {Array<Object>} [links=[]] - Array of link tag objects.
  * @returns {Array<Object>}
  */
 export const dedupeLink = (links = []) => {
 	const seen = new Set();
 	const out = [];
+
 	for (let i = links.length - 1; i >= 0; i--) {
-		const l = links[i];
-		const key = l.rel && l.href ? `rel:${l.rel}|${l.href}` : null;
+		const link = links[i];
+		const key = link.rel && link.href ? `rel:${link.rel}|hreflang:${link.hreflang ?? ''}|${link.href}` : null;
 		if (!key || seen.has(key)) continue;
 		seen.add(key);
-		out.push(l);
+		out.push(link);
 	}
+
 	return out.reverse();
 };

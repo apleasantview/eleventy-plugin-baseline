@@ -2,9 +2,9 @@ import { getWeight, ElementWeights } from '@rviscomi/capo.js';
 import { capoPosthtmlAdapter as adapter } from './capo-adapter.js';
 import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
 
-export function renderHead({ seeds, options, placeholderTag, eol, log }) {
+export function renderHead({ seeds, alternates, options, placeholderTag, eol, log }) {
 	const defaults = emitMeta(seeds.meta, seeds.render, options);
-	const extras = emitExtras(seeds.head);
+	const extras = emitExtras(seeds.head, alternates);
 
 	const deduped = dedupeAll([...defaults, ...extras]);
 	const sorted = capoSort(deduped);
@@ -30,15 +30,18 @@ function emitMeta(meta, render, options) {
 	if (options.showGenerator && render.generator) {
 		nodes.push(mkMeta({ name: 'generator', content: render.generator }));
 	}
+
 	return nodes;
 }
 
-function emitExtras(head) {
+function emitExtras(head, alternates = []) {
 	const nodes = [];
 	for (const m of asArray(head?.meta)) nodes.push(mkMeta(m));
 	for (const l of asArray(head?.link)) nodes.push(mkLink(l));
 	for (const s of asArray(head?.script)) nodes.push(mkScript(s));
 	for (const s of asArray(head?.style)) nodes.push(mkStyle(s));
+	for (const a of alternates) nodes.push(mkLink(a));
+
 	return nodes;
 }
 
@@ -53,6 +56,7 @@ function dedupeAll(nodes) {
 	}
 	const dedupedMetas = dedupeMeta(metas).map(mkMeta);
 	const dedupedLinks = dedupeLink(links).map(mkLink);
+
 	return [...dedupedMetas, ...dedupedLinks, ...others];
 }
 
@@ -63,6 +67,7 @@ function capoSort(nodes) {
 		weight: adapter.isElement(node) ? getWeight(node, adapter) : ElementWeights.OTHER
 	}));
 	weighted.sort((a, b) => b.weight - a.weight || a.i - b.i);
+
 	return weighted.map((w) => w.node);
 }
 

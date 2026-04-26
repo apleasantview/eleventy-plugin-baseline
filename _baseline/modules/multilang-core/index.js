@@ -4,7 +4,6 @@ import { langNormalization } from '../../core/utils/helpers.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
-import { set } from 'zod';
 
 /**
  * Multilang Core (Eleventy Module)
@@ -125,7 +124,7 @@ import { set } from 'zod';
  */
 /** @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig */
 export default function multilangCore(eleventyConfig, moduleContext) {
-	const { state, log } = moduleContext;
+	const { state, runtime, log } = moduleContext;
 	const settings = state.settings;
 	const options = state.options;
 
@@ -210,7 +209,9 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 
 	// Map form: translationsMap[translationKey][lang] → page metadata.
 	eleventyConfig.addCollection('translationsMap', (collection) => {
-		return buildTranslations(collection).map;
+		const map = buildTranslations(collection).map;
+		runtime.translationMap.set(map);
+		return map;
 	});
 
 	// Flat list: all translatable pages with locale data attached.

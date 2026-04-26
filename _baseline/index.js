@@ -6,6 +6,7 @@ import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createLogger } from './core/logging.js';
 import { createContentMapStore } from './core/content-map-store.js';
+import { createTranslationMapStore } from './core/translation-map-store.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { settingsSchema } from './core/schema.js';
@@ -305,6 +306,7 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Runtime stores (self-attach their lifecycle listeners) ---
 		const contentMapStore = createContentMapStore(eleventyConfig);
+		const translationMapStore = createTranslationMapStore(eleventyConfig);
 
 		// --- Core context (lazy access layer) ---
 		const coreContext = {
@@ -312,7 +314,8 @@ export default function baseline(settings = {}, options = {}) {
 			runtime: {
 				get contentMap() {
 					return contentMapStore.get();
-				}
+				},
+				translationMap: translationMapStore
 			},
 			site,
 			directories
