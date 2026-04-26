@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import i18nDefaultTranslation from '../../multilang-core/filters/i18n-default-translation.js';
+import i18nDefaultTranslation from '../../multilang/filters/i18n-default-translation.js';
 
 const collection = [
 	{ url: '/en/about/', locale: { translationKey: 'about', lang: 'en', isDefaultLang: true } },
