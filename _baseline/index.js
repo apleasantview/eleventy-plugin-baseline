@@ -156,14 +156,10 @@ export default function baseline(settings = {}, options = {}) {
 	}
 
 	// Logger is initialized after normalization to ensure correct verbosity.
-	const baseLog = createLogger(null, { verbose: options.verbose });
+	const baseLog = createLogger('core', { verbose: true });
 
 	function scopedLog(name) {
-		return {
-			info: (...args) => baseLog.info(`[${name}]`, ...args),
-			warn: (...args) => baseLog.warn(`[${name}]`, ...args),
-			error: (...args) => baseLog.error(`[${name}]`, ...args)
-		};
+		return createLogger(name, { verbose: options.verbose });
 	}
 
 	if (wasLegacy) {
@@ -177,6 +173,8 @@ export default function baseline(settings = {}, options = {}) {
 			baseLog.info('settings:', `${issue.path.join('.')} — ${issue.message}`);
 		}
 	}
+
+	baseLog.info('Eleventy Baseline', version);
 
 	/**
 	 * Eleventy plugin initializer.

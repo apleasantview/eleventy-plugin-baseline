@@ -51,6 +51,7 @@ export default function headCore(eleventyConfig, moduleContext) {
 	});
 
 	// --- Transform-time: compose and inject. ---
+	log.info('Injecting heads to pages');
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
 		headStats.pages.add(context?.page?.inputPath || context?.outputPath);
 

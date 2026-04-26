@@ -10,7 +10,7 @@ export function renderHead({ seeds, alternates, options, placeholderTag, eol, lo
 	const sorted = capoSort(deduped);
 
 	return function rendererPlugin(tree) {
-		log.info('injecting head for', seeds.page.inputPath || seeds.page.url);
+		// log.info('injecting head for', seeds.page.inputPath || seeds.page.url);
 		tree.match({ tag: placeholderTag }, () => ({
 			tag: 'head',
 			content: interleaveEOL(sorted, eol)

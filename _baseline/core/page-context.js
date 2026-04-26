@@ -185,7 +185,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	});
 
-	log.info('page-context registered');
+	log.info('Page context added to the data cascade and registry exposed');
 
 	return {
 		get: (data) => scope.cache.get(data),

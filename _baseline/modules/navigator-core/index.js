@@ -65,7 +65,7 @@ const __dirname = path.dirname(__filename);
  * Thunks returning current runtime state: { contentMap, pageContext }.
  */
 export default function navigatorCore(eleventyConfig, moduleContext) {
-	const { state, snapshots } = moduleContext;
+	const { state, snapshots, log } = moduleContext;
 	const { options } = state;
 	const renderTemplate = options.navigator?.template ?? false;
 	const inspectorDepth = options.navigator?.inspectorDepth ?? 4;
@@ -124,6 +124,8 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 			// Debug control surface
 			inspectorDepth
 		});
+
+		log.info('Navigator template registered at /navigator-core.html');
 	}
 
 	/**
