@@ -62,11 +62,11 @@ export default function headCore(eleventyConfig, moduleContext) {
 			return (tree) => tree;
 		}
 
-		const alternates = buildAlternates(
-			seeds.page?.locale?.translationKey,
-			runtime.translationMap.get(),
-			seeds.settings.url
-		);
+		const translationKey = seeds.page?.locale?.translationKey;
+
+		const alternates = translationKey
+			? buildAlternates(seeds.page?.locale?.translationKey, runtime.translationMap.get(), seeds.site?.url)
+			: [];
 
 		return renderHead({
 			seeds,
