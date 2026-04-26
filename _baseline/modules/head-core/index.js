@@ -1,6 +1,5 @@
 import { renderHead } from './drivers/posthtml-head-elements.js';
 import { buildAlternates } from './utils/alternates.js';
-import { collectHeadSeeds } from './utils/collector.js';
 
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
@@ -50,9 +49,6 @@ export default function headCore(eleventyConfig, moduleContext) {
 		});
 		headStats.pages.clear();
 	});
-
-	// --- Cascade-time: populate page._head seed bag. ---
-	collectHeadSeeds(eleventyConfig, { state, runtime });
 
 	// --- Transform-time: compose and inject. ---
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {

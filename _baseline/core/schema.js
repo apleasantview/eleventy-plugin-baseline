@@ -29,7 +29,9 @@ export const settingsSchema = z.object({
 	head: z
 		.object({
 			link: z.array(z.looseObject({})).optional(),
-			script: z.array(z.looseObject({})).optional()
+			script: z.array(z.looseObject({})).optional(),
+			meta: z.array(z.looseObject({})).optional(),
+			style: z.array(z.looseObject({})).optional()
 		})
 		.optional()
 });

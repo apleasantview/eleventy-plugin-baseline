@@ -18,14 +18,13 @@ const SCOPE_NAME = 'core/virtual-dir';
  * @param {import('@11ty/eleventy').UserConfig} eleventyConfig
  * @param {Object} options
  * @param {string} options.name - Key to synthesise (e.g. 'assets', 'public').
- * @param {string} [options.globalDataKey] - Dot-path for addGlobalData. Omit to skip.
  * @param {string} [options.outputDir] - Override the output subdirectory. Defaults
  *   to the raw dir value (symmetric with input). Pass `''` to resolve to the
  *   output root (used by `public`, which copies to `/`).
  * @returns {{input: string, output: string}} Live cache; properties refresh when
  *   eleventy.directories fires. Safe to read at plugin-init time.
  */
-export function registerVirtualDir(eleventyConfig, { name, globalDataKey, outputDir } = {}) {
+export function registerVirtualDir(eleventyConfig, { name, outputDir } = {}) {
 	if (!name) {
 		throw new Error('registerVirtualDir: `name` is required');
 	}
@@ -65,17 +64,6 @@ export function registerVirtualDir(eleventyConfig, { name, globalDataKey, output
 			syncCache(entry.cache, dirs, entry.rawDir, entry.rawOutputDir);
 		}
 	});
-
-	// if (globalDataKey) {
-	// 	eleventyConfig.addGlobalData(globalDataKey, () => ({
-	// 		input: cache.input,
-	// 		output: cache.output
-	// 	}));
-	// }
-
-	if (globalDataKey) {
-		eleventyConfig.addGlobalData(globalDataKey, {});
-	}
 
 	return cache;
 }

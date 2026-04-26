@@ -64,7 +64,9 @@ describe('settingsSchema', () => {
 		},
 		head: {
 			link: [{ rel: 'stylesheet', href: '/assets/css/index.css' }],
-			script: [{ src: '/assets/js/index.js', defer: true }]
+			script: [{ src: '/assets/js/index.js', defer: true }],
+			meta: [{ name: 'color-scheme', content: 'light dark' }],
+			style: []
 		}
 	};
 
@@ -82,12 +84,20 @@ describe('settingsSchema', () => {
 		const result = settingsSchema.safeParse({});
 		expect(result.success).toBe(true);
 	});
-
 	it('rejects a non-string title', () => {
 		const input = { ...validSettings, title: 42 };
 		const result = settingsSchema.safeParse(input);
 		expect(result.success).toBe(false);
 		expect(result.error.issues[0].path).toEqual(['title']);
+	});
+
+	it('allows unknown keys inside a language entry (permissive inner shape)', () => {
+		const input = {
+			...validSettings,
+			languages: { en: { languageName: 'English', anything: { nested: true } } }
+		};
+		const result = settingsSchema.safeParse(input);
+		expect(result.success).toBe(true);
 	});
 
 	it('rejects a non-boolean noindex', () => {
@@ -111,12 +121,17 @@ describe('settingsSchema', () => {
 		expect(result.error.issues[0].path).toEqual(['head', 'link']);
 	});
 
-	it('allows unknown keys inside a language entry (permissive inner shape)', () => {
-		const input = {
-			...validSettings,
-			languages: { en: { languageName: 'English', anything: { nested: true } } }
-		};
+	it('rejects head.meta that is not an array', () => {
+		const input = { ...validSettings, head: { meta: 'color-scheme' } };
 		const result = settingsSchema.safeParse(input);
-		expect(result.success).toBe(true);
+		expect(result.success).toBe(false);
+		expect(result.error.issues[0].path).toEqual(['head', 'meta']);
+	});
+
+	it('rejects head.style that is not an array', () => {
+		const input = { ...validSettings, head: { style: 'body {}' } };
+		const result = settingsSchema.safeParse(input);
+		expect(result.success).toBe(false);
+		expect(result.error.issues[0].path).toEqual(['head', 'style']);
 	});
 });

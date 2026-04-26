@@ -267,13 +267,11 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Virtual directories ---
 		registerVirtualDir(eleventyConfig, {
-			name: 'assets',
-			globalDataKey: '_assets'
+			name: 'assets'
 		});
 
 		const publicDir = registerVirtualDir(eleventyConfig, {
 			name: 'public',
-			globalDataKey: '',
 			outputDir: ''
 		});
 
