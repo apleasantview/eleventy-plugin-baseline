@@ -1,6 +1,6 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
-import { langNormalization } from '../../core/utils/helpers.js';
+import { normalizeLanguages } from '../../core/utils/helpers.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
@@ -50,22 +50,17 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  */
 export default function multilangCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
-	const settings = state.settings;
-	const options = state.options;
-
-	const moduleOptions = {
-		verbose: options.verbose,
-		multilingual: options.multilingual,
-		defaultLanguage: settings.defaultLanguage,
-		languages: settings.languages
-	};
+	const { settings, options } = state;
 
 	// --- Language normalization ---
 	// Accept languages as array or object; normalize to object map.
 	// Drives collection building, locale data, and sitemap-core language config.
-	moduleOptions.languages = langNormalization(moduleOptions, log);
-	const hasLanguages = moduleOptions.languages && Object.keys(moduleOptions.languages).length > 0;
-	const isMultilingual = moduleOptions.multilingual === true && moduleOptions.defaultLanguage && hasLanguages;
+	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
+	const defaultLanguage = normalizeLanguageCode(settings.defaultLanguage);
+	const languages = normalizeLanguages(settings, log);
+	const hasLanguages = languages && Object.keys(languages).length > 0;
+
+	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 
 	if (!isMultilingual) {
 		log.info('inactive: requires options.multilingual + settings.defaultLanguage + languages');
@@ -74,21 +69,17 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 
 	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {
-		defaultLanguage: moduleOptions.defaultLanguage,
+		defaultLanguage: defaultLanguage,
 		errorMode: 'allow-fallback'
 	});
-
-	// Build a set of allowed language codes for validation during collection building.
-	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
-	const allowedLanguages = new Set(Object.keys(moduleOptions.languages).map(normalizeLanguageCode));
 
 	// Computed locale data: every page gets a page.locale object with its
 	// resolved lang, translationKey, and whether it's the default language.
 	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
 		return (data) => {
-			const lang = normalizeLanguageCode(data.lang || data.language || moduleOptions.defaultLanguage);
 			const translationKey = data.translationKey;
-			const isDefaultLang = lang === normalizeLanguageCode(moduleOptions.defaultLanguage);
+			const lang = normalizeLanguageCode(data.lang || data.language || defaultLanguage);
+			const isDefaultLang = lang === defaultLanguage;
 
 			return {
 				translationKey,
@@ -97,6 +88,9 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 			};
 		};
 	});
+
+	// Build a set of allowed language codes for validation during collection building.
+	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLanguageCode));
 
 	// Build both the map (keyed by translationKey → lang) and the flat list.
 	// Shared logic for both collections — called once per collection registration.
@@ -108,7 +102,7 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 			const translationKey = page.data.translationKey;
 			if (!translationKey) continue;
 
-			const lang = page.data.lang || page.data.language || moduleOptions.defaultLanguage;
+			const lang = page.data.lang || page.data.language || defaultLanguage;
 			if (!lang) continue;
 
 			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
@@ -116,7 +110,7 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 				continue;
 			}
 
-			const locale = { locale: { translationKey, lang, isDefaultLang: lang === moduleOptions.defaultLanguage } };
+			const locale = { locale: { translationKey, lang, isDefaultLang: lang === defaultLanguage } };
 			const safeCopy = DeepCopy(page, locale);
 			list.push(safeCopy);
 
@@ -125,7 +119,7 @@ export default function multilangCore(eleventyConfig, moduleContext) {
 				title: page.data.title,
 				url: page.url,
 				lang,
-				isDefaultLang: lang === moduleOptions.defaultLanguage,
+				isDefaultLang: lang === defaultLanguage,
 				data: page.data
 			};
 		}

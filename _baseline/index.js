@@ -180,11 +180,6 @@ export default function baseline(settings = {}, options = {}) {
 		// --- State layer (authoritative configuration) ---
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
 
-		const inferredMultilingual = Boolean(settings.defaultLanguage && settings.languages);
-		const inferredHead = options.head?.driver || 'default';
-		const inferredSitemap = options.sitemap ?? options.enableSitemapTemplate ?? true;
-		const inferredNavigator = Boolean(isDev || options.navigator || options.enableNavigatorTemplate);
-
 		const state = {
 			settings: {
 				title: settings.title,
@@ -198,17 +193,16 @@ export default function baseline(settings = {}, options = {}) {
 
 			options: {
 				verbose: options.verbose ?? false,
-				multilingual: options.multilingual ?? inferredMultilingual,
-				head: {
-					driver: options.head?.driver ?? inferredHead
-				},
-				sitemap: inferredSitemap,
-				navigator: {
-					template: options.navigator ?? inferredNavigator
-				},
+				multilang: options.multilingual ?? false,
+				sitemap: options.sitemap ?? options.enableSitemapTemplate ?? true,
 				assets: {
-					esbuild: options.assetsESBuild ?? options.assets?.esbuild ?? {}
-				}
+					esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
+				},
+				head: {
+					titleSeparator: options.head?.titleSeparator,
+					showGenerator: options.head?.showGenerator
+				},
+				navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev
 			}
 		};
 
@@ -287,9 +281,9 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Module features ---
 		const features = {
-			multilang: inferredMultilingual,
-			sitemap: inferredSitemap,
-			navigator: inferredNavigator
+			multilang: Boolean(state.options.multilang),
+			sitemap: Boolean(state.options.sitemap),
+			navigator: Boolean(state.options.navigator)
 		};
 
 		// --- Module registry ---

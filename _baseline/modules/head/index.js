@@ -1,5 +1,6 @@
 import { renderHead } from './drivers/posthtml-head-elements.js';
 import { buildAlternates } from './utils/alternates.js';
+import { optionsSchema } from './schema.js';
 
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
@@ -45,7 +46,15 @@ const EOL = '\n';
  */
 export default function headCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
-	const { options } = state;
+	const { settings, options } = state;
+
+	// Structural-only options check: log on mismatch, do not throw.
+	const parsed = optionsSchema.safeParse(options.head);
+	if (!parsed.success) {
+		for (const issue of parsed.error.issues) {
+			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
+		}
+	}
 
 	const pageContextRegistry = moduleContext.resolvePageContext;
 

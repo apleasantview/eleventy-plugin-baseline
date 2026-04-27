@@ -14,7 +14,7 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  *
  * System role:
  *   The seam between head's pipeline and the renderer choice. Alternate
- *   drivers can be plugged in via options.head.driver without changing the
+ *   drivers can be substituted at the import site without changing the
  *   cascade-time seed builder.
  *
  * Lifecycle:

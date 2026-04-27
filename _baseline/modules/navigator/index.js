@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import debug from './utils/debug.js';
+import { optionsSchema } from './schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,9 +55,20 @@ const __dirname = path.dirname(__filename);
  */
 export default function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, snapshots, log } = moduleContext;
-	const { options } = state;
-	const renderTemplate = options.navigator?.template ?? false;
-	const inspectorDepth = options.navigator?.inspectorDepth ?? 4;
+	const { settings, options } = state;
+
+	// Structural-only options check: log on mismatch, do not throw.
+	const parsed = optionsSchema.safeParse(options.navigator);
+	if (!parsed.success) {
+		for (const issue of parsed.error.issues) {
+			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
+		}
+	}
+
+	// Boolean shorthand activates the virtual page; object form lets users tune.
+	const navigatorOpts = options.navigator && typeof options.navigator === 'object' ? options.navigator : {};
+	const renderTemplate = navigatorOpts.template ?? Boolean(options.navigator);
+	const inspectorDepth = navigatorOpts.inspectorDepth ?? 4;
 
 	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
 		return () => ({

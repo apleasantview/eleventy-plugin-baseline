@@ -3,6 +3,12 @@ import * as z from 'zod';
 // Structural schemas for head-core. Permissive on unknown keys, typed on
 // keys the driver reads. Non-throwing at the call site — safeParse only.
 
+// `options.head` slice: render-behaviour knobs.
+export const optionsSchema = z.looseObject({
+	titleSeparator: z.string().optional(),
+	showGenerator: z.boolean().optional()
+});
+
 // `settings.head` extras slot: additive link/script/meta/style arrays.
 export const settingsHeadSchema = z.looseObject({
 	link: z.array(z.looseObject({})).optional(),

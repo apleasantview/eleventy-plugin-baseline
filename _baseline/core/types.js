@@ -20,23 +20,30 @@
 
 /**
  * @typedef {Object} BaselineOptions
- * Runtime feature flags and behavior configuration.
+ * Runtime feature flags and behaviour configuration.
+ *
+ * User-facing input. Each module reads its own slice from `state.options.<module>`.
  *
  * @property {boolean} [verbose]
  * Enables structured debug logging across modules.
  *
- * @property {boolean|Object} [navigator]
- * Controls navigator tooling.
- * If not explicitly set, it may be inferred from environment (e.g. dev mode).
+ * @property {boolean} [multilingual]
+ * Enables multilingual mode. Requires settings.defaultLanguage and
+ * settings.languages; the multilang module bails with a log otherwise.
  *
- * @property {boolean} [enableSitemapTemplate]
+ * @property {boolean} [sitemap]
  * Enables sitemap generation module (default: true).
  *
- * @property {boolean} [multilingual]
- * Forces multilingual mode. If omitted, it is inferred from settings.
+ * @property {boolean|Object} [navigator]
+ * Controls navigator tooling. Boolean shorthand activates the module and
+ * the virtual debug page. Object form: { template, inspectorDepth }.
+ * If omitted, defaults to true in development mode.
  *
- * @property {Object} [assetsESBuild]
- * ESBuild pipeline configuration for assets system.
+ * @property {Object} [head]
+ * Head module options: { titleSeparator, showGenerator }.
+ *
+ * @property {Object} [assets]
+ * Assets module options: { esbuild }.
  */
 
 /**

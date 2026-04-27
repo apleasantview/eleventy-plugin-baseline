@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-// Structural schema for assets-core plugin options. Permissive on unknown
+// Structural schema for the `options.assets` slice. Permissive on unknown
 // keys (esbuild accepts many options we don't touch); strict on the keys the
 // plugin itself reads.
 
@@ -10,6 +10,5 @@ export const esbuildOptionsSchema = z.looseObject({
 });
 
 export const optionsSchema = z.looseObject({
-	verbose: z.boolean().optional(),
 	esbuild: esbuildOptionsSchema.optional()
 });

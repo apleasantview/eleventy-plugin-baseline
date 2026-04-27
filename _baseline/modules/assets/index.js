@@ -43,10 +43,10 @@ import assetsPostCSS from './processors/postcss-process.js';
  */
 export default function assetsCore(eleventyConfig, moduleContext) {
 	const { state, directories, log } = moduleContext;
-	const options = state.options;
-	const parsed = optionsSchema.safeParse(options);
+	const { settings, options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
+	const parsed = optionsSchema.safeParse(options.assets);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
 			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);

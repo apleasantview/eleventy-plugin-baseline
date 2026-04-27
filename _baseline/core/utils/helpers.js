@@ -35,24 +35,24 @@ export function resolveSubdir(inputDir, outputDir, rawDir) {
  * Accepts an array of language codes or an object keyed by language code.
  * Returns null if input is invalid or empty.
  *
- * @param {Object} userOptions - Options object containing languages.
+ * @param {Object} settings - Options object containing languages.
  * @param {import('../logging.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
  * @returns {Record<string, Object>|null} Normalized language map, or null.
  */
-export function langNormalization(userOptions, logger) {
-	const normalizedLanguages = Array.isArray(userOptions.languages)
+export function normalizeLanguages(settings, logger) {
+	const normalizedLanguages = Array.isArray(settings.languages)
 		? Object.fromEntries(
-				userOptions.languages
+				settings.languages
 					.filter((lang) => typeof lang === 'string' && lang.trim())
 					.map((lang) => [lang.toLowerCase().trim(), {}])
 			)
-		: userOptions.languages && typeof userOptions.languages === 'object'
-			? userOptions.languages
+		: settings.languages && typeof settings.languages === 'object'
+			? settings.languages
 			: null;
 
-	if (logger && Array.isArray(userOptions.languages)) {
+	if (logger && Array.isArray(settings.languages)) {
 		const normalizedCount = normalizedLanguages ? Object.keys(normalizedLanguages).length : 0;
-		if (normalizedCount !== userOptions.languages.length) {
+		if (normalizedCount !== settings.languages.length) {
 			logger.info('Some languages entries were invalid and were dropped.');
 		}
 	}
