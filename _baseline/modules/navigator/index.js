@@ -7,62 +7,50 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Navigator Core (Eleventy Module)
+ * Navigator (module)
  *
- * This module exposes internal Eleventy render-time state for debugging
- * and inspection purposes.
+ * Debug surface. Exposes Eleventy and Baseline runtime state to templates so
+ * developers can inspect data shape, scope contents, and lifecycle output
+ * without leaving the page.
  *
- * It is intentionally isolated from other baseline modules and does not
- * introduce runtime dependencies beyond Eleventy's config API.
+ * Architecture layer:
+ *   module
  *
- * ------------------------------------------------------------
+ * System role:
+ *   Read-only window into the runtime substrate. Pulls snapshots from the
+ *   page-context registry and content-map store via the module context;
+ *   does not write back.
  *
- * Responsibilities
- * ------------------------------------------------------------
- * 1. Expose internal Nunjucks runtime context as globals
- * 2. Expose template render context for inspection
- * 3. Optionally register a virtual debug page
- * 4. Provide debugging filters for structured inspection output
+ * Lifecycle:
+ *   build-time   → register Nunjucks globals, debug filters, and the
+ *                  optional virtual debug page
+ *   cascade-time → eleventyComputed `_snapshot` resolves contentMap and
+ *                  pageContext on each page
  *
- * ------------------------------------------------------------
+ * Why this exists:
+ *   Render-time inspection of cascade state has no built-in surface.
+ *   Centralising globals and filters under a debug-only module keeps the
+ *   inspection vocabulary stable and out of feature modules.
  *
- * Debug Surface
- * ------------------------------------------------------------
- * - _navigator → full Nunjucks runtime environment (env + ctx)
- * - _context   → raw template context (this.ctx)
- * - _snapshot     → runtime snapshots (contentMap, pageContext inspection map)
+ * Scope:
+ *   Owns the `_runtime` and `_ctx` Nunjucks globals, computed `_snapshot`,
+ *   debug filters (`_inspect`, `_json`, `_keys`), and the optional virtual
+ *   page at /navigator-core.html.
+ *   Does not own the data it surfaces (page-context registry, content-map
+ *   store).
  *
- * These are strictly development tools and should not be relied on
- * for production rendering logic.
+ * Data flow:
+ *   snapshots (contentMap, pageContext) + this.ctx → globals + computed
+ *   `_snapshot` + virtual page → developer
  *
- * Note: _snapshot.contentMap resolves to null on the virtual navigator
- * template because that template renders before `eleventy.contentMap`
- * fires. View _snapshot from any ordinary page for a populated contentMap.
- *
- * ------------------------------------------------------------
- *
- * Options
- * ------------------------------------------------------------
- * navigator:
- *   template: boolean | [boolean, number]
- *     Enables virtual debug page generation.
- *
- *   inspectorDepth: number
- *     Controls depth of inspected object output (default: 4)
- *
- * ------------------------------------------------------------
+ * Note: `_snapshot.contentMap` is null on the navigator template itself
+ * because it renders before `eleventy.contentMap` fires. Read `_snapshot`
+ * from any ordinary page for a populated contentMap.
  *
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
- * Eleventy configuration instance.
- *
  * @param {Object} moduleContext
- * Shared baseline module context.
- *
- * @param {Object} moduleContext.state
- * Resolved plugin state (settings + options).
- *
- * @param {Object} moduleContext.snapshots
- * Thunks returning current runtime state: { contentMap, pageContext }.
+ * @param {Object} moduleContext.state - Resolved plugin state.
+ * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext }.
  */
 export default function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, snapshots, log } = moduleContext;
@@ -78,7 +66,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	});
 
 	/**
-	 * Nunjucks Global: _navigator
+	 * Nunjucks Global: _runtime
 	 *
 	 * Exposes internal Nunjucks runtime state:
 	 * - env  → environment instance
@@ -94,7 +82,7 @@ export default function navigatorCore(eleventyConfig, moduleContext) {
 	});
 
 	/**
-	 * Nunjucks Global: _context
+	 * Nunjucks Global: _ctx
 	 *
 	 * Direct reference to the template execution context.
 	 * Useful for debugging data shape at render time.

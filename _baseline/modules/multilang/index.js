@@ -6,123 +6,48 @@ import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
 
 /**
- * Multilang Core (Eleventy Module)
+ * Multilang (module)
  *
- * This module provides language infrastructure for multilingual sites.
+ * Language infrastructure. Normalises language config, builds translation
+ * relationships, attaches per-page locale data, and exposes cross-language
+ * lookup filters. Active only when options.multilingual is true and both
+ * defaultLanguage and at least one languages entry are set; otherwise the
+ * module exits early.
  *
- * It normalizes language configuration, builds translation relationships
- * across pages, and exposes filters for cross-language lookups.
+ * Architecture layer:
+ *   module
  *
- * It also integrates with Eleventy’s I18nPlugin for locale-aware routing.
+ * System role:
+ *   Wraps Eleventy's I18nPlugin and feeds the translation-map store that
+ *   head reads at transform-time. Sitemap reuses the same normalised
+ *   language map.
  *
- * ------------------------------------------------------------
+ * Lifecycle:
+ *   build-time   → normalise languages, attach I18nPlugin, register filters
+ *                  and computed page.locale
+ *   cascade-time → translationsMap and translations collections build the
+ *                  per-translationKey map and write it to the store
  *
- * Responsibilities
- * ------------------------------------------------------------
- * 1. Normalize language configuration (settings.languages)
- * 2. Validate and resolve page-level language metadata
- * 3. Build translation collections (map + flat list)
- * 4. Attach computed locale data to every page
- * 5. Register relational i18n filters for templates
+ * Why this exists:
+ *   I18nPlugin handles locale-aware routing but not translation
+ *   relationships. Head needs a transform-time-readable hreflang map; the
+ *   collection populates it once and the store carries it across the
+ *   lifecycle boundary.
  *
- * ------------------------------------------------------------
+ * Scope:
+ *   Owns language normalisation, page.locale computation, the translations
+ *   and translationsMap collections, and the i18n filters
+ *   (i18nTranslationsFor, i18nTranslationIn, i18nDefaultTranslation).
+ *   Does not own URL routing (I18nPlugin) or hreflang rendering (head).
  *
- * Language Model
- * ------------------------------------------------------------
+ * Data flow:
+ *   settings.languages + page.lang/translationKey → normalisation +
+ *   I18nPlugin → collections + computed page.locale + translation-map
+ *   store → head, sitemap
  *
- * The module operates on two core concepts:
- *
- * - language
- *   → resolved per-page language code
- *
- * - translationKey
- *   → shared identifier linking translated pages
- *
- * Each page is mapped as:
- * translationKey → lang → page metadata
- *
- * ------------------------------------------------------------
- *
- * Activation Rules
- * ------------------------------------------------------------
- *
- * The module is conditionally active.
- *
- * It requires:
- * - options.multilingual === true
- * - settings.defaultLanguage
- * - a valid languages configuration
- *
- * If any of these are missing, the module exits early.
- *
- * ------------------------------------------------------------
- *
- * Outputs
- * ------------------------------------------------------------
- *
- * Global computed data:
- * - page.locale
- *   → { translationKey, lang, isDefaultLang }
- *
- * Collections:
- * - translationsMap
- *   → { [translationKey]: { [lang]: pageMeta } }
- *
- * - translations
- *   → flat list of localized pages with locale data
- *
- * Filters:
- * - i18nTranslationsFor
- * - i18nTranslationIn
- * - i18nDefaultTranslation
- *
- * ------------------------------------------------------------
- *
- * Integration
- * ------------------------------------------------------------
- *
- * Wraps Eleventy’s I18nPlugin to provide:
- * - locale-aware URL resolution
- * - fallback handling for missing translations
- *
- * Language normalization is shared with other modules
- * (e.g. sitemap-core) via core/helpers.js.
- *
- * ------------------------------------------------------------
- *
- * Options
- * ------------------------------------------------------------
- *
- * @typedef {Object} MultilangOptions
- *
- * @property {boolean} [multilingual]
- * Enables multilingual mode.
- *
- * @property {string} [defaultLanguage]
- * Default language code.
- *
- * @property {Record<string, unknown>|string[]} [languages]
- * Supported language definitions.
- *
- * @property {boolean} [verbose]
- * Enables logging for invalid or unknown language codes.
- *
- * ------------------------------------------------------------
- *
- * Module Context
- * ------------------------------------------------------------
- *
- * @typedef {Object} moduleContext
- *
- * Shared module boundary contract.
- *
- * @property {Object} state
- * Resolved baseline state (settings + options).
- *
- * @property {Object} log
- * Scoped logger instance for module diagnostics.
+ * @param {import("@11ty/eleventy/src/UserConfig.js").default} eleventyConfig
+ * @param {Object} moduleContext
  */
-/** @param { import("@11ty/eleventy/src/UserConfig.js").default } eleventyConfig */
 export default function multilangCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
 	const settings = state.settings;

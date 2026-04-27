@@ -6,25 +6,42 @@ const PLACEHOLDER_TAG = 'baseline-head';
 const EOL = '\n';
 
 /**
- * Head Core (Eleventy Module)
+ * Head (module)
  *
- * Render-time module that turns normalised per-page data into <head>
- * output. Two-stage pipeline:
+ * Render-time <head> composer. Turns the normalised page context into a
+ * sorted, deduped element list and replaces <baseline-head> in the output.
  *
- *   cascade-time   → collector populates page._head seed bag
- *   transform-time → composer reads the bag, emits nodes,
- *                    capo-sorts, replaces <baseline-head>
+ * Architecture layer:
+ *   module
  *
- * The cascade step exists because Eleventy's htmlTransformer context
- * exposes page metadata only, not the full data cascade. Seeds carry
- * every field the composer needs from the cascade into the transform.
+ * System role:
+ *   Consumes the page context (built at cascade-time) and the translation
+ *   map (written at cascade-time) to produce the final <head> at
+ *   transform-time.
  *
- * Pass 1 scope: bucket 1 (standard head tags) only — charset, viewport,
- * title, description, robots, canonical, optional generator, plus user
- * extras from settings.head. SEO and JSON-LD buckets are follow-up passes.
+ * Lifecycle:
+ *   cascade-time   → upstream page-context registry builds the per-page seeds
+ *   transform-time → PostHTML plugin reads seeds, emits nodes, capo-sorts,
+ *                    replaces <baseline-head>
+ *
+ * Why this exists:
+ *   Eleventy's htmlTransformer context exposes only page metadata, not the
+ *   full data cascade. Pre-built seeds in the page-context registry carry
+ *   every field the composer needs from cascade-time into transform-time.
+ *
+ * Scope:
+ *   Owns transform-time composition and placeholder replacement.
+ *   Pass 1 covers bucket 1 only: charset, viewport, title, description,
+ *   robots, canonical, optional generator, plus user extras from
+ *   settings.head and hreflang alternates. SEO and JSON-LD are later passes.
+ *   Does not own seed shape (page context) or driver internals.
+ *
+ * Data flow:
+ *   page context + translation-map store + settings.head → driver →
+ *   PostHTML tree mutation (replaces <baseline-head>)
  *
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
- * @param {Object} moduleContext - Baseline module context.
+ * @param {Object} moduleContext
  */
 export default function headCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;

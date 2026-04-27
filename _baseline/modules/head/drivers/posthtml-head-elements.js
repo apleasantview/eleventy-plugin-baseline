@@ -2,6 +2,48 @@ import { getWeight, ElementWeights } from '@rviscomi/capo.js';
 import { capoPosthtmlAdapter as adapter } from './capo-adapter.js';
 import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
 
+/**
+ * PostHTML head driver (driver)
+ *
+ * Default head renderer. Emits standard meta tags, layers user extras and
+ * hreflang alternates on top, dedupes, capo-sorts, and replaces the
+ * <baseline-head> placeholder with the result.
+ *
+ * Architecture layer:
+ *   module (driver inside head)
+ *
+ * System role:
+ *   The seam between head's pipeline and the renderer choice. Alternate
+ *   drivers can be plugged in via options.head.driver without changing the
+ *   cascade-time seed builder.
+ *
+ * Lifecycle:
+ *   transform-time → emit, dedupe, sort, mutate the PostHTML tree
+ *
+ * Why this exists:
+ *   Splitting the renderer from the seed builder lets head swap rendering
+ *   strategies (e.g. a future direct-DOM driver) without touching cascade
+ *   wiring or the page-context shape.
+ *
+ * Scope:
+ *   Owns node emission, dedupe orchestration, capo sort, and placeholder
+ *   replacement.
+ *   Does not own seed shape (page context), hreflang building
+ *   (head/utils/alternates.js), or capo's element weights (capo.js).
+ *
+ * Data flow:
+ *   seeds + alternates + options → emit → dedupe → capo-sort → PostHTML
+ *   tree mutation
+ *
+ * @param {Object} args
+ * @param {Object} args.seeds - Page context for the current page.
+ * @param {Array<Object>} args.alternates - hreflang link descriptors.
+ * @param {Object} args.options - Head options (titleSeparator, showGenerator).
+ * @param {string} args.placeholderTag - Placeholder element to replace.
+ * @param {string} args.eol - End-of-line separator interleaved between nodes.
+ * @param {Object} args.log - Scoped logger.
+ * @returns {(tree: Object) => Object} PostHTML plugin function.
+ */
 export function renderHead({ seeds, alternates, options, placeholderTag, eol, log }) {
 	const defaults = emitMeta(seeds.meta, seeds.render, options);
 	const extras = emitExtras(seeds.head, alternates);

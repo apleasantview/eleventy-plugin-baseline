@@ -66,86 +66,44 @@ function splitLegacyOptions(legacy) {
 }
 
 /**
- * Eleventy Plugin: baseline
+ * Baseline (composition root)
  *
- * This plugin establishes a structured runtime layer on top of Eleventy.
+ * Eleventy plugin entry point. Normalises user input, builds the runtime
+ * substrate (stores + page-context registry), and registers feature modules
+ * in deterministic order.
  *
- * Architecture
- * --------------------------------------------------
+ * Architecture layer:
+ *   composition root
  *
- * The system is organized into three layers:
+ * System role:
+ *   The single place that wires settings + options into state, attaches
+ *   lifecycle stores, registers the page-context registry, and hands a
+ *   uniform module context to each module. No feature behaviour lives here.
  *
- * 1. state
- *    → normalized user configuration (settings + options)
+ * Lifecycle:
+ *   build-time → legacy-shape detection, state computation, virtual dir
+ *                registration, store and page-context registration, module
+ *                wiring
  *
- * 2. runtime
- *    → lazy access layer over Eleventy lifecycle state
- *      (contentMap, environment bindings, derived values)
+ * Why this exists:
+ *   Modules need a stable, normalised input contract and a shared runtime
+ *   surface. Centralising the wiring keeps activation rules, option
+ *   inference, and registration order in one auditable place.
  *
- * 3. modules
- *    → feature plugins registered via a declarative registry
+ * Scope:
+ *   Owns the legacy-shape compatibility shim, state computation, runtime
+ *   store creation, page-context registration, and the module registry.
+ *   Does not own any feature behaviour; modules implement that.
  *
- * This structure enforces a strict boundary between:
- * - configuration (user input)
- * - runtime state (Eleventy lifecycle)
- * - feature implementation (modules)
+ * Data flow:
+ *   settings + options → state → runtime stores + page-context registry →
+ *   modules
  *
- * and prevents implicit coupling across those domains.
+ * Typedefs (BaselineSettings, BaselineOptions, BaselineState, BaselineContext)
+ * live in core/types.js.
  *
- * ------------------------------------------------------------
- *
- * @typedef {Object} BaselineSettings
- * Site identity and SEO configuration.
- *
- * @property {string} [title]
- * @property {string} [tagline]
- * @property {string} [url]
- * @property {boolean} [noindex]
- * @property {string} [defaultLanguage]
- * @property {Record<string, unknown>} [languages]
- * @property {Object} [head]
- *
- * @typedef {Object} BaselineOptions
- * Runtime feature flags and behavior configuration.
- *
- * @property {boolean} [verbose]
- * Enables structured debug logging across modules.
- *
- * @property {boolean|Object} [navigator]
- * Controls navigator tooling.
- * If not explicitly set, it may be inferred from environment (e.g. dev mode).
- *
- * @property {boolean} [enableSitemapTemplate]
- * Enables sitemap generation module (default: true).
- *
- * @property {boolean} [multilingual]
- * Forces multilingual mode. If omitted, it is inferred from settings.
- *
- * @property {Object} [assetsESBuild]
- * ESBuild pipeline configuration for assets system.
- *
- * ------------------------------------------------------------
- *
- * @typedef {Object} BaselineState
- * Fully resolved internal plugin state.
- *
- * @property {Object} settings
- * @property {Object} options
- *
- * ------------------------------------------------------------
- *
- * @typedef {Object} BaselineContext
- * Shared module boundary contract.
- *
- * This context is the only supported interface between:
- * - Eleventy configuration runtime
- * - baseline core
- * - feature modules
- *
- * @property {BaselineState} state
- * @property {Object} runtime
- * @property {Object} runtime.contentMap
- * @property {Object} runtime.site
+ * @param {import('./core/types.js').BaselineSettings} [settings]
+ * @param {import('./core/types.js').BaselineOptions} [options]
  */
 export default function baseline(settings = {}, options = {}) {
 	// --- Legacy compatibility layer ---

@@ -6,99 +6,41 @@ import assetsESbuild from './processors/esbuild-process.js';
 import assetsPostCSS from './processors/postcss-process.js';
 
 /**
- * Assets Core (Eleventy Module)
+ * Assets (module)
  *
- * This module owns asset pipeline integration within the baseline system.
+ * Asset pipeline integration. Wires Eleventy’s template formats to esbuild
+ * and PostCSS through compile guards that allow only declared entrypoints,
+ * and exposes inline filters for critical-path assets.
  *
- * It is responsible for wiring Eleventy’s template system to external
- * asset processors (ESBuild, PostCSS) and enforcing a constrained
- * entrypoint-based compilation model.
+ * Architecture layer:
+ *   module
  *
- * ------------------------------------------------------------
+ * System role:
+ *   Bridge between Eleventy’s template system and the external asset
+ *   processors. Reads `directories.assets` from the virtual-dir substrate.
  *
- * Responsibilities
- * ------------------------------------------------------------
- * 1. Register asset template formats (js, css)
- * 2. Define compile guards for asset entrypoints
- * 3. Delegate processing to external pipeline functions
- * 4. Register inline asset filters for templates
- * 5. Configure watch targets for asset changes
+ * Lifecycle:
+ *   build-time → register js/css formats, compile guards, watch target, and
+ *                inline filters; guards run per-entrypoint during compile
  *
- * ------------------------------------------------------------
+ * Why this exists:
+ *   Eleventy treats every .js and .css file as a template. Without compile
+ *   guards, 11tydata.js files and non-entry assets would either pollute the
+ *   template graph or trigger the wrong processor.
  *
- * Asset Model
- * ------------------------------------------------------------
+ * Scope:
+ *   Owns template format registration, compile guards, watch wiring, and the
+ *   inline filters (inlinePostCSS, inlineESbuild).
+ *   Does not own the processors themselves (assets/processors/) or
+ *   `directories.assets` resolution (core/virtual-dir.js).
  *
- * The module enforces an entrypoint-based structure:
+ * Data flow:
+ *   assets/{js,css}/index.{js,css} entrypoints → compile guard →
+ *   esbuild/PostCSS processor → output
  *
- * - JS:  /assets/js/index.js
- * - CSS: /assets/css/index.css
- *
- * Only these entry files are compiled.
- * All other files are ignored at the Eleventy template layer.
- *
- * Processing is delegated to:
- * - ESBuild (JavaScript)
- * - PostCSS (CSS)
- *
- * ------------------------------------------------------------
- *
- * Activation Rules
- * ------------------------------------------------------------
- *
- * The module is always registered.
- *
- * Compilation behavior depends on:
- * - presence of assets directory (required)
- * - availability of processor configuration (optional)
- *
- * If the assets directory is not defined, the module exits early.
- *
- * ------------------------------------------------------------
- *
- * Outputs
- * ------------------------------------------------------------
- *
- * - Compiled JS and CSS assets emitted via Eleventy template pipeline
- * - Inline asset filters:
- *   - inlineESbuild → <script> bundle
- *   - inlinePostCSS → <style> output
- * - Watch targets for asset file changes
- *
- * ------------------------------------------------------------
- *
- * Options
- * ------------------------------------------------------------
- *
- * @typedef {Object} AssetsOptions
- *
- * @property {Object} [assets]
- * Asset system configuration.
- *
- * @property {Object} [assets.esbuild]
- * ESBuild configuration passed to the JS processing pipeline.
- *
- * Defaults are defined in the processor layer and are not duplicated here.
- *
- * ------------------------------------------------------------
- *
- * Module Context
- * ------------------------------------------------------------
- *
- * @typedef {Object} moduleContext
- *
- * Shared module boundary contract.
- *
- * @property {Object} state
- * Resolved baseline state (settings + options).
- *
- * @property {Object} directories
- * Resolved directory map (Eleventy + virtual).
- *
- * @property {Object} log
- * Scoped logger instance for module diagnostics.
+ * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
+ * @param {Object} moduleContext
  */
-/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function assetsCore(eleventyConfig, moduleContext) {
 	const { state, directories, log } = moduleContext;
 	const options = state.options;

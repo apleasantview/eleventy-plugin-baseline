@@ -3,12 +3,42 @@ import { resolveSubdir } from './utils/helpers.js';
 import { createLogger } from './logging.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 
-// Eleventy's ProjectDirectories.setViaConfigObject() only honours input,
-// output, data, includes, and layouts; extra dir.* keys are silently ignored,
-// and the eleventy.directories event exposes only those same keys. This helper
-// synthesises additional virtual dir keys on eleventyConfig.directories, keeps
-// them in sync when Eleventy finalises its directories, and optionally
-// publishes the resolved paths as global data.
+/**
+ * Virtual directories (runtime substrate)
+ *
+ * Synthesises extra keys on eleventyConfig.directories (e.g. `assets`,
+ * `public`) that Eleventy itself won't accept, and keeps them in sync once
+ * Eleventy finalises its real directory map.
+ *
+ * Architecture layer:
+ *   runtime substrate
+ *
+ * System role:
+ *   Adds virtual dir keys consumed by modules (assets reads
+ *   `directories.assets`) and by the composition root (passthrough copy from
+ *   `directories.public`).
+ *
+ * Lifecycle:
+ *   build-time → synthesise key, pre-populate cache from eleventyConfig.dir
+ *   build-time → on `eleventy.directories`, refresh the cache to final paths
+ *
+ * Why this exists:
+ *   Eleventy's ProjectDirectories.setViaConfigObject() only honours input,
+ *   output, data, includes, and layouts. Extra `dir.*` keys are silently
+ *   ignored, and the `eleventy.directories` event exposes only the same set.
+ *   Synthesis fills the gap so consumers can read additional dirs the same
+ *   way they read the real ones.
+ *
+ * Scope:
+ *   Owns synthesis of extra `eleventyConfig.directories` keys, the live
+ *   cache, and a single shared listener for sync.
+ *   Does not own passthrough copy or watch wiring (composition root and
+ *   modules own those).
+ *
+ * Data flow:
+ *   { name, outputDir } → eleventyConfig.directories[name] getter →
+ *   live { input, output } cache → consumers
+ */
 
 const SCOPE_NAME = 'core:virtual-dir';
 

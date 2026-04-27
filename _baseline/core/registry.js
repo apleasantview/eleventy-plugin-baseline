@@ -1,3 +1,36 @@
+/**
+ * State isolation kernel (registry)
+ *
+ * Per-config scopes that hold caches, named values, and listener dedup sets.
+ * Every store and sub-registry in the substrate borrows a scope here; no
+ * feature data lives directly inside.
+ *
+ * Architecture layer:
+ *   registry
+ *
+ * System role:
+ *   Underpins virtual-dir, content-map store, translation-map store, and the
+ *   page-context registry. The seam between eleventyConfig and any long-lived
+ *   runtime state Baseline carries.
+ *
+ * Lifecycle:
+ *   build-time     → scopes created on demand
+ *   cascade-time   → values populated by store writers
+ *   transform-time → values read by transform-time consumers
+ *
+ * Why this exists:
+ *   Eleventy has no first-class place to hang per-config singletons. A
+ *   WeakMap keyed by eleventyConfig keeps state isolated across reloads and
+ *   parallel builds without leaks, and gives every consumer a stable slot.
+ *
+ * Scope:
+ *   Owns scope creation, listener dedup, and identity-keyed memoisation.
+ *   Does not own any feature data; only the containers feature code lives in.
+ *
+ * Data flow:
+ *   eleventyConfig → scope → { cache, values, listeners } → consumer
+ */
+
 const roots = new WeakMap();
 
 /**

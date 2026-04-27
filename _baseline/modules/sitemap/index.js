@@ -7,100 +7,46 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Sitemap Core (Eleventy Module)
+ * Sitemap (module)
  *
- * This module is responsible for sitemap generation and sitemap-related
- * page metadata enrichment within the baseline system.
+ * Sitemap generation and per-page sitemap metadata. Layers on Eleventy
+ * collections rather than rendering independently. In multilingual mode it
+ * partitions per-language sitemaps and emits a sitemap index; otherwise it
+ * emits a single flat sitemap.
  *
- * It operates as a structural layer on top of Eleventy collections,
- * not as a standalone rendering system.
+ * Architecture layer:
+ *   module
  *
- * ------------------------------------------------------------
+ * System role:
+ *   Reads the same normalised language map as multilang (via
+ *   core/utils/helpers.js) and emits virtual templates that Eleventy
+ *   renders to XML. Pages opt out via `noindex` in the cascade.
  *
- * Responsibilities
- * ------------------------------------------------------------
- * 1. Inject computed sitemap metadata into all pages
- * 2. Register sitemap XML output templates
- * 3. Support optional multilingual sitemap partitioning
- * 4. Generate sitemap index when multilingual mode is active
+ * Lifecycle:
+ *   build-time   → register virtual sitemap templates (single, per-lang,
+ *                  or index)
+ *   cascade-time → eleventyComputed `page.sitemap` resolves ignore /
+ *                  changefreq / priority on each page
  *
- * ------------------------------------------------------------
+ * Why this exists:
+ *   Eleventy has no built-in sitemap. Multilingual sites also need
+ *   partitioning plus an index, which only makes sense once language config
+ *   is normalised the same way multilang sees it.
  *
- * Sitemap Data Model
- * ------------------------------------------------------------
+ * Scope:
+ *   Owns computed page.sitemap and the virtual sitemap templates
+ *   (single-language /sitemap.xml, or per-lang /{lang}/sitemap.xml plus a
+ *   /sitemap.xml index).
+ *   Does not own language normalisation (core/utils/helpers.js) or noindex
+ *   propagation through the cascade.
  *
- * Each page is enriched with a computed `page.sitemap` object:
+ * Data flow:
+ *   settings.languages + page data → computed page.sitemap + virtual
+ *   templates → /sitemap.xml or per-language + index
  *
- * {
- *   ignore: boolean,
- *   changefreq: string,
- *   priority: number
- * }
- *
- * A page is excluded when:
- * - data.noindex is true
- * - or noindex is inherited from upstream data cascade
- *
- * ------------------------------------------------------------
- *
- * Activation Rules
- * ------------------------------------------------------------
- *
- * Multilingual mode is enabled when:
- * - options.multilingual is true
- * - settings.defaultLanguage is defined
- * - a normalized language map exists
- *
- * Otherwise, the system falls back to single-sitemap mode.
- *
- * ------------------------------------------------------------
- *
- * Outputs
- * ------------------------------------------------------------
- *
- * Single-language mode:
- * - /sitemap.xml
- *
- * Multilingual mode:
- * - /{lang}/sitemap.xml (per language)
- * - /sitemap.xml (sitemap index)
- *
- * ------------------------------------------------------------
- *
- * Options
- * ------------------------------------------------------------
- *
- * @typedef {Object} SitemapOptions
- *
- * @property {boolean} [enableSitemapTemplate=true]
- * Controls registration of virtual sitemap templates.
- *
- * @property {boolean} [multilingual]
- * Enables multilingual sitemap generation.
- * If omitted, derived from baseline state.
- *
- * @property {string} [defaultLanguage]
- * Default language used in multilingual sitemap resolution.
- *
- * @property {Object|Array} [languages]
- * Language definitions used to partition sitemap output.
- *
- * ------------------------------------------------------------
- *
- * Module Context
- * ------------------------------------------------------------
- *
- * @typedef {Object} SitemapContext
- *
- * Shared module boundary contract.
- *
- * @property {Object} state
- * Resolved baseline state (settings + options).
- *
- * @property {Object} log
- * Scoped logger instance for module diagnostics.
+ * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
+ * @param {Object} moduleContext
  */
-/** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default function sitemapCore(eleventyConfig, moduleContext) {
 	const { state, log } = moduleContext;
 	const settings = state.settings;
