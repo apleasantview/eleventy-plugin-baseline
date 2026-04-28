@@ -34,16 +34,17 @@
  * @property {boolean} [sitemap]
  * Enables sitemap generation module (default: true).
  *
- * @property {boolean|Object} [navigator]
+ * @property {boolean | { template?: boolean, inspectorDepth?: number }} [navigator]
  * Controls navigator tooling. Boolean shorthand activates the module and
- * the virtual debug page. Object form: { template, inspectorDepth }.
- * If omitted, defaults to true in development mode.
+ * the virtual debug page. Object form lets the page render flag and the
+ * inspector depth be tuned independently. Defaults to true in dev mode.
  *
- * @property {Object} [head]
- * Head module options: { titleSeparator, showGenerator }.
+ * @property {{ titleSeparator?: string, showGenerator?: boolean }} [head]
+ * Head module options.
  *
- * @property {Object} [assets]
- * Assets module options: { esbuild }.
+ * @property {{ esbuild?: { minify?: boolean, target?: string } }} [assets]
+ * Assets module options. The esbuild slice is permissive — any esbuild
+ * option is accepted; only `minify` and `target` are typed.
  */
 
 /**

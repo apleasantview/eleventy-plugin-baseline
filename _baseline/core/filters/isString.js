@@ -3,6 +3,6 @@
  * @param {*} object - Value to test.
  * @returns {boolean}
  */
-export default function isStringFilter(object) {
+export function isStringFilter(object) {
 	return typeof object === 'string';
 }

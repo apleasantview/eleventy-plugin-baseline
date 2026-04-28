@@ -44,7 +44,7 @@ const EOL = '\n';
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
  */
-export default function headCore(eleventyConfig, moduleContext) {
+export function headCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
 	const { settings, options } = state;
 

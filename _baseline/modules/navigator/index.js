@@ -53,7 +53,7 @@ const __dirname = path.dirname(__filename);
  * @param {Object} moduleContext.state - Resolved plugin state.
  * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext }.
  */
-export default function navigatorCore(eleventyConfig, moduleContext) {
+export function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, snapshots, log } = moduleContext;
 	const { settings, options } = state;
 

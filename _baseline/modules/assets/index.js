@@ -41,7 +41,7 @@ import assetsPostCSS from './processors/postcss-process.js';
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
  */
-export default function assetsCore(eleventyConfig, moduleContext) {
+export function assetsCore(eleventyConfig, moduleContext) {
 	const { state, directories, log } = moduleContext;
 	const { settings, options } = state;
 

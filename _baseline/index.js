@@ -11,17 +11,17 @@ import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { settingsSchema } from './core/schema.js';
 
-import globalFunctions from './core/global-functions/index.js';
-import filters from './core/filters/index.js';
-import shortcodes from './core/shortcodes/index.js';
-import modules from './core/modules.js';
+import { registerGlobals } from './core/global-functions/index.js';
+import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
+import { imageShortcode } from './core/shortcodes/index.js';
+import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
 
 const mode = process.env.ELEVENTY_ENV;
-const isDev = process.env.ELEVENTY_ENV === 'development';
-const isProd = process.env.ELEVENTY_ENV === 'production';
+const isDev = mode === 'development';
+const isProd = mode === 'production';
 
 const LEGACY_OPTION_KEYS = [
 	'verbose',
@@ -34,7 +34,16 @@ const LEGACY_OPTION_KEYS = [
 // Whitelist of reserved global data keys used internally across the plugin.
 // Positive side effect is they all get listed in order and merge data to the same key.
 // Also prevents name collision with filters.
-const INTERNAL_KEYS = ['_baseline', '_assets', '_head', '_multilang', '_sitemap', '_snapshot', '_pageContext'];
+const INTERNAL_KEYS = [
+	'_baseline',
+	'_assets',
+	'_head',
+	'_multilang',
+	'_navigator',
+	'_sitemap',
+	'_snapshot',
+	'_pageContext'
+];
 
 /**
  * Detect legacy single-object plugin invocation.
@@ -171,7 +180,7 @@ export default function baseline(settings = {}, options = {}) {
 			baseLog.warn('settings.url missing — canonical URLs will be relative');
 		}
 
-		globalFunctions(eleventyConfig);
+		registerGlobals(eleventyConfig);
 
 		eleventyConfig.addPlugin(HtmlBasePlugin, {
 			baseHref: process.env.URL || eleventyConfig.pathPrefix
@@ -195,14 +204,14 @@ export default function baseline(settings = {}, options = {}) {
 				verbose: options.verbose ?? false,
 				multilang: options.multilingual ?? false,
 				sitemap: options.sitemap ?? options.enableSitemapTemplate ?? true,
-				assets: {
-					esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
-				},
+				navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev,
 				head: {
 					titleSeparator: options.head?.titleSeparator,
 					showGenerator: options.head?.showGenerator
 				},
-				navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev
+				assets: {
+					esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
+				}
 			}
 		};
 
@@ -215,11 +224,11 @@ export default function baseline(settings = {}, options = {}) {
 
 		// --- Virtual directories ---
 		registerVirtualDir(eleventyConfig, {
-			name: 'assets'
+			key: 'assets'
 		});
 
 		const publicDir = registerVirtualDir(eleventyConfig, {
-			name: 'public',
+			key: 'public',
 			outputDir: ''
 		});
 
@@ -279,24 +288,22 @@ export default function baseline(settings = {}, options = {}) {
 			pageContext: () => pageContextRegistry.snapshot()
 		};
 
-		// --- Module features ---
+		// --- Module activation ---
 		const features = {
 			multilang: Boolean(state.options.multilang),
 			sitemap: Boolean(state.options.sitemap),
-			navigator: Boolean(state.options.navigator)
+			navigator: Boolean(state.options.navigator),
+			head: true,
+			assets: true
 		};
 
 		// --- Module registry ---
 		const moduleRegistry = [
-			{ when: features.multilang, name: 'multilang', plugin: modules.multilangCore },
-			{ name: 'assets', plugin: modules.assetsCore },
-			{ name: 'head', plugin: modules.headCore, consumes: { pageContext: true } },
-			{ when: features.sitemap, name: 'sitemap', plugin: modules.sitemapCore },
-			{
-				when: features.navigator,
-				name: 'navigator',
-				plugin: modules.navigatorCore
-			}
+			{ when: features.multilang, name: 'multilang', plugin: multilangCore },
+			{ when: features.sitemap, name: 'sitemap', plugin: sitemapCore },
+			{ when: features.navigator, name: 'navigator', plugin: navigatorCore },
+			{ when: features.head, name: 'head', plugin: headCore, consumes: { pageContext: true } },
+			{ when: features.assets, name: 'assets', plugin: assetsCore }
 		];
 
 		for (const entry of moduleRegistry) {
@@ -312,12 +319,12 @@ export default function baseline(settings = {}, options = {}) {
 		}
 
 		// --- Filters ---
-		eleventyConfig.addFilter('markdownify', filters.markdownFilter);
-		eleventyConfig.addFilter('relatedPosts', filters.relatedPostsFilter);
-		eleventyConfig.addFilter('isString', filters.isStringFilter);
+		eleventyConfig.addFilter('markdownify', markdownFilter);
+		eleventyConfig.addFilter('relatedPosts', relatedPostsFilter);
+		eleventyConfig.addFilter('isString', isStringFilter);
 
 		// --- Shortcodes ---
-		eleventyConfig.addShortcode('image', shortcodes.imageShortcode);
+		eleventyConfig.addShortcode('image', imageShortcode);
 
 		// --- Dev image pipeline ---
 		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);

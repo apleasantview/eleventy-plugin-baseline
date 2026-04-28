@@ -47,21 +47,21 @@ const SCOPE_NAME = 'core:virtual-dir';
  *
  * @param {import('@11ty/eleventy').UserConfig} eleventyConfig
  * @param {Object} options
- * @param {string} options.name - Key to synthesise (e.g. 'assets', 'public').
+ * @param {string} options.key - Key to synthesise (e.g. 'assets', 'public').
  * @param {string} [options.outputDir] - Override the output subdirectory. Defaults
  *   to the raw dir value (symmetric with input). Pass `''` to resolve to the
  *   output root (used by `public`, which copies to `/`).
  * @returns {{input: string, output: string}} Live cache; properties refresh when
  *   eleventy.directories fires. Safe to read at plugin-init time.
  */
-export function registerVirtualDir(eleventyConfig, { name, outputDir } = {}) {
-	if (!name) {
+export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
+	if (!key) {
 		throw new Error('registerVirtualDir: `name` is required');
 	}
 
 	const log = createLogger(SCOPE_NAME);
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
-	const rawDir = eleventyConfig.dir?.[name] || name;
+	const rawDir = eleventyConfig.dir?.[key] || key;
 	const rawOutputDir = outputDir ?? rawDir;
 	const cache = { input: null, output: null };
 
@@ -69,15 +69,15 @@ export function registerVirtualDir(eleventyConfig, { name, outputDir } = {}) {
 	// time (watch globs, ignores, compile-guard prefixes) see a valid path.
 	syncCache(cache, eleventyConfig.dir || {}, rawDir, rawOutputDir);
 
-	setEntry(scope, name, { rawDir, rawOutputDir, cache });
+	setEntry(scope, key, { rawDir, rawOutputDir, cache });
 
 	// Define the virtual key once. The getter reads the live cache, which the
 	// shared listener below refreshes when Eleventy emits its final directories.
-	const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, name);
+	const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, key);
 	if (existing && existing.configurable === false) {
-		log.info(`directories[${name}] already defined; skipping`);
+		log.info(`directories[${key}] already defined; skipping`);
 	} else {
-		Object.defineProperty(eleventyConfig.directories, name, {
+		Object.defineProperty(eleventyConfig.directories, key, {
 			get() {
 				return cache.input;
 			},

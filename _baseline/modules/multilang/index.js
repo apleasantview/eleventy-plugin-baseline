@@ -48,7 +48,7 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  * @param {import("@11ty/eleventy/src/UserConfig.js").default} eleventyConfig
  * @param {Object} moduleContext
  */
-export default function multilangCore(eleventyConfig, moduleContext) {
+export function multilangCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
 	const { settings, options } = state;
 

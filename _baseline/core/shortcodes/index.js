@@ -1,3 +1,2 @@
-import { imageShortcode } from './image.js';
-
-export default { imageShortcode };
+// Shortcodes barrel.
+export { imageShortcode } from './image.js';

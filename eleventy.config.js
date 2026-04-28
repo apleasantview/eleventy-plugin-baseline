@@ -19,9 +19,16 @@ export default async function (eleventyConfig) {
 	eleventyConfig.addPlugin(
 		baseline(settings, {
 			verbose: true,
-			enableNavigatorTemplate: true,
-			enableSitemapTemplate: true,
-			multilingual: true
+			multilingual: true,
+			sitemap: true,
+			navigator: true,
+			head: {
+				titleSeparator: ' | ',
+				showGenerator: true
+			},
+			assets: {
+				esbuild: {}
+			}
 		})
 	);
 

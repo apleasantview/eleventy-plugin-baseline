@@ -47,7 +47,7 @@ const __dirname = path.dirname(__filename);
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
  */
-export default function sitemapCore(eleventyConfig, moduleContext) {
+export function sitemapCore(eleventyConfig, moduleContext) {
 	const { state, log } = moduleContext;
 	const { settings, options } = state;
 
