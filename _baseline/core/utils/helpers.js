@@ -1,4 +1,5 @@
 import { TemplatePath } from '@11ty/eleventy-utils';
+import slugifyLib from 'slugify';
 
 /**
  * Helper function to add trailing slash to a path
@@ -28,6 +29,20 @@ export function resolveSubdir(inputDir, outputDir, rawDir) {
 		input: addTrailingSlash(TemplatePath.standardizeFilePath(joinedInput)),
 		output: addTrailingSlash(TemplatePath.standardizeFilePath(joinedOutput))
 	};
+}
+
+/**
+ * Slugify a string into a wikilink-friendly key.
+ * Lowercases, strips diacritics, replaces non-alphanumerics with hyphens,
+ * trims leading/trailing hyphens. Returns null for empty input.
+ *
+ * @param {string|null|undefined} input
+ * @returns {string|null}
+ */
+export function slugify(input) {
+	if (input == null) return null;
+	const slug = slugifyLib(String(input), { lower: true, strict: true, trim: true });
+	return slug || null;
 }
 
 /**

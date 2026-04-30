@@ -7,8 +7,10 @@ import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 import { createLogger } from './core/logging.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
+import { createSlugIndex } from './core/slug-index.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
+import { wikilinks } from './core/wikilinks.js';
 import { settingsSchema } from './core/schema.js';
 
 import { registerGlobals } from './core/global-functions/index.js';
@@ -262,6 +264,7 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Runtime stores (self-attach their lifecycle listeners) ---
 		const contentMapStore = createContentMapStore(eleventyConfig);
 		const translationMapStore = createTranslationMapStore(eleventyConfig);
+		const slugIndex = createSlugIndex(eleventyConfig);
 
 		// --- Module helpers (derived state) ---
 		const helpers = {};
@@ -274,7 +277,8 @@ export default function baseline(settings = {}, options = {}) {
 				get contentMap() {
 					return contentMapStore.get();
 				},
-				translationMap: translationMapStore
+				translationMap: translationMapStore,
+				slugIndex
 			},
 			directories,
 			helpers
@@ -282,6 +286,11 @@ export default function baseline(settings = {}, options = {}) {
 
 		// Page context registry
 		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
+
+		// Wikilinks: [[slug]] / [[slug | lang]] in body markdown.
+		eleventyConfig.amendLibrary('md', (md) => {
+			md.use(wikilinks, { slugIndex, pageContextRegistry, translationMapStore });
+		});
 
 		coreContext.snapshots = {
 			contentMap: () => contentMapStore.snapshot(),

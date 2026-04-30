@@ -1,4 +1,5 @@
 import pick from './utils/pick.js';
+import { slugify } from './utils/helpers.js';
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
@@ -41,6 +42,7 @@ const COMPUTED_KEY = 'eleventyComputed._pageContext';
  */
 export function registerPageContext(eleventyConfig, coreContext) {
 	const { state, runtime, site } = coreContext;
+	const { slugIndex } = runtime;
 	const { settings, options } = state;
 
 	const log = createLogger(SCOPE_NAME, { verbose: options.verbose });
@@ -100,9 +102,11 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	}
 
 	function buildEntry(data) {
+		const rawSlug = data?.slug ?? data?.page?.fileSlug;
 		return {
 			title: data?.title ?? null,
 			description: data?.description ?? null,
+			slug: slugify(rawSlug),
 			head: data?.head ?? null
 		};
 	}
@@ -202,6 +206,16 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 		const inspectionKey = context.page.url ?? context.page.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
+
+		// Register slug for wikilink resolution. In multilingual sites only the
+		// defaultLanguage page registers; the wikilinks plugin uses the
+		// translation map to hop to other languages.
+		if (slugIndex && entry.slug && page.url) {
+			const eligible = page.locale ? page.locale.isDefaultLang === true : true;
+			if (eligible) {
+				slugIndex.set(entry.slug, page.url, page.inputPath);
+			}
+		}
 
 		return context;
 	}
