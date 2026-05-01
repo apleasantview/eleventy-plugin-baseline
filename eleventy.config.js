@@ -45,12 +45,20 @@ export default async function (eleventyConfig) {
 		});
 	});
 
-	// --- Shortcodes ---
+	// --- Content components are dressed in shortcodes ---
 	// Alert block: wraps content in a styled alert component (info, warning, etc.).
 	eleventyConfig.addPairedNunjucksShortcode('alertBlock', function (text, alert = 'info') {
-		const res = this.env.render('components/alerts.njk', {
+		const res = this.env.render('blocks/alerts.njk', {
 			content: text,
 			type: alert
+		});
+		return res;
+	});
+
+	eleventyConfig.addPairedNunjucksShortcode('stepsBlock', function (text, steps = 'default') {
+		const res = this.env.render('blocks/steps.njk', {
+			content: text,
+			type: steps
 		});
 		return res;
 	});

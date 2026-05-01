@@ -1,4 +1,5 @@
 .c-docs-steps,
+.c-docs-steps--default,
 .c-docs-steps--compact {
 	p:first-of-type {
 		display: inline-block;
