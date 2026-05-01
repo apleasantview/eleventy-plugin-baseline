@@ -10,21 +10,21 @@ export default {
 			contentDir: 'content/en/',
 			languageCode: 'en',
 			languageName: 'English',
-			title: 'Eleventy Debugged Baseline',
+			title: 'Eleventy Baseline',
 			tagline: 'Start building your site and skip the recurring setup work.'
 		},
 		nl: {
 			contentDir: 'content/nl/',
 			languageCode: 'nl',
 			languageName: 'Nederlands',
-			title: 'Eleventy Plugin Baseline',
+			title: 'Eleventy Baseline',
 			tagline: 'Een rit op een magisch tapijt'
 		},
 		fr: {
 			contentDir: 'content/fr/',
 			languageCode: 'fr',
 			languageName: 'Français',
-			title: 'Eleventy Plugin Baseline',
+			title: 'Eleventy Baseline',
 			tagline: 'Un tour en tapis volant'
 		}
 	},
