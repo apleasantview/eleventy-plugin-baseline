@@ -1,6 +1,6 @@
 export default {
-	title: 'Eleventy Plugin Baseline',
-	tagline: 'A magic carpet ride',
+	title: 'Eleventy Baseline',
+	tagline: 'Start building your site and skip the recurring setup work.',
 	url: process.env.URL || 'http://localhost:8080/',
 	noindex: false,
 
@@ -11,7 +11,7 @@ export default {
 			languageCode: 'en',
 			languageName: 'English',
 			title: 'Eleventy Plugin Baseline',
-			tagline: 'A magic carpet ride'
+			tagline: 'Start building your site and skip the recurring setup work.'
 		},
 		nl: {
 			contentDir: 'content/nl/',
