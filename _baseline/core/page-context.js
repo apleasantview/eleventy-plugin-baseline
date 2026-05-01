@@ -65,7 +65,6 @@ export function registerPageContext(eleventyConfig, coreContext) {
 				if (!item) return acc;
 				const id = item?.[key];
 				if (!id) {
-					// fallback only when no key exists
 					acc[JSON.stringify(item)] = item;
 					return acc;
 				}
@@ -74,12 +73,37 @@ export function registerPageContext(eleventyConfig, coreContext) {
 			}, {})
 		);
 
+	// --- SEO helpers ---
+	function stripTrackingParams(urlObj) {
+		['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid'].forEach((p) =>
+			urlObj.searchParams.delete(p)
+		);
+
+		urlObj.hash = '';
+		return urlObj;
+	}
+
+	function extractFirstParagraph(data) {
+		const html = data?.content;
+		if (!html) return null;
+		const match = html.match(/<p>(.*?)<\/p>/i);
+		return match?.[1] ?? null;
+	}
+
+	// --- Field resolver ---
+	function resolveField({ pageValue, siteValue, fallbackValue, isHome }) {
+		let value = pageValue ?? siteValue ?? fallbackValue ?? null;
+
+		return value;
+	}
+
 	// --- Builders ---
 	function buildSite(lang, userSettings) {
 		const langEntry = lang ? userSettings.languages?.[lang] : undefined;
 		return {
 			title: langEntry?.title ?? userSettings.title ?? '',
 			tagline: langEntry?.tagline ?? userSettings.tagline ?? '',
+			description: langEntry?.description ?? userSettings.description ?? '',
 			url: userSettings.url ?? '',
 			noindex: userSettings.noindex === true
 		};
@@ -103,9 +127,11 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	function buildEntry(data) {
 		const rawSlug = data?.slug ?? data?.page?.fileSlug;
+
 		return {
-			title: data?.title ?? null,
-			description: data?.description ?? null,
+			title: data?.seo?.title ?? data?.title ?? null,
+			description: data?.seo?.description ?? data?.description ?? null,
+			excerpt: data?.excerpt ?? null,
 			slug: slugify(rawSlug),
 			head: data?.head ?? null
 		};
@@ -119,32 +145,67 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	function buildMeta({ data, site, page, query }) {
 		const noindex = site.noindex || data?.noindex === true;
+
 		const robots = noindex
 			? 'noindex, nofollow'
 			: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
-		let title;
-		if (query.isHome) {
-			title = site.tagline ? `${site.title}${separator}${site.tagline}` : site.title;
-		} else if (!data?.title) {
-			title = site.title;
-		} else if (!site.title || data.title === site.title) {
-			title = data.title;
-		} else {
-			title = `${data.title}${separator}${site.title}`;
+		const contentMap = runtime.contentMap;
+
+		const siteTitle = site.title;
+		const siteDescription = site.description;
+		const tagline = site.tagline;
+
+		const pageTitle = data?.seo?.title ?? data?.title ?? siteTitle;
+
+		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt ?? extractFirstParagraph(data);
+
+		function enhance(value) {
+			if (query.isHome && !pageTitle && tagline) {
+				return `${siteTitle}${separator}${tagline}`;
+			}
+
+			if (!query.isHome && pageTitle && siteTitle && pageTitle !== siteTitle) {
+				return `${pageTitle}${separator}${siteTitle}`;
+			}
+
+			return `${pageTitle}${separator}${tagline}`;
 		}
 
-		let canonical;
+		// ---- DESCRIPTION ----
+		const description = resolveField({
+			pageValue: pageDescription,
+			siteValue: siteDescription,
+			isHome: query.isHome
+		});
+
+		// ---- TITLE ----
+		const base = resolveField({
+			pageValue: pageTitle,
+			siteValue: siteTitle
+		});
+
+		const title = enhance(base);
+
+		// ---- CANONICAL ----
+		let canonical = null;
+
 		if (!noindex) {
-			const contentMap = runtime.contentMap;
-			const path = pick(data?.canonical, page.url, page.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
-			canonical = path && site.url ? new URL(path, site.url).href : (path ?? null);
+			const rawPath =
+				data?.canonical ?? page.url ?? (page.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
+
+			if (rawPath && site.url) {
+				const url = new URL(rawPath, site.url);
+				canonical = stripTrackingParams(url).href;
+			} else {
+				canonical = rawPath ?? null;
+			}
 		}
 
 		return {
 			title,
-			description: pick(data?.description, site.tagline, ''),
-			canonical: canonical ?? null,
+			description,
+			canonical,
 			robots,
 			noindex
 		};
@@ -201,17 +262,13 @@ export function registerPageContext(eleventyConfig, coreContext) {
 			meta,
 			render,
 			head
-			// settings
 		};
 
 		const inspectionKey = context.page.url ?? context.page.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
 
-		// Register slug for wikilink resolution. In multilingual sites only the
-		// defaultLanguage page registers; the wikilinks plugin uses the
-		// translation map to hop to other languages.
 		if (slugIndex && entry.slug && page.url) {
-			const eligible = page.locale ? page.locale.isDefaultLang === true : true;
+			const eligible = page.locale?.isDefaultLang === true;
 			if (eligible) {
 				slugIndex.set(entry.slug, page.url, page.inputPath);
 			}

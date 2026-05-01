@@ -10,7 +10,7 @@ export default {
 			contentDir: 'content/en/',
 			languageCode: 'en',
 			languageName: 'English',
-			title: 'Eleventy Plugin Baseline',
+			title: 'Eleventy Debugged Baseline',
 			tagline: 'Start building your site and skip the recurring setup work.'
 		},
 		nl: {
