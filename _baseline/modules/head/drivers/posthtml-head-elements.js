@@ -79,7 +79,10 @@ function emitMeta(meta, render, options) {
 function emitExtras(head, alternates = []) {
 	const nodes = [];
 	for (const m of asArray(head?.meta)) nodes.push(mkMeta(m));
-	for (const l of asArray(head?.link)) nodes.push(mkLink(l));
+	for (const l of asArray(head?.link)) {
+		if (l?.rel === 'canonical') continue; // 🚨 remove duplication source
+		nodes.push(mkLink(l));
+	}
 	for (const s of asArray(head?.script)) nodes.push(mkScript(s));
 	for (const s of asArray(head?.style)) nodes.push(mkStyle(s));
 	for (const a of alternates) nodes.push(mkLink(a));

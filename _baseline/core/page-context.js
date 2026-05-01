@@ -59,15 +59,18 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	}
 
 	// --- Helpers ---
-	const uniqueBy = (arr, key) =>
+	const uniqueBy = (arr, keyFn) =>
 		Object.values(
 			(arr ?? []).reduce((acc, item) => {
 				if (!item) return acc;
-				const id = item?.[key];
+
+				const id = typeof keyFn === 'function' ? keyFn(item) : item?.[keyFn];
+
 				if (!id) {
 					acc[JSON.stringify(item)] = item;
 					return acc;
 				}
+
 				acc[id] = item;
 				return acc;
 			}, {})
@@ -88,6 +91,16 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		if (!html) return null;
 		const match = html.match(/<p>(.*?)<\/p>/i);
 		return match?.[1] ?? null;
+	}
+
+	function normalizeCanonical(path, siteUrl) {
+		if (!path || !siteUrl) return null;
+
+		const url = new URL(path, siteUrl);
+
+		url.hash = '';
+
+		return stripTrackingParams(url).href;
 	}
 
 	// --- Field resolver ---
@@ -157,11 +170,10 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		const tagline = site.tagline;
 
 		const pageTitle = data?.seo?.title ?? data?.title ?? siteTitle;
-
 		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt ?? extractFirstParagraph(data);
 
 		function enhance(value) {
-			if (query.isHome && !pageTitle && tagline) {
+			if (query.isHome && !data?.seo?.title && tagline) {
 				return `${siteTitle}${separator}${tagline}`;
 			}
 
@@ -169,7 +181,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 				return `${pageTitle}${separator}${siteTitle}`;
 			}
 
-			return `${pageTitle}${separator}${tagline}`;
+			return value;
 		}
 
 		// ---- DESCRIPTION ----
@@ -191,15 +203,10 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		let canonical = null;
 
 		if (!noindex) {
-			const rawPath =
+			const rawCanonical =
 				data?.canonical ?? page.url ?? (page.inputPath && contentMap?.inputPathToUrl?.[page.inputPath]?.[0]);
 
-			if (rawPath && site.url) {
-				const url = new URL(rawPath, site.url);
-				canonical = stripTrackingParams(url).href;
-			} else {
-				canonical = rawPath ?? null;
-			}
+			canonical = normalizeCanonical(rawCanonical, site.url);
 		}
 
 		return {
@@ -222,7 +229,16 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		const userHead = userSettings.head ?? {};
 		const pageHead = data?.head ?? {};
 
-		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], 'href');
+		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], (item) => {
+			if (item?.rel === 'canonical') {
+				try {
+					return normalizeCanonical(item.href, site.url);
+				} catch {
+					return item?.href;
+				}
+			}
+			return item?.href;
+		});
 
 		const script = uniqueBy([...(userHead.script ?? []), ...(pageHead.script ?? [])], 'src');
 
