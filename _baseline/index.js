@@ -310,7 +310,7 @@ export default function baseline(settings = {}, options = {}) {
 		const moduleRegistry = [
 			{ when: features.multilang, name: 'multilang', plugin: multilangCore },
 			{ when: features.sitemap, name: 'sitemap', plugin: sitemapCore },
-			{ when: features.navigator, name: 'navigator', plugin: navigatorCore },
+			{ name: 'navigator', plugin: navigatorCore },
 			{ when: features.head, name: 'head', plugin: headCore, consumes: { pageContext: true } },
 			{ when: features.assets, name: 'assets', plugin: assetsCore }
 		];
