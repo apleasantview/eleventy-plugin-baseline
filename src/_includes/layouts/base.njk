@@ -5,7 +5,7 @@
 		<a href="#main" class="skip-link"> Skip to main content </a>
 		<div class="">
 			<div class="u-wrapper c-top-bar">
-				<div>{%- include "partials/theme-switcher.njk" %}&emsp;{% include "partials/language-switcher.njk" %}</div>
+				<div>{% include "partials/language-switcher.njk" %}&emsp;{%- include "partials/theme-switcher.njk" %}</div>
 			</div>
 		</div>
 		{%- include "components/header.njk" %}
@@ -18,7 +18,7 @@
 		</main>
 		<footer>
 			<div class="u-wrapper">
-				<div>{%- include "partials/theme-switcher.njk" %}&emsp;{% include "partials/language-switcher.njk" %}</div>
+				<div>{% include "partials/language-switcher.njk" %}&emsp;{%- include "partials/theme-switcher.njk" %}</div>
 				<div>
 					<small>revision: {{ helpers.buildCommit() | safe }}</small>&emsp;<small
 						>npm:

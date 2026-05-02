@@ -3,6 +3,8 @@
 	flex-wrap: wrap;
 	justify-content: space-between;
 	column-gap: var(--space-3xl);
+	row-gap: var(--space-cluster-l);
+	margin-block-start: var(--space-inset-xs);
 	margin-block-end: var(--space-inset-2xs);
 	align-items: center;
 }
@@ -14,4 +16,8 @@
 	&:hover {
 		text-decoration: underline;
 	}
+}
+
+.c-header__block > small {
+	text-wrap: balance;
 }
