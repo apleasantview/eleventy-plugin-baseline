@@ -10,7 +10,7 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  * <baseline-head> placeholder with the result.
  *
  * Architecture layer:
- *   module (driver inside head)
+ *   module
  *
  * System role:
  *   The seam between head's pipeline and the renderer choice. Alternate

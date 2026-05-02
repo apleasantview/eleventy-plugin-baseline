@@ -43,7 +43,7 @@
  * Head module options.
  *
  * @property {{ esbuild?: { minify?: boolean, target?: string } }} [assets]
- * Assets module options. The esbuild slice is permissive — any esbuild
+ * Assets module options. The esbuild slice is permissive: any esbuild
  * option is accepted; only `minify` and `target` are typed.
  */
 

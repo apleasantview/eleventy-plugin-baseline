@@ -1,9 +1,31 @@
 /**
- * capo.js adapter for PostHTML AST nodes.
+ * Capo PostHTML adapter (driver)
  *
- * Implements the HTMLAdapter interface capo.js v2 uses to compute element
- * weights (src/adapters/adapter.js in @rviscomi/capo.js). Only getWeight is
- * consumed downstream; the rest are shimmed to satisfy the shape.
+ * Implements the `HTMLAdapter` interface capo.js v2 expects, against
+ * PostHTML's `{ tag, attrs, content }` node shape. Only `getWeight` is
+ * exercised downstream; the rest are shimmed to satisfy the contract.
+ *
+ * Architecture layer:
+ *   module
+ *
+ * System role:
+ *   Translation shim between the head driver's PostHTML tree and the
+ *   capo.js sort. Used by `posthtml-head-elements.js` when ordering the
+ *   composed `<head>` element list.
+ *
+ * Lifecycle:
+ *   transform-time → invoked per node while capo.js scores element weights
+ *
+ * Why this exists:
+ *   capo.js is DOM-shaped; PostHTML is not. Without an adapter the driver
+ *   would have to walk the tree twice or hand-roll element weighting.
+ *
+ * Scope:
+ *   Owns attribute lookup, tag name resolution, and text extraction over
+ *   PostHTML nodes. Does not own weighting logic; capo.js owns that.
+ *
+ * Data flow:
+ *   PostHTML node → adapter accessor → capo.js getWeight
  *
  * A PostHTML element node looks like `{ tag, attrs, content }` where attrs
  * is either undefined or a plain object. Boolean attributes appear with an

@@ -1,7 +1,7 @@
 import { slugify } from './utils/helpers.js';
 
 /**
- * WIKILINKS (filter)
+ * Wikilinks (runtime substrate)
  *
  * MediaWiki-style inline link syntax for body markdown. Recognises
  * [[slug]], [[slug#anchor]], [[slug:lang]], [[slug|alias]], and any
@@ -24,8 +24,8 @@ import { slugify } from './utils/helpers.js';
  * Why this exists:
  *   Markdown-it has no wiki-link syntax. Eleventy resolves all
  *   eleventyComputed values before any body renders, so the slug index
- *   and translation map are complete by the time this rule fires —
- *   resolution is deterministic without a two-pass build.
+ *   and translation map are complete by the time this rule fires.
+ *   Resolution is deterministic without a two-pass build.
  *
  * Scope:
  *   Owns syntax parsing, slug-to-href resolution, the lang hop, and link

@@ -1,5 +1,38 @@
 import * as z from 'zod';
 
+/**
+ * Schemas (runtime substrate)
+ *
+ * Zod schemas for the two user-facing inputs Baseline validates: the
+ * directory `config` export and the `settings` argument. Structural only.
+ * Value-level preferences stay permissive.
+ *
+ * Architecture layer:
+ *   runtime substrate
+ *
+ * System role:
+ *   Validation seam at the public boundary. The composition root parses
+ *   `settings` non-fatally at init; the directory `config` is checked in
+ *   the test suite, not at runtime.
+ *
+ * Lifecycle:
+ *   build-time → composition root calls `settingsSchema.safeParse(settings)`
+ *                and logs structural mismatches under `info`
+ *
+ * Why this exists:
+ *   Eleventy accepts almost anything users pass through `addPlugin`. A
+ *   structural gate catches typos and shape drift early without forcing
+ *   a hard failure on imperfect input.
+ *
+ * Scope:
+ *   Owns the structural shape of `settings` and `config`. Does not own
+ *   defaults, value semantics, or required-field policy; those live in
+ *   the composition root and individual modules.
+ *
+ * Data flow:
+ *   user input → safeParse → issues logged or accepted
+ */
+
 export const configSchema = z.object({
 	dir: z.object({
 		input: z.string().min(1),
