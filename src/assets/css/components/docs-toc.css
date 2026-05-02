@@ -1,8 +1,7 @@
 .c-docs-toc,
 .c-docs-toc--sidebar {
-	> a {
+	> div:not(.c-docs-toc__children) {
 		margin-block-start: var(--space-stack-m);
-		display: inline-block;
 	}
 
 	* + p {
@@ -55,4 +54,17 @@
 		border: none;
 		max-width: 45ch;
 	}
+}
+
+.c-docs-toc__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.c-docs-toc__menu__caret {
+	background: none;
+	border: 0;
+	cursor: pointer;
+	padding: 0.25rem;
 }
