@@ -20,6 +20,7 @@
 @import './layouts/fluid-grid.css';
 
 /* 06. Components */
+@import './components/top-bar.css';
 @import './components/header.css';
 @import './components/navigation.css';
 @import './components/docs-toc.css';
