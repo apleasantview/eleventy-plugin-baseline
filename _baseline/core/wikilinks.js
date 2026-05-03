@@ -1,4 +1,4 @@
-import { slugify } from './utils/helpers.js';
+import { slugify } from './utils/slugify.js';
 
 /**
  * Wikilinks (runtime substrate)

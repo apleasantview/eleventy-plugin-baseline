@@ -1,5 +1,5 @@
 import pick from './utils/pick.js';
-import { slugify } from './utils/helpers.js';
+import { slugify } from './utils/slugify.js';
 import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
