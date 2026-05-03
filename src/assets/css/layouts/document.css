@@ -7,14 +7,14 @@
 	}
 
 	.l-document__principal {
-		max-width: 60rem;
+		max-width: 53.75rem;
 	}
 
 	@media (--screen-lg) {
 		& {
-			grid-template-columns: minmax(min(300px, 100%), 32ch) minmax(min(740px, 100%), 1fr);
+			grid-template-columns: minmax(min(0px, 100%), 20rem) minmax(min(0px, 54rem), 1fr);
 			align-items: baseline;
-			column-gap: var(--space-xl);
+			column-gap: var(--space-3xl);
 		}
 
 		.l-document__sidebar {
@@ -24,6 +24,7 @@
 			max-height: calc(95vh - 6rem);
 			overflow-y: auto;
 			scrollbar-width: thin;
+			max-width: 27.5rem;
 		}
 	}
 }

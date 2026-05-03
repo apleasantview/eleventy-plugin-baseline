@@ -11,3 +11,7 @@
 		margin-block-start: var(--space-stack-xl);
 	}
 }
+
+.u-flow--snug > * + * {
+	margin-block-start: var(--flow-space-snug);
+}

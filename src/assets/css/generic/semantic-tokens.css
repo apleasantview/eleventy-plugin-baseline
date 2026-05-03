@@ -89,6 +89,7 @@
 	--wrapper-padding-inline: var(--space-fluid-s-xl);
 
 	--flow-space: var(--space-stack-s);
+	--flow-space-snug: var(--space-stack-xs);
 
 	/* Headings flow-space */
 	--heading-flow-space: var(--space-stack-l);

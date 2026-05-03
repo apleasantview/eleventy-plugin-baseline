@@ -11,11 +11,11 @@
 
 	> ol:first-of-type > li + li,
 	> ul:first-of-type > li + li {
-		margin-block-start: var(--space-stack-l);
+		margin-block-start: var(--space-stack-s);
 	}
 
 	li > * + * {
-		margin-block-start: var(--flow-space);
+		margin-block-start: var(--flow-space-snug);
 	}
 }
 
