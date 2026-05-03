@@ -1,4 +1,4 @@
 export default {
 	topicSlug: 'reference',
-	topicTitle: 'References'
+	topicTitle: 'Core reference'
 };
