@@ -1,6 +1,6 @@
 export default {
 	title: 'Eleventy Baseline',
-	tagline: 'Start building your site and skip the recurring setup work.',
+	tagline: 'Start building your site, skip the recurring setup work.',
 	url: process.env.URL || 'http://localhost:8080/',
 	noindex: false,
 
