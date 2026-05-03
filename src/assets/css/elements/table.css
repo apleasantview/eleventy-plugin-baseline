@@ -1,0 +1,142 @@
+:root {
+	--table-border: #e5e7eb;
+	--table-bg-even: transparent;
+	--table-bg-odd: transparent;
+	--table-header-bg: transparent;
+	--table-text: currentColor;
+}
+
+/* =========================================================
+   RESPONSIVE WRAPPER (no layout break on small screens)
+   ========================================================= */
+
+/* Best modern browsers */
+div:has(> table) {
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Fallback (uncomment if you want maximum compatibility)
+table {
+  display: block;
+  overflow-x: auto;
+}
+*/
+
+/* =========================================================
+   BASE TABLE
+   ========================================================= */
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: auto;
+	color: var(--table-text);
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+/* =========================================================
+   COLUMN BEHAVIOUR
+   - early columns shrink to content
+   - last column fills remaining space
+   ========================================================= */
+
+/* Make early columns tight */
+th:not(:last-child),
+td:not(:last-child) {
+	white-space: nowrap;
+	width: 1%; /* forces shrink-to-fit behavior */
+}
+
+/* Last column is flexible */
+th:last-child,
+td:last-child {
+	width: auto;
+	white-space: normal;
+	word-break: break-word;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+thead {
+	background: var(--table-header-bg);
+	border-bottom: 2px solid var(--table-border);
+}
+
+th {
+	text-align: left;
+	font-weight: 600;
+	padding: 0.75rem 1rem;
+	white-space: nowrap;
+}
+
+/* =========================================================
+   BODY CELLS
+   ========================================================= */
+
+td {
+	padding: 0.75rem 1rem;
+	vertical-align: top;
+	border-bottom: 1px solid var(--table-border);
+}
+
+/* =========================================================
+   ZEBRA STRIPING
+   ========================================================= */
+
+tbody tr:nth-child(odd) {
+	background: var(--table-bg-odd);
+}
+
+tbody tr:nth-child(even) {
+	background: var(--table-bg-even);
+}
+
+/* Subtle hover for usability */
+tbody tr:hover {
+	background: #f9fafb;
+}
+
+/* =========================================================
+   CONTENT SAFETY
+   ========================================================= */
+
+/* Prevent long strings breaking layout */
+td,
+th {
+	word-break: break-word;
+}
+
+/* Optional: nicer inline code in tables */
+
+/* =========================================================
+   OPTIONAL: STICKY HEADER (docs-friendly)
+   ========================================================= */
+
+thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
+
+/* =========================================================
+   OPTIONAL: DARK MODE
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--table-border: #374151;
+		--table-bg-even: transparent;
+		--table-bg-odd: transparent;
+		--table-header-bg: transparent;
+		--table-text: currentColor;
+	}
+
+	tbody tr:hover {
+		background: #1f2937;
+	}
+}
