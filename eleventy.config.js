@@ -45,20 +45,29 @@ export default async function (eleventyConfig) {
 		});
 	});
 
-	// --- Content components are dressed in shortcodes ---
+	// --- Content blocks are dressed in shortcodes ---
 	// Alert block: wraps content in a styled alert component (info, warning, etc.).
-	eleventyConfig.addPairedNunjucksShortcode('alertBlock', function (text, alert = 'info') {
-		const res = this.env.render('blocks/alerts.njk', {
-			content: text,
+	eleventyConfig.addPairedNunjucksShortcode('alertBlock', function (content, alert = 'info') {
+		const res = this.env.render('blocks/alert.njk', {
+			content: content,
 			type: alert
 		});
 		return res;
 	});
 
-	eleventyConfig.addPairedNunjucksShortcode('stepsBlock', function (text, steps = 'default') {
-		const res = this.env.render('blocks/steps.njk', {
-			content: text,
+	// Steps Block: wraps lists in a styled list component.
+	eleventyConfig.addPairedNunjucksShortcode('stepsBlock', function (content, steps = 'default') {
+		const res = this.env.render('blocks/step.njk', {
+			content: content,
 			type: steps
+		});
+		return res;
+	});
+
+	eleventyConfig.addPairedNunjucksShortcode('tableBlock', function (content, responsive = 'false') {
+		const res = this.env.render('blocks/table.njk', {
+			content: content,
+			responsive: responsive
 		});
 		return res;
 	});
