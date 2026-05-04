@@ -21,14 +21,6 @@ table {
 	line-height: 1.5;
 }
 
-/* Last column is flexible */
-th:last-child,
-td:last-child {
-	width: auto;
-	white-space: normal;
-	word-break: break-word;
-}
-
 thead {
 	background: var(--table-header-bg);
 	border-bottom: 2px solid var(--table-border);
