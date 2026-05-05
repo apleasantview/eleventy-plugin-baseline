@@ -25,6 +25,7 @@ const mode = process.env.ELEVENTY_ENV;
 const isDev = mode === 'development';
 const isProd = mode === 'production';
 
+// Options shape before refactor.
 const LEGACY_OPTION_KEYS = [
 	'verbose',
 	'enableNavigatorTemplate',
@@ -32,6 +33,8 @@ const LEGACY_OPTION_KEYS = [
 	'assetsESBuild',
 	'multilingual'
 ];
+
+const GLOBAL_KEY = Symbol.for('eleventy:baseline:banner');
 
 // Whitelist of reserved global data keys used internally across the plugin.
 // Positive side effect is they all get listed in order and merge data to the same key.
@@ -44,8 +47,29 @@ const INTERNAL_KEYS = [
 	'_navigator',
 	'_sitemap',
 	'_snapshot',
-	'_pageContext'
+	'eleventyComputed._pageContext',
+	'eleventyComputed._contentGraph'
 ];
+
+// Base logger outputs regardless of options.
+const baseLog = createLogger(null, { verbose: true });
+
+function baselineBanner(version) {
+	const label = `Eleventy Baseline v${version}`;
+	const width = 42;
+	const padded = label.padEnd(width - 6);
+
+	return ['', '╔' + '═'.repeat(width - 2) + '╗', `║  ${padded}  ║`, '╚' + '═'.repeat(width - 2) + '╝', ''].join('\n');
+}
+
+function printBannerOnce(baseLog, version) {
+	if (globalThis[GLOBAL_KEY]) return;
+
+	globalThis[GLOBAL_KEY] = true;
+	baseLog.print(baselineBanner(version));
+}
+
+printBannerOnce(baseLog, version);
 
 /**
  * Detect legacy single-object plugin invocation.
@@ -127,14 +151,6 @@ export default function baseline(settings = {}, options = {}) {
 		options = split.options;
 	}
 
-	// Base logger outputs regardless of options.
-	const baseLog = createLogger(null, { verbose: true });
-
-	// Scoped logging.
-	function scopedLog(name) {
-		return createLogger(name, { verbose: options.verbose });
-	}
-
 	if (wasLegacy) {
 		baseLog.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
 	}
@@ -147,7 +163,10 @@ export default function baseline(settings = {}, options = {}) {
 		}
 	}
 
-	baseLog.info('Eleventy Baseline', version);
+	// Scoped logging.
+	function scopedLog(name) {
+		return createLogger(name, { verbose: options.verbose });
+	}
 
 	/**
 	 * Eleventy plugin initializer.
