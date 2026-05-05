@@ -58,6 +58,7 @@ export function createLogger(namespace, { verbose = false } = {}) {
 		},
 		error: (...args) => {
 			console.error(chalk.red().bold(label), ...args);
-		}
+		},
+		print: (content) => console.log(chalk.gray(content))
 	};
 }
