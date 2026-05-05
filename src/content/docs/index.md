@@ -18,7 +18,7 @@ The documentation for Baseline. Each chapter with its own job:
 
 ## Where to start
 
-If baseline is new to you, the [[introduction | introduction]] is the door. If you already know the plugin and want a specific detail, the [[core-reference | core reference]] and [[module | modules]] chapters are the lookup view.
+If Baseline is new to you, the [[introduction | introduction]] is the door. If you already know the plugin and want a specific detail, the [[core-reference | core reference]] and [[module | modules]] chapters are the lookup view.
 
 ## About this project
 
