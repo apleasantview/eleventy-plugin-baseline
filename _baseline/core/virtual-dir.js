@@ -3,6 +3,8 @@ import { resolveSubdir } from './utils/helpers.js';
 import { createLogger } from './logging.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 
+const SCOPE_NAME = 'core:virtual-dir';
+
 /**
  * Virtual directories (runtime substrate)
  *
@@ -39,8 +41,6 @@ import { getScope, addScopeListener, setEntry } from './registry.js';
  *   { name, outputDir } → eleventyConfig.directories[name] getter →
  *   live { input, output } cache → consumers
  */
-
-const SCOPE_NAME = 'core:virtual-dir';
 
 /**
  * Register a virtual directory on eleventyConfig.directories.
