@@ -17,29 +17,35 @@ table {
 	border-collapse: collapse;
 	table-layout: auto;
 	color: var(--table-text);
-	font-size: 0.95rem;
+	font-size: var(--text-size-body);
 	line-height: 1.5;
-}
-
-thead {
-	background: var(--table-header-bg);
-	border-bottom: 2px solid var(--table-border);
-}
-
-th {
+	caption-side: bottom;
+	margin-bottom: var(--space-inset-s);
 	text-align: left;
-	font-weight: 600;
-	padding: 0.75rem 1rem;
-	white-space: nowrap;
+
+	& > thead {
+		background: var(--table-header-bg);
+		vertical-align: bottom;
+	}
+
+	& > tbody {
+		vertical-align: top;
+	}
 }
 
-td {
-	padding: 0.75rem 1rem;
-	vertical-align: top;
-	border-bottom: 1px solid var(--table-border);
+tr {
+	& > * {
+		border-bottom: 1px solid var(--table-border);
+		padding: 0.75rem 0.5rem;
+		text-wrap: pretty;
+	}
+
+	& > th {
+		font-weight: 600;
+	}
 }
 
-thead th {
+thead > th {
 	position: sticky;
 	top: 0;
 	z-index: 1;

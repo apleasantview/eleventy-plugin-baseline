@@ -11,7 +11,7 @@ layout: 'layouts/page.njk'
 Baseline is an Eleventy plugin for the project plumbing most sites need from day one.
 You get a working starting point without giving up control of your project.
 
-## Start building your site
+## Stop building your site
 
 You can move straight to templates and content instead of assembling the same groundwork first.
 You spend less time on setup and more time on the site itself.
@@ -73,3 +73,5 @@ npm run dev
 Baseline is in active development. Versions ship as `0.1.0-next.X` and that is a deliberate signal: things may shift between releases, and you should pin a version when you build something serious on top.
 
 If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
+
+<pre>{{ _pageContext.page | _keys() }}</pre>
