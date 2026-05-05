@@ -14,20 +14,21 @@
 /* 04. Elements */
 @import './elements/base.css';
 @import './elements/skip-link.css';
-@import './elements/table.css';
 
-/* 05. Objects & Layouts */
+/* 05. Layouts & Objects */
 @import './layouts/document.css';
 @import './layouts/fluid-grid.css';
 
-/* 06. Components */
+/* 06. Blocks & Components */
+@import './blocks/alert.css';
+@import './blocks/step.css';
+@import './blocks/table.css';
 @import './components/top-bar.css';
 @import './components/header.css';
 @import './components/navigation.css';
 @import './components/docs-toc.css';
 @import './components/docs-toc--details.css';
 @import './components/docs-toc--sidebar.css';
-@import './components/docs-steps.css';
 
 /* 07. Utilities */
 @import './utilities/flow.css';
