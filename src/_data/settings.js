@@ -30,7 +30,10 @@ export default {
 	},
 
 	head: {
-		link: [{ rel: 'stylesheet', href: '/assets/css/index.css' }],
+		link: [
+			{ rel: 'stylesheet', href: '/assets/css/index.css' },
+			{ rel: 'me', href: 'https://mastodon.social/@crisverstraeten' }
+		],
 		script: [
 			{ src: '/assets/js/index.js', defer: true },
 			{ src: '/assets/js/vendor/index.js', defer: true }
