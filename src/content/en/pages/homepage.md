@@ -73,5 +73,3 @@ npm run dev
 Baseline is in active development. Versions ship as `0.1.0-next.X` and that is a deliberate signal: things may shift between releases, and you should pin a version when you build something serious on top.
 
 If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
-
-<pre>{{ _pageContext.page | _keys() }}</pre>
