@@ -13,7 +13,7 @@
 		flex-wrap: wrap;
 		column-gap: var(--space-inline-default);
 		row-gap: var(--space-inline-tight);
-		margin-block-start: 0.5rem;
+		margin-block-start: var(--space-m);
 		padding: 0;
 		list-style: none;
 	}
@@ -67,4 +67,9 @@
 	border: 0;
 	cursor: pointer;
 	padding: 0.25rem;
+}
+
+.c-docs-toc hr {
+	margin-top: var(--space-l);
+	margin-bottom: var(--space-l);
 }
