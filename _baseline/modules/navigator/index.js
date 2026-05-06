@@ -67,7 +67,7 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 
 	// Boolean shorthand activates the virtual page; object form lets users tune.
 	const navigatorOpts = options.navigator && typeof options.navigator === 'object' ? options.navigator : {};
-	const renderTemplate = env.mode === 'development' ?? navigatorOpts.template ?? Boolean(options.navigator);
+	const renderTemplate = navigatorOpts.template ?? (typeof options.navigator === 'boolean' ? options.navigator : env.mode === 'development');
 	const inspectorDepth = navigatorOpts.inspectorDepth ?? 4;
 
 	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {

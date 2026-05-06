@@ -58,7 +58,7 @@ export const settingsSchema = z.object({
 	url: z.string().optional(),
 	noindex: z.boolean().optional(),
 	defaultLanguage: z.string().optional(),
-	languages: z.record(z.string(), z.looseObject({})).optional(),
+	languages: z.union([z.record(z.string(), z.looseObject({})), z.array(z.string().min(1))]).optional(),
 	head: z
 		.object({
 			link: z.array(z.looseObject({})).optional(),
