@@ -2,29 +2,15 @@
 <html lang="{{ lang | default(settings.defaultLanguage) }}">
 	<baseline-head></baseline-head>
 	<body>
-		<a href="#main" class="skip-link"> Skip to main content </a>
-		<div class="">
-			<div class="u-wrapper c-top-bar">
-				<div>{% include "partials/language-switcher.njk" %}&emsp;{%- include "partials/theme-switcher.njk" %}</div>
-			</div>
-		</div>
-		{%- include "components/header.njk" %}
-		<main id="main" tabindex="-1">
+		<a href="#document" class="skip-link"> Skip to main content </a>
+		{%- include "partials/header.njk" %}
+		<main id="document" tabindex="-1">
 			<div class="u-wrapper">
 				{%- block content %}
 					<p>No content found.</p>
 				{%- endblock %}
 			</div>
 		</main>
-		<footer>
-			<div class="u-wrapper">
-				<div>
-					<small>Open source under MIT</small>
-				</div>
-				<div>
-					<small>&copy; 2026 - a project by <a href="https://www.apleasantview.com/">a pleasant view</a></small>
-				</div>
-			</div>
-		</footer>
+		{%- include "partials/footer.njk" %}
 	</body>
 </html>

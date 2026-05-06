@@ -1,11 +1,14 @@
 .c-header {
+	padding-block-start: var(--space-inset-xs);
+	padding-block-end: var(--space-inset-xs);
+}
+
+.c-header__block {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
 	column-gap: var(--space-3xl);
 	row-gap: var(--space-cluster-l);
-	margin-block-start: var(--space-inset-xs);
-	margin-block-end: var(--space-inset-2xs);
 	align-items: center;
 }
 
@@ -18,6 +21,6 @@
 	}
 }
 
-.c-header__block > small {
-	text-wrap: balance;
+.c-header__content > small {
+	text-wrap: pretty;
 }

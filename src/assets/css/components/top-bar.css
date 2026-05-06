@@ -4,5 +4,6 @@
 	max-width: 100%;
 	align-items: flex-start;
 	justify-content: flex-end;
-	margin-block-start: var(--space-inset-2xs);
+	padding-block-start: 0.25rem;
+	padding-block-end: 0.25rem;
 }

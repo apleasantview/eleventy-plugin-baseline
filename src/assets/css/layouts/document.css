@@ -1,6 +1,9 @@
 .l-document {
 	display: grid;
 	grid-template-columns: minmax(min(288px, 100%), 1fr);
+	border-top: 1px solid var(--color-border);
+	padding-block-start: var(--space-inset-xs);
+	padding-block-end: var(--space-inset-xs);
 
 	.l-document__sidebar {
 		display: none;

@@ -26,6 +26,7 @@
 @import './blocks/table.css';
 @import './components/top-bar.css';
 @import './components/header.css';
+@import './components/footer.css';
 @import './components/navigation.css';
 @import './components/docs-toc.css';
 @import './components/docs-toc--details.css';

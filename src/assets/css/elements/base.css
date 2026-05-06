@@ -48,12 +48,7 @@ main > * + * {
 header,
 main,
 footer {
-	padding-block: var(--space-inset-s);
-}
-
-main,
-footer {
-	border-top: 1px solid var(--color-border);
+	padding-block: var(--space-inset-2xs);
 }
 
 footer {
