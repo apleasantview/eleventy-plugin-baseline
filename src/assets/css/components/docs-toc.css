@@ -2,6 +2,7 @@
 .c-docs-toc--sidebar {
 	> div:not(.c-docs-toc__children) {
 		margin-block-start: var(--space-stack-m);
+		margin-block-end: var(--space-stack-s);
 	}
 
 	* + p {
