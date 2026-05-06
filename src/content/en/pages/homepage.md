@@ -31,7 +31,7 @@ Keep the defaults where they help, and override where you need to.
 ## Run it and check the output
 
 Start the dev server, inspect the output, and adjust only what you want to override.
-Start from the [quickstart](/docs/introduction/quickstart/), browse the [docs](/docs/), or follow the [simple-site tutorial](/docs/tutorial/simple-baseline-site/).
+Start from the [[quickstart | quickstart]], browse the [[docs | docs]], or follow the [[simple-baseline-site | simple-site tutorial]].
 
 ---
 
@@ -60,7 +60,7 @@ Today that includes assets, head, sitemap, multilang, and navigator.
 ## Install and start
 
 Install the packages, add Baseline to your Eleventy config, and run the dev server.
-See the [quickstart](/docs/introduction/quickstart/) for the full setup path:
+See the [[quickstart | quickstart]] for the full setup path:
 
 ```bash
 npm install @11ty/eleventy @11ty/eleventy-img
