@@ -92,5 +92,5 @@
 	--flow-space-snug: var(--space-stack-xs);
 
 	/* Headings flow-space */
-	--heading-flow-space: var(--space-stack-l);
+	--flow-space-heading: var(--space-stack-l);
 }

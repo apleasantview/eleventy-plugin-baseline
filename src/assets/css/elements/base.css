@@ -105,12 +105,12 @@ h1 {
 }
 
 h2 {
-	--flow-space: var(--heading-flow-space);
+	--flow-space: var(--flow-space-heading);
 	font-size: var(--text-size-title);
 }
 
 h3 {
-	--flow-space: var(--heading-flow-space);
+	--flow-space: var(--flow-space-heading);
 	font-size: var(--text-size-lede);
 }
 
@@ -155,12 +155,4 @@ figure figcaption {
 	font-size: var(--text-size-secondary);
 	padding-block: 0.5rem;
 	text-align: center;
-}
-
-hr {
-	--flow-space: var(--space-stack-m);
-	border: 0;
-	border-top: 1px solid;
-	color: var(--color-border);
-	margin-block-start: var(--flow-space);
 }

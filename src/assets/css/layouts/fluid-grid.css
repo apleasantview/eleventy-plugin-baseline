@@ -7,5 +7,5 @@
 }
 
 .l-fluid-grid__block > :nth-child(1) {
-	margin-block-start: var(--heading-flow-space);
+	margin-block-start: var(--flow-space-heading);
 }
