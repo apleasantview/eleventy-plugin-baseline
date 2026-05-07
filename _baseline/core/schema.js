@@ -58,7 +58,25 @@ export const settingsSchema = z.object({
 	url: z.string().optional(),
 	noindex: z.boolean().optional(),
 	defaultLanguage: z.string().optional(),
-	languages: z.union([z.record(z.string(), z.looseObject({})), z.array(z.string().min(1))]).optional(),
+	languages: z
+		.unknown()
+		.optional()
+		.superRefine((value, ctx) => {
+			if (value === undefined) return;
+
+			if (Array.isArray(value)) {
+				const arrayResult = z.array(z.string().min(1)).safeParse(value);
+				if (!arrayResult.success) {
+					for (const issue of arrayResult.error.issues) ctx.addIssue(issue);
+				}
+				return;
+			}
+
+			const recordResult = z.record(z.string(), z.looseObject({})).safeParse(value);
+			if (!recordResult.success) {
+				for (const issue of recordResult.error.issues) ctx.addIssue(issue);
+			}
+		}),
 	head: z
 		.object({
 			link: z.array(z.looseObject({})).optional(),

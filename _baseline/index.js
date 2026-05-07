@@ -12,6 +12,7 @@ import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { wikilinks } from './core/wikilinks.js';
 import { settingsSchema } from './core/schema.js';
+import { deriveBaselineState } from './core/state.js';
 
 import { registerGlobals } from './core/global-functions/index.js';
 import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
@@ -70,6 +71,28 @@ function printBannerOnce(baseLog, version) {
 }
 
 printBannerOnce(baseLog, version);
+
+// --- Content-graph pre-pass ---
+//
+// The graph store and its sentinel-guarded pre-pass live at module scope so
+// the closure can hand back accessor functions that read from the same
+// reference without cloning the (potentially large) extracted shape into
+// every template's data context.
+//
+// The sentinel guards against re-entry: the pre-pass spawns Eleventy
+// programmatically, which loads the user's config, which calls baseline()
+// again. The child process sees the env var and skips its own pre-pass.
+const PREPASS_SENTINEL = 'BASELINE_PREPASS_RUNNING';
+const isPrepassChild = process.env[PREPASS_SENTINEL] === '1';
+
+let contentGraph = null;
+
+if (!isPrepassChild) {
+	// Pre-pass implementation lands in a follow-up. The hook is here so the
+	// graph store and accessors can wire through without further entry-point
+	// changes.
+	contentGraph = null;
+}
 
 /**
  * Detect legacy single-object plugin invocation.
@@ -163,9 +186,12 @@ export default function baseline(settings = {}, options = {}) {
 		}
 	}
 
+	// Resolve state once, above the closure. Pure; no eleventyConfig.
+	const state = deriveBaselineState(settings, options, { mode });
+
 	// Scoped logging.
 	function scopedLog(name) {
-		return createLogger(name, { verbose: options.verbose });
+		return createLogger(name, { verbose: state.options.verbose });
 	}
 
 	/**
@@ -207,40 +233,20 @@ export default function baseline(settings = {}, options = {}) {
 			baseHref: process.env.URL || eleventyConfig.pathPrefix
 		});
 
-		// --- State layer (authoritative configuration) ---
+		// --- Feature exposure to templates ---
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
-
-		const state = {
-			settings: {
-				title: settings.title,
-				tagline: settings.tagline,
-				url: settings.url,
-				noindex: settings.noindex ?? false,
-				defaultLanguage: settings.defaultLanguage,
-				languages: settings.languages,
-				head: settings.head
-			},
-
-			options: {
-				verbose: options.verbose ?? false,
-				multilang: options.multilingual ?? false,
-				sitemap: options.sitemap ?? options.enableSitemapTemplate ?? true,
-				navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev,
-				head: {
-					titleSeparator: options.head?.titleSeparator,
-					showGenerator: options.head?.showGenerator
-				},
-				assets: {
-					esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
-				}
-			}
-		};
 
 		eleventyConfig.addGlobalData('_baseline', {
 			features: {
-				...state.options,
+				...state.features,
 				hasImageTransformPlugin
 			}
+		});
+
+		// Content-graph accessors. Templates query the cascade; the fat data
+		// stays once at module scope and the cascade carries handles.
+		eleventyConfig.addGlobalData('_baseline.contentGraph', {
+			isReady: () => contentGraph !== null
 		});
 
 		// --- Virtual directories ---
@@ -316,22 +322,13 @@ export default function baseline(settings = {}, options = {}) {
 			pageContext: () => pageContextRegistry.snapshot()
 		};
 
-		// --- Module activation ---
-		const features = {
-			multilang: Boolean(state.options.multilang),
-			sitemap: Boolean(state.options.sitemap),
-			navigator: Boolean(state.options.navigator),
-			head: true,
-			assets: true
-		};
-
 		// --- Module registry ---
 		const moduleRegistry = [
-			{ when: features.multilang, name: 'multilang', plugin: multilangCore },
-			{ when: features.sitemap, name: 'sitemap', plugin: sitemapCore },
+			{ when: state.features.multilang, name: 'multilang', plugin: multilangCore },
+			{ when: state.features.sitemap, name: 'sitemap', plugin: sitemapCore },
 			{ name: 'navigator', plugin: navigatorCore },
-			{ when: features.head, name: 'head', plugin: headCore, consumes: { pageContext: true } },
-			{ when: features.assets, name: 'assets', plugin: assetsCore }
+			{ when: state.features.head, name: 'head', plugin: headCore, consumes: { pageContext: true } },
+			{ when: state.features.assets, name: 'assets', plugin: assetsCore }
 		];
 
 		for (const entry of moduleRegistry) {
