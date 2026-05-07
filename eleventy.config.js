@@ -16,7 +16,7 @@ import settings from './src/_data/settings.js';
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
 	// --- Baseline plugin ---
-	eleventyConfig.addPlugin(
+	await eleventyConfig.addPlugin(
 		baseline(settings, {
 			verbose: true,
 			multilingual: true,
