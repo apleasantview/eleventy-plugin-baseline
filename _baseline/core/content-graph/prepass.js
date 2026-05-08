@@ -5,7 +5,16 @@ import Eleventy from '@11ty/eleventy';
 
 import { buildGraph } from './graph.js';
 
+// Re-entry guard: set once by the outer process, read at call-time on
+// the inner re-entry to skip the pre-pass. Permanent for the life of
+// the outer process — the pre-pass runs exactly once.
 export const PREPASS_SENTINEL = 'BASELINE_PREPASS_RUNNING';
+
+// Log-suppression scope: set only while runPrepass is executing. Read by
+// the logger to silence baseline's own info-level chatter during the
+// inner build. Different lifetime to PREPASS_SENTINEL on purpose.
+export const PREPASS_ACTIVE = 'BASELINE_PREPASS_ACTIVE';
+
 export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content-graph.json');
 
 /**
@@ -29,18 +38,24 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, log, options = {}) {
-	process.env[PREPASS_SENTINEL] = '1';
-
-	const elev = new Eleventy(input, output, { ...options, dryRun: true });
-	const pages = await elev.toJSON();
-
+	log.info('Somewhere, a bowl of petunias is thinking: oh no, not again.', { color: 'cyan' });
 	log.info('Building content graph…');
-	const graph = buildGraph(pages);
+	process.env[PREPASS_SENTINEL] = '1';
+	process.env[PREPASS_ACTIVE] = '1';
 
-	await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
-	await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
+	let graph;
+	try {
+		const elev = new Eleventy(input, output, { ...options, dryRun: true });
+		const pages = await elev.toJSON();
+		graph = buildGraph(pages);
 
-	log.info('Pre-pass finished');
+		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
+		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
+	} finally {
+		process.env[PREPASS_ACTIVE] = '0';
+		log.info('Pre-pass finished');
+	}
+
 	return graph;
 }
 

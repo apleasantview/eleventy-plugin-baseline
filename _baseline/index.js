@@ -135,8 +135,6 @@ export default function baseline(settings = {}, options = {}) {
 		if (process.env[PREPASS_SENTINEL] !== '1') {
 			const prepassLog = scopedLog('core:pre-pass');
 			prepassLog.info('Initialising pre-pass');
-			prepassLog.info('Somewhere, a bowl of petunias is thinking: oh no, not again.', { color: 'cyan' });
-
 			contentGraph = await runPrepass(
 				eleventyConfig.directories?.input,
 				eleventyConfig.directories?.output,

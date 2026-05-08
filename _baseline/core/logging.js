@@ -49,9 +49,18 @@ import chalk from 'kleur';
  */
 export function createLogger(namespace, { verbose = false } = {}) {
 	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
+
+	// Pre-pass gate: silence baseline's own info during the inner Eleventy
+	// run so modules don't double-log every line they emit again during the
+	// real build. Env-var contract scoped to runPrepass's execution (set in
+	// try, cleared in finally). Eleventy's own `[11ty]` output is governed
+	// by its `quietMode` and stays untouched here.
+	const isPrepass = () => process.env.BASELINE_PREPASS_ACTIVE === '1';
+
 	return {
 		info: (...args) => {
 			if (!verbose) return;
+			if (isPrepass()) return;
 			const last = args.at(-1);
 			const opts = last && typeof last === 'object' && 'color' in last ? args.pop() : null;
 			const paint = opts?.color && typeof chalk[opts.color] === 'function' ? chalk[opts.color] : null;
@@ -63,7 +72,9 @@ export function createLogger(namespace, { verbose = false } = {}) {
 		error: (...args) => {
 			console.error(chalk.red().bold(label), ...args);
 		},
-		print: (content) => console.log(chalk.gray(content))
+		print: (content) => {
+			console.log(chalk.gray(content));
+		}
 	};
 }
 
