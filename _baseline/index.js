@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
-import { createLogger } from './core/logging.js';
+import { createLogger, printBannerOnce } from './core/logging.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
@@ -48,8 +48,6 @@ const mode = process.env.ELEVENTY_ENV;
 const isDev = mode === 'development';
 const isProd = mode === 'production';
 
-const GLOBAL_KEY = Symbol.for('eleventy:baseline:banner');
-
 // Whitelist of reserved global data keys used internally across the plugin.
 // Positive side effect is they all get listed in order and merge data to the same key.
 // Also prevents name collision with filters.
@@ -67,21 +65,6 @@ const INTERNAL_KEYS = [
 
 // Base logger outputs regardless of options.
 const baseLog = createLogger(null, { verbose: true });
-
-function baselineBanner(version) {
-	const label = `Eleventy Baseline v${version}`;
-	const width = 42;
-	const padded = label.padEnd(width - 6);
-
-	return ['', '╔' + '═'.repeat(width - 2) + '╗', `║  ${padded}  ║`, '╚' + '═'.repeat(width - 2) + '╝', ''].join('\n');
-}
-
-function printBannerOnce(baseLog, version) {
-	if (globalThis[GLOBAL_KEY]) return;
-
-	globalThis[GLOBAL_KEY] = true;
-	baseLog.print(baselineBanner(version));
-}
 
 printBannerOnce(baseLog, version);
 
