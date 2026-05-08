@@ -33,7 +33,7 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  *
  * @param {string} input
  * @param {string} output
- * @param {import('../logging.js').BaselineLogger} log
+ * @param {object} log
  * @param {object} [options]
  * @returns {Promise<object>}
  */
