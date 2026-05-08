@@ -1,6 +1,7 @@
 import { parseHTML } from 'linkedom';
 
 import { extractGraph } from './extractors.js';
+import { buildBacklinkIndex } from './backlinks.js';
 
 /**
  * Build the content graph from `eleventy.toJSON()` output.
@@ -21,61 +22,28 @@ import { extractGraph } from './extractors.js';
  *   structured view of every page's rendered body so templates can read
  *   across pages without re-rendering.
  *
- * @param {Array<{ url: string, inputPath?: string, outputPath?: string, rawInput?: string, content?: string }>} pages
- * @returns {{ pages: Record<string, object>, backlinks: Record<string, string[]> }}
+ * @param {Array<{ url: string, content?: string }>} pages
+ * @returns {{ pages: Record<string, { text: string, excerpt: string, headings: object[], links: object[], images: object[] }>, backlinks: Record<string, string[]> }}
  */
 export function buildGraph(pages) {
 	const records = {};
 
 	for (const page of pages) {
 		if (!page?.url || typeof page.content !== 'string') continue;
+		if (!page.outputPath?.endsWith('.html')) continue;
 
-		let extracted;
 		try {
 			const { document } = parseHTML(page.content);
-			extracted = extractGraph(document);
+			records[page.url] = extractGraph(document);
 		} catch {
 			// Fail silently — a parse failure on one page should not nuke the graph.
 			continue;
 		}
-
-		records[page.url] = {
-			url: page.url,
-			inputPath: page.inputPath ?? null,
-			outputPath: page.outputPath ?? null,
-			rawInput: page.rawInput ?? null,
-			content: page.content,
-			extracted
-		};
 	}
 
 	const backlinks = buildBacklinkIndex(records);
 
 	return { pages: records, backlinks };
-}
-
-/**
- * Pre-compute a reverse index: target url -> list of source urls.
- *
- * Built once at graph time so getBacklinks() is a hash lookup, not a
- * scan over every page on every call.
- */
-function buildBacklinkIndex(records) {
-	const index = {};
-
-	for (const page of Object.values(records)) {
-		for (const link of page.extracted.links) {
-			if (!link.internal || !link.href) continue;
-
-			// Strip fragments so /foo/#section folds into /foo/.
-			const target = link.href.split('#')[0] || link.href;
-
-			if (!index[target]) index[target] = [];
-			if (!index[target].includes(page.url)) index[target].push(page.url);
-		}
-	}
-
-	return index;
 }
 
 /**
@@ -89,11 +57,12 @@ function buildBacklinkIndex(records) {
 export function createAccessors(getGraph) {
 	return {
 		isReady: () => getGraph() !== null,
-		getPage: (url) => getGraph()?.pages[url] ?? null,
-		getHeadings: (url) => getGraph()?.pages[url]?.extracted.headings ?? [],
-		getOutgoingLinks: (url) => getGraph()?.pages[url]?.extracted.links ?? [],
-		getImages: (url) => getGraph()?.pages[url]?.extracted.images ?? [],
-		getText: (url) => getGraph()?.pages[url]?.extracted.text ?? null,
+		getPage: (url) => getGraph()?.pages[url],
+		getHeadings: (url) => getGraph()?.pages[url]?.headings ?? [],
+		getOutgoingLinks: (url) => getGraph()?.pages[url]?.links ?? [],
+		getImages: (url) => getGraph()?.pages[url]?.images ?? [],
+		getText: (url) => getGraph()?.pages[url]?.text,
+		getExcerpt: (url) => getGraph()?.pages[url]?.excerpt,
 		getBacklinks: (url) => {
 			const graph = getGraph();
 			if (!graph) return [];

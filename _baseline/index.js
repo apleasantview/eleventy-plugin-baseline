@@ -14,32 +14,12 @@ import { wikilinks } from './core/wikilinks.js';
 import { settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
 import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
+import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
 
 import { registerGlobals } from './core/global-functions/index.js';
 import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
 import { imageShortcode } from './core/shortcodes/index.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
-
-import fs from 'node:fs/promises';
-import Eleventy from '@11ty/eleventy';
-
-const PREPASS_SENTINEL = 'BASELINE_PREPASS_RUNNING';
-
-async function prepass(input, output, options = {}) {
-	try {
-		process.env[PREPASS_SENTINEL] = '1';
-		const elev = new Eleventy(input, output, options);
-		console.log('Hello');
-		const json = await elev.toJSON();
-		console.log('Goodbye');
-		await fs.mkdir('./.cache', { recursive: true });
-		await fs.writeFile('./.cache/eleventy.json', JSON.stringify(json), 'utf-8');
-		process.exit(0);
-	} catch (err) {
-		console.error('PREPASS ERROR:', err);
-		process.exit(1);
-	}
-}
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
@@ -142,27 +122,27 @@ export default function baseline(settings = {}, options = {}) {
 	 * composes global APIs, filters, shortcodes, and feature modules.
 	 */
 	const plugin = async function (eleventyConfig) {
-		// Pre-pass runs once on the outer invocation. Sentinel skips the
-		// inner re-entry triggered by the pre-pass's own Eleventy instance.
-		if (process.env[PREPASS_SENTINEL] !== '1') {
-			await prepass(eleventyConfig.directories?.input, eleventyConfig.directories?.output, {
-				// --quiet
-				quietMode: true,
-				dryRun: true,
-
-				config: function (eleventyConfig) {
-					// Do some custom Configuration API stuff
-					// Works great with eleventyConfig.addGlobalData
-					console.log("What's up?");
-				}
-			});
-		}
-
 		// --- Eleventy compatibility check ---
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
 			baseLog.error('Eleventy version mismatch:', e.message);
+		}
+
+		// --- Pre-pass run ---
+		// Pre-pass runs once on the outer invocation. Sentinel skips the
+		// inner re-entry triggered by the pre-pass's own Eleventy instance.
+		if (process.env[PREPASS_SENTINEL] !== '1') {
+			const prepassLog = scopedLog('core:pre-pass');
+			prepassLog.info('Initialising pre-pass');
+			prepassLog.info('Somewhere, a bowl of petunias is thinking: oh no, not again.', { color: 'cyan' });
+
+			contentGraph = await runPrepass(
+				eleventyConfig.directories?.input,
+				eleventyConfig.directories?.output,
+				prepassLog,
+				{ quietMode: true }
+			);
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
@@ -198,12 +178,6 @@ export default function baseline(settings = {}, options = {}) {
 				...state.features,
 				hasImageTransformPlugin
 			}
-		});
-
-		// Content-graph accessors. Templates query the cascade; the fat data
-		// stays once at module scope and the cascade carries handles.
-		eleventyConfig.addGlobalData('_baseline.contentGraph', {
-			isReady: () => contentGraph !== null
 		});
 
 		// --- Virtual directories ---
