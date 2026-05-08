@@ -7,8 +7,10 @@
 		<div class="l-document__sidebar">{% include "components/docs-toc--sidebar.njk" %}</div>
 
 		<div class="l-document__principal u-flow">
-			<h1>{{ title }}</h1>
-			{{ content | safe }}
+			<article>
+				<h1>{{ title }}</h1>
+				{{ content | safe }}
+			</article>
 			<div style="margin-block-start: var(--space-2xl)"></div>
 		</div>
 	</div>
