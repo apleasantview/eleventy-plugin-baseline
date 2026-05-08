@@ -13,6 +13,7 @@ import { registerPageContext } from './core/page-context.js';
 import { wikilinks } from './core/wikilinks.js';
 import { settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
+import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
 
 import { registerGlobals } from './core/global-functions/index.js';
 import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
@@ -46,15 +47,6 @@ const { name, version } = __require('./package.json');
 const mode = process.env.ELEVENTY_ENV;
 const isDev = mode === 'development';
 const isProd = mode === 'production';
-
-// Options shape before refactor.
-const LEGACY_OPTION_KEYS = [
-	'verbose',
-	'enableNavigatorTemplate',
-	'enableSitemapTemplate',
-	'assetsESBuild',
-	'multilingual'
-];
 
 const GLOBAL_KEY = Symbol.for('eleventy:baseline:banner');
 
@@ -94,35 +86,6 @@ function printBannerOnce(baseLog, version) {
 printBannerOnce(baseLog, version);
 
 let contentGraph = null;
-
-/**
- * Detect legacy single-object plugin invocation.
- *
- * The original plugin API accepted a single merged configuration object.
- * This helper detects that shape and enables safe normalization into
- * the current (settings, options) contract.
- *
- * NOTE: arguments.length is required because default parameters mask arity.
- */
-function looksLikeLegacyOptions(firstArg, argsLength) {
-	if (argsLength >= 2) return false;
-	if (!firstArg || typeof firstArg !== 'object') return false;
-	return LEGACY_OPTION_KEYS.some((key) => key in firstArg);
-}
-
-/**
- * Normalize legacy plugin input into the current structured contract.
- *
- * - settings → site identity (content + SEO concerns)
- * - options  → runtime behavior flags
- */
-function splitLegacyOptions(legacy) {
-	const { defaultLanguage, languages, ...rest } = legacy;
-	return {
-		settings: { defaultLanguage, languages },
-		options: rest
-	};
-}
 
 /**
  * Baseline (composition root)
@@ -166,16 +129,10 @@ function splitLegacyOptions(legacy) {
  */
 export default function baseline(settings = {}, options = {}) {
 	// --- Legacy compatibility layer ---
-	const argsLength = arguments.length;
-	const wasLegacy = looksLikeLegacyOptions(settings, argsLength);
-
-	if (wasLegacy) {
-		const split = splitLegacyOptions(settings);
-		settings = split.settings;
-		options = split.options;
-	}
-
-	if (wasLegacy) {
+	if (isLegacyShape(settings, arguments.length)) {
+		const normalized = normalizeLegacyShape(settings);
+		settings = normalized.settings;
+		options = normalized.options;
 		baseLog.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
 	}
 
