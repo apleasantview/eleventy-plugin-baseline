@@ -88,13 +88,13 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	function extractFirstParagraph(data) {
 		const html = data?.content;
-		if (!html) return null;
+		if (!html) return;
 		const match = html.match(/<p>(.*?)<\/p>/i);
-		return match?.[1] ?? null;
+		return match?.[1];
 	}
 
 	function normalizeCanonical(path, siteUrl) {
-		if (!path || !siteUrl) return null;
+		if (!path || !siteUrl) return;
 
 		const url = new URL(path, siteUrl);
 
@@ -105,7 +105,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	// --- Field resolver ---
 	function resolveField({ pageValue, siteValue, fallbackValue, isHome }) {
-		let value = pageValue ?? siteValue ?? fallbackValue ?? null;
+		let value = pageValue ?? siteValue ?? fallbackValue;
 
 		return value;
 	}
@@ -124,17 +124,17 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	function buildPage(pageInput) {
 		return {
-			inputPath: pageInput?.inputPath ?? null,
-			fileSlug: pageInput?.fileSlug ?? null,
-			filePathStem: pageInput?.filePathStem ?? null,
-			outputFileExtension: pageInput?.outputFileExtension ?? null,
-			templateSyntax: pageInput?.templateSyntax ?? null,
-			date: pageInput?.date ?? null,
-			url: pageInput?.url ?? null,
-			outputPath: pageInput?.outputPath ?? null,
-			lang: pageInput?.lang ?? null,
-			locale: pageInput?.locale ?? null,
-			sitemap: pageInput?.sitemap ?? null
+			inputPath: pageInput?.inputPath,
+			fileSlug: pageInput?.fileSlug,
+			filePathStem: pageInput?.filePathStem,
+			outputFileExtension: pageInput?.outputFileExtension,
+			templateSyntax: pageInput?.templateSyntax,
+			date: pageInput?.date,
+			url: pageInput?.url,
+			outputPath: pageInput?.outputPath,
+			lang: pageInput?.lang,
+			locale: pageInput?.locale,
+			sitemap: pageInput?.sitemap
 		};
 	}
 
@@ -142,11 +142,11 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		const rawSlug = data?.slug ?? data?.page?.fileSlug;
 
 		return {
-			title: data?.seo?.title ?? data?.title ?? null,
-			description: data?.seo?.description ?? data?.description ?? null,
-			excerpt: data?.excerpt ?? null,
+			title: data?.seo?.title ?? data?.title,
+			description: data?.seo?.description ?? data?.description,
+			excerpt: data?.excerpt,
 			slug: slugify(rawSlug),
-			head: data?.head ?? null
+			head: data?.head
 		};
 	}
 
@@ -200,7 +200,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		const title = enhance(base);
 
 		// ---- CANONICAL ----
-		let canonical = null;
+		let canonical;
 
 		if (!noindex) {
 			const rawCanonical =
@@ -220,7 +220,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 
 	function buildRender(data) {
 		return {
-			generator: data?.eleventy?.generator ?? null
+			generator: data?.eleventy?.generator
 		};
 	}
 

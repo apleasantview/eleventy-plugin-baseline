@@ -41,7 +41,7 @@ function extractExcerpt(root, text) {
 	const fromP = firstP?.textContent?.trim();
 	if (fromP) return fromP;
 
-	if (!text) return null;
+	if (!text) return;
 	return text.length > 200 ? text.slice(0, 200).trimEnd() + '…' : text;
 }
 
@@ -62,9 +62,9 @@ export function extractGraph(document) {
 	const articles = main?.querySelectorAll('article') ?? [];
 	const root = articles.length === 1 ? articles[0] : (main ?? document.body);
 
-	if (!root) return { text: null, excerpt: null, headings: [], links: [], images: [] };
+	if (!root) return { text: undefined, excerpt: undefined, headings: [], links: [], images: [] };
 
-	const text = root.textContent?.trim() ?? null;
+	const text = root.textContent?.trim();
 
 	return {
 		text,
