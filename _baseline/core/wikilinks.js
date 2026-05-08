@@ -38,7 +38,7 @@ import { slugify } from './utils/slugify.js';
  *
  * @param {import('markdown-it').default} md
  * @param {Object} deps
- * @param {{getBySlug: (slug: string) => string | null}} deps.slugIndex
+ * @param {{getBySlug: (slug: string) => string | undefined}} deps.slugIndex
  * @param {{getByKey: (url: string) => any}} deps.pageContextRegistry
  * @param {{get: () => Record<string, Record<string, {url: string, title?: string}>> | null}} [deps.translationMapStore]
  */

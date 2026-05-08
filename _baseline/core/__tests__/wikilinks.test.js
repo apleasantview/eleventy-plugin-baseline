@@ -5,10 +5,10 @@ import { wikilinks } from '../wikilinks.js';
 function makeDeps({ slugs = {}, contexts = {}, translations = null } = {}) {
 	return {
 		slugIndex: {
-			getBySlug: (slug) => slugs[slug] ?? null
+			getBySlug: (slug) => slugs[slug]
 		},
 		pageContextRegistry: {
-			getByKey: (url) => contexts[url] ?? null
+			getByKey: (url) => contexts[url]
 		},
 		translationMapStore: {
 			get: () => translations

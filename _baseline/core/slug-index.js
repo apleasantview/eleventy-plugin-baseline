@@ -35,7 +35,7 @@ const SCOPE_NAME = 'core:slug-index';
  *   page-context.buildPageContext → set() → registry scope → wikilinks getBySlug()
  *
  * @param {import('@11ty/eleventy').UserConfig} eleventyConfig
- * @returns {{set: (slug: string, url: string, inputPath?: string) => void, getBySlug: (slug: string) => string | null, snapshot: () => Record<string, {url: string, inputPath?: string}>}}
+ * @returns {{set: (slug: string, url: string, inputPath?: string) => void, getBySlug: (slug: string) => string | undefined, snapshot: () => Record<string, {url: string, inputPath?: string}>}}
  */
 export function createSlugIndex(eleventyConfig) {
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
@@ -52,7 +52,7 @@ export function createSlugIndex(eleventyConfig) {
 			setEntry(scope, slug, { url, inputPath });
 		},
 		getBySlug(slug) {
-			return getEntry(scope, slug)?.url ?? null;
+			return getEntry(scope, slug)?.url;
 		},
 		snapshot() {
 			return Object.fromEntries(scope.values);

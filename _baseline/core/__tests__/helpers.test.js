@@ -57,10 +57,10 @@ describe('slugify', () => {
 		expect(slugify('---about---')).toBe('about');
 	});
 
-	it('returns null for null, undefined, or empty input', () => {
-		expect(slugify(null)).toBeNull();
-		expect(slugify(undefined)).toBeNull();
-		expect(slugify('')).toBeNull();
-		expect(slugify('!!!')).toBeNull();
+	it('returns undefined for null, undefined, or empty input', () => {
+		expect(slugify(null)).toBeUndefined();
+		expect(slugify(undefined)).toBeUndefined();
+		expect(slugify('')).toBeUndefined();
+		expect(slugify('!!!')).toBeUndefined();
 	});
 });
