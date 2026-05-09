@@ -54,7 +54,7 @@ const __dirname = path.dirname(__filename);
  * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext }.
  */
 export function navigatorCore(eleventyConfig, moduleContext) {
-	const { state, snapshots, log, env } = moduleContext;
+	const { state, runtime, snapshots, log, env } = moduleContext;
 	const { settings, options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
@@ -76,6 +76,13 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 			pageContext: snapshots.pageContext()
 		});
 	});
+
+	// Public read surface for plugin-produced cross-page data. Templates can
+	// paginate over `_navigator.backlinks` or read `_navigator.graph` directly.
+	eleventyConfig.addGlobalData('_navigator', () => ({
+		graph: runtime.contentGraph?.pages ?? {},
+		backlinks: runtime.contentGraph?.backlinks ?? {}
+	}));
 
 	/**
 	 * Nunjucks Global: _runtime
