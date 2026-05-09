@@ -5,6 +5,37 @@ import Eleventy from '@11ty/eleventy';
 
 import { buildGraph } from './graph.js';
 
+/**
+ * Pre-pass (runtime substrate)
+ *
+ * Runs a programmatic Eleventy in dryRun mode, hands its rendered output
+ * to the graph builder, and writes the result to disk for serve-mode
+ * rebuilds to read between cycles.
+ *
+ * Architecture layer:
+ *   runtime substrate
+ *
+ * System role:
+ *   Build-time entry point for the content graph. Owns the re-entry
+ *   sentinel, the log-suppression scope, and the cache file path.
+ *
+ * Lifecycle:
+ *   build-time → outer process triggers a synthetic Eleventy run, captures
+ *                rendered HTML via toJSON(), and persists the graph
+ *
+ * Why this exists:
+ *   Eleventy's data cascade is blind to rendered output. A pre-pass is the
+ *   way to read the rendered shape of every page before the real build
+ *   composes its templates.
+ *
+ * Scope:
+ *   Owns the synthetic Eleventy run, sentinel handling, and cache I/O.
+ *   Does not own extraction or the graph shape (graph.js owns those).
+ *
+ * Data flow:
+ *   inner Eleventy toJSON() → buildGraph → cache file + in-memory graph
+ */
+
 // Re-entry guard: set once by the outer process, read at call-time on
 // the inner re-entry to skip the pre-pass. Permanent for the life of
 // the outer process — the pre-pass runs exactly once.
@@ -35,6 +66,7 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  * @param {string} output
  * @param {object} log
  * @param {object} [options]
+ * @param {Set<string>} [options.knownOrigins] - Origins to strip from internal hrefs during extraction.
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, log, options = {}) {
@@ -43,11 +75,22 @@ export async function runPrepass(input, output, log, options = {}) {
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
+	// knownOrigins is consumed by the graph builder, not Eleventy.
+	const { knownOrigins, ...elevOptions } = options;
+
 	let graph;
 	try {
-		const elev = new Eleventy(input, output, { ...options, dryRun: true });
+		const elev = new Eleventy(input, output, {
+			...elevOptions,
+			dryRun: true,
+			// Surface fields the graph and backlink enrichment read off `data`.
+			config: function (eleventyConfig) {
+				eleventyConfig.dataFilterSelectors.add('title');
+				eleventyConfig.dataFilterSelectors.add('eleventyExcludeFromCollections');
+			}
+		});
 		const pages = await elev.toJSON();
-		graph = buildGraph(pages);
+		graph = buildGraph(pages, { knownOrigins });
 
 		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');

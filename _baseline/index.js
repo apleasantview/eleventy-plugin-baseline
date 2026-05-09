@@ -40,7 +40,8 @@ const INTERNAL_KEYS = [
 	'_sitemap',
 	'_snapshot',
 	'eleventyComputed._pageContext',
-	'eleventyComputed._contentGraph'
+	'eleventyComputed._graph',
+	'eleventyComputed._backlinks'
 ];
 
 // Base logger outputs regardless of options.
@@ -135,15 +136,29 @@ export default function baseline(settings = {}, options = {}) {
 		if (process.env[PREPASS_SENTINEL] !== '1') {
 			const prepassLog = scopedLog('core:pre-pass');
 			prepassLog.info('Initialising pre-pass');
+
+			// Origins HtmlBasePlugin may have rewritten internal hrefs to.
+			// Stripped during link extraction so backlinks key on path-only.
+			const knownOrigins = new Set(['http://localhost:8080']);
+			for (const candidate of [settings.url, process.env.URL]) {
+				if (!candidate) continue;
+				try {
+					knownOrigins.add(new URL(candidate).origin);
+				} catch {}
+			}
+
 			contentGraph = await runPrepass(
 				eleventyConfig.directories?.input,
 				eleventyConfig.directories?.output,
 				prepassLog,
-				{ quietMode: true }
+				{ quietMode: true, knownOrigins }
 			);
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
+			// _graph and _backlinks are wired below as real computed callbacks
+			// reading from the pre-pass output. The rest are reserved-empty.
+			if (key === 'eleventyComputed._graph' || key === 'eleventyComputed._backlinks') return;
 			eleventyConfig.addGlobalData(key, {});
 		});
 
@@ -231,12 +246,24 @@ export default function baseline(settings = {}, options = {}) {
 				get contentMap() {
 					return contentMapStore.get();
 				},
+				get contentGraph() {
+					return contentGraph;
+				},
 				translationMap: translationMapStore,
 				slugIndex
 			},
 			directories,
 			helpers
 		};
+
+		// Cascade hookup for the content graph. Reads via the runtime getter so
+		// serve-mode rebuilds reassigning `contentGraph` are picked up.
+		eleventyConfig.addGlobalData('eleventyComputed._graph', () => (data) => {
+			return coreContext.runtime.contentGraph?.pages?.[data.page?.url];
+		});
+		eleventyConfig.addGlobalData('eleventyComputed._backlinks', () => (data) => {
+			return coreContext.runtime.contentGraph?.backlinks?.[data.page?.url] ?? [];
+		});
 
 		// Page context registry
 		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
