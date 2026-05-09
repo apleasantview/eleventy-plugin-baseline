@@ -10,39 +10,42 @@ const __dirname = path.dirname(__filename);
 /**
  * Navigator (module)
  *
- * Debug surface. Exposes Eleventy and Baseline runtime state to templates so
- * developers can inspect data shape, scope contents, and lifecycle output
- * without leaving the page.
+ * Two roles, one module: the public read surface for plugin-produced
+ * cross-page data (the content graph and its enriched backlinks), and the
+ * debug surface for inspecting Eleventy and Baseline runtime state.
  *
  * Architecture layer:
  *   module
  *
  * System role:
- *   Read-only window into the runtime substrate. Pulls snapshots from the
- *   page-context registry and content-map store via the module context;
- *   does not write back.
+ *   Read-only window over the runtime substrate. Surfaces the content graph
+ *   for templates that need cross-page reads, and snapshots from the
+ *   page-context registry and content-map store for debugging. Writes
+ *   nothing back.
  *
  * Lifecycle:
- *   build-time   → register Nunjucks globals, debug filters, and the
- *                  optional virtual debug page
+ *   build-time   → register `_navigator` (graph, backlinks), debug globals,
+ *                  filters, and the optional virtual debug page
  *   cascade-time → eleventyComputed `_snapshot` resolves contentMap and
  *                  pageContext on each page
  *
  * Why this exists:
- *   Render-time inspection of cascade state has no built-in surface.
- *   Centralising globals and filters under a debug-only module keeps the
- *   inspection vocabulary stable and out of feature modules.
+ *   Templates need an addressable cross-page surface for graph reads, and
+ *   render-time inspection of cascade state has no built-in equivalent.
+ *   One module owns both vocabularies so feature modules stay narrow.
  *
  * Scope:
- *   Owns the `_runtime` and `_ctx` Nunjucks globals, computed `_snapshot`,
+ *   Owns the `_navigator` global (`{ graph, backlinks }`, the public read
+ *   surface), the debug globals `_runtime` and `_ctx`, computed `_snapshot`,
  *   debug filters (`_inspect`, `_json`, `_keys`), and the optional virtual
  *   page at /navigator-core.html.
- *   Does not own the data it surfaces (page-context registry, content-map
- *   store).
+ *   Does not own the data it surfaces (content graph, page-context registry,
+ *   content-map store).
  *
  * Data flow:
- *   snapshots (contentMap, pageContext) + this.ctx → globals + computed
- *   `_snapshot` + virtual page → developer
+ *   runtime.contentGraph + snapshots + this.ctx → `_navigator` + debug
+ *   globals + computed `_snapshot` + virtual page → templates and
+ *   developers
  *
  * Note: `_snapshot.contentMap` is null on the navigator template itself
  * because it renders before `eleventy.contentMap` fires. Read `_snapshot`
@@ -51,6 +54,7 @@ const __dirname = path.dirname(__filename);
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
  * @param {Object} moduleContext.state - Resolved plugin state.
+ * @param {Object} moduleContext.runtime - Lazy access layer; reads contentGraph.
  * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext }.
  */
 export function navigatorCore(eleventyConfig, moduleContext) {
