@@ -71,6 +71,25 @@ export default async function (eleventyConfig) {
 		});
 		return res;
 	});
+
+	eleventyConfig.addFilter('unique', (array, key) => {
+		if (!Array.isArray(array)) return [];
+
+		if (!key) {
+			return [...new Set(array)];
+		}
+
+		const seen = new Set();
+
+		return array.filter((item) => {
+			const value = item?.[key];
+
+			if (seen.has(value)) return false;
+
+			seen.add(value);
+			return true;
+		});
+	});
 }
 
 // Re-export directory config from the plugin so Eleventy picks it up.
