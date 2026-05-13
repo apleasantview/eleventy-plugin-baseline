@@ -5,21 +5,20 @@ import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 
 import { createLogger, printBannerOnce } from './core/logging.js';
+import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
+import { settingsSchema } from './core/schema.js';
+import { deriveBaselineState } from './core/state.js';
+import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
+import { registerGlobals } from './core/global-functions/index.js';
+import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
-import { registerVirtualDir } from './core/virtual-dir.js';
 import { registerPageContext } from './core/page-context.js';
 import { wikilinks } from './core/wikilinks.js';
-import { settingsSchema } from './core/schema.js';
-import { deriveBaselineState } from './core/state.js';
-import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
-import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
-
-import { registerGlobals } from './core/global-functions/index.js';
+import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
 import { imageShortcode } from './core/shortcodes/index.js';
-import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
@@ -40,8 +39,10 @@ const INTERNAL_KEYS = [
 	'_sitemap',
 	'_snapshot',
 	'eleventyComputed._pageContext',
-	'eleventyComputed._graph',
-	'eleventyComputed._backlinks'
+	'eleventyComputed._node',
+	'eleventyComputed._edges',
+	'eleventyComputed._backlinks',
+	'eleventyComputed._outgoing'
 ];
 
 // Base logger outputs regardless of options.
@@ -130,12 +131,14 @@ export default function baseline(settings = {}, options = {}) {
 			baseLog.error('Eleventy version mismatch:', e.message);
 		}
 
-		// --- Pre-pass run ---
-		// Pre-pass runs once on the outer invocation. Sentinel skips the
-		// inner re-entry triggered by the pre-pass's own Eleventy instance.
+		// --- Pre-pass wiring ---
+		// One mechanic: the pre-pass runs at the start of every Eleventy
+		// build cycle via `eleventy.before`. Initial build, watch rebuild,
+		// production build — all the same path. Templates always render
+		// against a graph rebuilt from current source. The sentinel keeps
+		// the inner Eleventy from re-attaching the hook on re-entry.
 		if (process.env[PREPASS_SENTINEL] !== '1') {
 			const prepassLog = scopedLog('core:pre-pass');
-			prepassLog.info('Initialising pre-pass');
 
 			// Origins HtmlBasePlugin may have rewritten internal hrefs to.
 			// Stripped during link extraction so backlinks key on path-only.
@@ -147,30 +150,40 @@ export default function baseline(settings = {}, options = {}) {
 				} catch {}
 			}
 
-			contentGraph = await runPrepass(
-				eleventyConfig.directories?.input,
-				eleventyConfig.directories?.output,
-				prepassLog,
-				{ quietMode: true, knownOrigins }
-			);
+			eleventyConfig.on('eleventy.before', async () => {
+				contentGraph = await runPrepass(
+					eleventyConfig.directories?.input,
+					eleventyConfig.directories?.output,
+					prepassLog,
+					{ quietMode: true, knownOrigins }
+				);
+			});
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
-			// _graph and _backlinks are wired below as real computed callbacks
-			// reading from the pre-pass output. The rest are reserved-empty.
-			if (key === 'eleventyComputed._graph' || key === 'eleventyComputed._backlinks') return;
+			// We leave elevenytComputed callbacks alone, the rest are reserved-empty.
+			if (
+				key === 'eleventyComputed._pageContext' ||
+				key === 'eleventyComputed._node' ||
+				key === 'eleventyComputed._backlinks' ||
+				key === 'eleventyComputed._outgoing'
+			)
+				return;
 			eleventyConfig.addGlobalData(key, {});
 		});
 
 		const env = {
-			name: 'Eleventy Baseline',
-			package: name,
 			version,
-			mode
+			name: 'Eleventy Baseline',
+			env: {
+				mode,
+				package: name
+			}
 		};
 
 		eleventyConfig.addGlobalData('_baseline', {
-			env
+			...env,
+			options: state.options
 		});
 
 		if (!settings.url) {
@@ -256,23 +269,52 @@ export default function baseline(settings = {}, options = {}) {
 			helpers
 		};
 
-		// Cascade hookup for the content graph. Reads via the runtime getter so
-		// serve-mode rebuilds reassigning `contentGraph` are picked up.
-		eleventyConfig.addGlobalData('eleventyComputed._graph', () => (data) => {
-			return coreContext.runtime.contentGraph?.pages?.[data.page?.url];
-		});
-		eleventyConfig.addGlobalData('eleventyComputed._backlinks', () => (data) => {
-			return coreContext.runtime.contentGraph?.backlinks?.[data.page?.url] ?? [];
-		});
-
 		// Page context registry
 		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
 
+		// --- Content graph ---
+		// Cascade hookup for the content graph. Reads via the runtime getter so
+		// serve-mode rebuilds reassigning `contentGraph` are picked up.
+		function getNode(pageUrl) {
+			return coreContext.runtime.contentGraph?.nodes?.[pageUrl];
+		}
+
+		function getEdges() {
+			return coreContext.runtime.contentGraph?.edges ?? [];
+		}
+
+		eleventyConfig.addGlobalData('eleventyComputed._node', () => (data) => {
+			const pageUrl = data.page?.url;
+			if (!pageUrl) return undefined;
+
+			return getNode(pageUrl);
+		});
+
+		eleventyConfig.addGlobalData('eleventyComputed._backlinks', () => (data) => {
+			const edges = getEdges();
+
+			const pageUrl = data.page?.url;
+			if (!pageUrl) return [];
+
+			return edges.filter((edge) => edge.to === pageUrl);
+		});
+
+		eleventyConfig.addGlobalData('eleventyComputed._outgoing', () => (data) => {
+			const edges = getEdges();
+
+			const pageUrl = data.page?.url;
+			if (!pageUrl) return [];
+
+			return edges.filter((edge) => edge.from === pageUrl);
+		});
+
+		// --- Content helper ---
 		// Wikilinks: [[slug]] / [[slug | lang]] in body markdown.
 		eleventyConfig.amendLibrary('md', (md) => {
 			md.use(wikilinks, { slugIndex, pageContextRegistry, translationMapStore });
 		});
 
+		// --- Snapshots ---
 		coreContext.snapshots = {
 			contentMap: () => contentMapStore.snapshot(),
 			pageContext: () => pageContextRegistry.snapshot()

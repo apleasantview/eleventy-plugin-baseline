@@ -39,10 +39,11 @@ import { buildBacklinkIndex } from './backlinks.js';
 /**
  * @param {Array<{ url: string, content?: string, data?: object }>} pages
  * @param {{ knownOrigins?: Set<string> }} [options] - Origins to strip from internal hrefs (HtmlBasePlugin rewrites them at render time).
- * @returns {{ pages: Record<string, object>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
+ * @returns {{ pages: Record<string, { slug?: string, title?: string, text?: string, excerpt?: string, headings: Array, links: Array, images: Array }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
  */
 export function buildGraph(pages, options = {}) {
-	const records = {};
+	const nodes = {};
+	const edges = [];
 	const sourceMeta = {};
 
 	for (const page of pages) {
@@ -50,10 +51,20 @@ export function buildGraph(pages, options = {}) {
 		if (!page.outputPath?.endsWith('.html')) continue;
 		// Honour the same opt-out 404s, drafts and internal templates already use.
 		if (page.data?.eleventyExcludeFromCollections === true) continue;
+		if (page.data?.baselineExcludeFromGraph === true) continue;
 
 		try {
 			const { document } = parseHTML(page.content);
-			records[page.url] = extractGraph(document, options);
+			const graph = extractGraph(document, { ...options, url: page.url });
+			nodes[page.url] = {
+				title: page.data?.title,
+				slug: page.data?.slug,
+				description: page.data?.description,
+				date: page.data?.date,
+				locale: page.data?.locale,
+				...graph.node
+			};
+			edges.push(...graph.edges);
 			sourceMeta[page.url] = { title: page.data?.title };
 		} catch {
 			// Fail silently — a parse failure on one page should not nuke the graph.
@@ -61,9 +72,9 @@ export function buildGraph(pages, options = {}) {
 		}
 	}
 
-	const backlinks = buildBacklinkIndex(records, sourceMeta);
+	const backlinks = buildBacklinkIndex(edges, nodes, sourceMeta);
 
-	return { pages: records, backlinks };
+	return { nodes: nodes, edges: edges, backlinks };
 }
 
 /**
@@ -71,18 +82,18 @@ export function buildGraph(pages, options = {}) {
  * over a getter so the underlying graph reference can be swapped (e.g.
  * on serve-mode rebuilds) without re-registering global data.
  *
- * @param {() => ({ pages: Record<string, object>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> } | null)} getGraph
+ * @param {() => ({ nodes: Record<string, object>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> } | null)} getGraph
  */
 export function createAccessors(getGraph) {
 	return {
 		isReady: () => getGraph() !== null,
-		getPage: (url) => getGraph()?.pages[url],
-		getHeadings: (url) => getGraph()?.pages[url]?.headings ?? [],
-		getOutgoingLinks: (url) => getGraph()?.pages[url]?.links ?? [],
-		getImages: (url) => getGraph()?.pages[url]?.images ?? [],
-		getText: (url) => getGraph()?.pages[url]?.text,
-		getExcerpt: (url) => getGraph()?.pages[url]?.excerpt,
+		getPage: (url) => getGraph()?.nodes[url],
+		getHeadings: (url) => getGraph()?.nodes[url]?.headings ?? [],
+		getOutgoingLinks: (url) => getGraph()?.nodes[url]?.links ?? [],
+		getImages: (url) => getGraph()?.nodes[url]?.images ?? [],
+		getText: (url) => getGraph()?.nodes[url]?.text,
+		getExcerpt: (url) => getGraph()?.nodes[url]?.excerpt,
 		getBacklinks: (url) => getGraph()?.backlinks[url] ?? [],
-		all: () => getGraph()?.pages ?? {}
+		all: () => getGraph()?.nodes ?? {}
 	};
 }

@@ -1,3 +1,5 @@
+import { slugify } from '../utils/slugify.js';
+
 /**
  * Extractors (runtime substrate)
  *
@@ -32,24 +34,35 @@
 function extractHeadings(root) {
 	const nodes = root.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
-	return Array.from(nodes).map((el) => ({
-		level: Number(el.tagName[1]),
-		text: (el.textContent || '').trim(),
-		id: el.id || null
-	}));
+	return Array.from(nodes).map((el) => {
+		const text = (el.textContent || '').trim();
+		// Live DOM id wins (matches anchored markup); fall back to a slugified
+		// id so consumers always have a stable handle, even when the rendering
+		// pipeline did not auto-anchor headings.
+		return {
+			level: Number(el.tagName[1]),
+			text,
+			id: el.id || slugify(text) || null
+		};
+	});
 }
 
-function extractLinks(root, knownOrigins) {
+function extractLinks(root, currentPage, knownOrigins) {
 	const anchors = root.querySelectorAll('a[href]');
 
 	return Array.from(anchors).map((a) => {
 		const raw = a.getAttribute('href');
+		const page = currentPage;
 		const href = normaliseHref(raw, knownOrigins);
+		const internal = isInternal(href);
+		const type = internal ? 'link' : 'external';
 
 		return {
-			href,
-			text: (a.textContent || '').trim(),
-			internal: isInternal(href)
+			internal,
+			from: page,
+			to: href,
+			type: type,
+			text: (a.textContent || '').trim()
 		};
 	});
 }
@@ -113,13 +126,15 @@ export function extractGraph(document, options = {}) {
 	if (!root) return { text: undefined, excerpt: undefined, headings: [], links: [], images: [] };
 
 	const text = root.textContent?.trim();
+	const currentpage = options.url;
 	const knownOrigins = options.knownOrigins;
 
 	return {
-		text,
-		excerpt: extractExcerpt(root, text),
-		headings: extractHeadings(root),
-		links: extractLinks(root, knownOrigins),
-		images: extractImages(root)
+		node: {
+			excerpt: extractExcerpt(root, text),
+			headings: extractHeadings(root),
+			images: extractImages(root)
+		},
+		edges: extractLinks(root, currentpage, knownOrigins)
 	};
 }

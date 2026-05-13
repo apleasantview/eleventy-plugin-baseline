@@ -31,34 +31,34 @@
  */
 
 /**
- * @param {Record<string, { links: Array<{ href: string, internal: boolean }>, excerpt?: string }>} records
+ * @param {Record<string, { links: Array<{ href: string, internal: boolean }>, excerpt?: string }>} nodes
  * @param {Record<string, { title?: string }>} [sourceMeta] - Per-source metadata to enrich entries with.
  * @returns {Record<string, Array<{ url: string, title?: string, excerpt?: string }>>}
  */
-export function buildBacklinkIndex(records, sourceMeta = {}) {
+export function buildBacklinkIndex(edges, nodes = {}, sourceMeta = {}) {
 	const index = {};
 	const seen = {};
 
-	for (const [sourceUrl, page] of Object.entries(records)) {
-		for (const link of page.links) {
-			if (!link.internal || !link.href) continue;
+	for (const edge of edges) {
+		if (!edge.internal) continue;
+		if (!edge.to || !edge.from) continue;
 
-			// Strip fragments so /foo/#section folds into /foo/.
-			const target = link.href.split('#')[0] || link.href;
+		// Strip fragments so /foo/#section folds into /foo/
+		const target = edge.to.split('#')[0];
 
-			if (!index[target]) {
-				index[target] = [];
-				seen[target] = new Set();
-			}
-			if (seen[target].has(sourceUrl)) continue;
-			seen[target].add(sourceUrl);
-
-			index[target].push({
-				url: sourceUrl,
-				title: sourceMeta[sourceUrl]?.title,
-				excerpt: page.excerpt
-			});
+		if (!index[target]) {
+			index[target] = [];
+			seen[target] = new Set();
 		}
+
+		if (seen[target].has(edge.from)) continue;
+		seen[target].add(edge.from);
+
+		index[target].push({
+			url: edge.from,
+			title: sourceMeta[edge.from]?.title || nodes[edge.from]?.title,
+			excerpt: nodes[edge.from]?.excerpt
+		});
 	}
 
 	return index;

@@ -20,13 +20,15 @@ import { buildGraph } from './graph.js';
  *   sentinel, the log-suppression scope, and the cache file path.
  *
  * Lifecycle:
- *   build-time → outer process triggers a synthetic Eleventy run, captures
- *                rendered HTML via toJSON(), and persists the graph
+ *   build-time → fires on each Eleventy `eleventy.before` event; spawns a
+ *                synthetic Eleventy, captures rendered HTML via toJSON(),
+ *                and persists the graph before the outer cycle renders.
  *
  * Why this exists:
  *   Eleventy's data cascade is blind to rendered output. A pre-pass is the
  *   way to read the rendered shape of every page before the real build
- *   composes its templates.
+ *   composes its templates. Running it every cycle keeps the graph current
+ *   in serve mode without a separate merge mechanic.
  *
  * Scope:
  *   Owns the synthetic Eleventy run, sentinel handling, and cache I/O.
@@ -86,7 +88,12 @@ export async function runPrepass(input, output, log, options = {}) {
 			// Surface fields the graph and backlink enrichment read off `data`.
 			config: function (eleventyConfig) {
 				eleventyConfig.dataFilterSelectors.add('title');
+				eleventyConfig.dataFilterSelectors.add('slug');
+				eleventyConfig.dataFilterSelectors.add('description');
+				eleventyConfig.dataFilterSelectors.add('date');
+				// eleventyConfig.dataFilterSelectors.add('_pageContext'); -> Future pass.
 				eleventyConfig.dataFilterSelectors.add('eleventyExcludeFromCollections');
+				eleventyConfig.dataFilterSelectors.add('baselineExcludeFromGraph');
 			}
 		});
 		const pages = await elev.toJSON();
