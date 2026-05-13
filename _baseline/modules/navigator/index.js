@@ -71,7 +71,8 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 
 	// Boolean shorthand activates the virtual page; object form lets users tune.
 	const navigatorOpts = options.navigator && typeof options.navigator === 'object' ? options.navigator : {};
-	const renderTemplate = navigatorOpts.template ?? (typeof options.navigator === 'boolean' ? options.navigator : env.mode === 'development');
+	const renderTemplate =
+		navigatorOpts.template ?? (typeof options.navigator === 'boolean' ? options.navigator : env.mode === 'development');
 	const inspectorDepth = navigatorOpts.inspectorDepth ?? 4;
 
 	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
@@ -84,7 +85,8 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 	// Public read surface for plugin-produced cross-page data. Templates can
 	// paginate over `_navigator.backlinks` or read `_navigator.graph` directly.
 	eleventyConfig.addGlobalData('_navigator', () => ({
-		graph: runtime.contentGraph?.pages ?? {},
+		nodes: runtime.contentGraph?.nodes ?? {},
+		edges: runtime.contentGraph?.edges ?? {},
 		backlinks: runtime.contentGraph?.backlinks ?? {}
 	}));
 
