@@ -1,12 +1,14 @@
 {% extends "layouts/base.njk" %}
 
 {%- block content %}
-{%- include "components/docs-toc--details.njk" %}
+
 <div class="l-document">
+
 	<!-- sidebar -->
 	<div class="l-document__sidebar">{% include "components/docs-toc--sidebar.njk" %}</div>
 
-	<div class="l-document__principal u-flow">
+	<!-- content -->
+	<div class="l-document__content u-flow">
 		<article class="u-flow">
 			<h1>{{ title }}</h1>
 			{{ content | safe }}
@@ -16,5 +18,9 @@
 		</div>
 		<div style="margin-block-start: var(--space-2xl)"></div>
 	</div>
+
+	<!-- aside -->
+	<div class="l-document__aside u-flow">{% include "components/document-aside.njk" %}</div>
+
 </div>
 {%- endblock %}

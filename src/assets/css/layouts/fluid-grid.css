@@ -1,4 +1,5 @@
-.l-fluid-grid {
+.l-fluid-grid,
+.l-fluid-grid--autofill {
 	box-sizing: content-box;
 	max-width: 100%;
 	display: grid;
@@ -8,4 +9,8 @@
 
 .l-fluid-grid__block > :nth-child(1) {
 	margin-block-start: var(--flow-space-heading);
+}
+
+.l-fluid-grid--autofill {
+	grid-template-columns: repeat(auto-fill, minmax(min(288px, 100%), 1fr));
 }
