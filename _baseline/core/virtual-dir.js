@@ -4,6 +4,7 @@ import { createLogger } from './logging.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 
 const SCOPE_NAME = 'core:virtual-dir';
+const LOG_NAME = 'virtual-dir';
 
 /**
  * Virtual directories (runtime substrate)
@@ -56,10 +57,10 @@ const SCOPE_NAME = 'core:virtual-dir';
  */
 export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
 	if (!key) {
-		throw new Error('registerVirtualDir: `name` is required');
+		throw new Error('[baseline/virtual-dir] `name` is required');
 	}
 
-	const log = createLogger(SCOPE_NAME);
+	const log = createLogger(LOG_NAME);
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 	const rawDir = eleventyConfig.dir?.[key] || key;
 	const rawOutputDir = outputDir ?? rawDir;

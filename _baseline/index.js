@@ -138,7 +138,7 @@ export default function baseline(settings = {}, options = {}) {
 		// against a graph rebuilt from current source. The sentinel keeps
 		// the inner Eleventy from re-attaching the hook on re-entry.
 		if (process.env[PREPASS_SENTINEL] !== '1') {
-			const prepassLog = scopedLog('core:pre-pass');
+			const prepassLog = scopedLog('content-graph');
 
 			// Origins HtmlBasePlugin may have rewritten internal hrefs to.
 			// Stripped during link extraction so backlinks key on path-only.
@@ -215,6 +215,9 @@ export default function baseline(settings = {}, options = {}) {
 			key: 'public',
 			outputDir: ''
 		});
+
+		const virtualDirLog = scopedLog('virtual-dir');
+		virtualDirLog.info('Virtual directories mounted');
 
 		const directories = {
 			input: eleventyConfig.directories?.input,

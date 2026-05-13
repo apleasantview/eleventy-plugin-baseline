@@ -4,7 +4,7 @@ import { createLogger } from '../logging.js';
 
 // Module-level logger. Image shortcode only uses `.warn`, which emits regardless
 // of verbose, so we don't thread verbose through the shortcode signature.
-const log = createLogger('image');
+const log = createLogger('image-shortcode');
 
 const DEFAULT_WIDTHS = [320, 640, 960, 1280, 1920, 'auto'];
 const DEFAULT_FORMATS = ['avif', 'webp'];
@@ -68,7 +68,7 @@ export async function imageShortcode(options = {}) {
 
 	// --- Validation and normalization ---
 
-	if (!src) throw new Error(`imageShortcode: src is required (received ${JSON.stringify(src)})`);
+	if (!src) throw new Error(`[baseline/image-shortcode] src is required (received ${JSON.stringify(src)})`);
 	if (alt == null) {
 		log.warn('alt is required (use empty string for decorative images)');
 	}

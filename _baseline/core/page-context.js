@@ -4,6 +4,7 @@ import { createLogger } from './logging.js';
 import { getScope, memoize, setEntry } from './registry.js';
 
 const SCOPE_NAME = 'core:page-context';
+const LOG_NAME = 'page-context';
 const COMPUTED_KEY = 'eleventyComputed._pageContext';
 
 /**
@@ -45,7 +46,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	const { slugIndex } = runtime;
 	const { settings, options } = state;
 
-	const log = createLogger(SCOPE_NAME, { verbose: options.verbose });
+	const log = createLogger(LOG_NAME, { verbose: options.verbose });
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
 	// Head options.
