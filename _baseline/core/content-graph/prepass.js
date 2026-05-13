@@ -72,8 +72,9 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, log, options = {}) {
+	log.info('Pre-pass run active');
 	log.info('Somewhere, a bowl of petunias is thinking: oh no, not again.', { color: 'cyan' });
-	log.info('Building content graph…');
+	log.info('Writing content graph to cache');
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
@@ -87,11 +88,7 @@ export async function runPrepass(input, output, log, options = {}) {
 			dryRun: true,
 			// Surface fields the graph and backlink enrichment read off `data`.
 			config: function (eleventyConfig) {
-				eleventyConfig.dataFilterSelectors.add('title');
-				eleventyConfig.dataFilterSelectors.add('slug');
-				eleventyConfig.dataFilterSelectors.add('description');
-				eleventyConfig.dataFilterSelectors.add('date');
-				// eleventyConfig.dataFilterSelectors.add('_pageContext'); -> Future pass.
+				eleventyConfig.dataFilterSelectors.add('_pageContext'); // -> Future pass.
 				eleventyConfig.dataFilterSelectors.add('eleventyExcludeFromCollections');
 				eleventyConfig.dataFilterSelectors.add('baselineExcludeFromGraph');
 			}
@@ -103,7 +100,7 @@ export async function runPrepass(input, output, log, options = {}) {
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
 	} finally {
 		process.env[PREPASS_ACTIVE] = '0';
-		log.info('Pre-pass finished');
+		log.info('Pre-pass run finished');
 	}
 
 	return graph;

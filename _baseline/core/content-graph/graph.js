@@ -55,19 +55,33 @@ export function buildGraph(pages, options = {}) {
 
 		try {
 			const { document } = parseHTML(page.content);
-			const graph = extractGraph(document, { ...options, url: page.url });
-			nodes[page.url] = {
-				title: page.data?.title,
-				slug: page.data?.slug,
-				description: page.data?.description,
-				date: page.data?.date,
-				locale: page.data?.locale,
+			const ctx = page.data?._pageContext ?? {};
+			const url = ctx.page?.url ?? page.url;
+
+			const graph = extractGraph(document, { ...options, url });
+
+			const nodeIdentity = {
+				title: ctx.entry?.title,
+				slug: ctx.entry?.slug,
+				description: ctx.entry?.description,
+				lang: ctx.page?.lang,
+				locale: ctx.page?.locale,
+				date: ctx.page?.date,
+				url
+			};
+
+			nodes[url] = {
+				...nodeIdentity,
 				...graph.node
 			};
+
 			edges.push(...graph.edges);
-			sourceMeta[page.url] = { title: page.data?.title };
-		} catch {
-			// Fail silently — a parse failure on one page should not nuke the graph.
+
+			sourceMeta[url] = { title: nodeIdentity.title };
+		} catch (err) {
+			if (process.env.NODE_ENV !== 'production') {
+				console.warn(`Graph extraction failed for ${page.url}`, err);
+			}
 			continue;
 		}
 	}
