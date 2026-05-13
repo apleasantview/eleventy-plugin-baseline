@@ -161,10 +161,11 @@ export default function baseline(settings = {}, options = {}) {
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
-			// We leave elevenytComputed callbacks alone, the rest are reserved-empty.
+			// We leave eleventyComputed callback kEys alone, the rest are reserved-empty.
 			if (
 				key === 'eleventyComputed._pageContext' ||
 				key === 'eleventyComputed._node' ||
+				key === 'eleventyComputed._edges' ||
 				key === 'eleventyComputed._backlinks' ||
 				key === 'eleventyComputed._outgoing'
 			)
