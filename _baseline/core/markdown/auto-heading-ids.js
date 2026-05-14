@@ -56,7 +56,16 @@ export function autoHeadingIds(md, { slugify } = {}) {
 			if (t.type !== 'heading_open') continue;
 			if (t.attrGet('id')) continue;
 
-			const text = (tokens[i + 1]?.content || '').trim();
+			// Read from children rather than .content: markdown-it-attrs
+			// strips the {.class} from children tokens but leaves the parent
+			// inline .content untouched, so slugifying .content would fold
+			// the attribute text into the id.
+			const inline = tokens[i + 1];
+			const text = (inline?.children || [])
+				.filter((c) => c.type === 'text' || c.type === 'code_inline' || c.type === 'image')
+				.map((c) => (c.type === 'image' ? c.attrGet('alt') || c.content || '' : c.content))
+				.join('')
+				.trim();
 			if (!text) continue;
 
 			const base = slugify(text);
