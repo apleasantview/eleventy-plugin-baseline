@@ -55,6 +55,24 @@ describe('auto-heading-ids', () => {
 		);
 	});
 
+	it('does not fold an attrs class into the id', () => {
+		const out = md.render('## Hello world {.lead}').trim();
+		expect(out).toContain('id="hello-world"');
+		expect(out).toContain('class="lead"');
+	});
+
+	it('uses inline code content as part of the slug', () => {
+		expect(md.render('## The `foo` API').trim()).toBe(
+			'<h2 id="the-foo-api">The <code>foo</code> API</h2>'
+		);
+	});
+
+	it('uses image alt text as part of the slug', () => {
+		expect(md.render('## ![Implementation diagram](impl.png)').trim()).toContain(
+			'id="implementation-diagram"'
+		);
+	});
+
 	it('leaves empty headings without an id', () => {
 		const out = md.render('##\n').trim();
 		expect(out).not.toContain('id=');
