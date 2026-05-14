@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 
 import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
+import markdownItAttrs from 'markdown-it-attrs';
 
 import { createLogger, printBannerOnce } from './core/logging.js';
 import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
@@ -15,7 +16,8 @@ import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
 import { registerPageContext } from './core/page-context.js';
-import { wikilinks } from './core/wikilinks.js';
+import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
+import { slugify } from './core/utils/slugify.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
 import { imageShortcode } from './core/shortcodes/index.js';
@@ -316,10 +318,20 @@ export default function baseline(settings = {}, options = {}) {
 			return edges.filter((edge) => edge.from === pageUrl);
 		});
 
-		// --- Content helper ---
-		// Wikilinks: [[slug]] / [[slug | lang]] in body markdown.
+		// --- Markdown engine ---
+		// Order matters: attrs first so manual ids are visible to auto-heading-ids'
+		// seed pass; wikilinks last since it parses inline tokens independently.
+		const mdLog = scopedLog('markdown');
 		eleventyConfig.amendLibrary('md', (md) => {
-			md.use(wikilinks, { slugIndex, pageContextRegistry, translationMapStore });
+			safeUse(md, 'curly_attributes', markdownItAttrs, undefined, mdLog);
+			safeUse(md, 'baseline_auto_heading_ids', autoHeadingIds, { slugify }, mdLog);
+			safeUse(
+				md,
+				'baseline_wikilinks',
+				wikilinks,
+				{ slugIndex, pageContextRegistry, translationMapStore },
+				mdLog
+			);
 		});
 
 		// --- Snapshots ---

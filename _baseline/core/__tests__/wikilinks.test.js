@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import markdownit from 'markdown-it';
-import { wikilinks } from '../wikilinks.js';
+import { wikilinks } from '../markdown/wikilinks.js';
 
 function makeDeps({ slugs = {}, contexts = {}, translations = null } = {}) {
 	return {

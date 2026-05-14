@@ -1,4 +1,4 @@
-import { slugify } from './utils/slugify.js';
+import { slugify } from '../utils/slugify.js';
 
 /**
  * Wikilinks (runtime substrate)
@@ -148,5 +148,5 @@ export function wikilinks(md, { slugIndex, pageContextRegistry, translationMapSt
 		return true;
 	}
 
-	md.inline.ruler.before('link', 'wikilink', tokenize);
+	md.inline.ruler.before('link', 'baseline_wikilinks', tokenize);
 }
