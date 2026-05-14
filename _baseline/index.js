@@ -24,7 +24,9 @@ const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
 
 const mode = process.env.ELEVENTY_ENV;
+// eslint-disable-next-line no-unused-vars
 const isDev = mode === 'development';
+// eslint-disable-next-line no-unused-vars
 const isProd = mode === 'production';
 
 // Whitelist of reserved global data keys used internally across the plugin.
@@ -147,7 +149,9 @@ export default function baseline(settings = {}, options = {}) {
 				if (!candidate) continue;
 				try {
 					knownOrigins.add(new URL(candidate).origin);
-				} catch {}
+				} catch {
+					prepassLog('No known origins found');
+				}
 			}
 
 			eleventyConfig.on('eleventy.before', async () => {
