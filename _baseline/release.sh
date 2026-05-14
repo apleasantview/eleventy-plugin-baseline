@@ -32,6 +32,7 @@ main() {
   if [[ "${local_only}" == true ]]; then
     echo "Running in local mode (no auth, no publish, no version bump)..."
     preview
+    confirm "Tarball looks good? Proceed with local package?" || exit 0
     bump_version
     pack
     exit 0
@@ -69,6 +70,7 @@ preview() {
   npm pack --dry-run
   echo ""
   echo "Pack destination: ${packages_dir}"
+  echo "Pack version: v${next}"
 }
 
 confirm() {
