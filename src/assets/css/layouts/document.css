@@ -36,7 +36,7 @@
 			grid-template-columns:
 				[sidebar] minmax(min(0px, 100%), 304px)
 				[content] minmax(min(0px, 100%), 860px)
-				[aside] minmax(min(0px, 100%), 288px);
+				[aside] minmax(min(0px, 100%), 304px);
 		}
 
 		.l-document__sidebar {
