@@ -26,11 +26,17 @@
 		& {
 			grid-template-columns:
 				[sidebar] minmax(min(0px, 100%), 320px)
-				[content] minmax(min(0px, 100%), 860px)
-				[aside] minmax(min(0px, 100%), 393px);
+				[content] minmax(min(0px, 100%), 860px);
 			align-items: baseline;
 			column-gap: var(--space-3xl);
-			justify-content: center;
+			justify-content: start;
+		}
+
+		&:has(.l-document__aside) {
+			grid-template-columns:
+				[sidebar] minmax(min(0px, 100%), 304px)
+				[content] minmax(min(0px, 100%), 860px)
+				[aside] minmax(min(0px, 100%), 288px);
 		}
 
 		.l-document__sidebar {
