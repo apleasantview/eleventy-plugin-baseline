@@ -24,8 +24,8 @@ const __dirname = path.dirname(__filename);
  *   nothing back.
  *
  * Lifecycle:
- *   build-time   → register `_navigator` (graph, backlinks), debug globals,
- *                  filters, and the optional virtual debug page
+ *   build-time   → register `_navigator` ({ nodes, edges, backlinks }),
+ *                  debug globals, filters, and the optional virtual debug page
  *   cascade-time → eleventyComputed `_snapshot` resolves contentMap and
  *                  pageContext on each page
  *
@@ -35,8 +35,8 @@ const __dirname = path.dirname(__filename);
  *   One module owns both vocabularies so feature modules stay narrow.
  *
  * Scope:
- *   Owns the `_navigator` global (`{ graph, backlinks }`, the public read
- *   surface), the debug globals `_runtime` and `_ctx`, computed `_snapshot`,
+ *   Owns the `_navigator` global (`{ nodes, edges, backlinks }`, the public
+ *   read surface), the debug globals `_runtime` and `_ctx`, computed `_snapshot`,
  *   debug filters (`_inspect`, `_json`, `_keys`), and the optional virtual
  *   page at /navigator-core.html.
  *   Does not own the data it surfaces (content graph, page-context registry,

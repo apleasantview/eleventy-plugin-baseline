@@ -6,9 +6,11 @@ import { buildBacklinkIndex } from './backlinks.js';
 /**
  * Content graph (runtime substrate)
  *
- * Turns rendered HTML into the per-page record map and inverse-link
- * index that templates query through the cascade. Shape is fixed at v1:
- * text, excerpt, headings, links, images, plus a backlink lookup.
+ * Turns rendered HTML into the `{ nodes, edges, backlinks }` graph that
+ * templates query through the cascade. Node shape carries identity
+ * (from page-context) merged with extracted fields (excerpt, headings,
+ * images). Edges are flat anchor records. Backlinks is the target-keyed
+ * inverse index, pre-enriched with the source page's title and excerpt.
  *
  * Architecture layer:
  *   runtime substrate
@@ -39,7 +41,7 @@ import { buildBacklinkIndex } from './backlinks.js';
 /**
  * @param {Array<{ url: string, content?: string, data?: object }>} pages
  * @param {{ knownOrigins?: Set<string> }} [options] - Origins to strip from internal hrefs (HtmlBasePlugin rewrites them at render time).
- * @returns {{ pages: Record<string, { slug?: string, title?: string, text?: string, excerpt?: string, headings: Array, links: Array, images: Array }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
+ * @returns {{ nodes: Record<string, object>, edges: Array<{ internal: boolean, from: string, to: string, type: string, text: string }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
  */
 export function buildGraph(pages, options = {}) {
 	const nodes = {};
@@ -98,7 +100,7 @@ export function buildGraph(pages, options = {}) {
  * over a getter so the underlying graph reference can be swapped (e.g.
  * on serve-mode rebuilds) without re-registering global data.
  *
- * @param {() => ({ nodes: Record<string, object>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> } | null)} getGraph
+ * @param {() => ({ nodes: Record<string, object>, edges: Array<object>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> } | null)} getGraph
  */
 export function createAccessors(getGraph) {
 	return {
