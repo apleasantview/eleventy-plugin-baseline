@@ -59,14 +59,36 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		};
 	}
 
+	/**
+	 * Build the `entry` branch — the author's view of the page.
+	 *
+	 * Holds the content's self-description (title, description, excerpt), its
+	 * identity (slug), structural classification (section as a hierarchical
+	 * path array, type as a free-form classifier), and per-page head extras.
+	 * Values pass through raw; consumers normalise.
+	 */
 	function buildEntry(data) {
 		const rawSlug = data?.slug ?? data?.page?.fileSlug;
+
+		// Coerce a string section to a single-element array, with a dev warning.
+		// Strict contract is "section is always an array"; runtime stays forgiving.
+		let section = data?.section;
+		if (typeof section === 'string') {
+			if (process.env.NODE_ENV !== 'production') {
+				console.warn(
+					`[baseline] entry.section should be an array; got string "${section}" at ${data?.page?.url ?? data?.page?.inputPath}. Use ['${section}'] instead.`
+				);
+			}
+			section = [section];
+		}
 
 		return {
 			title: data?.seo?.title ?? data?.title,
 			description: data?.seo?.description ?? data?.description,
 			excerpt: data?.excerpt,
 			slug: slugify(rawSlug),
+			section,
+			type: data?.type,
 			head: data?.head
 		};
 	}
