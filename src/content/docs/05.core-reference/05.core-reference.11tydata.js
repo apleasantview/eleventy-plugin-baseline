@@ -1,4 +1,4 @@
 export default {
-	topicSlug: 'core-reference',
-	topicTitle: 'Core reference'
+	section: ['docs', 'core-reference'],
+	sectionLabel: 'Core reference'
 };

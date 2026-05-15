@@ -9,13 +9,15 @@
 	{%- if not variant %}
 	<hr />
 	{%- endif %}
-	{%- set topics = collections.docs | groupby("data.topicTitle") %}
+	{%- set topics = collections.docs | groupby("data.sectionLabel") %}
+	{%- set currentPath = _ctx().section | default([]) | join("/") %}
 	{%- for topic, items in topics %}
-		{% set topicSlug = items[0].data.topicSlug %}
-		{%- set topicHref = "/docs/" ~ topicSlug ~ "/" %}
+		{%- set topicSection = items[0].data.section | default([]) %}
+		{%- set topicPath = topicSection | join("/") %}
+		{%- set topicHref = "/" ~ topicPath ~ "/" %}
 		{%- if loop.index0 >= 1 %}
 
-			<div class="c-docs-toc__item {{ "active" if topicSlug === _ctx().topicSlug }}">
+			<div class="c-docs-toc__item {{ "active" if topicPath === currentPath }}">
 				<div class="c-docs-toc__row">
 					<p>
 						<strong

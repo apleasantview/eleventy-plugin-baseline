@@ -1,4 +1,4 @@
 export default {
-	topicSlug: 'feature-guide',
-	topicTitle: 'Feature guides'
+	section: ['docs', 'feature-guide'],
+	sectionLabel: 'Feature guides'
 };

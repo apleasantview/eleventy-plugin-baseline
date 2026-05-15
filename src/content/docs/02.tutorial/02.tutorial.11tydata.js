@@ -1,4 +1,4 @@
 export default {
-	topicSlug: 'tutorial',
-	topicTitle: 'Tutorials'
+	section: ['docs', 'tutorial'],
+	sectionLabel: 'Tutorials'
 };
