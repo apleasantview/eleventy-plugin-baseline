@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isStringFilter } from '../filters/isString.js';
+import { isStringFilter } from '../surface/filters/isString.js';
 
 describe('isStringFilter', () => {
 	it('returns true for a plain string', () => {

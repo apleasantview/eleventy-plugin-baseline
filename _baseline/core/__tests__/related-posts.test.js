@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { relatedPostsFilter } from '../filters/related-posts.js';
+import { relatedPostsFilter } from '../surface/filters/related-posts.js';
 
 // Nunjucks invokes filters with `this` bound to the template runtime,
 // which exposes `this.ctx.page`. We simulate that with .call(thisArg).

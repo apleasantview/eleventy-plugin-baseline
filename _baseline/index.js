@@ -10,7 +10,6 @@ import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.
 import { settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
 import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
-import { registerGlobals } from './core/global-functions/index.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
@@ -19,8 +18,13 @@ import { registerPageContext } from './core/page-context/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugify } from './core/utils/slugify.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
-import { markdownFilter, relatedPostsFilter, isStringFilter } from './core/filters/index.js';
-import { imageShortcode } from './core/shortcodes/index.js';
+import {
+	registerGlobals,
+	markdownFilter,
+	relatedPostsFilter,
+	isStringFilter,
+	imageShortcode
+} from './core/surface/index.js';
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
