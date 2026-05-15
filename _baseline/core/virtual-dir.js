@@ -1,5 +1,5 @@
-import { TemplatePath } from '@11ty/eleventy-utils';
-import { resolveSubdir } from './utils/helpers.js';
+import { ensureDotSlashDir } from './utils/ensure-dot-slash-dir.js';
+import { resolveSubdir } from './utils/resolve-subdir.js';
 import { createLogger } from './logging.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 
@@ -102,8 +102,8 @@ export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
 }
 
 function syncCache(cache, dirs, rawDir, rawOutputDir) {
-	const inputDir = TemplatePath.addLeadingDotSlash(dirs.input || './');
-	const outputDir = TemplatePath.addLeadingDotSlash(dirs.output || './');
+	const inputDir = ensureDotSlashDir(dirs.input);
+	const outputDir = ensureDotSlashDir(dirs.output);
 
 	// resolveSubdir symmetrically resolves against input and output; call twice
 	// so input and output subdirs can differ (e.g. `public` copies to root).

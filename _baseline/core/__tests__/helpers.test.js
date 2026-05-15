@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { addTrailingSlash, resolveSubdir } from '../utils/helpers.js';
+import { addTrailingSlash } from '../utils/add-trailing-slash.js';
+import { resolveSubdir } from '../utils/resolve-subdir.js';
 import { slugify } from '../utils/slugify.js';
 
 describe('addTrailingSlash', () => {

@@ -1,6 +1,6 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
-import { normalizeLanguages } from '../../core/utils/helpers.js';
+import { normalizeLanguages } from '../../core/utils/normalize-languages.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
