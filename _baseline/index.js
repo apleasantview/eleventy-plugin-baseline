@@ -28,6 +28,8 @@ import {
 
 const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
+const eleventyVersion = process.env.ELEVENTY_VERSION;
+// const absoluteRoot = process.env.ELEVENTY_ROOT; -> Safekeeping.
 
 const mode = process.env.ELEVENTY_ENV;
 // eslint-disable-next-line no-unused-vars
@@ -56,7 +58,7 @@ const INTERNAL_KEYS = [
 // Base logger outputs regardless of options.
 const baseLog = createLogger(null, { verbose: true });
 
-printBannerOnce(baseLog, version);
+printBannerOnce(baseLog, { version, eleventyVersion });
 
 let contentGraph = null;
 
@@ -106,19 +108,20 @@ export default function baseline(settings = {}, options = {}) {
 		const normalized = normalizeLegacyShape(settings);
 		settings = normalized.settings;
 		options = normalized.options;
-		baseLog.info('DEPRECATED: single-object plugin arg. Use baseline(settings, options) instead.');
+		baseLog.info('Single-object plugin arg is deprecated. Use baseline(settings, options).');
 	}
 
 	// Validate configuration shape (non-fatal).
 	const parsed = settingsSchema.safeParse(settings);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			baseLog.info('settings:', `${issue.path.join('.')} — ${issue.message}`);
+			baseLog.info('settings:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
+	baseLog.info('Settings + options resolved');
 
 	// Scoped logging.
 	function scopedLog(name) {
@@ -136,7 +139,7 @@ export default function baseline(settings = {}, options = {}) {
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
-			baseLog.error('Eleventy version mismatch:', e.message);
+			baseLog.error('Eleventy version mismatch.', e.message);
 		}
 
 		// --- Pre-pass wiring ---
@@ -146,7 +149,7 @@ export default function baseline(settings = {}, options = {}) {
 		// against a graph rebuilt from current source. The sentinel keeps
 		// the inner Eleventy from re-attaching the hook on re-entry.
 		if (process.env[PREPASS_SENTINEL] !== '1') {
-			const prepassLog = scopedLog('content-graph');
+			const prepassLog = scopedLog('pre-pass');
 
 			// Origins HtmlBasePlugin may have rewritten internal hrefs to.
 			// Stripped during link extraction so backlinks key on path-only.
@@ -156,7 +159,7 @@ export default function baseline(settings = {}, options = {}) {
 				try {
 					knownOrigins.add(new URL(candidate).origin);
 				} catch {
-					prepassLog('No known origins found');
+					prepassLog.info('No known origins, using localhost only');
 				}
 			}
 
@@ -164,7 +167,7 @@ export default function baseline(settings = {}, options = {}) {
 				contentGraph = await runPrepass(
 					eleventyConfig.directories?.input,
 					eleventyConfig.directories?.output,
-					prepassLog,
+					scopedLog,
 					{ quietMode: true, knownOrigins }
 				);
 			});
@@ -198,7 +201,7 @@ export default function baseline(settings = {}, options = {}) {
 		});
 
 		if (!settings.url) {
-			baseLog.warn('settings.url missing — canonical URLs will be relative');
+			baseLog.warn('settings.url missing, canonical URLs will be relative');
 		}
 
 		registerGlobals(eleventyConfig);
@@ -329,13 +332,7 @@ export default function baseline(settings = {}, options = {}) {
 		eleventyConfig.amendLibrary('md', (md) => {
 			safeUse(md, 'curly_attributes', markdownItAttrs, undefined, mdLog);
 			safeUse(md, 'baseline_auto_heading_ids', autoHeadingIds, { slugify }, mdLog);
-			safeUse(
-				md,
-				'baseline_wikilinks',
-				wikilinks,
-				{ slugIndex, pageContextRegistry, translationMapStore },
-				mdLog
-			);
+			safeUse(md, 'baseline_wikilinks', wikilinks, { slugIndex, pageContextRegistry, translationMapStore }, mdLog);
 		});
 
 		// --- Snapshots ---
@@ -353,6 +350,7 @@ export default function baseline(settings = {}, options = {}) {
 			{ when: state.features.assets, name: 'assets', plugin: assetsCore }
 		];
 
+		const active = [];
 		for (const entry of moduleRegistry) {
 			const { when = true, name, plugin, consumes = {} } = entry;
 			if (!when) continue;
@@ -363,7 +361,9 @@ export default function baseline(settings = {}, options = {}) {
 			};
 
 			eleventyConfig.addPlugin(plugin, moduleContext);
+			active.push(name);
 		}
+		baseLog.info(`Modules active: ${active.join(', ')}`);
 
 		// --- Filters ---
 		eleventyConfig.addFilter('markdownify', markdownFilter);

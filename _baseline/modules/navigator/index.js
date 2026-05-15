@@ -65,7 +65,7 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 	const parsed = optionsSchema.safeParse(options.navigator);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
+			log.info('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
@@ -138,7 +138,7 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 			inspectorDepth
 		});
 
-		log.info('Navigator template registered at /navigator-core.html');
+		log.info('Navigator mounted at /navigator-core.html');
 	}
 
 	/**

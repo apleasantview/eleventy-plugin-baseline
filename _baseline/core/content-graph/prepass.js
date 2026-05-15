@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 import Eleventy from '@11ty/eleventy';
+import chalk from 'kleur';
 
 import { buildGraph } from './graph.js';
 
@@ -66,15 +67,18 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  *
  * @param {string} input
  * @param {string} output
- * @param {object} log
+ * @param {(namespace: string) => { info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
  * @param {object} [options]
  * @param {Set<string>} [options.knownOrigins] - Origins to strip from internal hrefs during extraction.
  * @returns {Promise<object>}
  */
-export async function runPrepass(input, output, log, options = {}) {
-	log.info('Pre-pass run active');
-	log.info('Somewhere, a bowl of petunias is thinking: oh no, not again.', { color: 'cyan' });
-	log.info('Writing content graph to cache');
+export async function runPrepass(input, output, scopedLog, options = {}) {
+	const log = scopedLog('pre-pass');
+	const graphLog = scopedLog('content-graph');
+
+	log.info('Pre-pass starting');
+	log.info(chalk.cyan('Somewhere, a bowl of petunias is thinking: oh no, not again.'));
+	graphLog.info('Caching content graph');
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
@@ -94,13 +98,13 @@ export async function runPrepass(input, output, log, options = {}) {
 			}
 		});
 		const pages = await elev.toJSON();
-		graph = buildGraph(pages, { knownOrigins });
+		graph = buildGraph(pages, { knownOrigins, log: graphLog });
 
 		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
 	} finally {
 		process.env[PREPASS_ACTIVE] = '0';
-		log.info('Pre-pass run finished');
+		log.info('Pre-pass done');
 	}
 
 	return graph;

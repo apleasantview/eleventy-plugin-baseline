@@ -63,9 +63,11 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 
 	if (!isMultilingual) {
-		log.info('inactive: requires options.multilang + settings.defaultLanguage + languages');
+		log.info('Multilang inactive, needs options.multilang, settings.defaultLanguage, and languages');
 		return;
 	}
+
+	log.info(`Multilang active, ${Object.keys(languages).join('/')} (default: ${defaultLanguage})`);
 
 	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {

@@ -76,7 +76,7 @@ export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
 	// shared listener below refreshes when Eleventy emits its final directories.
 	const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, key);
 	if (existing && existing.configurable === false) {
-		log.info(`directories[${key}] already defined; skipping`);
+		log.info(`directories.${key} already defined, skipping`);
 	} else {
 		Object.defineProperty(eleventyConfig.directories, key, {
 			get() {

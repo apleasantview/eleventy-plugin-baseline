@@ -79,7 +79,7 @@ export default async function assetsPostCSS(cssFilePath) {
 		// Return raw CSS; markup wrapping is handled in the plugin registration.
 		return result.css;
 	} catch (error) {
-		log.error('PostCSS failed:', error);
+		log.error('PostCSS failed.', error);
 		// Surface a safe CSS string so the caller can decide how to wrap it.
 		return '/* Error processing CSS */';
 	}

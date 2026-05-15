@@ -40,10 +40,11 @@ import { buildBacklinkIndex } from './backlinks.js';
 
 /**
  * @param {Array<{ url: string, content?: string, data?: object }>} pages
- * @param {{ knownOrigins?: Set<string> }} [options] - Origins to strip from internal hrefs (HtmlBasePlugin rewrites them at render time).
+ * @param {{ knownOrigins?: Set<string>, log?: { warn: (...args: unknown[]) => void } }} [options] - Origins to strip from internal hrefs (HtmlBasePlugin rewrites them at render time). `log` routes dev-mode extraction warnings through the scoped logger.
  * @returns {{ nodes: Record<string, object>, edges: Array<{ internal: boolean, from: string, to: string, type: string, text: string }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
  */
 export function buildGraph(pages, options = {}) {
+	const { log } = options;
 	const nodes = {};
 	const edges = [];
 	const sourceMeta = {};
@@ -84,7 +85,7 @@ export function buildGraph(pages, options = {}) {
 			sourceMeta[url] = { title: nodeIdentity.title };
 		} catch (err) {
 			if (process.env.NODE_ENV !== 'production') {
-				console.warn(`Graph extraction failed for ${page.url}`, err);
+				log?.warn(`Graph extraction failed for ${page.url}`, err);
 			}
 			continue;
 		}

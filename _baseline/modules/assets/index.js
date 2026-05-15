@@ -49,7 +49,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	const parsed = optionsSchema.safeParse(options.assets);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
+			log.info('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
@@ -63,12 +63,14 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	const watchGlob = TemplatePath.join(assetsDirectory, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 
 	if (!assetsDirectory) {
-		log.warn('eleventyConfig.directories.assets is unset; registerVirtualDir must run before this plugin.');
+		log.warn('directories.assets is unset, registerVirtualDir must run before this plugin');
 		return;
 	}
 
 	// Watch common asset formats so edits trigger reloads during --serve.
 	eleventyConfig.addWatchTarget(watchGlob);
+
+	log.info('Assets pipeline registered');
 
 	// --- JS (esbuild) ---
 	// Register js as a template format. Only index.js files under assets/js/

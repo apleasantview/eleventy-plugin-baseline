@@ -106,7 +106,7 @@ export async function imageShortcode(options = {}) {
 		});
 	} catch (error) {
 		if (process.env.ELEVENTY_RUN_MODE === 'serve') {
-			log.warn(`transformOnRequest failed for ${src}, retrying.\n > ${error?.message || error}`);
+			log.warn(`transformOnRequest failed for ${src}, retrying. ${error?.message || error}`);
 			metadata = await Image(resolvedSrc, imageOptions);
 		} else {
 			throw error;

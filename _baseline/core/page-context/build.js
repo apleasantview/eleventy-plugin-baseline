@@ -25,11 +25,12 @@ import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
  *   slugIndex: { set: (slug: string, url: string, inputPath: string) => void } | null,
  *   settings: import('../types.js').BaselineSettings,
  *   runtime: { contentMap: any },
- *   options: import('../types.js').BaselineOptions
+ *   options: import('../types.js').BaselineOptions,
+ *   log?: { warn: (...args: unknown[]) => void }
  * }} deps
  * @returns {(data: any) => object}
  */
-export function createPageContext({ scope, slugIndex, settings, runtime, options }) {
+export function createPageContext({ scope, slugIndex, settings, runtime, options, log }) {
 	const separator = options.head?.titleSeparator ?? ' – ';
 
 	function buildSite(lang, userSettings) {
@@ -75,8 +76,8 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		let section = data?.section;
 		if (typeof section === 'string') {
 			if (process.env.NODE_ENV !== 'production') {
-				console.warn(
-					`[baseline] entry.section should be an array; got string "${section}" at ${data?.page?.url ?? data?.page?.inputPath}. Use ['${section}'] instead.`
+				log?.warn(
+					`entry.section should be an array, got string "${section}" at ${data?.page?.url ?? data?.page?.inputPath}. Use ['${section}'] instead.`
 				);
 			}
 			section = [section];

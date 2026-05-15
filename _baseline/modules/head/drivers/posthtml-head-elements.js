@@ -41,10 +41,9 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  * @param {Object} args.options - Head options (titleSeparator, showGenerator).
  * @param {string} args.placeholderTag - Placeholder element to replace.
  * @param {string} args.eol - End-of-line separator interleaved between nodes.
- * @param {Object} args.log - Scoped logger.
  * @returns {(tree: Object) => Object} PostHTML plugin function.
  */
-export function renderHead({ seeds, alternates, options, placeholderTag, eol, log }) {
+export function renderHead({ seeds, alternates, options, placeholderTag, eol }) {
 	const defaults = emitMeta(seeds.meta, seeds.render, options);
 	const extras = emitExtras(seeds.head, alternates);
 
@@ -52,7 +51,6 @@ export function renderHead({ seeds, alternates, options, placeholderTag, eol, lo
 	const sorted = capoSort(deduped);
 
 	return function rendererPlugin(tree) {
-		// log.info('injecting head for', seeds.page.inputPath || seeds.page.url);
 		tree.match({ tag: placeholderTag }, () => ({
 			tag: 'head',
 			content: interleaveEOL(sorted, eol)

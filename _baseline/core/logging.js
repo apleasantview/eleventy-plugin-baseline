@@ -61,10 +61,7 @@ export function createLogger(namespace, { verbose = false } = {}) {
 		info: (...args) => {
 			if (!verbose) return;
 			if (isPrepass()) return;
-			const last = args.at(-1);
-			const opts = last && typeof last === 'object' && 'color' in last ? args.pop() : null;
-			const paint = opts?.color && typeof chalk[opts.color] === 'function' ? chalk[opts.color] : null;
-			console.log(chalk.gray(label), ...(paint ? args.map((a) => (typeof a === 'string' ? paint(a) : a)) : args));
+			console.log(chalk.gray(label), ...args);
 		},
 		warn: (...args) => {
 			console.warn(chalk.yellow().bold(label), ...args);
@@ -81,36 +78,37 @@ export function createLogger(namespace, { verbose = false } = {}) {
 const BANNER_GLOBAL_KEY = Symbol.for('eleventy:baseline:banner');
 
 /**
- * Render the boxed startup banner string. Pure — no I/O.
+ * Render the boxed startup banner string. Pure, label-only.
  *
- * @param {string} version
  * @returns {string}
  */
-export function baselineBanner(version) {
-	const label = `Eleventy Baseline`;
-	const versionLabel = `v${version}`;
-	const width = 42;
+export function baselineBanner() {
+	const label = 'Eleventy Baseline';
+	const width = 28;
+	const inner = width - 2;
+	const pad = inner - label.length;
+	const left = Math.floor(pad / 2);
+	const right = pad - left;
 
-	const title = chalk.bold().white(label);
-	const versionText = chalk.green(versionLabel);
+	const top = '╔' + '═'.repeat(inner) + '╗';
+	const middle = '║' + ' '.repeat(left) + chalk.bold().white(label) + ' '.repeat(right) + '║';
+	const bottom = '╚' + '═'.repeat(inner) + '╝';
 
-	const content = `${title} ${chalk.gray('•')} ${versionText}`;
-
-	const padded = content.padEnd(width - 6);
-
-	return ['', '╔' + '═'.repeat(width - 2) + '╗', `║  ${padded}    ║`, '╚' + '═'.repeat(width - 2) + '╝', ''].join('\n');
+	return ['', top, middle, bottom, ''].join('\n');
 }
 
 /**
- * Print the banner once per process. Guarded by a global symbol so repeated
- * plugin invocations (inner pre-pass Eleventy, multi-instance setups) don't
- * re-print.
+ * Print the banner and an intro line once per process. Guarded by a global
+ * symbol so repeated plugin invocations (inner pre-pass Eleventy,
+ * multi-instance setups) don't re-print.
  *
  * @param {BaselineLogger} log
- * @param {string} version
+ * @param {{ version: string, eleventyVersion?: string }} versions
  */
-export function printBannerOnce(log, version) {
+export function printBannerOnce(log, { version, eleventyVersion } = {}) {
 	if (globalThis[BANNER_GLOBAL_KEY]) return;
 	globalThis[BANNER_GLOBAL_KEY] = true;
-	log.print(baselineBanner(version));
+	log.print(baselineBanner());
+	const tail = eleventyVersion ? `, running Eleventy v${eleventyVersion}` : '';
+	log.info(`Baseline v${version}${tail}`);
 }

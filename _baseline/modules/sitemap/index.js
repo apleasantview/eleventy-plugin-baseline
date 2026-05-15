@@ -108,6 +108,8 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			languages: languages,
 			_internal: true
 		});
+
+		log.info('Sitemaps written per-language');
 	} else {
 		eleventyConfig.addTemplate('_baseline/sitemap-core.html', baseContent, {
 			permalink: '/sitemap.xml',
@@ -117,5 +119,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			eleventyExcludeFromCollections: true,
 			_internal: true
 		});
+
+		log.info('Sitemap written');
 	}
 }

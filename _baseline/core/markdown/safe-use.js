@@ -25,7 +25,7 @@
  * @param {string} ruleName - canonical rule name the plugin registers
  * @param {(md: any, options?: any) => void} plugin
  * @param {any} [options]
- * @param {{ debug?: (msg: string) => void }} [log]
+ * @param {{ info?: (msg: string) => void }} [log]
  */
 export function safeUse(md, ruleName, plugin, options, log) {
 	const rulers = [md.core?.ruler, md.block?.ruler, md.inline?.ruler];
@@ -34,7 +34,7 @@ export function safeUse(md, ruleName, plugin, options, log) {
 	);
 
 	if (installed) {
-		log?.debug?.(`markdown-it rule "${ruleName}" already registered, skipping`);
+		log?.info?.(`markdown-it rule "${ruleName}" already registered, skipping`);
 		return;
 	}
 

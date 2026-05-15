@@ -61,7 +61,7 @@ export default async function assetsESbuild(jsFilePath, options = {}) {
 		// Return raw JS; markup wrapping is handled by the plugin registration.
 		return result.outputFiles[0].text;
 	} catch (error) {
-		log.error('esbuild failed:', error);
+		log.error('esbuild failed.', error);
 		// Surface a safe JS comment so the caller can decide how to wrap it.
 		return '/* Error processing JS */';
 	}

@@ -52,7 +52,7 @@ export function headCore(eleventyConfig, moduleContext) {
 	const parsed = optionsSchema.safeParse(options.head);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			log.info('options:', `${issue.path.join('.')} — ${issue.message}`);
+			log.info('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
@@ -68,23 +68,19 @@ export function headCore(eleventyConfig, moduleContext) {
 	const headStats = { pages: new Set() };
 
 	eleventyConfig.on('eleventy.after', () => {
-		log.info({
-			message: 'Head injection summary',
-			totalPages: headStats.pages.size,
-			sample: Array.from(headStats.pages).slice(0, 10)
-		});
+		log.info(`Heads injected for ${headStats.pages.size} pages`);
 		headStats.pages.clear();
 	});
 
 	// --- Transform-time: compose and inject. ---
-	log.info('Injecting heads to pages');
+	log.info('Injecting heads');
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
 		headStats.pages.add(context?.page?.inputPath || context?.outputPath);
 
 		const key = context?.page?.url ?? context?.page?.inputPath;
 		const seeds = pageContextRegistry?.getByKey(key);
 		if (!seeds) {
-			log.warn('no head seeds for', context?.page?.inputPath || context?.outputPath);
+			log.warn('No head seeds for', context?.page?.inputPath || context?.outputPath);
 			return (tree) => tree;
 		}
 
@@ -99,8 +95,7 @@ export function headCore(eleventyConfig, moduleContext) {
 			alternates,
 			options: headOptions,
 			placeholderTag: PLACEHOLDER_TAG,
-			eol: EOL,
-			log
+			eol: EOL
 		});
 	});
 }

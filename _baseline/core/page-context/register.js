@@ -48,7 +48,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	const log = createLogger(LOG_NAME, { verbose: options.verbose });
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
-	const buildPageContext = createPageContext({ scope, slugIndex, settings, runtime, options });
+	const buildPageContext = createPageContext({ scope, slugIndex, settings, runtime, options, log });
 
 	function shouldSkip(data) {
 		if (data._internal) return true;
@@ -63,7 +63,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	});
 
-	log.info('Page context added to the data cascade and registry exposed');
+	log.info('Page context registered');
 
 	return {
 		get: (data) => scope.cache.get(data),
