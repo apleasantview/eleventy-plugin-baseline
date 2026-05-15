@@ -15,7 +15,7 @@ import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
-import { registerPageContext } from './core/page-context.js';
+import { registerPageContext } from './core/page-context/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugify } from './core/utils/slugify.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';

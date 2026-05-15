@@ -1,117 +1,37 @@
-import pick from './utils/pick.js';
-import { slugify } from './utils/slugify.js';
-import { createLogger } from './logging.js';
-import { getScope, memoize, setEntry } from './registry.js';
-
-const SCOPE_NAME = 'core:page-context';
-const LOG_NAME = 'page-context';
-const COMPUTED_KEY = 'eleventyComputed._pageContext';
+import { setEntry } from '../registry.js';
+import { slugify } from '../utils/slugify.js';
+import { uniqueBy } from '../utils/unique-by.js';
+import { resolveField } from '../utils/resolve-field.js';
+import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
 
 /**
- * Page context (runtime substrate)
+ * Page context — builder factory
  *
- * A normalised per-page object built once at cascade-time and cached for
- * transform-time consumers. The shape downstream modules read instead of
- * re-deriving from raw cascade data.
+ * Returns a `buildPageContext` function bound to the runtime dependencies
+ * it needs (scope, slug index, resolved settings, runtime substrate handles,
+ * options). Each top-level key in the page context (`site`, `page`, `entry`,
+ * `query`, `meta`, `render`, `head`) has its own builder inside the closure.
  *
  * Architecture layer:
- *   runtime substrate
+ *   runtime substrate (page-context internal)
  *
  * System role:
- *   Lifecycle bridge between Eleventy's data cascade and the htmlTransformer.
- *   Head reads it via `getByKey`; navigator snapshots it for inspection.
+ *   Pure transformation of Eleventy data → normalised page context. The
+ *   factory keeps cross-builder dependencies (separator, site.url, contentMap)
+ *   in one place without threading them through every builder signature.
  *
- * Lifecycle:
- *   cascade-time   → eleventyComputed._pageContext builds and caches the context
- *   transform-time → consumers retrieve the cached context by page.url
- *
- * Why this exists:
- *   Eleventy's htmlTransformer context exposes only page metadata, not the
- *   data cascade. The cache lets transform-time consumers read the same
- *   normalised view that cascade-time produced.
- *
- * Scope:
- *   Owns the page-context shape, memoisation, key-based lookup, and snapshot.
- *   Does not own the meaning of any field; modules consume them as they see fit.
- *   Templates with `_internal: true` are skipped (synthetic sitemap pages, etc.).
- *
- * Data flow:
- *   data cascade → buildPageContext → registry scope → head, navigator
- *
- * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
- * @param {Object} coreContext - Resolved baseline core context (state, runtime, helpers).
+ * @param {{
+ *   scope: { values: Map },
+ *   slugIndex: { set: (slug: string, url: string, inputPath: string) => void } | null,
+ *   settings: import('../types.js').BaselineSettings,
+ *   runtime: { contentMap: any },
+ *   options: import('../types.js').BaselineOptions
+ * }} deps
+ * @returns {(data: any) => object}
  */
-export function registerPageContext(eleventyConfig, coreContext) {
-	const { state, runtime, site } = coreContext;
-	const { slugIndex } = runtime;
-	const { settings, options } = state;
-
-	const log = createLogger(LOG_NAME, { verbose: options.verbose });
-	const scope = getScope(eleventyConfig, SCOPE_NAME);
-
-	// Head options.
+export function createPageContext({ scope, slugIndex, settings, runtime, options }) {
 	const separator = options.head?.titleSeparator ?? ' – ';
-	const generator = options.head?.showGenerator ?? false;
 
-	function shouldSkip(data) {
-		if (data._internal) return true;
-		if (data.page?.outputFileExtension !== 'html') return true;
-		return false;
-	}
-
-	// --- Helpers ---
-	const uniqueBy = (arr, keyFn) =>
-		Object.values(
-			(arr ?? []).reduce((acc, item) => {
-				if (!item) return acc;
-
-				const id = typeof keyFn === 'function' ? keyFn(item) : item?.[keyFn];
-
-				if (!id) {
-					acc[JSON.stringify(item)] = item;
-					return acc;
-				}
-
-				acc[id] = item;
-				return acc;
-			}, {})
-		);
-
-	// --- SEO helpers ---
-	function stripTrackingParams(urlObj) {
-		['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid'].forEach((p) =>
-			urlObj.searchParams.delete(p)
-		);
-
-		urlObj.hash = '';
-		return urlObj;
-	}
-
-	function extractFirstParagraph(data) {
-		const html = data?.content;
-		if (!html) return;
-		const match = html.match(/<p>(.*?)<\/p>/i);
-		return match?.[1];
-	}
-
-	function normalizeCanonical(path, siteUrl) {
-		if (!path || !siteUrl) return;
-
-		const url = new URL(path, siteUrl);
-
-		url.hash = '';
-
-		return stripTrackingParams(url).href;
-	}
-
-	// --- Field resolver ---
-	function resolveField({ pageValue, siteValue, fallbackValue, isHome }) {
-		let value = pageValue ?? siteValue ?? fallbackValue;
-
-		return value;
-	}
-
-	// --- Builders ---
 	function buildSite(lang, userSettings) {
 		const langEntry = lang ? userSettings.languages?.[lang] : undefined;
 		return {
@@ -151,7 +71,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	}
 
-	function buildQuery({ entry, page }) {
+	function buildQuery({ page }) {
 		return {
 			isHome: page.url === '/'
 		};
@@ -225,15 +145,15 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		};
 	}
 
-	// HEAD (global + page-level merge + dedupe)
-	function buildHead({ userSettings, data }) {
+	// --- HEAD (global + page-level merge + dedupe) ---
+	function buildHead({ userSettings, data, siteUrl }) {
 		const userHead = userSettings.head ?? {};
 		const pageHead = data?.head ?? {};
 
 		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], (item) => {
 			if (item?.rel === 'canonical') {
 				try {
-					return normalizeCanonical(item.href, site.url);
+					return normalizeCanonical(item.href, siteUrl);
 				} catch {
 					return item?.href;
 				}
@@ -259,7 +179,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	 * Main context builder.
 	 * Pure transformation: Eleventy data → normalised page context.
 	 */
-	function buildPageContext(data) {
+	return function buildPageContext(data) {
 		const pageInput = data.page ?? {};
 		const userSettings = data.settings ?? settings;
 
@@ -269,7 +189,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		const query = buildQuery({ entry, page });
 		const meta = buildMeta({ data, site, page, query });
 		const render = buildRender(data);
-		const head = buildHead({ userSettings, data });
+		const head = buildHead({ userSettings, data, siteUrl: site.url });
 
 		const context = {
 			site,
@@ -292,20 +212,5 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		}
 
 		return context;
-	}
-
-	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
-		return (data) => {
-			if (shouldSkip(data)) return null;
-			return memoize(scope, data, buildPageContext);
-		};
-	});
-
-	log.info('Page context added to the data cascade and registry exposed');
-
-	return {
-		get: (data) => scope.cache.get(data),
-		getByKey: (key) => scope.values.get(key),
-		snapshot: () => Object.fromEntries(scope.values)
 	};
 }
