@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import Eleventy from '@11ty/eleventy';
 import chalk from 'kleur';
 
+import { pickRepetitionQuip } from '../logging/index.js';
 import { buildGraph } from './graph.js';
 
 /**
@@ -77,7 +78,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	const graphLog = scopedLog('content-graph');
 
 	log.info('Pre-pass starting');
-	log.info(chalk.cyan('Somewhere, a bowl of petunias is thinking: oh no, not again.'));
+	log.info(chalk.cyan(pickRepetitionQuip()));
 	graphLog.info('Caching content graph');
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';

@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import postcss from 'postcss';
 import loadPostCSSConfig from 'postcss-load-config';
 import fallbackPostCSSConfig from '../configs/postcss.config.js';
-import { createLogger } from '../../../core/logging.js';
+import { createLogger } from '../../../core/logging/index.js';
 
 /**
  * PostCSS processor (processor)

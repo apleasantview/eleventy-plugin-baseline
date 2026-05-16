@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createLogger } from '../logging.js';
+import { createLogger } from '../logging/index.js';
 
 // kleur auto-disables colour in non-TTY environments (Vitest's default runner),
 // so prefixes are plain strings in these assertions.

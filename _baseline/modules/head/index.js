@@ -68,7 +68,7 @@ export function headCore(eleventyConfig, moduleContext) {
 	const headStats = { pages: new Set() };
 
 	eleventyConfig.on('eleventy.after', () => {
-		log.info(`Heads injected for ${headStats.pages.size} pages`);
+		log.info(`Head injected into ${headStats.pages.size} pages`);
 		headStats.pages.clear();
 	});
 

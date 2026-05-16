@@ -5,7 +5,7 @@ import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
 import markdownItAttrs from 'markdown-it-attrs';
 
-import { createLogger, printBannerOnce } from './core/logging.js';
+import { createLogger, printBannerOnce } from './core/logging/index.js';
 import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
 import { settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
@@ -121,7 +121,7 @@ export default function baseline(settings = {}, options = {}) {
 
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
-	baseLog.info('Settings + options resolved');
+	baseLog.info('Settings and options resolved, modules loaded');
 
 	// Scoped logging.
 	function scopedLog(name) {
@@ -363,7 +363,6 @@ export default function baseline(settings = {}, options = {}) {
 			eleventyConfig.addPlugin(plugin, moduleContext);
 			active.push(name);
 		}
-		baseLog.info(`Modules active: ${active.join(', ')}`);
 
 		// --- Filters ---
 		eleventyConfig.addFilter('markdownify', markdownFilter);

@@ -1,5 +1,8 @@
 import chalk from 'kleur';
 
+export * from './banner.js';
+export * from './quips.js';
+
 /**
  * Logger (runtime substrate)
  *
@@ -36,11 +39,12 @@ import chalk from 'kleur';
  * @property {(...args: unknown[]) => void} info   Verbose-only.
  * @property {(...args: unknown[]) => void} warn   Always visible.
  * @property {(...args: unknown[]) => void} error  Always visible.
+ * @property {(content: string) => void}   print  Unprefixed pass-through (used by the banner).
  */
 
 /**
  * Create a namespaced logger. Prefix is `[baseline]` at plugin root and
- * `[baseline:<namespace>]` inside modules. `info` is gated behind `verbose`;
+ * `[baseline/<namespace>]` inside modules. `info` is gated behind `verbose`;
  * `warn` and `error` always emit.
  *
  * @param {string | null | undefined} namespace
@@ -73,42 +77,4 @@ export function createLogger(namespace, { verbose = false } = {}) {
 			console.log(chalk.gray(content));
 		}
 	};
-}
-
-const BANNER_GLOBAL_KEY = Symbol.for('eleventy:baseline:banner');
-
-/**
- * Render the boxed startup banner string. Pure, label-only.
- *
- * @returns {string}
- */
-export function baselineBanner() {
-	const label = 'Eleventy Baseline';
-	const width = 28;
-	const inner = width - 2;
-	const pad = inner - label.length;
-	const left = Math.floor(pad / 2);
-	const right = pad - left;
-
-	const top = '╔' + '═'.repeat(inner) + '╗';
-	const middle = '║' + ' '.repeat(left) + chalk.bold().white(label) + ' '.repeat(right) + '║';
-	const bottom = '╚' + '═'.repeat(inner) + '╝';
-
-	return ['', top, middle, bottom, ''].join('\n');
-}
-
-/**
- * Print the banner and an intro line once per process. Guarded by a global
- * symbol so repeated plugin invocations (inner pre-pass Eleventy,
- * multi-instance setups) don't re-print.
- *
- * @param {BaselineLogger} log
- * @param {{ version: string, eleventyVersion?: string }} versions
- */
-export function printBannerOnce(log, { version, eleventyVersion } = {}) {
-	if (globalThis[BANNER_GLOBAL_KEY]) return;
-	globalThis[BANNER_GLOBAL_KEY] = true;
-	log.print(baselineBanner());
-	const tail = eleventyVersion ? `, running Eleventy v${eleventyVersion}` : '';
-	log.info(`Baseline v${version}${tail}`);
 }

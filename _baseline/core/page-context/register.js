@@ -1,4 +1,4 @@
-import { createLogger } from '../logging.js';
+import { createLogger } from '../logging/index.js';
 import { getScope, memoize } from '../registry.js';
 import { createPageContext } from './build.js';
 

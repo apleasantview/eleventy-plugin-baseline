@@ -1,5 +1,5 @@
 import * as esbuild from 'esbuild';
-import { createLogger } from '../../../core/logging.js';
+import { createLogger } from '../../../core/logging/index.js';
 
 /**
  * esbuild processor (processor)

@@ -44,7 +44,7 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 	};
 
 	const resolvedOptions = {
-		verbose: options.verbose ?? false,
+		verbose: options.verbose ?? true,
 		multilang: options.multilingual ?? false,
 		sitemap: options.sitemap ?? options.enableSitemapTemplate ?? true,
 		navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev,

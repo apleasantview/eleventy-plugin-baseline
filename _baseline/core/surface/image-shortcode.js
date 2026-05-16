@@ -1,6 +1,6 @@
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
-import { createLogger } from '../logging.js';
+import { createLogger } from '../logging/index.js';
 
 // Module-level logger. Image shortcode only uses `.warn`, which emits regardless
 // of verbose, so we don't thread verbose through the shortcode signature.

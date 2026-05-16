@@ -1,6 +1,6 @@
 import { ensureDotSlashDir } from './utils/ensure-dot-slash-dir.js';
 import { resolveSubdir } from './utils/resolve-subdir.js';
-import { createLogger } from './logging.js';
+import { createLogger } from './logging/index.js';
 import { getScope, addScopeListener, setEntry } from './registry.js';
 
 const SCOPE_NAME = 'core:virtual-dir';

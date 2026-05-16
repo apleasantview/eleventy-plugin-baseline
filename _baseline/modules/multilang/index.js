@@ -67,7 +67,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 		return;
 	}
 
-	log.info(`Multilang active, ${Object.keys(languages).join('/')} (default: ${defaultLanguage})`);
+	log.info(`Multilang active: ${Object.keys(languages).join('/')} (default: ${defaultLanguage})`);
 
 	// Register Eleventy's built-in I18nPlugin for locale-aware URL resolution.
 	eleventyConfig.addPlugin(I18nPlugin, {
