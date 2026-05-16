@@ -4,7 +4,7 @@
  * Returns undefined if input is invalid or empty.
  *
  * @param {Object} settings - Options object containing languages.
- * @param {import('../logging.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
+ * @param {import('../logging/index.js').BaselineLogger} [logger] - Logger for dropped-entry notice.
  * @returns {Record<string, Object>|undefined} Normalized language map, or undefined.
  */
 export function normalizeLanguages(settings, logger) {

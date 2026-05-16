@@ -10,16 +10,8 @@ This is a working plugin, not a finished product. Things might shift, break, or 
 
 ## Install
 
-If you already have Eleventy and eleventy-img installed:
-
 ```bash
-npm install @apleasantview/eleventy-plugin-baseline
-```
-
-For a fresh project (install Eleventy and eleventy-img too):
-
-```bash
-npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-baseline
+npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
 Requires Eleventy 3.x and Node >=20.
@@ -57,7 +49,7 @@ const settings = {
 
 await eleventyConfig.addPlugin(
 	baseline(settings, {
-		verbose: false, // extra logging during builds
+		verbose: true, // build-narrative logging (default: true)
 		sitemap: true, // XML sitemap generation (default: true)
 		navigator: false // debug page for inspecting template data (default: on in development)
 	})
@@ -72,6 +64,8 @@ The plugin registers everything on load. No setup beyond the config above.
 
 - An image shortcode (via eleventy-img) — AVIF and WebP, responsive widths, lazy loading. Alt text is required — the build warns if you skip it.
 - Wikilinks in Markdown — `[[slug]]`, `[[slug:lang]]`, `[[slug#anchor]]`, `[[slug|alias]]`, combinable. Forward links only.
+- Auto heading IDs — every heading gets a stable slugified `id` with WordPress-style dedup; manual `{#id}` always wins.
+- Element attributes in Markdown — `{#id .class key="value"}` syntax attaches attributes to any block element (via `markdown-it-attrs`).
 - Filters: `markdownify`, `relatedPosts`, `isString`
 - A date-formatting global
 - Drafts preprocessor — drafts stay out of production builds automatically

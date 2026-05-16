@@ -2,6 +2,8 @@ import { renderHead } from './drivers/posthtml-head-elements.js';
 import { buildAlternates } from './utils/alternates.js';
 import { optionsSchema } from './schema.js';
 
+import chalk from 'kleur';
+
 // Internal constants — not user-facing.
 const PLACEHOLDER_TAG = 'baseline-head';
 const EOL = '\n';
@@ -68,7 +70,7 @@ export function headCore(eleventyConfig, moduleContext) {
 	const headStats = { pages: new Set() };
 
 	eleventyConfig.on('eleventy.after', () => {
-		log.info(`Head injected into ${headStats.pages.size} pages`);
+		log.info(chalk.green(`Head injected into ${headStats.pages.size} pages`));
 		headStats.pages.clear();
 	});
 

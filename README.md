@@ -27,16 +27,8 @@ The repo serves dual purposes. `_baseline/` is the plugin itself — what gets p
 
 ## Install
 
-If you already have Eleventy and eleventy-img installed:
-
 ```bash
-npm install @apleasantview/eleventy-plugin-baseline
-```
-
-For a fresh project (install Eleventy and eleventy-img too):
-
-```bash
-npm install @11ty/eleventy @11ty/eleventy-img @apleasantview/eleventy-plugin-baseline
+npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
 Requires Eleventy 3.x and Node >=20.
@@ -74,7 +66,7 @@ const settings = {
 
 await eleventyConfig.addPlugin(
 	baseline(settings, {
-		verbose: false, // extra logging during builds
+		verbose: true, // build-narrative logging (default: true)
 		sitemap: true, // XML sitemap generation (default: true)
 		navigator: false // debug page for inspecting template data (default: on in development)
 	})
@@ -120,29 +112,28 @@ project root and under `src/`. Both share the same `package.json` and `node_modu
 /
 ├── _baseline/                    # The plugin package (what gets published to npm)
 │   ├── index.js                  # Plugin entry point (composition root)
-│   ├── core/                     # Internal helpers, filters, globals, shortcodes
-│   │   ├── filters/              # markdownify, relatedPosts, isString
-│   │   ├── global-functions/     # date
-│   │   ├── shortcodes/           # image
-│   │   ├── utils/                # helpers, pick, slugify
-│   │   ├── back-compat/          # Legacy single-object plugin-arg shim
-│   │   ├── content-graph/        # Pre-pass substrate (extractors, graph, prepass)
+│   ├── modules.js                # Barrel re-export of the five module functions
+│   ├── core/                     # Substrate: state, runtime, surface, helpers
+│   │   ├── state.js              # Settings/options → frozen state derivation
+│   │   ├── schema.js             # Zod schemas for settings/config
+│   │   ├── types.js              # Shared JSDoc typedefs
+│   │   ├── registry.js           # Per-config scoped state primitive
+│   │   ├── virtual-dir.js        # Synthesised dir keys (assets, public)
 │   │   ├── content-map-store.js  # Eleventy contentMap accessor
 │   │   ├── translation-map-store.js
 │   │   ├── slug-index.js         # Default-language slug → url map (read by wikilinks)
-│   │   ├── wikilinks.js          # markdown-it plugin: [[slug]] / [[slug:lang]] / etc.
-│   │   ├── page-context.js       # Per-page normalised context registry
-│   │   ├── registry.js           # Per-config scoped state primitive
-│   │   ├── virtual-dir.js        # Synthesised dir keys (assets, public)
-│   │   ├── schema.js             # Zod schemas for settings/config
-│   │   ├── state.js              # Settings/options → frozen state derivation
-│   │   ├── types.js
-│   │   └── logging.js
+│   │   ├── back-compat/          # Legacy single-object plugin-arg shim
+│   │   ├── logging/              # Namespaced logger, banner, pre-pass quips
+│   │   ├── markdown/             # Markdown substrate: auto-heading-ids, wikilinks, attrs, markdownify, safeUse
+│   │   ├── page-context/         # Per-page normalised context registry
+│   │   ├── content-graph/        # Pre-pass substrate (extractors, graph, prepass, backlinks)
+│   │   ├── surface/              # Public-registration surface: filters, image shortcode, date global
+│   │   └── utils/                # Small focused helpers (one per file)
 │   └── modules/                  # Feature modules
 │       ├── assets/               # Asset pipeline (esbuild + PostCSS)
 │       ├── head/                 # <head> injection via PostHTML
 │       ├── multilang/            # Multilingual support, hreflang, i18n filters
-│       ├── navigator/            # Debug tooling and template inspector
+│       ├── navigator/            # Runtime-introspection page and public read surface
 │       └── sitemap/              # Sitemap generation
 │
 ├── src/                          # Documentation website sources
