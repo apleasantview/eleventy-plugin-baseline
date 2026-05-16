@@ -1,5 +1,5 @@
 {
-  "name": "eleventy-plugin-baseline",
+  "name": "eleventy-baseline-docs",
   "version": "1.0.0",
   "description": "An experimental Swiss army knife toolkit for Eleventy",
   "main": "index.js",
@@ -19,7 +19,8 @@
     "build:eleventy": "cross-env ELEVENTY_ENV=production npx @11ty/eleventy",
     "build:eleventy-next": "cross-env ELEVENTY_ENV=production npx @11ty/eleventy --config=eleventy.config.next.js",
     "dryrun": "npx @11ty/eleventy --dryrun",
-    "dryrun-next": "npx @11ty/eleventy --config=eleventy.config.next.js --dryrun",
+    "dryrun:prod": "cross-env ELEVENTY_ENV=production npx @11ty/eleventy --dryrun",
+    "dryrun:next": "npx @11ty/eleventy --config=eleventy.config.next.js --dryrun",
     "debug": "npm-run-all clean debug:*",
     "debug:log": "npm-run-all clean debug:eleventy-logged",
     "debug:eleventy": "cross-env DEBUG=Eleventy* npx @11ty/eleventy --dryrun",
