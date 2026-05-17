@@ -1,7 +1,8 @@
 ---
 title: 'Eleventy Baseline'
 slug: 'homepage'
-description: 'Eleventy Baseline is a plugin for Eleventy that provides a ready-made site foundation with assets, metadata, and a live content graph that keeps rendered output in sync.ate: 2026-05-17
+description: 'Eleventy Baseline is a plugin for Eleventy that provides a ready-made site foundation with assets, metadata, and a live content graph that keeps rendered output in sync.'
+date: 2026-05-17
 permalink: '/'
 translationKey: homepage
 layout: 'layouts/page.njk'
