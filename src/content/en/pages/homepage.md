@@ -70,11 +70,11 @@ npm install @apleasantview/eleventy-plugin-baseline
 npm run dev
 ```
 
-The [[quickstart | quickstart]] walks through the full setup. The [[docs | docs]] cover the modules and the architecture. The [[simple-baseline-site | simple-site tutorial]] builds a small site from zero.
+The [[quickstart | quickstart]] walks through the full setup. The [[docs | docs]] cover the concept, modules and the architecture. The [[simple-baseline-site | simple site tutorial]] builds a small site from zero.
 
 ### Rolling releases
 
-Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. The next stable release will land alongside Eleventy v4. Pin a version when you build something serious on top.
+Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Pin a version when you build something serious on top.
 
 If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
 
