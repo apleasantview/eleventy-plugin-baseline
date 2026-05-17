@@ -1,6 +1,6 @@
 ---
 title: 'Eleventy Baseline'
-slug: 'home'
+slug: 'homepage'
 description: 'Eleventy Baseline is a plugin for Eleventy that provides a ready-made site foundation with assets, metadata, and a live content graph that keeps rendered output in sync.'
 date: 2026-05-17
 permalink: '/'
@@ -14,6 +14,8 @@ And every site hits the same limit. Your front matter is readable from anywhere.
 
 Eleventy Baseline provides both, ready on day one. Already built, with a live reflection of everything you render. Your project still belongs to you.
 
+---
+
 ## In practice
 
 Baseline is a working foundation for Eleventy sites.
@@ -22,6 +24,8 @@ Images render at the right widths in modern formats, lazy by default. Links betw
 
 Your layouts, styles, scripts, and editorial structure stay yours. Keep the defaults where they help, and override where you need to.
 
+---
+
 ## Built on Baseline
 
 The site you are reading runs on Baseline. What you are looking at is the system itself in use, not an illustration of it.
@@ -29,6 +33,8 @@ The site you are reading runs on Baseline. What you are looking at is the system
 Open any docs page and try it: the table of contents is built from the rendered HTML, the "Linked from" footer reads the content graph, the language switcher reads the settings. All wired by the same system you are reading about.
 
 View source. Browse the repo. Run it locally. It's visible.
+
+---
 
 ## The three-layer architecture
 
@@ -48,6 +54,8 @@ The features that read from both: assets, head, multilang, navigator, sitemap. N
 
 Full breakdown in the [[docs | docs]].
 
+---
+
 ## Install and start
 
 Install the packages, register Baseline in your Eleventy config, and run the dev server.
@@ -60,7 +68,7 @@ npm run dev
 
 The [[quickstart | quickstart]] walks through the full setup. The [[docs | docs]] cover the modules and the architecture. The [[simple-baseline-site | simple-site tutorial]] builds a small site from zero.
 
-## Rolling releases
+### Rolling releases
 
 Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. The next stable release will land alongside Eleventy v4. Pin a version when you build something serious on top.
 
