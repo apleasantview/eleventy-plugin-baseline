@@ -1,32 +1,30 @@
 <aside style="font-size: var(--text-size-secondary)">
-	{% set toc = _node.headings %}
-	{% if toc.length %}
-	<nav class="toc" aria-labelledby="toc-title">
-		<details open>
-			<summary id="toc-title">On this page</summary>
-			<ol class="toc-list" style="list-style: none; padding-inline: 0.75rem;">
-			{% for heading in toc.slice(1) %}
-				<li class="toc-item toc-level-{{ heading.level }}" style="margin-top: 0.5rem;">
-					{% if heading.level > 2 %}
-					<span style="padding-inline: 0.5rem;">- <a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
-						{{ heading.text | truncate(24, true, '...') }}
-					</a>
-					</span>
-					{% else %}
-					<a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
-						{{ heading.text }}
-					</a>
-					{% endif %}
-				</li>
-			{% endfor %}
-			</ol>
-		</details>
-	</nav>
-	{% endif %}
-
-	<hr>
-
 	<div class="u-flow">
+		{% set toc = _node.headings %}
+		{% if toc.length %}
+		<nav class="toc" aria-labelledby="toc-title">
+			<details open>
+				<summary id="toc-title">On this page</summary>
+				<ol class="toc-list" style="list-style: none; padding-inline: 0.75rem;">
+				{% for heading in toc.slice(1) %}
+					<li class="toc-item toc-level-{{ heading.level }}" style="margin-top: 0.5rem;">
+						{% if heading.level > 2 %}
+						<span style="padding-inline: 0.5rem;">- <a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
+							{{ heading.text | truncate(24, true, '...') }}
+						</a>
+						</span>
+						{% else %}
+						<a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
+							{{ heading.text }}
+						</a>
+						{% endif %}
+					</li>
+				{% endfor %}
+				</ol>
+			</details>
+		</nav>
+		{% endif %}
+
 		{% set backlinks = _backlinks %}
 		{% if backlinks.length %}
 		<nav aria-labelledby="backlinks-title">
@@ -74,5 +72,4 @@
 		</nav>
 		{% endif %}
 	</div>
-	
 </aside>

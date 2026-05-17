@@ -10,10 +10,11 @@
 /* 03. Generic */
 @import './generic/semantic-tokens.css' layer(tokens);
 @import './generic/modern-reset.css' layer(reset);
+@import './generic/skip-link.css';
 
 /* 04. Elements */
 @import './elements/base.css';
-@import './elements/skip-link.css';
+@import './elements/headings.css';
 @import './elements/hr.css';
 
 /* 05. Layouts & Objects */

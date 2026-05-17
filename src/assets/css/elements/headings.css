@@ -1,0 +1,22 @@
+:heading {
+	color: tomato;
+	margin-block-start: 1.5em;
+}
+
+h1 {
+	font-size: var(--text-size-display);
+	margin-top: var(--flow-space);
+	padding-block-end: var(--space-inset-s);
+}
+
+h2 {
+	--flow-space: var(--flow-space-heading);
+	font-size: var(--text-size-title);
+	padding-block-end: var(--space-inset-s);
+	border-bottom: 1px solid var(--color-border-strong);
+}
+
+h3 {
+	--flow-space: var(--flow-space-heading);
+	font-size: var(--text-size-lede);
+}
