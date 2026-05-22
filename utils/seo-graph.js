@@ -316,6 +316,13 @@ export function buildSeoGraph(data) {
 	const description = node?.description || data.description;
 	const excerpt = node?.excerpt;
 
+	// SEO inputs from front matter follow a three-field split:
+	//   type        editorial label (free-form, author-set). Drives collections,
+	//               nav, and the corpus endpoint filename.
+	//   pageType    schema.org WebPage @type override. Technical, opt-in.
+	//   articleType schema.org Article @type override. Technical, opt-in,
+	//               only meaningful when type === 'article'.
+	// WEBPAGE_TYPE_DEFAULTS bridges layer 1 → layer 2 for known editorial labels.
 	const isHome = pageUrl === '/' || /^\/[a-z]{2}\/$/.test(pageUrl);
 	const entryType = data.type || node?.type;
 	const isOrgPage = isHome || ['about', 'contact'].includes(entryType);
