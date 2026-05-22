@@ -4,7 +4,6 @@ slug: 'outgoing-index'
 description: 'Browse outgoing links across the content graph.'
 date: 2026-05-10
 permalink: '/outgoing/'
-layout: 'layouts/page.njk'
 baselineExcludeFromGraph: true
 noindex: true
 ---
@@ -44,9 +43,9 @@ There are {{ edges | unique('to') | length }} URLs referenced by {{ edges | leng
 
 <small style="margin-top: 0.25rem;">
 From: <a href="{{ link.from }}">{{ link.from }}</a>
-<br>Text: {{ link.text}}  
+<br>Text: {{ link.text}}
 
-```json
+```nunjucks
 {{ link | _json(2) | safe }}
 
 ```

@@ -1,6 +1,6 @@
 ---
 title: 'Eleventy Baseline'
-slug: 'homepage'
+slug: 'home'
 description: "Eleventy Baseline est un plugin pour Eleventy qui fournit une fondation de site prête à l'emploi, avec les assets, les métadonnées et un graphe de contenu vivant qui maintient la sortie rendue synchronisée."
 date: 2026-05-17
 permalink: '/fr/'

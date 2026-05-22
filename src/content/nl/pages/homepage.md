@@ -1,11 +1,10 @@
 ---
 title: 'Eleventy Baseline'
-slug: 'homepage'
+slug: 'home'
 description: 'Eleventy Baseline is een plugin voor Eleventy die een kant-en-klare sitebasis biedt met assets, metadata en een levende content graph die de gerenderde output gesynchroniseerd houdt.'
 date: 2026-05-17
 permalink: '/nl/'
 translationKey: homepage
-layout: 'layouts/page.njk'
 ---
 
 Elke werkende Eleventy-site bouwt dezelfde basis opnieuw op: assets compileren, head-tags, sitemap, beeldverwerking. Steeds hetzelfde grondwerk.

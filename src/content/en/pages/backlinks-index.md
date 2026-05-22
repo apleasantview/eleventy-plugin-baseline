@@ -4,7 +4,6 @@ slug: 'backlinks-index'
 description: 'Browse incoming links and references across the content graph.'
 date: 2026-05-10
 permalink: '/backlinks/'
-layout: 'layouts/page.njk'
 baselineExcludeFromGraph: true
 noindex: true
 ---
