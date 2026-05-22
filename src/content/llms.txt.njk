@@ -1,0 +1,29 @@
+---
+permalink: /llms.txt
+baselineExcludeFromGraph: true
+eleventyExcludeFromCollections: true
+---
+# {{ settings.title | safe }} 
+
+> {{ settings.tagline | safe }}
+
+{% set siteBase = settings.url.slice(0, -1) -%}
+
+{% for langKey, langConfig in settings.languages %}
+## {{ langConfig.languageName | safe }}
+
+{% for url, node in (_navigator.nodes | dictsort) -%}
+	{%- if node.lang === langKey -%}
+
+		{%- if url.endsWith("/") -%}
+			{%- set mdUrl = url + "index.md" -%}
+		{%- else -%}
+			{%- set mdUrl = url + ".md" -%}
+		{%- endif -%}
+
+- [{{ node.title | safe }}]({{ siteBase }}{{ url }}) ([markdown]({{ siteBase }}{{ mdUrl }})): {{ node.description | safe }}
+
+	{% endif -%}
+{%- endfor %}
+
+{% endfor %}

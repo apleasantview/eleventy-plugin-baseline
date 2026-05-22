@@ -1,11 +1,16 @@
 import { buildSeoGraph, buildSeoMeta } from '../../utils/seo-graph.js';
 import { gitModified } from '../../utils/git-date.js';
 
-const mdAlternates = (data) => ({
-	rel: 'alternate',
-	type: 'text/markdown',
-	href: `${data.page.url}index.md`
-});
+const mdAlternates = (data) => {
+	if (data.baselineExcludeFromGraph) return [];
+	return [
+		{
+			rel: 'alternate',
+			type: 'text/markdown',
+			href: `${data.page.url}index.md`
+		}
+	];
+};
 
 export default {
 	permalink: function (data) {
@@ -39,7 +44,7 @@ export default {
 			// OG + Twitter meta. Same data sources as the graph so they cannot drift.
 			meta: (data) => buildSeoMeta(data),
 			// Add markdown alternates for site pages.
-			link: (data) => [mdAlternates(data)]
+			link: (data) => mdAlternates(data)
 		}
 	}
 };

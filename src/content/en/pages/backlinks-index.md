@@ -4,8 +4,10 @@ slug: 'backlinks-index'
 description: 'Browse incoming links and references across the content graph.'
 date: 2026-05-10
 permalink: '/backlinks/'
+sitemap:
+  ignore: true
+eleventyExcludeFromCollections: true
 baselineExcludeFromGraph: true
-noindex: true
 ---
 
 Incoming links across the content graph.
@@ -45,7 +47,7 @@ There are {{ edges | unique('to') | length }} pages referencing {{ edges | lengt
 From: <a href="{{ link.from }}">{{ link.from }}</a>
 <br>Text: {{ link.text}}
 
-```json
+```nunjucks
 {{ link | _json(2) | safe }}
 
 ```

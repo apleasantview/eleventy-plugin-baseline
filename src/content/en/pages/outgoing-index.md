@@ -4,8 +4,10 @@ slug: 'outgoing-index'
 description: 'Browse outgoing links across the content graph.'
 date: 2026-05-10
 permalink: '/outgoing/'
+sitemap:
+  ignore: true
+eleventyExcludeFromCollections: true
 baselineExcludeFromGraph: true
-noindex: true
 ---
 
 Outgoing links across the content graph.
