@@ -11,3 +11,10 @@ publish = "dist"
     X-Frame-Options            = "DENY"
     Referrer-Policy            = "strict-origin-when-cross-origin"
     Permissions-Policy         = "autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), publickey-credentials-get=()"
+    Link                       = '''</sitemap.xml>; rel="sitemap", </llms.txt>; rel="alternate"; type="text/plain", </.well-known/api-catalog>; rel="api-catalog", </schemamap.xml>; rel="schemamap"'''
+
+[[headers]]
+  for = "/.well-known/api-catalog"
+  [headers.values]
+    Content-Type   = "application/linkset+json"
+    Cache-Control  = "public, max-age=300"

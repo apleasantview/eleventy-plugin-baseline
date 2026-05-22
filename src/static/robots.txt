@@ -1,4 +1,7 @@
 User-agent: *
-Allow: /
+Disallow:
+
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 Sitemap: https://www.eleventy-baseline.dev/sitemap.xml
+Schemamap: https://www.eleventy-baseline.dev/schemamap.xml

@@ -1,0 +1,67 @@
+{
+	"linkset": [
+		{
+			"anchor": "https://www.eleventy-baseline.dev/schema/article.json",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			],
+			"type": [
+				{
+					"href": "https://schema.org/TechArticle"
+				}
+			]
+		},
+		{
+			"anchor": "https://www.eleventy-baseline.dev/schema/page.json",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			],
+			"type": [
+				{
+					"href": "https://schema.org/WebPage"
+				}
+			]
+		},
+		{
+			"anchor": "https://www.eleventy-baseline.dev/schema/about.json",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			],
+			"type": [
+				{
+					"href": "https://schema.org/AboutPage"
+				}
+			]
+		},
+		{
+			"anchor": "https://www.eleventy-baseline.dev/schemamap.xml",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			]
+		},
+		{
+			"anchor": "https://www.eleventy-baseline.dev/sitemap.xml",
+			"type": [
+				{
+					"href": "https://www.sitemaps.org/schemas/sitemap/0.9"
+				}
+			]
+		},
+		{
+			"anchor": "https://www.eleventy-baseline.dev/llms.txt",
+			"type": [
+				{
+					"href": "https://llmstxt.org/"
+				}
+			]
+		}
+	]
+}
