@@ -18,8 +18,9 @@ const LOCALE_OG = {
 	fr: 'fr_FR'
 };
 
-// Maps entry.type to schema.org WebPage subtype. Falls back to plain WebPage.
-export const WEBPAGE_TYPE_BY_TYPE = {
+// Default schema.org WebPage subtype for known editorial `type` values.
+// Front-matter `pageType` overrides this. Unknown values fall back to plain WebPage.
+export const WEBPAGE_TYPE_DEFAULTS = {
 	about: 'AboutPage',
 	contact: 'ContactPage',
 	faq: 'FAQPage'
@@ -219,6 +220,33 @@ function buildWorkTranslationRefs(navigatorNodes, translationKey, currentUrl, si
 	return refs.length ? refs : null;
 }
 
+function buildArticleNode({
+	canonical,
+	title,
+	description,
+	excerpt,
+	lang,
+	datePublished,
+	dateModified,
+	siteUrl,
+	articleSection,
+	articleType
+}) {
+	return dropNulls({
+		'@type': articleType || 'Article',
+		'@id': idFor(canonical, 'article'),
+		headline: title,
+		description: description || excerpt,
+		inLanguage: LOCALE_REGION[lang] || lang,
+		datePublished: toISO(datePublished),
+		dateModified: toISO(dateModified),
+		author: { '@id': idFor(siteUrl, 'cristovao') },
+		publisher: { '@id': idFor(siteUrl, 'organization') },
+		isPartOf: { '@id': idFor(canonical, 'webpage') },
+		articleSection
+	});
+}
+
 function buildWebPageNode(ctx) {
 	const {
 		canonical,
@@ -226,14 +254,14 @@ function buildWebPageNode(ctx) {
 		description,
 		excerpt,
 		lang,
-		entryType,
 		datePublished,
 		dateModified,
 		siteUrl,
 		isOrgPage,
 		neighborhoodSlug,
 		workTranslation,
-		hasShareImage
+		hasShareImage,
+		webPageType
 	} = ctx;
 
 	let about = null;
@@ -244,7 +272,7 @@ function buildWebPageNode(ctx) {
 	}
 
 	return dropNulls({
-		'@type': WEBPAGE_TYPE_BY_TYPE[entryType] || 'WebPage',
+		'@type': webPageType,
 		'@id': idFor(canonical, 'webpage'),
 		url: canonical,
 		name: title,
@@ -292,7 +320,11 @@ export function buildSeoGraph(data) {
 	const entryType = data.type || node?.type;
 	const isOrgPage = isHome || ['about', 'contact'].includes(entryType);
 	const isService = entryType === 'service';
+	const isArticle = entryType === 'article';
 	const neighborhoodSlug = entryType === 'neighborhood' ? data.slug : null;
+
+	// Page-level schema @type: front-matter override → defaults map → plain WebPage.
+	const webPageType = data.pageType || WEBPAGE_TYPE_DEFAULTS[entryType] || 'WebPage';
 
 	const workTranslation = buildWorkTranslationRefs(navigatorNodes, translationKey, pageUrl, siteUrl);
 
@@ -316,11 +348,30 @@ export function buildSeoGraph(data) {
 			})
 		: null;
 
+	// Article node when entryType is 'article'. articleType refines the schema subtype
+	// (TechArticle, BlogPosting, etc.); articleSection comes from the cascade's sectionLabel.
+	const articleNode = isArticle
+		? buildArticleNode({
+				canonical,
+				title,
+				description,
+				excerpt,
+				lang,
+				datePublished,
+				dateModified,
+				siteUrl,
+				articleSection: data.sectionLabel,
+				articleType: data.articleType
+			})
+		: null;
+
 	// WebPage.mainEntity: a ref to the Service node on service pages, or an array of
 	// Question entities on FAQ pages.
 	let mainEntity = null;
 	if (isService) {
 		mainEntity = { '@id': idFor(canonical, 'service') };
+	} else if (isArticle) {
+		mainEntity = { '@id': idFor(canonical, 'article') };
 	} else if (entryType === 'faq' && Array.isArray(data.faqs) && data.faqs.length) {
 		mainEntity = data.faqs.map((f) => ({
 			'@type': 'Question',
@@ -345,7 +396,6 @@ export function buildSeoGraph(data) {
 			description,
 			excerpt,
 			lang,
-			entryType,
 			datePublished,
 			dateModified,
 			siteUrl,
@@ -353,9 +403,11 @@ export function buildSeoGraph(data) {
 			neighborhoodSlug,
 			mainEntity,
 			workTranslation,
-			hasShareImage: !!seo.shareImage
+			hasShareImage: !!seo.shareImage,
+			webPageType
 		}),
 		serviceNode,
+		articleNode,
 		breadcrumb
 	].filter(Boolean);
 
