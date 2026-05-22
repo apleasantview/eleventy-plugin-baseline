@@ -232,7 +232,8 @@ function buildWebPageNode(ctx) {
 		siteUrl,
 		isOrgPage,
 		neighborhoodSlug,
-		workTranslation
+		workTranslation,
+		hasShareImage
 	} = ctx;
 
 	let about = null;
@@ -252,7 +253,7 @@ function buildWebPageNode(ctx) {
 		isPartOf: { '@id': idFor(siteUrl, 'website') },
 		about,
 		mainEntity: ctx.mainEntity || null,
-		primaryImageOfPage: { '@id': idFor(siteUrl, 'shareimage') },
+		primaryImageOfPage: hasShareImage ? { '@id': idFor(siteUrl, 'shareimage') } : null,
 		datePublished: toISO(datePublished),
 		dateModified: toISO(dateModified),
 		workTranslation
@@ -351,7 +352,8 @@ export function buildSeoGraph(data) {
 			isOrgPage,
 			neighborhoodSlug,
 			mainEntity,
-			workTranslation
+			workTranslation,
+			hasShareImage: !!seo.shareImage
 		}),
 		serviceNode,
 		breadcrumb
