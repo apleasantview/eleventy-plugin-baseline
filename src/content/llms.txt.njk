@@ -3,27 +3,74 @@ permalink: /llms.txt
 baselineExcludeFromGraph: true
 eleventyExcludeFromCollections: true
 ---
-# {{ settings.title | safe }} 
+# {{ settings.title | safe }}
 
 > {{ settings.tagline | safe }}
 
-{% set siteBase = settings.url.slice(0, -1) -%}
+## About this project
+
+Eleventy Baseline is an opinionated infrastructure plugin for Eleventy. It handles the structural decisions you would otherwise wire up on every project: directory layout, asset pipeline, image handling, head metadata, multilingual support, sitemaps, and a content graph that exposes the data cascade to templates. The defaults work as a coherent set out of the box, and each one is overrideable.
+
+**Baseline is:**
+
+- a plugin for Eleventy 3.x
+- an architectural layer that sits on top of Eleventy
+- a coherent set of integrated structural conventions
+- production-ready out of the box
+
+**Baseline is not:**
+
+- a CMS
+- a visual theme
+- a site template
+- a replacement for Eleventy
+
+## Who it is for
+
+- developers maintaining multilingual content sites
+- agencies repeatedly building Eleventy sites for clients
+- teams maintaining long-lived static publications
+- Eleventy users tired of patching their own starter on every new project
+- developers who want stronger conventions without adopting a different framework
+
+## Why people adopt it
+
+- avoiding repeated setup work across Eleventy projects
+- standardising project structure across teams
+- reducing plugin and configuration sprawl
+- shortening the distance between "installed" and "building"
+- improving maintainability for long-lived sites
+
+## Ecosystem position
+
+Baseline sits closer to the onboarding philosophy of Nuxt, Astro, or Hugo than to isolated Eleventy utility plugins. It is intended as a coherent architectural layer, not a loose plugin collection.
+
+## Core concepts
+
+- **content graph**: Baseline's internal map of rendered pages and their relationships (forward links, backlinks, navigation), exposed to templates at build time
+- **navigator**: a debugging and introspection surface for Baseline's runtime state and content-graph data
+- **modules**: the optional integrated subsystems (assets, head, multilang, navigator, sitemap)
+- **page context**: a normalised per-page object Baseline builds at cascade-time and exposes to templates as `_pageContext`
+- **substrate**: Baseline's internal layer of state, runtime, and shared helpers that the modules read from
+
+## Documentation
+
+{%- set siteBase = settings.url.slice(0, -1) -%}
 
 {% for langKey, langConfig in settings.languages %}
-## {{ langConfig.languageName | safe }}
 
-{% for url, node in (_navigator.nodes | dictsort) -%}
-	{%- if node.lang === langKey -%}
+### {{ langConfig.languageName | safe }}
 
-		{%- if url.endsWith("/") -%}
-			{%- set mdUrl = url + "index.md" -%}
-		{%- else -%}
-			{%- set mdUrl = url + ".md" -%}
-		{%- endif -%}
+{% for url, node in _navigator.nodes -%}
+{% if node.lang === langKey -%}
+{%- if url.endsWith("/") -%}
+{%- set mdUrl = url + "index.md" -%}
+{%- else -%}
+{%- set mdUrl = url + ".md" -%}
+{%- endif -%}
 
 - [{{ node.title | safe }}]({{ siteBase }}{{ url }}) ([markdown]({{ siteBase }}{{ mdUrl }})): {{ node.description | safe }}
 
-	{% endif -%}
-{%- endfor %}
-
+{% endif -%}
+{% endfor -%}
 {% endfor %}
