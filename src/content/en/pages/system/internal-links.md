@@ -1,16 +1,11 @@
 ---
-title: 'Outgoing links index'
-slug: 'outgoing-index'
-description: 'Browse outgoing links across the content graph.'
+title: 'Internal links index'
+slug: 'internal-links'
+description: 'Browse incoming links and references across the content graph.'
 date: 2026-05-10
-permalink: '/outgoing/'
-sitemap:
-  ignore: true
-eleventyExcludeFromCollections: true
-baselineExcludeFromGraph: true
 ---
 
-Outgoing links across the content graph.
+Incoming links across the content graph.
 
 Each page lists where it is referenced and provides a short excerpt of the surrounding context when available.
 
@@ -18,21 +13,21 @@ Each page lists where it is referenced and provides a short excerpt of the surro
 
 {% if _navigator.edges | length %}
 
-<div class="outgoing u-flow">
+<div class="backlinks u-flow">
 
 {% for type, edges in _navigator.edges | groupby("type") %}
 
-{% if type === "external" %}
+{% if type === "link" %}
 
-## Outgoing links
+## Backlinks
 
-There are {{ edges | unique('to') | length }} URLs referenced by {{ edges | length }} pages.
+There are {{ edges | unique('to') | length }} pages referencing {{ edges | length }} URLs.
 
-{%- for to, edge in edges | sort(false, false, "to") | groupby("to") %}
+{% for to, edge in edges | sort(false, false, "to") | groupby("to") %}
 
 <div class="u-flow" style="margin-top: 2rem;">
 
-<p><strong>{{ loop.index }}. {{ to.split('?')[0] | truncate(84, true, '...') }}</strong>  
+<p><strong>{{ loop.index }}. {{ to.split('?')[0] | truncate(90, true, '...') }}</strong>  
 <br><small>({{ edge.length }} references)</small></p>
 
 <div class="l-fluid-grid--autofill" style="margin-top: 0.5rem; column-gap: 2.5rem;">
@@ -68,7 +63,7 @@ From: <a href="{{ link.from }}">{{ link.from }}</a>
 
 {% endif %}
 
-{% endfor -%}
+{% endfor %}
 
 </div>
 
