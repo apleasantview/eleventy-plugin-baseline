@@ -2,16 +2,19 @@
 {%- set home = collections.translationsMap.homepage[lang] or collections.translationsMap.homepage[settings.defaultLanguage] %}
 {%- set homeText = { en: "Homepage", nl: "Homepage", fr: "Accueil" } %}
 {%- set docText = { en: "Documentation", nl: "Documentatie" } %}
+{%- set aboutText = { en: "About", nl: "Over", fr: "À propos" } %}
 <div class="c-navigation--wrapped">
+	{% include "components/top-bar.njk" %}
 	<nav class="c-navigation">
 		<div class="c-navigation__block">
 			<div class="c-navigation__links">
 				<ul>
 					{# <li><a {% if page.url == "/" %} aria-current="page"{% endif %} class="c-navigation__link" href="{{ home.url }}">{{ homeText[lang] or homeText[settings.defaultLanguage]}}</a></li> #}
 					<li>
-						<a class="c-navigation__link" href="/docs/" {%- if page.url == "/docs/" %}aria-current="page"{%- endif %}
-							>{{ docText[lang] or docText[settings.defaultLanguage] }}</a
-						>
+						<a class="c-navigation__link" href="/docs/" {%- if page.url == "/docs/" %}aria-current="page"{%- endif %}>{{ docText[lang] or docText[settings.defaultLanguage] }}</a>
+					</li>
+					<li>
+						<a class="c-navigation__link" href="/about/" {%- if page.url == "/about/" %}aria-current="page"{%- endif %}>{{ aboutText[lang] or aboutText[settings.defaultLanguage] }}</a>
 					</li>
 					<li>|</li>
 					<li>
