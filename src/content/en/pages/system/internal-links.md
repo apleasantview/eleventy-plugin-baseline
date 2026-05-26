@@ -15,9 +15,9 @@ Each page lists where it is referenced and provides a short excerpt of the surro
 
 <div class="backlinks u-flow">
 
-{% for type, edges in _navigator.edges | groupby("type") %}
+{% set edges = _navigator.edges | selectattr("internal") | list %}
 
-{% if type === "link" %}
+{% if edges | length %}
 
 ## Backlinks
 
@@ -62,8 +62,6 @@ From: <a href="{{ link.from }}">{{ link.from }}</a>
 <br>
 
 {% endif %}
-
-{% endfor %}
 
 </div>
 

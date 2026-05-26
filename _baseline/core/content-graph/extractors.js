@@ -90,19 +90,25 @@ function extractLinks(root, currentPage, knownOrigins) {
 
 	return Array.from(anchors).map((a) => {
 		const raw = a.getAttribute('href');
-		const page = currentPage;
 		const href = normaliseHref(raw, knownOrigins);
-		const internal = isInternal(href);
-		const type = internal ? 'link' : 'external';
 
 		return {
-			internal,
-			from: page,
+			internal: isInternal(href),
+			from: currentPage,
 			to: href,
-			type: type,
-			text: (a.textContent || '').trim()
+			text: (a.textContent || '').trim(),
+			rel: extractRel(a)
 		};
 	});
+}
+
+// HTML `rel` is a space-separated token list, case-insensitive per spec.
+// Lowercased and deduped so consumers can do membership checks without
+// caring about author-side whitespace or casing.
+function extractRel(el) {
+	const raw = el.getAttribute('rel');
+	if (!raw) return [];
+	return Array.from(new Set(raw.trim().toLowerCase().split(/\s+/).filter(Boolean)));
 }
 
 // HtmlBasePlugin rewrites internal hrefs to absolute URLs at render time

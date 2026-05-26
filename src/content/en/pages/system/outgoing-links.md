@@ -15,9 +15,9 @@ Each page lists where it is referenced and provides a short excerpt of the surro
 
 <div class="outgoing u-flow">
 
-{% for type, edges in _navigator.edges | groupby("type") %}
+{% set edges = _navigator.edges | rejectattr("internal") | list %}
 
-{% if type === "external" %}
+{% if edges | length %}
 
 ## Outgoing links
 
@@ -62,8 +62,6 @@ From: <a href="{{ link.from }}">{{ link.from }}</a>
 <br>
 
 {% endif %}
-
-{% endfor -%}
 
 </div>
 

@@ -41,7 +41,7 @@ import { buildBacklinkIndex } from './backlinks.js';
 /**
  * @param {Array<{ url: string, content?: string, data?: object }>} pages
  * @param {{ knownOrigins?: Set<string>, log?: { warn: (...args: unknown[]) => void } }} [options] - Origins to strip from internal hrefs (HtmlBasePlugin rewrites them at render time). `log` routes dev-mode extraction warnings through the scoped logger.
- * @returns {{ nodes: Record<string, object>, edges: Array<{ internal: boolean, from: string, to: string, type: string, text: string }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
+ * @returns {{ nodes: Record<string, object>, edges: Array<{ internal: boolean, from: string, to: string, text: string, rel: string[] }>, backlinks: Record<string, Array<{ url: string, title?: string, excerpt?: string }>> }}
  */
 export function buildGraph(pages, options = {}) {
 	const { log } = options;
