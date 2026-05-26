@@ -31,20 +31,58 @@ import { slugify } from '../utils/slugify.js';
  *   parsed document + knownOrigins → per-page record
  */
 
+// Live DOM id wins (matches anchored markup); fall back to a slugified id
+// so consumers always have a stable handle, even when the rendering pipeline
+// did not auto-anchor headings.
+function headingRecord(el) {
+	const text = (el.textContent || '').trim();
+	return {
+		level: Number(el.tagName[1]),
+		text,
+		id: el.id || slugify(text) || null
+	};
+}
+
 function extractHeadings(root) {
 	const nodes = root.querySelectorAll('h1, h2, h3, h4, h5, h6');
+	return Array.from(nodes).map(headingRecord);
+}
 
-	return Array.from(nodes).map((el) => {
-		const text = (el.textContent || '').trim();
-		// Live DOM id wins (matches anchored markup); fall back to a slugified
-		// id so consumers always have a stable handle, even when the rendering
-		// pipeline did not auto-anchor headings.
-		return {
-			level: Number(el.tagName[1]),
-			text,
-			id: el.id || slugify(text) || null
-		};
-	});
+function extractSections(root) {
+	const rootLevel = 2;
+	const sections = [];
+	let current = null;
+
+	// Shallow walk: markdown-rendered HTML keeps headings as siblings of
+	// their prose, which is the shape sections need.
+	for (const el of Array.from(root.children)) {
+		const isHeading = /^H[1-6]$/.test(el.tagName);
+		const level = isHeading ? Number(el.tagName[1]) : null;
+
+		if (isHeading && level === rootLevel) {
+			if (current) sections.push(finalizeSection(current));
+			current = { heading: headingRecord(el), parts: [] };
+			continue;
+		}
+
+		// H1 is the document title. Never opens a section, never folds in.
+		if (isHeading && level < rootLevel) continue;
+
+		// Pre-H2 content has no section to attach to; `excerpt` covers the lead.
+		if (current) current.parts.push(el);
+	}
+
+	if (current) sections.push(finalizeSection(current));
+	return sections;
+}
+
+function finalizeSection({ heading, parts }) {
+	const text = parts
+		.map((el) => el.textContent || '')
+		.join(' ')
+		.replace(/\s+/g, ' ')
+		.trim();
+	return { heading, text };
 }
 
 function extractLinks(root, currentPage, knownOrigins) {
@@ -133,6 +171,7 @@ export function extractGraph(document, options = {}) {
 		node: {
 			excerpt: extractExcerpt(root, text),
 			headings: extractHeadings(root),
+			sections: extractSections(root),
 			images: extractImages(root)
 		},
 		edges: extractLinks(root, currentpage, knownOrigins)
