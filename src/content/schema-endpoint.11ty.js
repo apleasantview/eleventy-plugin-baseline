@@ -48,9 +48,7 @@ export default function (data) {
 			const isArticle = schemaType === 'article';
 
 			return {
-				'@type': isArticle
-					? articleType || 'Article'
-					: pageType || WEBPAGE_TYPE_DEFAULTS[node.type] || 'WebPage',
+				'@type': isArticle ? articleType || 'Article' : pageType || WEBPAGE_TYPE_DEFAULTS[node.type] || 'WebPage',
 				'@id': `${siteUrl}${node.url}#${isArticle ? 'article' : 'webpage'}`,
 				url: `${siteUrl}${node.url}`,
 				name: node.title,

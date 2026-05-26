@@ -7,7 +7,6 @@ permalink: '/agent-discovery/'
 sitemap:
   ignore: true
 eleventyExcludeFromCollections: true
-baselineExcludeFromGraph: true
 ---
 
 This site exposes a handful of static surfaces that AI agents, search crawlers, and integrations can read without parsing HTML. They are generated at build time and cross-reference each other.

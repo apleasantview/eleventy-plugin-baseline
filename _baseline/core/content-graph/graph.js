@@ -53,7 +53,7 @@ export function buildGraph(pages, options = {}) {
 		if (!page?.url || typeof page.content !== 'string') continue;
 		if (!page.outputPath?.endsWith('.html')) continue;
 		// Honour the same opt-out 404s, drafts and internal templates already use.
-		if (page.data?.eleventyExcludeFromCollections === true) continue;
+		if (page.data?._internal === true) continue;
 		if (page.data?.baselineExcludeFromGraph === true) continue;
 
 		try {

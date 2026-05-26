@@ -49,6 +49,11 @@
 		},
 		{
 			"anchor": "https://www.eleventy-baseline.dev/sitemap.xml",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			],
 			"type": [
 				{
 					"href": "https://www.sitemaps.org/schemas/sitemap/0.9"
@@ -57,6 +62,11 @@
 		},
 		{
 			"anchor": "https://www.eleventy-baseline.dev/llms.txt",
+			"service-doc": [
+				{
+					"href": "https://www.eleventy-baseline.dev/agent-discovery/"
+				}
+			],
 			"type": [
 				{
 					"href": "https://llmstxt.org/"
