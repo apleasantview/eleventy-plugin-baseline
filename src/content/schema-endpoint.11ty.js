@@ -41,7 +41,7 @@ export default function (data) {
 	const entries = Object.values(navigatorNodes)
 		.filter((node) => node?.type === schemaType)
 		.map((node) => {
-			const lang = node.locale?.lang;
+			const lang = node.lang;
 			const item = itemByUrl[node.url];
 			const articleType = item?.data?.articleType;
 			const pageType = item?.data?.pageType;

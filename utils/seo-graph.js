@@ -207,14 +207,14 @@ function buildWorkTranslationRefs(navigatorNodes, translationKey, currentUrl, si
 	if (!navigatorNodes || !translationKey) return null;
 	const refs = [];
 	for (const node of Object.values(navigatorNodes)) {
-		if (node.locale?.translationKey !== translationKey) continue;
+		if (node.translationKey !== translationKey) continue;
 		if (node.url === currentUrl) continue;
 		const absoluteUrl = `${siteUrl.replace(/\/+$/, '')}${node.url}`;
 		refs.push({
 			'@type': 'WebPage',
 			'@id': idFor(absoluteUrl, 'webpage'),
 			url: absoluteUrl,
-			inLanguage: LOCALE_REGION[node.locale.lang] || node.locale.lang
+			inLanguage: LOCALE_REGION[node.lang] || node.lang
 		});
 	}
 	return refs.length ? refs : null;
@@ -306,8 +306,8 @@ export function buildSeoGraph(data) {
 		return { '@context': 'https://schema.org', '@graph': [] };
 	}
 
-	const lang = node?.locale?.lang || data.page?.locale?.lang || data.lang || settings.defaultLanguage;
-	const translationKey = node?.locale?.translationKey || data.page?.locale?.translationKey || data.translationKey;
+	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
+	const translationKey = node?.translationKey || data.page?.translationKey || data.translationKey;
 
 	const siteUrl = settings.url;
 	const siteName = settings.languages?.[lang]?.title || settings.title;
@@ -442,7 +442,7 @@ export function buildSeoMeta(data) {
 
 	if (!seo || !settings || !settings.url || !pageUrl) return [];
 
-	const lang = node?.locale?.lang || data.page?.locale?.lang || data.lang || settings.defaultLanguage;
+	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
 	const siteUrl = settings.url;
 	const siteName = settings.languages?.[lang]?.title || settings.title;
 	const canonical = `${siteUrl.replace(/\/+$/, '')}${pageUrl}`;
