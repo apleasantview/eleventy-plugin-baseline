@@ -5,6 +5,6 @@
  * @returns {Array<object>}
  */
 export default function i18nTranslationsFor(page, collection) {
-	if (!page?.locale?.translationKey) return [];
-	return collection.filter((p) => p.locale && p.locale.translationKey === page.locale.translationKey);
+	if (!page?.translationKey) return [];
+	return collection.filter((p) => p.translationKey === page.translationKey);
 }

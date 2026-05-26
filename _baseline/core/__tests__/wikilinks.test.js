@@ -144,7 +144,7 @@ describe('wikilinks', () => {
 				contexts: {
 					'/en/about/': {
 						entry: { title: 'About' },
-						page: { locale: { translationKey: 'about', lang: 'en', isDefaultLang: true } }
+						page: { translationKey: 'about', lang: 'en', isDefaultLang: true }
 					}
 				},
 				translations: {

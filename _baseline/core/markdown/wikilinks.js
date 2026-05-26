@@ -88,7 +88,7 @@ export function wikilinks(md, { slugIndex, pageContextRegistry, translationMapSt
 		}
 
 		const lang = rawLang.toLowerCase();
-		const translationKey = ctx?.page?.locale?.translationKey;
+		const translationKey = ctx?.page?.translationKey;
 		if (!translationKey) return null;
 
 		const map = translationMapStore?.get?.();

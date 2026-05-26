@@ -6,11 +6,11 @@
  * @returns {object|null}
  */
 export default function i18nTranslationIn(page, collection, lang) {
-	if (!page?.locale?.translationKey) return null;
+	if (!page?.translationKey) return null;
 
 	return (
 		collection.find(
-			(p) => p.locale && p.locale.translationKey === page.locale.translationKey && p.locale.lang === lang
+			(p) => p.translationKey === page.translationKey && p.lang === lang
 		) || null
 	);
 }

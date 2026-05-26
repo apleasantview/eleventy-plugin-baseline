@@ -71,6 +71,8 @@ export function buildGraph(pages, options = {}) {
 				type: ctx.entry?.type,
 				lang: ctx.page?.lang,
 				locale: ctx.page?.locale,
+				translationKey: ctx.page?.translationKey,
+				isDefaultLang: ctx.page?.isDefaultLang,
 				date: ctx.page?.date,
 				url
 			};

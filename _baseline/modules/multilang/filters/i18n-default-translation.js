@@ -5,10 +5,8 @@
  * @returns {object|null}
  */
 export default function i18nDefaultTranslation(page, collection) {
-	if (!page?.locale?.translationKey) return null;
+	if (!page?.translationKey) return null;
 	return (
-		collection.find(
-			(p) => p.locale && p.locale.translationKey === page.locale.translationKey && p.locale.isDefaultLang
-		) || null
+		collection.find((p) => p.translationKey === page.translationKey && p.isDefaultLang) || null
 	);
 }
