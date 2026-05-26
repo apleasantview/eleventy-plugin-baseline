@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeLanguages } from '../../core/utils/normalize-languages.js';
+import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
  *
  * System role:
  *   Reads the same normalised language map as multilang (via
- *   core/utils/normalize-languages.js) and emits virtual templates that Eleventy
+ *   core/utils/normalize-language-map.js) and emits virtual templates that Eleventy
  *   renders to XML. Pages opt out via `noindex` in the cascade.
  *
  * Lifecycle:
@@ -37,7 +37,7 @@ const __dirname = path.dirname(__filename);
  *   Owns computed page.sitemap and the virtual sitemap templates
  *   (single-language /sitemap.xml, or per-lang /{lang}/sitemap.xml plus a
  *   /sitemap.xml index).
- *   Does not own language normalisation (core/utils/normalize-languages.js) or noindex
+ *   Does not own language normalisation (core/utils/normalize-language-map.js) or noindex
  *   propagation through the cascade.
  *
  * Data flow:
@@ -56,7 +56,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 	// Drives collection building, locale data, and sitemap-core language config.
 	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
 	const defaultLanguage = normalizeLanguageCode(settings.defaultLanguage);
-	const languages = normalizeLanguages(settings, log);
+	const languages = normalizeLanguageMap(settings, log);
 	const hasLanguages = languages && Object.keys(languages).length > 0;
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 

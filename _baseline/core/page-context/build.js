@@ -56,6 +56,8 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			outputPath: pageInput?.outputPath,
 			lang: pageInput?.lang,
 			locale: pageInput?.locale,
+			translationKey: pageInput?.translationKey,
+			isDefaultLang: pageInput?.isDefaultLang,
 			sitemap: pageInput?.sitemap
 		};
 	}
@@ -228,7 +230,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
 
 		if (slugIndex && entry.slug && page.url) {
-			const eligible = page.locale?.isDefaultLang === true;
+			const eligible = page.isDefaultLang === true;
 			if (eligible) {
 				slugIndex.set(entry.slug, page.url, page.inputPath);
 			}

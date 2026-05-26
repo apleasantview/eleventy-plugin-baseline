@@ -5,43 +5,24 @@ import { deriveLang } from './derive-lang.js';
 /**
  * Resolve the effective `{ lang, locale }` default from settings.
  *
- * Accepts `settings.defaultLocale` (BCP 47) and/or `settings.defaultLanguage`
- * (short code). When both are present, `defaultLocale` wins and a mismatch
- * between the two is warned via the provided logger but does not throw.
+ * defaultLocale is preferred; defaultLanguage is a writer-side alias.
+ * When both are set, defaultLocale wins silently. When only
+ * defaultLanguage is given, locale is derived via `Intl.Locale` (which
+ * returns the bare language subtag as a valid BCP 47 tag).
  *
- * When only one is given, the missing half is derived: a `defaultLanguage`
- * looks up `settings.languages[lang].locale` for its expansion; a
- * `defaultLocale` extracts the short subtag via `Intl.Locale`.
- *
- * @param {{
- *   defaultLanguage?: string,
- *   defaultLocale?: string,
- *   languages?: Record<string, { locale?: string }>
- * }} settings
- * @param {{ warn?: (msg: string) => void }} [log]
+ * @param {{ defaultLanguage?: string, defaultLocale?: string }} settings
  * @returns {{ lang: string, locale: string | null }}
  */
-export function resolveDefault(settings, log) {
+export function resolveDefault(settings) {
 	const explicitLang = normalizeLang(settings?.defaultLanguage);
 	const explicitLocale = normalizeLocale(settings?.defaultLocale);
 
-	if (explicitLocale && explicitLang) {
-		const derivedLang = deriveLang(explicitLocale);
-		if (derivedLang && derivedLang !== explicitLang) {
-			log?.warn?.(
-				`defaultLocale "${explicitLocale}" and defaultLanguage "${explicitLang}" disagree; defaultLocale wins`
-			);
-		}
-		return { lang: derivedLang ?? explicitLang, locale: explicitLocale };
-	}
-
 	if (explicitLocale) {
-		return { lang: deriveLang(explicitLocale) ?? '', locale: explicitLocale };
+		return { lang: deriveLang(explicitLocale) ?? explicitLang, locale: explicitLocale };
 	}
 
 	if (explicitLang) {
-		const fromLanguages = normalizeLocale(settings?.languages?.[explicitLang]?.locale);
-		return { lang: explicitLang, locale: fromLanguages ?? null };
+		return { lang: explicitLang, locale: normalizeLocale(explicitLang) ?? explicitLang };
 	}
 
 	return { lang: '', locale: null };

@@ -1,6 +1,12 @@
 import { I18nPlugin } from '@11ty/eleventy';
 import { DeepCopy } from '@11ty/eleventy-utils';
-import { normalizeLanguages } from '../../core/utils/normalize-languages.js';
+import {
+	normalizeLang,
+	normalizeLocale,
+	deriveLang,
+	resolveDefault
+} from '../../core/locale/index.js';
+import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
@@ -9,10 +15,10 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  * Multilang (module)
  *
  * Language infrastructure. Normalises language config, builds translation
- * relationships, attaches per-page locale data, and exposes cross-language
- * lookup filters. Active only when options.multilingual is true and both
- * defaultLanguage and at least one languages entry are set; otherwise the
- * module exits early.
+ * relationships, attaches per-page lang / locale / translationKey /
+ * isDefaultLang fields, and exposes cross-language lookup filters. Active
+ * only when options.multilingual is true and both defaultLanguage and at
+ * least one languages entry are set; otherwise the module exits early.
  *
  * Architecture layer:
  *   module
@@ -24,7 +30,8 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  *
  * Lifecycle:
  *   build-time   → normalise languages, attach I18nPlugin, register filters
- *                  and computed page.locale
+ *                  and computed page.lang / page.locale / page.translationKey
+ *                  / page.isDefaultLang
  *   cascade-time → translationsMap and translations collections build the
  *                  per-translationKey map and write it to the store
  *
@@ -35,15 +42,16 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  *   lifecycle boundary.
  *
  * Scope:
- *   Owns language normalisation, page.locale computation, the translations
- *   and translationsMap collections, and the i18n filters
- *   (i18nTranslationsFor, i18nTranslationIn, i18nDefaultTranslation).
- *   Does not own URL routing (I18nPlugin) or hreflang rendering (head).
+ *   Owns language normalisation, per-page flat locale fields (lang, locale,
+ *   translationKey, isDefaultLang), the translations and translationsMap
+ *   collections, and the i18n filters (i18nTranslationsFor,
+ *   i18nTranslationIn, i18nDefaultTranslation). Does not own URL routing
+ *   (I18nPlugin) or hreflang rendering (head).
  *
  * Data flow:
- *   settings.languages + page.lang/translationKey → normalisation +
- *   I18nPlugin → collections + computed page.locale + translation-map
- *   store → head, sitemap
+ *   settings.languages + page.lang/locale/translationKey → normalisation
+ *   + I18nPlugin → collections + flat computed page fields +
+ *   translation-map store → head, sitemap
  *
  * @param {import("@11ty/eleventy/src/UserConfig.js").default} eleventyConfig
  * @param {Object} moduleContext
@@ -52,12 +60,12 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
 	const { settings, options } = state;
 
-	// --- Language normalization ---
-	// Accept languages as array or object; normalize to object map.
-	// Drives collection building, locale data, and sitemap-core language config.
-	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
-	const defaultLanguage = normalizeLanguageCode(settings.defaultLanguage);
-	const languages = normalizeLanguages(settings, log);
+	// --- Default resolution ---
+	// resolveDefault returns { lang, locale } from settings.defaultLocale (preferred)
+	// or settings.defaultLanguage (cosmetic alias; locale derived via Intl.Locale,
+	// returning the bare language subtag when no region is given).
+	const { lang: defaultLanguage, locale: defaultLocale } = resolveDefault(settings);
+	const languages = normalizeLanguageMap(settings, log);
 	const hasLanguages = languages && Object.keys(languages).length > 0;
 
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
@@ -75,24 +83,50 @@ export function multilangCore(eleventyConfig, moduleContext) {
 		errorMode: 'allow-fallback'
 	});
 
-	// Computed locale data: every page gets a page.locale object with its
-	// resolved lang, translationKey, and whether it's the default language.
-	eleventyConfig.addGlobalData('eleventyComputed.page.locale', () => {
-		return (data) => {
-			const translationKey = data.translationKey;
-			const lang = normalizeLanguageCode(data.lang || data.language || defaultLanguage);
-			const isDefaultLang = lang === defaultLanguage;
+	// --- Per-page resolvers ---
+	// Shared between the four flat eleventyComputed registrations below and
+	// the buildTranslations collection iterator. Closes over defaults and
+	// the languages map.
+	//
+	// Accept `language` as a writer-side alias for `lang`. Cheap, forgiving,
+	// and means existing front matter using either spelling keeps working.
+	// Also derives lang from data.locale when neither is set.
+	function resolvePageLang(data) {
+		return (
+			normalizeLang(data.lang || data.language || deriveLang(data.locale)) || defaultLanguage
+		);
+	}
 
-			return {
-				translationKey,
-				lang,
-				isDefaultLang
-			};
-		};
-	});
+	function resolvePageLocale(data) {
+		if (data.locale) return normalizeLocale(data.locale);
+		const lang = resolvePageLang(data);
+		return normalizeLocale(languages?.[lang]?.locale) ?? defaultLocale;
+	}
+
+	// --- Computed per-page fields ---
+	// Four independent registrations merge cleanly at the leaves (validated
+	// 2026-05-25 via temp/workbench/multilang-glow-up/eleventy-probe/).
+	// Replaces the historical single-bag page.locale object with flat
+	// siblings on page.
+	eleventyConfig.addGlobalData(
+		'eleventyComputed.page.lang',
+		() => (data) => resolvePageLang(data)
+	);
+	eleventyConfig.addGlobalData(
+		'eleventyComputed.page.locale',
+		() => (data) => resolvePageLocale(data)
+	);
+	eleventyConfig.addGlobalData(
+		'eleventyComputed.page.translationKey',
+		() => (data) => data.translationKey
+	);
+	eleventyConfig.addGlobalData(
+		'eleventyComputed.page.isDefaultLang',
+		() => (data) => resolvePageLang(data) === defaultLanguage
+	);
 
 	// Build a set of allowed language codes for validation during collection building.
-	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLanguageCode));
+	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLang));
 
 	// Build both the map (keyed by translationKey → lang) and the flat list.
 	// Shared logic for both collections — called once per collection registration.
@@ -104,7 +138,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 			const translationKey = page.data.translationKey;
 			if (!translationKey) continue;
 
-			const lang = page.data.lang || page.data.language || defaultLanguage;
+			const lang = resolvePageLang(page.data);
 			if (!lang) continue;
 
 			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
@@ -112,8 +146,13 @@ export function multilangCore(eleventyConfig, moduleContext) {
 				continue;
 			}
 
-			const locale = { locale: { translationKey, lang, isDefaultLang: lang === defaultLanguage } };
-			const safeCopy = DeepCopy(page, locale);
+			const isDefaultLang = lang === defaultLanguage;
+			const locale = resolvePageLocale(page.data);
+
+			// Attach flat per-page fields. Mirrors the eleventyComputed shape
+			// so collection consumers read item.lang / item.locale /
+			// item.translationKey / item.isDefaultLang directly.
+			const safeCopy = DeepCopy(page, { lang, locale, translationKey, isDefaultLang });
 			list.push(safeCopy);
 
 			if (!map[translationKey]) map[translationKey] = {};
@@ -121,7 +160,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 				title: page.data.title,
 				url: page.url,
 				lang,
-				isDefaultLang: lang === defaultLanguage,
+				isDefaultLang,
 				data: page.data
 			};
 		}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { normalizeLang } from '../locale/normalize-lang.js';
 import { normalizeLocale } from '../locale/normalize-locale.js';
 import { deriveLang } from '../locale/derive-lang.js';
@@ -85,22 +85,11 @@ describe('resolveDefault', () => {
 		});
 	});
 
-	it('uses defaultLanguage alone, derives locale from languages map', () => {
-		expect(
-			resolveDefault({
-				defaultLanguage: 'en',
-				languages: { en: { locale: 'en-US' } }
-			})
-		).toEqual({ lang: 'en', locale: 'en-US' });
-	});
-
-	it('returns null locale when defaultLanguage is given but the languages entry has none', () => {
-		expect(
-			resolveDefault({
-				defaultLanguage: 'en',
-				languages: { en: {} }
-			})
-		).toEqual({ lang: 'en', locale: null });
+	it('uses defaultLanguage alone, derives locale via Intl.Locale', () => {
+		expect(resolveDefault({ defaultLanguage: 'en' })).toEqual({
+			lang: 'en',
+			locale: 'en'
+		});
 	});
 
 	it('prefers defaultLocale when both are present and agree', () => {
@@ -112,11 +101,10 @@ describe('resolveDefault', () => {
 		).toEqual({ lang: 'en', locale: 'en-US' });
 	});
 
-	it('warns and trusts defaultLocale when the two disagree', () => {
-		const warn = vi.fn();
-		const result = resolveDefault({ defaultLocale: 'fr-FR', defaultLanguage: 'en' }, { warn });
-		expect(result).toEqual({ lang: 'fr', locale: 'fr-FR' });
-		expect(warn).toHaveBeenCalledOnce();
+	it('trusts defaultLocale silently when the two disagree', () => {
+		expect(
+			resolveDefault({ defaultLocale: 'fr-FR', defaultLanguage: 'en' })
+		).toEqual({ lang: 'fr', locale: 'fr-FR' });
 	});
 
 	it('returns empty default for empty settings', () => {
