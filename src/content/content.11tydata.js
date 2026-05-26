@@ -13,6 +13,7 @@ const mdAlternates = (data) => {
 };
 
 export default {
+	type: 'page',
 	permalink: function (data) {
 		if (data.page.inputPath.includes('11tydata.js')) return false;
 		const slug = data.slug ? this.slugify(data.slug) : data.page.fileSlug;

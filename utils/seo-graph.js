@@ -42,6 +42,13 @@ function slugifyName(s) {
 	return slugify(String(s), { lower: true, strict: true });
 }
 
+// Person @id fragment derived from seo.person.givenName so the graph identifies
+// the actual site owner rather than a hardcoded name. Falls back to 'person'
+// when givenName is absent.
+function personFragment(seo) {
+	return seo?.person?.givenName ? slugifyName(seo.person.givenName) : 'person';
+}
+
 function dropNulls(value) {
 	if (Array.isArray(value)) {
 		const cleaned = value.map(dropNulls).filter((v) => v !== null && v !== undefined);
@@ -93,7 +100,7 @@ function buildOrganizationNode(seo, siteUrl) {
 		sameAs: o.sameAs,
 		knowsAbout: o.knowsAbout,
 		slogan: o.slogan,
-		founder: { '@id': idFor(siteUrl, 'cristovao') }
+		founder: { '@id': idFor(siteUrl, personFragment(seo)) }
 	});
 	return node;
 }
@@ -102,7 +109,7 @@ function buildPersonNode(seo, siteUrl) {
 	const p = seo.person;
 	return dropNulls({
 		'@type': p['@type'],
-		'@id': idFor(siteUrl, 'cristovao'),
+		'@id': idFor(siteUrl, personFragment(seo)),
 		name: p.name,
 		givenName: p.givenName,
 		familyName: p.familyName,
@@ -230,7 +237,8 @@ function buildArticleNode({
 	dateModified,
 	siteUrl,
 	articleSection,
-	articleType
+	articleType,
+	personFragment: personFrag
 }) {
 	return dropNulls({
 		'@type': articleType || 'Article',
@@ -240,7 +248,7 @@ function buildArticleNode({
 		inLanguage: LOCALE_REGION[lang] || lang,
 		datePublished: toISO(datePublished),
 		dateModified: toISO(dateModified),
-		author: { '@id': idFor(siteUrl, 'cristovao') },
+		author: { '@id': idFor(siteUrl, personFrag) },
 		publisher: { '@id': idFor(siteUrl, 'organization') },
 		isPartOf: { '@id': idFor(canonical, 'webpage') },
 		articleSection
@@ -368,7 +376,8 @@ export function buildSeoGraph(data) {
 				dateModified,
 				siteUrl,
 				articleSection: data.sectionLabel,
-				articleType: data.articleType
+				articleType: data.articleType,
+				personFragment: personFragment(seo)
 			})
 		: null;
 
