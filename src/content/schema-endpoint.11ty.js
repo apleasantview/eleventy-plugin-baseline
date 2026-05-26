@@ -6,18 +6,25 @@
 // Schemamap: directive in robots.txt. Discovery surface for AI agents that
 // consume structured data corpus-wide (NLWeb pattern).
 
-import { LOCALE_REGION, WEBPAGE_TYPE_DEFAULTS } from '../../utils/seo-graph.js';
+import { WEBPAGE_TYPE_DEFAULTS } from '../../utils/seo-graph.js';
 import { gitModified } from '../../utils/git-date.js';
 
-const TYPES = ['article', 'page', 'about'];
-
 export const data = {
+	// Paginate over `collections.all`, then transform to the distinct set of
+	// `type` values via `before`. Each yields a /schema/<type>.json corpus.
 	pagination: {
-		data: 'schemaTypes',
+		data: 'collections.all',
 		size: 1,
-		alias: 'schemaType'
+		alias: 'schemaType',
+		before: (paginationData) => {
+			const types = new Set();
+			for (const item of paginationData) {
+				const t = item?.data?.type;
+				if (t) types.add(t);
+			}
+			return [...types];
+		}
 	},
-	schemaTypes: TYPES,
 	permalink: ({ schemaType }) => `/schema/${schemaType}.json`,
 	baselineExcludeFromGraph: true,
 	eleventyExcludeFromCollections: true,
@@ -41,7 +48,6 @@ export default function (data) {
 	const entries = Object.values(navigatorNodes)
 		.filter((node) => node?.type === schemaType)
 		.map((node) => {
-			const lang = node.lang;
 			const item = itemByUrl[node.url];
 			const articleType = item?.data?.articleType;
 			const pageType = item?.data?.pageType;
@@ -54,7 +60,7 @@ export default function (data) {
 				name: node.title,
 				...(isArticle ? { headline: node.title } : {}),
 				description: node.description,
-				inLanguage: LOCALE_REGION[lang] || lang,
+				inLanguage: node.locale || node.lang,
 				...(item?.inputPath ? { dateModified: gitModified(item.inputPath) } : {}),
 				isPartOf: { '@id': `${siteUrl}/#website` }
 			};

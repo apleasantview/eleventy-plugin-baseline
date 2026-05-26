@@ -5,18 +5,13 @@
 
 import slugify from 'slugify';
 
-export const LOCALE_REGION = {
-	en: 'en-US',
-	nl: 'nl-NL',
-	fr: 'fr-FR'
-};
-
-// OG wants the underscored BCP-47 form, distinct from the hyphenated schema.org form.
-const LOCALE_OG = {
-	en: 'en_US',
-	nl: 'nl_NL',
-	fr: 'fr_FR'
-};
+// Resolve a BCP-47 locale string for a navigator node, falling back through
+// page data, the language entry in settings, and finally the bare lang code.
+// Baseline's multilang module normalises page.locale via Intl.Locale, so this
+// is the trustworthy source whenever the plugin is wired up.
+function resolveLocale({ node, data, settings, lang }) {
+	return node?.locale || data?.page?.locale || data?.locale || settings?.languages?.[lang]?.locale || lang;
+}
 
 // Default schema.org WebPage subtype for known editorial `type` values.
 // Front-matter `pageType` overrides this. Unknown values fall back to plain WebPage.
@@ -156,7 +151,7 @@ function buildPlaceNode(name, siteUrl) {
 	};
 }
 
-function buildServiceNode({ canonical, name, description, lang, siteUrl, areaServed }) {
+function buildServiceNode({ canonical, name, description, locale, siteUrl, areaServed }) {
 	const placeRefs = areaServed?.length
 		? areaServed.map((a) => ({
 				'@id': idFor(siteUrl, `place-${slugifyName(a)}`)
@@ -171,7 +166,7 @@ function buildServiceNode({ canonical, name, description, lang, siteUrl, areaSer
 		serviceType: name,
 		areaServed: placeRefs,
 		url: canonical,
-		inLanguage: LOCALE_REGION[lang] || lang
+		inLanguage: locale
 	});
 }
 
@@ -221,7 +216,7 @@ function buildWorkTranslationRefs(navigatorNodes, translationKey, currentUrl, si
 			'@type': 'WebPage',
 			'@id': idFor(absoluteUrl, 'webpage'),
 			url: absoluteUrl,
-			inLanguage: LOCALE_REGION[node.lang] || node.lang
+			inLanguage: node.locale || node.lang
 		});
 	}
 	return refs.length ? refs : null;
@@ -232,7 +227,7 @@ function buildArticleNode({
 	title,
 	description,
 	excerpt,
-	lang,
+	locale,
 	datePublished,
 	dateModified,
 	siteUrl,
@@ -245,7 +240,7 @@ function buildArticleNode({
 		'@id': idFor(canonical, 'article'),
 		headline: title,
 		description: description || excerpt,
-		inLanguage: LOCALE_REGION[lang] || lang,
+		inLanguage: locale,
 		datePublished: toISO(datePublished),
 		dateModified: toISO(dateModified),
 		author: { '@id': idFor(siteUrl, personFrag) },
@@ -261,7 +256,7 @@ function buildWebPageNode(ctx) {
 		title,
 		description,
 		excerpt,
-		lang,
+		locale,
 		datePublished,
 		dateModified,
 		siteUrl,
@@ -285,7 +280,7 @@ function buildWebPageNode(ctx) {
 		url: canonical,
 		name: title,
 		description: description || excerpt || null,
-		inLanguage: LOCALE_REGION[lang] || lang,
+		inLanguage: locale,
 		isPartOf: { '@id': idFor(siteUrl, 'website') },
 		about,
 		mainEntity: ctx.mainEntity || null,
@@ -315,6 +310,7 @@ export function buildSeoGraph(data) {
 	}
 
 	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
+	const locale = resolveLocale({ node, data, settings, lang });
 	const translationKey = node?.translationKey || data.page?.translationKey || data.translationKey;
 
 	const siteUrl = settings.url;
@@ -357,7 +353,7 @@ export function buildSeoGraph(data) {
 				canonical,
 				name: node?.headings?.[0]?.text || title,
 				description: description || excerpt,
-				lang,
+				locale,
 				siteUrl,
 				areaServed: seo.organization?.areaServed
 			})
@@ -371,7 +367,7 @@ export function buildSeoGraph(data) {
 				title,
 				description,
 				excerpt,
-				lang,
+				locale,
 				datePublished,
 				dateModified,
 				siteUrl,
@@ -411,7 +407,7 @@ export function buildSeoGraph(data) {
 			title,
 			description,
 			excerpt,
-			lang,
+			locale,
 			datePublished,
 			dateModified,
 			siteUrl,
@@ -452,6 +448,7 @@ export function buildSeoMeta(data) {
 	if (!seo || !settings || !settings.url || !pageUrl) return [];
 
 	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
+	const locale = resolveLocale({ node, data, settings, lang });
 	const siteUrl = settings.url;
 	const siteName = settings.languages?.[lang]?.title || settings.title;
 	const canonical = `${siteUrl.replace(/\/+$/, '')}${pageUrl}`;
@@ -465,7 +462,7 @@ export function buildSeoMeta(data) {
 		{ property: 'og:title', content: title },
 		{ property: 'og:description', content: description },
 		{ property: 'og:url', content: canonical },
-		{ property: 'og:locale', content: LOCALE_OG[lang] || lang }
+		{ property: 'og:locale', content: locale.replace('-', '_') }
 	];
 
 	if (shareImage) {
