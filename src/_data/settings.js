@@ -8,21 +8,21 @@ export default {
 	languages: {
 		en: {
 			contentDir: 'content/en/',
-			languageCode: 'en',
+			locale: 'en',
 			languageName: 'English',
 			title: 'Eleventy Baseline',
 			tagline: 'Start building your site and skip the recurring setup work.'
 		},
 		nl: {
 			contentDir: 'content/nl/',
-			languageCode: 'nl',
+			locale: 'nl',
 			languageName: 'Nederlands',
 			title: 'Eleventy Baseline',
 			tagline: 'Een rit op een magisch tapijt'
 		},
 		fr: {
 			contentDir: 'content/fr/',
-			languageCode: 'fr',
+			locale: 'fr',
 			languageName: 'Français',
 			title: 'Eleventy Baseline',
 			tagline: 'Un tour en tapis volant'
