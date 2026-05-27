@@ -84,5 +84,6 @@ export const settingsSchema = z.object({
 			meta: z.array(z.looseObject({})).optional(),
 			style: z.array(z.looseObject({})).optional()
 		})
-		.optional()
+		.optional(),
+	seo: z.looseObject({}).optional()
 });

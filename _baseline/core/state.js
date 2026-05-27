@@ -40,7 +40,8 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 		noindex: settings.noindex ?? false,
 		defaultLanguage: settings.defaultLanguage,
 		languages: settings.languages,
-		head: settings.head
+		head: settings.head,
+		seo: settings.seo
 	};
 
 	const resolvedOptions = {
