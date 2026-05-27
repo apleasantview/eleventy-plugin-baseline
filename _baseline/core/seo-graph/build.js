@@ -1,6 +1,47 @@
 import { setEntry } from '../registry.js';
 
 /**
+ * Resolve the canonical URL for the `seo` namespace.
+ *
+ * Strip-all by default: the entire query string and fragment are removed.
+ * Opt-out is a boolean carried at page level (`seo.preserveQueryParams`)
+ * or site level (`settings.seo.preserveQueryParams`); page-level wins.
+ * The fragment is always stripped regardless.
+ *
+ * Returns `undefined` when the page or site is noindex, when `settings.url`
+ * is missing, or when no resolvable canonical input exists.
+ *
+ * @param {{ seo?: any, data?: any, settings?: any, page?: any }} input
+ * @returns {string | undefined}
+ */
+export function resolveCanonicalUrl({ seo, data, settings, page }) {
+	if (!settings?.url) return undefined;
+	if (settings.noindex === true || data?.noindex === true) return undefined;
+
+	const raw = seo?.canonical ?? data?.canonical ?? page?.url;
+	if (!raw) return undefined;
+
+	let url;
+	try {
+		url = new URL(raw, settings.url);
+	} catch {
+		return undefined;
+	}
+
+	url.hash = '';
+
+	const pagePref = seo?.preserveQueryParams;
+	const sitePref = settings.seo?.preserveQueryParams;
+	const preserveQueryParams = pagePref ?? sitePref ?? false;
+
+	if (!preserveQueryParams) {
+		url.search = '';
+	}
+
+	return url.href;
+}
+
+/**
  * SEO namespace builder factory.
  *
  * Returns `buildSeoNamespace(data)` which normalises the cascade into a
@@ -17,13 +58,24 @@ import { setEntry } from '../registry.js';
  */
 export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 	return function buildSeoNamespace(data) {
-		const seo = data.seo ?? {};
+		const seoIn = data.seo ?? {};
+		const userSettings = data.settings ?? settings;
 
-		// TODO: canonical, openGraph, twitter, schema.graph
+		const seoOut = { ...seoIn };
+
+		const url = resolveCanonicalUrl({
+			seo: seoIn,
+			data,
+			settings: userSettings,
+			page: data.page
+		});
+		if (url) seoOut.url = url;
+
+		// TODO: openGraph, twitter, schema.graph
 
 		const inspectionKey = data.page?.url ?? data.page?.inputPath;
-		if (inspectionKey) setEntry(scope, inspectionKey, seo);
+		if (inspectionKey) setEntry(scope, inspectionKey, seoOut);
 
-		return seo;
+		return seoOut;
 	};
 }

@@ -56,7 +56,7 @@ export default function (data) {
 			return {
 				'@type': isArticle ? articleType || 'Article' : pageType || WEBPAGE_TYPE_DEFAULTS[node.type] || 'WebPage',
 				'@id': `${siteUrl}${node.url}#${isArticle ? 'article' : 'webpage'}`,
-				url: `${siteUrl}${node.url}`,
+				url: item?.data?.seo?.url,
 				name: node.title,
 				...(isArticle ? { headline: node.title } : {}),
 				description: node.description,

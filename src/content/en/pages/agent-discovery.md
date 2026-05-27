@@ -4,9 +4,6 @@ slug: 'agent-discovery'
 description: 'Static discovery surfaces for AI agents and integrations.'
 date: 2026-05-22
 permalink: '/agent-discovery/'
-sitemap:
-  ignore: true
-eleventyExcludeFromCollections: true
 ---
 
 This site exposes a handful of static surfaces that AI agents, search crawlers, and integrations can read without parsing HTML. They are generated at build time and cross-reference each other.
