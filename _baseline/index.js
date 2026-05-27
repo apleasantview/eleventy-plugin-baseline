@@ -15,6 +15,7 @@ import { createContentMapStore } from './core/content-map-store.js';
 import { createTranslationMapStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
 import { registerPageContext } from './core/page-context/index.js';
+import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugify } from './core/utils/slugify.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
@@ -286,8 +287,9 @@ export default function baseline(settings = {}, options = {}) {
 			helpers
 		};
 
-		// Page context registry
+		// Page context and SEO graph registries
 		const pageContextRegistry = registerPageContext(eleventyConfig, coreContext);
+		const seoGraphRegistry = registerSeoGraph(eleventyConfig, coreContext);
 
 		// --- Content graph ---
 		// Cascade hookup for the content graph. Reads via the runtime getter so
@@ -338,7 +340,8 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Snapshots ---
 		coreContext.snapshots = {
 			contentMap: () => contentMapStore.snapshot(),
-			pageContext: () => pageContextRegistry.snapshot()
+			pageContext: () => pageContextRegistry.snapshot(),
+			seoGraph: () => seoGraphRegistry.snapshot()
 		};
 
 		// --- Module registry ---
@@ -346,7 +349,7 @@ export default function baseline(settings = {}, options = {}) {
 			{ when: state.features.multilang, name: 'multilang', plugin: multilangCore },
 			{ when: state.features.sitemap, name: 'sitemap', plugin: sitemapCore },
 			{ name: 'navigator', plugin: navigatorCore },
-			{ when: state.features.head, name: 'head', plugin: headCore, consumes: { pageContext: true } },
+			{ when: state.features.head, name: 'head', plugin: headCore, consumes: { pageContext: true, seoGraph: true } },
 			{ when: state.features.assets, name: 'assets', plugin: assetsCore }
 		];
 
@@ -357,7 +360,8 @@ export default function baseline(settings = {}, options = {}) {
 			const moduleContext = {
 				...coreContext,
 				log: scopedLog(name),
-				resolvePageContext: consumes.pageContext ? pageContextRegistry : null
+				resolvePageContext: consumes.pageContext ? pageContextRegistry : null,
+				resolveSeoGraph: consumes.seoGraph ? seoGraphRegistry : null
 			};
 
 			eleventyConfig.addPlugin(plugin, moduleContext);
