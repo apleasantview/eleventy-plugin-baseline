@@ -33,15 +33,16 @@ const EOL = '\n';
  *   every field the composer needs from cascade-time into transform-time.
  *
  * Scope:
- *   Owns transform-time composition and placeholder replacement.
- *   Pass 1 covers bucket 1 only: charset, viewport, title, description,
- *   robots, canonical, optional generator, plus user extras from
- *   settings.head and hreflang alternates. SEO and JSON-LD are later passes.
- *   Does not own seed shape (page context) or driver internals.
+ *   Owns transform-time composition and placeholder replacement. Emits
+ *   charset, viewport, title, description, robots, canonical, optional
+ *   generator, user extras from settings.head, hreflang alternates, plus the
+ *   seo substrate's OG/Twitter projections and JSON-LD graph.
+ *   Does not own seed shape (page context), the seo projection
+ *   (core/seo-graph), or driver internals.
  *
  * Data flow:
- *   page context + translation-map store + settings.head → driver →
- *   PostHTML tree mutation (replaces <baseline-head>)
+ *   page context + seo handle + translation-map store + settings.head →
+ *   driver → PostHTML tree mutation (replaces <baseline-head>)
  *
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
@@ -59,6 +60,7 @@ export function headCore(eleventyConfig, moduleContext) {
 	}
 
 	const pageContextRegistry = moduleContext.resolvePageContext;
+	const seoGraphRegistry = moduleContext.resolveSeoGraph;
 
 	// Resolved plugin options with defaults.
 	const headOptions = {
@@ -86,6 +88,10 @@ export function headCore(eleventyConfig, moduleContext) {
 			return (tree) => tree;
 		}
 
+		// Peer substrate, read by the same key as the page context above. Carries
+		// the resolved canonical, OG/Twitter projections, and the JSON-LD graph.
+		const seo = seoGraphRegistry?.getByKey(key);
+
 		const translationKey = seeds.page?.translationKey;
 
 		const alternates = translationKey
@@ -94,6 +100,7 @@ export function headCore(eleventyConfig, moduleContext) {
 
 		return renderHead({
 			seeds,
+			seo,
 			alternates,
 			options: headOptions,
 			placeholderTag: PLACEHOLDER_TAG,

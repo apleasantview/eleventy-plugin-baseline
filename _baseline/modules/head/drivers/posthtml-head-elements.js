@@ -27,28 +27,41 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  *
  * Scope:
  *   Owns node emission, dedupe orchestration, capo sort, and placeholder
- *   replacement.
- *   Does not own seed shape (page context), hreflang building
- *   (head/utils/alternates.js), or capo's element weights (capo.js).
+ *   replacement. Owns the og:/twitter: vocabulary: the seo substrate hands
+ *   over short structured keys, this driver maps them to <meta>/<script>.
+ *   Does not own seed shape (page context), the seo projection
+ *   (core/seo-graph), hreflang building (head/utils/alternates.js), or capo's
+ *   element weights (capo.js).
  *
  * Data flow:
- *   seeds + alternates + options → emit → dedupe → capo-sort → PostHTML
+ *   seeds + seo + alternates + options → emit → dedupe → capo-sort → PostHTML
  *   tree mutation
  *
  * @param {Object} args
  * @param {Object} args.seeds - Page context for the current page.
+ * @param {Object} [args.seo] - Resolved seo namespace (url, graph, openGraph, twitter).
  * @param {Array<Object>} args.alternates - hreflang link descriptors.
  * @param {Object} args.options - Head options (titleSeparator, showGenerator).
  * @param {string} args.placeholderTag - Placeholder element to replace.
  * @param {string} args.eol - End-of-line separator interleaved between nodes.
  * @returns {(tree: Object) => Object} PostHTML plugin function.
  */
-export function renderHead({ seeds, alternates, options, placeholderTag, eol }) {
-	const defaults = emitMeta(seeds.meta, seeds.render, options);
+export function renderHead({ seeds, seo, alternates, options, placeholderTag, eol }) {
+	// seo.url is the canonical source, resolved at cascade-time. It is undefined
+	// on noindex / no-settings.url pages, where the seo layer deliberately drops
+	// the canonical — emitMeta's guard then emits nothing, which is correct. The
+	// seo handle is present whenever a head renders (same skip set as page
+	// context), so there is no absent-handle case to fall back for.
+	const canonical = seo?.url;
+	const defaults = emitMeta(seeds.meta, seeds.render, options, canonical);
 	const extras = emitExtras(seeds.head, alternates);
+	const { meta: seoMeta, multi: seoMulti, scripts: seoScripts } = emitSeo(seo);
 
-	const deduped = dedupeAll([...defaults, ...extras]);
-	const sorted = capoSort(deduped);
+	// seo emits last so the substrate wins a property collision with settings.head.
+	// Multi-valued tags and JSON-LD bypass dedupe (property-keyed last-wins would
+	// collapse repeated og:locale:alternate / article:author to one).
+	const deduped = dedupeAll([...defaults, ...extras, ...seoMeta]);
+	const sorted = capoSort([...deduped, ...seoMulti, ...seoScripts]);
 
 	return function rendererPlugin(tree) {
 		tree.match({ tag: placeholderTag }, () => ({
@@ -59,19 +72,85 @@ export function renderHead({ seeds, alternates, options, placeholderTag, eol }) 
 	};
 }
 
-function emitMeta(meta, render, options) {
+function emitMeta(meta, render, options, canonical) {
 	const nodes = [];
 	nodes.push(mkMeta({ charset: 'UTF-8' }));
 	nodes.push(mkMeta({ name: 'viewport', content: 'width=device-width, initial-scale=1.0' }));
 	if (meta.title) nodes.push({ tag: 'title', content: [meta.title] });
 	if (meta.description) nodes.push(mkMeta({ name: 'description', content: meta.description }));
 	nodes.push(mkMeta({ name: 'robots', content: meta.robots }));
-	if (meta.canonical) nodes.push(mkLink({ rel: 'canonical', href: meta.canonical }));
+	if (canonical) nodes.push(mkLink({ rel: 'canonical', href: canonical }));
 	if (options.showGenerator && render.generator) {
 		nodes.push(mkMeta({ name: 'generator', content: render.generator }));
 	}
 
 	return nodes;
+}
+
+/**
+ * Map the resolved seo projection to head nodes. The substrate hands over short
+ * structured keys; this driver owns the og:/twitter: vocabulary. Single-valued
+ * tags ride the deduped meta flow; multi-valued ones (og:locale:alternate,
+ * repeated article:author) go in `multi` to skip the property-keyed dedupe.
+ * The JSON-LD graph rides `scripts` (the adapter returns a bare @graph array,
+ * wrapped in its @context envelope here).
+ *
+ * @param {Object} [seo] - Resolved seo namespace (graph, openGraph, twitter).
+ * @returns {{ meta: Array<Object>, multi: Array<Object>, scripts: Array<Object> }}
+ */
+function emitSeo(seo) {
+	const meta = [];
+	const multi = [];
+	const scripts = [];
+	if (!seo) return { meta, multi, scripts };
+
+	const og = seo.openGraph ?? {};
+	const tw = seo.twitter ?? {};
+
+	const prop = (property, content) => {
+		if (content !== undefined && content !== null && content !== '') meta.push(mkMeta({ property, content }));
+	};
+	const name = (key, content) => {
+		if (content !== undefined && content !== null && content !== '') meta.push(mkMeta({ name: key, content }));
+	};
+
+	prop('og:title', og.title);
+	prop('og:type', og.type);
+	prop('og:description', og.description);
+	prop('og:url', og.url);
+	prop('og:site_name', og.siteName);
+	prop('og:locale', og.locale);
+	prop('og:image', og.image);
+	prop('og:image:alt', og.imageAlt);
+	if (og.imageWidth !== undefined) prop('og:image:width', String(og.imageWidth));
+	if (og.imageHeight !== undefined) prop('og:image:height', String(og.imageHeight));
+
+	for (const loc of asArray(og.localeAlternate)) {
+		if (loc) multi.push(mkMeta({ property: 'og:locale:alternate', content: loc }));
+	}
+
+	if (og.article) {
+		prop('article:published_time', og.article.publishedTime);
+		prop('article:modified_time', og.article.modifiedTime);
+		prop('article:section', og.article.section);
+		for (const author of asArray(og.article.authors)) {
+			if (author) multi.push(mkMeta({ property: 'article:author', content: author }));
+		}
+	}
+
+	name('twitter:card', tw.card);
+	name('twitter:site', tw.site);
+	name('twitter:creator', tw.creator);
+	name('twitter:title', tw.title);
+	name('twitter:description', tw.description);
+	name('twitter:image', tw.image);
+
+	if (seo.graph?.length) {
+		const content = JSON.stringify({ '@context': 'https://schema.org', '@graph': seo.graph });
+		scripts.push(mkScript({ type: 'application/ld+json', content }));
+	}
+
+	return { meta, multi, scripts };
 }
 
 function emitExtras(head, alternates = []) {
