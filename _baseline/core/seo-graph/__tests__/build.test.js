@@ -46,8 +46,8 @@ describe('resolveCanonicalUrl', () => {
 
 	it('preserves the query when page-level preserveQueryParams is true', () => {
 		const url = resolveCanonicalUrl({
-			seo: { canonical: '/posts/hello/?ref=docs', preserveQueryParams: true },
-			data: {},
+			seo: { canonical: '/posts/hello/?ref=docs' },
+			data: { preserveQueryParams: true },
 			settings: { url: siteUrl },
 			page: { url: '/posts/hello/' }
 		});
@@ -56,8 +56,8 @@ describe('resolveCanonicalUrl', () => {
 
 	it('lets page-level false override site-level true', () => {
 		const url = resolveCanonicalUrl({
-			seo: { canonical: '/posts/hello/?ref=docs', preserveQueryParams: false },
-			data: {},
+			seo: { canonical: '/posts/hello/?ref=docs' },
+			data: { preserveQueryParams: false },
 			settings: { url: siteUrl, seo: { preserveQueryParams: true } },
 			page: { url: '/posts/hello/' }
 		});

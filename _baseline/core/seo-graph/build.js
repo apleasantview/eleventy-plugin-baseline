@@ -4,8 +4,8 @@ import { setEntry } from '../registry.js';
  * Resolve the canonical URL for the `seo` namespace.
  *
  * Strip-all by default: the entire query string and fragment are removed.
- * Opt-out is a boolean carried at page level (`seo.preserveQueryParams`)
- * or site level (`settings.seo.preserveQueryParams`); page-level wins.
+ * Opt-out is a boolean carried at page level (`preserveQueryParams` in
+ * front matter) or site level (`settings.seo.preserveQueryParams`); page-level wins.
  * The fragment is always stripped regardless.
  *
  * Returns `undefined` when the page or site is noindex, when `settings.url`
@@ -30,7 +30,7 @@ export function resolveCanonicalUrl({ seo, data, settings, page }) {
 
 	url.hash = '';
 
-	const pagePref = seo?.preserveQueryParams;
+	const pagePref = data?.preserveQueryParams;
 	const sitePref = settings.seo?.preserveQueryParams;
 	const preserveQueryParams = pagePref ?? sitePref ?? false;
 
