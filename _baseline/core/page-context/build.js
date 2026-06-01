@@ -175,22 +175,38 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const userHead = userSettings.head ?? {};
 		const pageHead = data?.head ?? {};
 
+		// Keys must distinguish tags that legitimately differ: links by rel + href
+		// (so preconnect and dns-prefetch to one host both survive), metas by their
+		// identifying attribute (name / property / charset / http-equiv) so og:*
+		// property tags are not collapsed. The head driver runs the authoritative
+		// final pass; this just merges settings + front-matter without losing tags.
+		// Links key on rel + href so tags that share a host but differ in rel
+		// (preconnect vs dns-prefetch) are not collapsed. Metas key on their
+		// identifying attribute so two tags with the same key (e.g. a repeated
+		// og:title) collapse to the last, matching the driver's authoritative
+		// pass instead of leaning on uniqueBy's by-shape fallback.
 		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], (item) => {
 			if (item?.rel === 'canonical') {
 				try {
-					return normalizeCanonical(item.href, siteUrl);
+					return `canonical|${normalizeCanonical(item.href, siteUrl)}`;
 				} catch {
-					return item?.href;
+					return `canonical|${item?.href}`;
 				}
 			}
-			return item?.href;
+			return item?.href ? `${item.rel ?? ''}|${item.href}` : undefined;
 		});
 
 		const script = uniqueBy([...(userHead.script ?? []), ...(pageHead.script ?? [])], 'src');
 
 		const style = uniqueBy([...(userHead.style ?? []), ...(pageHead.style ?? [])], 'href');
 
-		const meta = uniqueBy([...(userHead.meta ?? []), ...(pageHead.meta ?? [])], 'name');
+		const meta = uniqueBy([...(userHead.meta ?? []), ...(pageHead.meta ?? [])], (item) => {
+			if (item?.charset) return 'charset';
+			if (item?.name) return `name:${item.name}`;
+			if (item?.property) return `prop:${item.property}`;
+			if (item?.['http-equiv']) return `http:${item['http-equiv']}`;
+			return undefined;
+		});
 
 		return {
 			link,
