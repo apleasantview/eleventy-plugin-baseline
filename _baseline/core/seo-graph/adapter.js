@@ -17,6 +17,7 @@ import {
 	buildImageObject
 } from '@jdevalk/seo-graph-core';
 import { resolveDates } from '../dates/index.js';
+import { resolveLocale } from '../locale/index.js';
 import { slugify } from '../utils/slugify.js';
 
 /** Recursively strip null/undefined; `_data/schema.js` uses null as "not set". */
@@ -34,11 +35,6 @@ function dropNulls(value) {
 		return Object.keys(out).length ? out : null;
 	}
 	return value;
-}
-
-/** BCP-47 locale for the page; trusts multilang's normalised page.locale first. */
-function resolveLocale(node, data, settings, lang) {
-	return node?.locale || data?.page?.locale || data?.locale || settings?.languages?.[lang]?.locale || lang;
 }
 
 /** Stable within-site slug for an Organization @id. */

@@ -9,12 +9,7 @@
 // — written fresh against Baseline's namespace.
 
 import { resolveDates } from '../dates/index.js';
-import { toOpenGraphLocale } from '../locale/index.js';
-
-/** BCP-47 locale for the page; trusts multilang's normalised page.locale first. */
-function resolveLocale(node, data, settings, lang) {
-	return node?.locale || data?.page?.locale || data?.locale || settings?.languages?.[lang]?.locale || lang;
-}
+import { resolveLocale, toOpenGraphLocale } from '../locale/index.js';
 
 /**
  * Sibling-locale alternates in OG underscore form, excluding the page's own
