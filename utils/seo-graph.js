@@ -295,8 +295,17 @@ export function buildSeoGraph(data) {
 	// Reading _pageContext creates a cycle (Baseline's page-context builder reads data.head).
 	// _navigator is addGlobalData (not Nunjucks-only) and carries the per-page identity
 	// merged with extracted DOM data, so it covers what _pageContext would have given us.
-	const seo = data.seo;
 	const settings = data.settings;
+	// Bridge until this file retires with the seo-graph migration: identity
+	// moved to `data.schema`, the share image to `settings.seo.ogImage`.
+	// Synthesised into the old `seo` shape; undefined `data.schema` (proxy)
+	// yields undefined `seo`, still caught by the guard below.
+	const schema = data.schema;
+	const seo = schema && {
+		organization: schema.organization,
+		person: schema.person,
+		shareImage: settings?.seo?.ogImage ?? null
+	};
 	const pageUrl = data.page?.url;
 	const datePublished = data.page?.datePublished;
 	const dateModified = data.page?.dateModified;
@@ -454,7 +463,8 @@ export function buildSeoMeta(data) {
 	const canonical = `${siteUrl.replace(/\/+$/, '')}${pageUrl}`;
 	const title = node?.title || data.title;
 	const description = node?.description || data.description || node?.excerpt;
-	const shareImage = seo.shareImage;
+	// Bridge: share image moved to `settings.seo.ogImage` (see buildSeoGraph).
+	const shareImage = settings.seo?.ogImage ?? null;
 
 	const entries = [
 		{ property: 'og:site_name', content: siteName },
