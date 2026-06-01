@@ -6,6 +6,7 @@ date: 2026-05-23
 permalink: '/about/'
 translationKey: 'about'
 type: 'about'
+pageType: 'AboutPage'
 ---
 
 _Baseline is an opinionated Eleventy plugin that handles the structural decisions you'd otherwise wire up on every project. Looking for the marketing pitch? It's over on the [docs overview](https://www.eleventy-baseline.dev/docs/introduction/overview/)._

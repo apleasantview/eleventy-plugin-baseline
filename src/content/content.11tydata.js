@@ -1,4 +1,4 @@
-import { buildSeoGraph, buildSeoMeta } from '../../utils/seo-graph.js';
+import { buildSeoMeta } from '../../utils/seo-graph.js';
 import { gitModified } from '../../utils/git-date.js';
 
 const mdAlternates = (data) => {
@@ -35,14 +35,18 @@ export default {
 		},
 		head: {
 			// JSON-LD graph emitted into <head> via Baseline's head.script merge.
-			// buildSeoGraph reads _navigator.nodes for page identity + translation siblings.
-			script: (data) => [
-				{
-					type: 'application/ld+json',
-					content: JSON.stringify(buildSeoGraph(data))
-				}
-			],
-			// OG + Twitter meta. Same data sources as the graph so they cannot drift.
+			// Reads the plugin-resolved graph (data.seo.graph, assembled by the
+			// seo-graph substrate); the adapter returns the bare @graph array, so we
+			// wrap it in the @context envelope here. Guarded: skipped pages (_internal
+			// / non-html) resolve data.seo to null, so emit nothing when there's no
+			// graph rather than throwing. Bridge until the head module reads the seo
+			// handle directly (bar 4).
+			script: (data) => {
+				const graph = data.seo?.graph;
+				if (!graph?.length) return [];
+				return [{ type: 'application/ld+json', content: JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }) }];
+			},
+			// OG + Twitter meta — still via the bridge until 3b lands open-graph.js.
 			meta: (data) => buildSeoMeta(data),
 			// Add markdown alternates for site pages.
 			link: (data) => mdAlternates(data)

@@ -6,7 +6,7 @@
 // Schemamap: directive in robots.txt. Discovery surface for AI agents that
 // consume structured data corpus-wide (NLWeb pattern).
 
-import { WEBPAGE_TYPE_DEFAULTS } from '../../utils/seo-graph.js';
+import { makeIds } from '@jdevalk/seo-graph-core';
 import { gitModified } from '../../utils/git-date.js';
 
 export const data = {
@@ -34,8 +34,13 @@ export const data = {
 export default function (data) {
 	const { settings, _navigator, schemaType, collections } = data;
 	const navigatorNodes = _navigator?.nodes || {};
-	const siteUrlRaw = settings?.url || '';
-	const siteUrl = siteUrlRaw.replace(/\/+$/, '');
+	const siteUrl = (settings?.url || '').replace(/\/+$/, '');
+	const isArticle = schemaType === 'article';
+
+	// Mint @ids through the same factory the per-page graph uses, so the corpus
+	// and per-page documents share identity (canonical = siteUrl + node.url,
+	// which is exactly what the adapter feeds buildWebPage/buildArticle).
+	const ids = makeIds({ siteUrl: settings?.url || '' });
 
 	// Navigator nodes do not carry inputPath or front-matter overrides; join via
 	// collections.all by url so we can resolve the source file (for git-backed
@@ -45,37 +50,48 @@ export default function (data) {
 		if (item?.url) itemByUrl[item.url] = item;
 	}
 
+	// Lift the resolved identity nodes (WebSite + the entity it publishes through)
+	// from any page's graph, so the corpus shares the per-page identity verbatim
+	// and resolves its own publisher ref rather than re-deriving the org slug.
+	// Falls back to a minimal WebSite if no resolved graph is found.
+	let identityNodes = null;
+	for (const item of collections?.all || []) {
+		const graph = item?.data?.seo?.graph;
+		if (!Array.isArray(graph)) continue;
+		const website = graph.find((n) => n['@type'] === 'WebSite');
+		if (!website) continue;
+		const publisherId = website.publisher?.['@id'];
+		const publisher = publisherId && graph.find((n) => n['@id'] === publisherId);
+		identityNodes = publisher ? [website, publisher] : [website];
+		break;
+	}
+
 	const entries = Object.values(navigatorNodes)
 		.filter((node) => node?.type === schemaType)
 		.map((node) => {
 			const item = itemByUrl[node.url];
-			const articleType = item?.data?.articleType;
-			const pageType = item?.data?.pageType;
-			const isArticle = schemaType === 'article';
+			const canonical = `${siteUrl}${node.url}`;
+			// @type from the page's own opt-in front matter; no editorial-to-schema
+			// bridge (matches the adapter dropping WEBPAGE_TYPE_DEFAULTS).
+			const type = isArticle ? item?.data?.articleType || 'Article' : item?.data?.pageType || 'WebPage';
 
 			return {
-				'@type': isArticle ? articleType || 'Article' : pageType || WEBPAGE_TYPE_DEFAULTS[node.type] || 'WebPage',
-				'@id': `${siteUrl}${node.url}#${isArticle ? 'article' : 'webpage'}`,
+				'@type': type,
+				'@id': isArticle ? ids.article(canonical) : ids.webPage(canonical),
 				url: item?.data?.seo?.url,
 				name: node.title,
 				...(isArticle ? { headline: node.title } : {}),
 				description: node.description,
 				inLanguage: node.locale || node.lang,
 				...(item?.inputPath ? { dateModified: gitModified(item.inputPath) } : {}),
-				isPartOf: { '@id': `${siteUrl}/#website` }
+				isPartOf: { '@id': ids.website }
 			};
 		});
 
 	const graph = {
 		'@context': 'https://schema.org',
 		'@graph': [
-			{
-				'@type': 'WebSite',
-				'@id': `${siteUrl}/#website`,
-				url: `${siteUrl}/`,
-				name: settings?.title,
-				publisher: { '@id': `${siteUrl}/#organization` }
-			},
+			...(identityNodes || [{ '@type': 'WebSite', '@id': ids.website, url: `${siteUrl}/`, name: settings?.title }]),
 			...entries
 		]
 	};
