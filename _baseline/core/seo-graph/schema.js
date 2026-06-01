@@ -7,15 +7,12 @@ export const seoSchema = z
 		title: z.string().optional(),
 		description: z.string().optional(),
 		url: z.string().optional(),
-		image: z.unknown().optional(),
+		ogImage: z.unknown().optional(),
 		locale: z.string().optional(),
 		openGraph: z.record(z.unknown()).optional(),
 		twitter: z.record(z.unknown()).optional(),
-		schema: z
-			.object({
-				graph: z.array(z.unknown()).optional()
-			})
-			.passthrough()
-			.optional()
+		// The assembled JSON-LD @graph. Authored identity lives at
+		// `data.schema`; the resolved graph lives here. No `seo.schema` path.
+		graph: z.array(z.unknown()).optional()
 	})
 	.passthrough();

@@ -41,5 +41,10 @@ export default {
 		meta: [{ name: 'color-scheme', content: 'light dark' }]
 	},
 
-	seo: {}
+	seo: {
+		preserveQueryParams: false,
+		ogImage: null, // TODO: 1200×630 OG card for the baseline site
+		openGraph: { type: 'website' },
+		twitter: { card: 'summary_large_image' }
+	}
 };

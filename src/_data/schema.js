@@ -1,6 +1,6 @@
-// SEO graph data for utils/seo-graph.js (JSON-LD @graph + OG/Twitter fallbacks).
-// Cascade key: seo (`seo.organization`, `seo.person`, `seo.shareImage`).
-// Null fields are dropped from the emitted graph.
+// schema.org identity for the site: who published it.
+// Cascade key: schema (`schema.organization`, `schema.person`).
+// Read by the seo-graph substrate; null fields are dropped from the graph.
 export default {
 	organization: {
 		'@type': 'Organization',
@@ -40,7 +40,5 @@ export default {
 			'https://www.linkedin.com/in/cristovaoverstraeten/'
 		]
 		// worksFor wired by the graph builder via @id reference
-	},
-
-	shareImage: null // TODO: 1200×630 OG card for the baseline site
+	}
 };
