@@ -6,6 +6,7 @@ import * as z from 'zod';
 // `options.head` slice: render-behaviour knobs.
 export const optionsSchema = z.looseObject({
 	titleSeparator: z.string().optional(),
+	titleTemplate: z.string().optional(),
 	showGenerator: z.boolean().optional()
 });
 

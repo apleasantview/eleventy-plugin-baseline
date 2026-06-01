@@ -5,6 +5,46 @@ import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
 
 /**
+ * Apply a title template, replacing tokens with resolved values. Tokens:
+ * `%s` (page title), `%siteTitle%`, `%tagline%`. One regex with the longer
+ * tokens first so `%s` does not eat the `%s` inside `%siteTitle%`.
+ * Replacement is literal: an empty value leaves the surrounding template
+ * text as the author wrote it.
+ *
+ * @param {string} template
+ * @param {{ title?: string, siteTitle?: string, tagline?: string }} tokens
+ * @returns {string}
+ */
+export function applyTitleTemplate(template, { title, siteTitle, tagline }) {
+	const values = { '%s': title, '%siteTitle%': siteTitle, '%tagline%': tagline };
+	return template.replace(/%siteTitle%|%tagline%|%s/g, (token) => values[token] ?? '');
+}
+
+/**
+ * Resolve the final `<title>` text.
+ *
+ * Precedence: per-page bare opt-out (`titleTemplate: null`) → per-page
+ * template → titleless home (baked-in `siteTitle` + `tagline`) → global
+ * template → default (`page – site`, guarded so a page named like the site
+ * stays bare). With no template set anywhere this reproduces the legacy
+ * separator composition exactly.
+ *
+ * @returns {string}
+ */
+export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, separator, globalTemplate }) {
+	const pageTemplate = data?.titleTemplate;
+	const base = pageTitle ?? siteTitle;
+	const tokens = { title: pageTitle, siteTitle, tagline };
+
+	if (pageTemplate === null) return base;
+	if (typeof pageTemplate === 'string') return applyTitleTemplate(pageTemplate, tokens);
+	if (isHome && !data?.seo?.title) return tagline ? `${siteTitle}${separator}${tagline}` : base;
+	if (typeof globalTemplate === 'string') return applyTitleTemplate(globalTemplate, tokens);
+	if (!isHome && pageTitle && siteTitle && pageTitle !== siteTitle) return `${pageTitle}${separator}${siteTitle}`;
+	return base;
+}
+
+/**
  * Page context — builder factory
  *
  * Returns a `buildPageContext` function bound to the runtime dependencies
@@ -118,18 +158,6 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const pageTitle = data?.seo?.title ?? data?.title ?? siteTitle;
 		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt ?? extractFirstParagraph(data);
 
-		function enhance(value) {
-			if (query.isHome && !data?.seo?.title && tagline) {
-				return `${siteTitle}${separator}${tagline}`;
-			}
-
-			if (!query.isHome && pageTitle && siteTitle && pageTitle !== siteTitle) {
-				return `${pageTitle}${separator}${siteTitle}`;
-			}
-
-			return value;
-		}
-
 		// ---- DESCRIPTION ----
 		const description = resolveField({
 			pageValue: pageDescription,
@@ -138,12 +166,15 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		});
 
 		// ---- TITLE ----
-		const base = resolveField({
-			pageValue: pageTitle,
-			siteValue: siteTitle
+		const title = resolveTitle({
+			data,
+			isHome: query.isHome,
+			pageTitle,
+			siteTitle,
+			tagline,
+			separator,
+			globalTemplate: options.head?.titleTemplate
 		});
-
-		const title = enhance(base);
 
 		// ---- CANONICAL ----
 		let canonical;

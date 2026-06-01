@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPageContext } from '../build.js';
+import { createPageContext, applyTitleTemplate, resolveTitle } from '../build.js';
 
 // Drive the public builder and read the merged `head` it produces. These guard
 // the dedupe regression: distinct tags must survive the settings + front-matter
@@ -62,5 +62,116 @@ describe('buildHead dedupe', () => {
 			}
 		});
 		expect(head.link).toHaveLength(1);
+	});
+});
+
+describe('applyTitleTemplate', () => {
+	it('replaces %s with the page title', () => {
+		expect(applyTitleTemplate('%s', { title: 'About' })).toBe('About');
+	});
+
+	it('replaces %siteTitle% and %tagline%', () => {
+		expect(applyTitleTemplate('%siteTitle% — %tagline%', { siteTitle: 'Site', tagline: 'Tag' })).toBe('Site — Tag');
+	});
+
+	it('does not let %s corrupt the %s inside %siteTitle%', () => {
+		expect(applyTitleTemplate('%s | %siteTitle%', { title: 'About', siteTitle: 'Site' })).toBe('About | Site');
+	});
+
+	it('resolves an absent token to an empty string, literally', () => {
+		expect(applyTitleTemplate('%s — %tagline%', { title: 'About' })).toBe('About — ');
+	});
+});
+
+describe('resolveTitle', () => {
+	const separator = ' – ';
+	const siteTitle = 'Baseline';
+	const tagline = 'Skip the setup';
+
+	it('returns a bare page title when the page opts out with null', () => {
+		const out = resolveTitle({
+			data: { title: 'About', titleTemplate: null },
+			isHome: false,
+			pageTitle: 'About',
+			siteTitle,
+			tagline,
+			separator
+		});
+		expect(out).toBe('About');
+	});
+
+	it('applies a per-page template above everything else', () => {
+		const out = resolveTitle({
+			data: { title: 'About', titleTemplate: '%s :: %siteTitle%' },
+			isHome: false,
+			pageTitle: 'About',
+			siteTitle,
+			tagline,
+			separator,
+			globalTemplate: '%s | %siteTitle%'
+		});
+		expect(out).toBe('About :: Baseline');
+	});
+
+	it('keeps the titleless home baked-in, ignoring a global template', () => {
+		const out = resolveTitle({
+			data: {},
+			isHome: true,
+			pageTitle: siteTitle,
+			siteTitle,
+			tagline,
+			separator,
+			globalTemplate: '%s | %siteTitle%'
+		});
+		expect(out).toBe('Baseline – Skip the setup');
+	});
+
+	it('applies the global template on a non-home page', () => {
+		const out = resolveTitle({
+			data: { title: 'About' },
+			isHome: false,
+			pageTitle: 'About',
+			siteTitle,
+			tagline,
+			separator,
+			globalTemplate: '%s | %siteTitle%'
+		});
+		expect(out).toBe('About | Baseline');
+	});
+
+	it('falls back to the legacy page–site composition with no template', () => {
+		const out = resolveTitle({
+			data: { title: 'About' },
+			isHome: false,
+			pageTitle: 'About',
+			siteTitle,
+			tagline,
+			separator
+		});
+		expect(out).toBe('About – Baseline');
+	});
+
+	it('stays bare when the page title equals the site title', () => {
+		const out = resolveTitle({
+			data: { title: 'Baseline' },
+			isHome: false,
+			pageTitle: 'Baseline',
+			siteTitle,
+			tagline,
+			separator
+		});
+		expect(out).toBe('Baseline');
+	});
+
+	it('composes the legacy home title with no template', () => {
+		const out = resolveTitle({
+			data: {},
+			isHome: true,
+			pageTitle: siteTitle,
+			siteTitle,
+			tagline,
+			separator
+		});
+		expect(out).toBe('Baseline – Skip the setup');
 	});
 });
