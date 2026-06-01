@@ -26,8 +26,8 @@ const __dirname = path.dirname(__filename);
  * Lifecycle:
  *   build-time   → register `_navigator` ({ nodes, edges, backlinks }),
  *                  debug globals, filters, and the optional virtual debug page
- *   cascade-time → eleventyComputed `_snapshot` resolves contentMap and
- *                  pageContext on each page
+ *   cascade-time → eleventyComputed `_snapshot` resolves contentMap,
+ *                  pageContext, and seoGraph on each page
  *
  * Why this exists:
  *   Templates need an addressable cross-page surface for graph reads, and
@@ -55,11 +55,11 @@ const __dirname = path.dirname(__filename);
  * @param {Object} moduleContext
  * @param {Object} moduleContext.state - Resolved plugin state.
  * @param {Object} moduleContext.runtime - Lazy access layer; reads contentGraph.
- * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext }.
+ * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext, seoGraph }.
  */
 export function navigatorCore(eleventyConfig, moduleContext) {
 	const { state, runtime, snapshots, log, env } = moduleContext;
-	const { settings, options } = state;
+	const { options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
 	const parsed = optionsSchema.safeParse(options.navigator);
@@ -78,7 +78,8 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
 		return () => ({
 			contentMap: snapshots.contentMap(),
-			pageContext: snapshots.pageContext()
+			pageContext: snapshots.pageContext(),
+			seoGraph: snapshots.seoGraph()
 		});
 	});
 

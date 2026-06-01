@@ -6,9 +6,6 @@
 // Schemamap: directive in robots.txt. Discovery surface for AI agents that
 // consume structured data corpus-wide (NLWeb pattern).
 
-import { makeIds } from '@jdevalk/seo-graph-core';
-import { resolveDates } from '../../_baseline/core/dates/index.js';
-
 export const data = {
 	// Paginate over `collections.all`, then transform to the distinct set of
 	// `type` values via `before`. Each yields a /schema/<type>.json corpus.
@@ -32,31 +29,21 @@ export const data = {
 };
 
 export default function (data) {
-	const { settings, _navigator, schemaType, collections } = data;
+	const { _navigator, _snapshot, schemaType } = data;
 	const navigatorNodes = _navigator?.nodes || {};
-	const siteUrl = (settings?.url || '').replace(/\/+$/, '');
+	// Every page's resolved `seo` namespace, keyed by url (the registry snapshot
+	// the navigator surfaces). The corpus reads identity straight from here, so
+	// it never re-mints @ids — those were minted once, by the per-page adapter.
+	const seoByUrl = _snapshot?.seoGraph || {};
 	const isArticle = schemaType === 'article';
 
-	// Mint @ids through the same factory the per-page graph uses, so the corpus
-	// and per-page documents share identity (canonical = siteUrl + node.url,
-	// which is exactly what the adapter feeds buildWebPage/buildArticle).
-	const ids = makeIds({ siteUrl: settings?.url || '' });
-
-	// Navigator nodes do not carry inputPath or front-matter overrides; join via
-	// collections.all by url so we can resolve the source file (for git-backed
-	// dateModified) and read pageType/articleType from item.data.
-	const itemByUrl = {};
-	for (const item of collections?.all || []) {
-		if (item?.url) itemByUrl[item.url] = item;
-	}
-
 	// Lift the resolved identity nodes (WebSite + the entity it publishes through)
-	// from any page's graph, so the corpus shares the per-page identity verbatim
-	// and resolves its own publisher ref rather than re-deriving the org slug.
-	// Falls back to a minimal WebSite if no resolved graph is found.
+	// from any page's resolved graph, so the corpus shares the per-page identity
+	// verbatim and resolves its own publisher ref. Falls back to nothing if no
+	// resolved graph exists (a corpus with no entries either way).
 	let identityNodes = null;
-	for (const item of collections?.all || []) {
-		const graph = item?.data?.seo?.graph;
+	for (const seo of Object.values(seoByUrl)) {
+		const graph = seo?.graph;
 		if (!Array.isArray(graph)) continue;
 		const website = graph.find((n) => n['@type'] === 'WebSite');
 		if (!website) continue;
@@ -65,38 +52,48 @@ export default function (data) {
 		identityNodes = publisher ? [website, publisher] : [website];
 		break;
 	}
+	const websiteId = identityNodes?.[0]?.['@id'];
+
+	// Find a page's primary node inside its own resolved graph, structurally:
+	// the WebPage is `isPartOf` the WebSite; an Article is `isPartOf` the WebPage.
+	// No @id arithmetic — the node carries the id the adapter already minted.
+	function pickPrimary(graph) {
+		if (!Array.isArray(graph) || !websiteId) return undefined;
+		const webPage = graph.find((n) => n.isPartOf?.['@id'] === websiteId);
+		if (!isArticle) return webPage;
+		return graph.find((n) => n.isPartOf?.['@id'] === webPage?.['@id']);
+	}
 
 	const entries = Object.values(navigatorNodes)
 		.filter((node) => node?.type === schemaType)
 		.map((node) => {
-			const item = itemByUrl[node.url];
-			const canonical = `${siteUrl}${node.url}`;
-			// @type from the page's own opt-in front matter; no editorial-to-schema
-			// bridge (matches the adapter dropping WEBPAGE_TYPE_DEFAULTS).
-			const type = isArticle ? item?.data?.articleType || 'Article' : item?.data?.pageType || 'WebPage';
-			// Same resolveDates source the per-page graph reads, so the corpus
-			// dateModified matches the page's own JSON-LD verbatim.
-			const dateModified = item ? resolveDates(item.data).dateModified : undefined;
+			const seo = seoByUrl[node.url];
+			const primary = pickPrimary(seo?.graph);
+			// A navigator node with no resolved graph (or graph-less page) is not a
+			// corpus entry — skip rather than emit one missing its identity.
+			if (!primary) return null;
 
 			return {
-				'@type': type,
-				'@id': isArticle ? ids.article(canonical) : ids.webPage(canonical),
-				url: item?.data?.seo?.url,
+				'@type': primary['@type'],
+				'@id': primary['@id'],
+				url: seo.url,
 				name: node.title,
 				...(isArticle ? { headline: node.title } : {}),
 				description: node.description,
 				inLanguage: node.locale || node.lang,
-				...(dateModified ? { dateModified: dateModified.toISOString() } : {}),
-				isPartOf: { '@id': ids.website }
+				// dateModified rides on the node already (ISO string), same
+				// resolveDates source the page's own JSON-LD used.
+				...(primary.dateModified ? { dateModified: primary.dateModified } : {}),
+				// Flat corpus: every entry is a child of the WebSite, not of its
+				// per-page WebPage (which is what the node's own isPartOf points to).
+				isPartOf: { '@id': websiteId }
 			};
-		});
+		})
+		.filter(Boolean);
 
 	const graph = {
 		'@context': 'https://schema.org',
-		'@graph': [
-			...(identityNodes || [{ '@type': 'WebSite', '@id': ids.website, url: `${siteUrl}/`, name: settings?.title }]),
-			...entries
-		]
+		'@graph': [...(identityNodes || []), ...entries]
 	};
 
 	return JSON.stringify(graph, null, 2);
