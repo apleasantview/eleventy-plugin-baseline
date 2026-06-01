@@ -17,10 +17,13 @@ export const settingsHeadSchema = z.looseObject({
 	style: z.array(z.looseObject({})).optional()
 });
 
-// `settings.seo` site-default SEO scalars, page-overridable.
+// `settings.seo` site-default SEO config: canonical policy, default share
+// image, and OG/Twitter defaults. Structural only; values stay permissive.
 export const settingsSeoSchema = z.looseObject({
-	ogImage: z.string().optional(),
-	twitterSite: z.string().optional()
+	preserveQueryParams: z.boolean().optional(),
+	ogImage: z.unknown().optional(),
+	openGraph: z.looseObject({}).optional(),
+	twitter: z.looseObject({}).optional()
 });
 
 // Page-level `seo:` block. Same scalar set as bare front matter, namespaced.
