@@ -5,7 +5,7 @@
  * user templates can reach: filters, global functions, shortcodes.
  */
 
-import { registerDateGlobal } from './global-date-function.js';
+import { registerDateGlobal } from '../dates/index.js';
 
 // --- Filters ---
 export { markdownFilter } from '../markdown/markdownify.js';
