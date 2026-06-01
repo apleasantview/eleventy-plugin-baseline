@@ -46,7 +46,7 @@ export function resolveCanonicalUrl({ seo, data, settings, page }) {
  *
  * Returns `buildSeoNamespace(data)` which normalises the cascade into a
  * resolved `seo` object: canonical fields, OG/Twitter projections, and the
- * assembled JSON-LD graph under `schema.graph`.
+ * assembled JSON-LD graph at `seo.graph`.
  *
  * @param {{
  *   scope: { values: Map },
@@ -71,7 +71,7 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 		});
 		if (url) seoOut.url = url;
 
-		// TODO: openGraph, twitter, schema.graph
+		// TODO: openGraph, twitter, graph
 
 		const inspectionKey = data.page?.url ?? data.page?.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, seoOut);

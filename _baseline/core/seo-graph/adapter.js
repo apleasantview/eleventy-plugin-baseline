@@ -2,7 +2,7 @@
 //
 // Translates Baseline's cascade (settings, page-context, navigator nodes)
 // into piece-builder inputs, then calls assembleGraph and returns the
-// resolved @graph array for storage under data.seo.schema.graph.
+// resolved @graph array for storage under data.seo.graph.
 
 /**
  * @param {{
