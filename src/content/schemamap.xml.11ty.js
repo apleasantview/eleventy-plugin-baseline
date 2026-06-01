@@ -1,9 +1,10 @@
 // Catalogues the per-type schema endpoints. Paired with /schema/*.json
 // (the corpus documents) and the Schemamap: directive in robots.txt.
-// Each entry's lastmod is the most recent git commit across the source
-// files that feed that type's endpoint, so it cannot drift from the JSON-LD.
+// Each entry's lastmod is the most recent resolved dateModified across the
+// pages that feed that type's endpoint, read from the same resolveDates source
+// the per-page and corpus JSON-LD use, so it cannot drift from them.
 
-import { maxGitModified } from '../../utils/git-date.js';
+import { resolveDates } from '../../_baseline/core/dates/index.js';
 
 const TYPES = ['article', 'page', 'about'];
 
@@ -18,14 +19,21 @@ export default function (data) {
 	const siteUrl = (settings?.url || '').replace(/\/+$/, '');
 	const navigatorNodes = Object.values(_navigator?.nodes || {});
 
-	const inputPathByUrl = {};
+	const itemByUrl = {};
 	for (const item of collections?.all || []) {
-		if (item?.url && item?.inputPath) inputPathByUrl[item.url] = item.inputPath;
+		if (item?.url) itemByUrl[item.url] = item;
 	}
 
 	const entries = TYPES.map((type) => {
-		const paths = navigatorNodes.filter((n) => n?.type === type).map((n) => inputPathByUrl[n.url]);
-		return { type, lastmod: maxGitModified(paths) };
+		let lastmod = null;
+		for (const node of navigatorNodes) {
+			if (node?.type !== type) continue;
+			const item = itemByUrl[node.url];
+			const resolved = item ? resolveDates(item.data).dateModified : undefined;
+			const iso = resolved ? resolved.toISOString() : null;
+			if (iso && (!lastmod || iso > lastmod)) lastmod = iso;
+		}
+		return { type, lastmod };
 	});
 
 	const lines = [

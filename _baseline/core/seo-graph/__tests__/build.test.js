@@ -157,4 +157,34 @@ describe('createSeoNamespace', () => {
 		});
 		expect(out.url).toBeUndefined();
 	});
+
+	// Wiring seam: the namespace must actually assemble graph + projections in,
+	// not just resolve the canonical. The builders are tested in isolation
+	// (adapter.test.js, open-graph.test.js); these guard that build.js calls
+	// them and assigns the result, so dropping a call reds here.
+	// The graph + projection builders read data.settings directly (the real
+	// cascade always carries it), so the bag includes it — unlike the canonical
+	// tests above, which exercise the closure-settings fallback.
+	const settings = { url: siteUrl, title: 'Demo Site' };
+
+	it('wires the OG projection into seo.openGraph', () => {
+		const build = makeBuilder();
+		const out = build({ seo: {}, settings, title: 'Hello', page: { url: '/posts/hello/' } });
+		expect(out.openGraph.type).toBe('website');
+		expect(out.openGraph.title).toBe('Hello');
+		expect(out.openGraph.url).toBe('https://www.example.com/posts/hello/');
+	});
+
+	it('wires the Twitter projection into seo.twitter', () => {
+		const build = makeBuilder();
+		const out = build({ seo: {}, settings, page: { url: '/posts/hello/' } });
+		expect(out.twitter.card).toBe('summary_large_image');
+	});
+
+	it('wires the assembled graph into seo.graph', () => {
+		const build = makeBuilder();
+		const out = build({ seo: {}, settings, page: { url: '/posts/hello/' } });
+		expect(Array.isArray(out.graph)).toBe(true);
+		expect(out.graph.length).toBeGreaterThan(0);
+	});
 });

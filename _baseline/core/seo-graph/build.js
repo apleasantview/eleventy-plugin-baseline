@@ -1,5 +1,6 @@
 import { setEntry } from '../registry.js';
 import { assembleSchemaGraph } from './adapter.js';
+import { buildSocialProjections } from './open-graph.js';
 
 /**
  * Resolve the canonical URL for the `seo` namespace.
@@ -74,7 +75,9 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 
 		seoOut.graph = assembleSchemaGraph(data);
 
-		// TODO: openGraph, twitter
+		const social = buildSocialProjections(data, url);
+		seoOut.openGraph = social.openGraph;
+		seoOut.twitter = social.twitter;
 
 		const inspectionKey = data.page?.url ?? data.page?.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, seoOut);

@@ -7,7 +7,7 @@
 // consume structured data corpus-wide (NLWeb pattern).
 
 import { makeIds } from '@jdevalk/seo-graph-core';
-import { gitModified } from '../../utils/git-date.js';
+import { resolveDates } from '../../_baseline/core/dates/index.js';
 
 export const data = {
 	// Paginate over `collections.all`, then transform to the distinct set of
@@ -74,6 +74,9 @@ export default function (data) {
 			// @type from the page's own opt-in front matter; no editorial-to-schema
 			// bridge (matches the adapter dropping WEBPAGE_TYPE_DEFAULTS).
 			const type = isArticle ? item?.data?.articleType || 'Article' : item?.data?.pageType || 'WebPage';
+			// Same resolveDates source the per-page graph reads, so the corpus
+			// dateModified matches the page's own JSON-LD verbatim.
+			const dateModified = item ? resolveDates(item.data).dateModified : undefined;
 
 			return {
 				'@type': type,
@@ -83,7 +86,7 @@ export default function (data) {
 				...(isArticle ? { headline: node.title } : {}),
 				description: node.description,
 				inLanguage: node.locale || node.lang,
-				...(item?.inputPath ? { dateModified: gitModified(item.inputPath) } : {}),
+				...(dateModified ? { dateModified: dateModified.toISOString() } : {}),
 				isPartOf: { '@id': ids.website }
 			};
 		});

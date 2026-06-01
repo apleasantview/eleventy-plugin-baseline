@@ -3,6 +3,7 @@ import { normalizeLang } from '../locale/normalize-lang.js';
 import { normalizeLocale } from '../locale/normalize-locale.js';
 import { deriveLang } from '../locale/derive-lang.js';
 import { resolveDefault } from '../locale/resolve-default.js';
+import { toOpenGraphLocale } from '../locale/open-graph-locale.js';
 
 describe('normalizeLang', () => {
 	it('lowercases and trims', () => {
@@ -109,5 +110,30 @@ describe('resolveDefault', () => {
 
 	it('returns empty default for empty settings', () => {
 		expect(resolveDefault({})).toEqual({ lang: '', locale: null });
+	});
+});
+
+describe('toOpenGraphLocale', () => {
+	it('converts lang-region to underscore form', () => {
+		expect(toOpenGraphLocale('en-US')).toBe('en_US');
+		expect(toOpenGraphLocale('nl-NL')).toBe('nl_NL');
+	});
+
+	it('canonicalises casing before converting', () => {
+		expect(toOpenGraphLocale('en-us')).toBe('en_US');
+	});
+
+	it('converts every subtag, not just the first hyphen', () => {
+		expect(toOpenGraphLocale('zh-Hant-HK')).toBe('zh_Hant_HK');
+	});
+
+	it('passes a bare language subtag through unchanged', () => {
+		expect(toOpenGraphLocale('en')).toBe('en');
+	});
+
+	it('returns null for nullish or invalid input', () => {
+		expect(toOpenGraphLocale(null)).toBeNull();
+		expect(toOpenGraphLocale('')).toBeNull();
+		expect(toOpenGraphLocale('!!!')).toBeNull();
 	});
 });
