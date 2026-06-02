@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { markdownFilter } from '../markdown/markdownify.js';
+import { markdownFilter } from '../markdownify.js';
 
 describe('markdownFilter', () => {
 	it('renders bold to <strong>', () => {

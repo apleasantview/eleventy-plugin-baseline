@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeLang } from '../locale/normalize-lang.js';
-import { normalizeLocale } from '../locale/normalize-locale.js';
-import { deriveLang } from '../locale/derive-lang.js';
-import { resolveDefault } from '../locale/resolve-default.js';
-import { toOpenGraphLocale } from '../locale/open-graph-locale.js';
+import { normalizeLang } from '../normalize-lang.js';
+import { normalizeLocale } from '../normalize-locale.js';
+import { deriveLang } from '../derive-lang.js';
+import { resolveDefault } from '../resolve-default.js';
+import { toOpenGraphLocale } from '../open-graph-locale.js';
 
 describe('normalizeLang', () => {
 	it('lowercases and trims', () => {

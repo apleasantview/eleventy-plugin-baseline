@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import markdownit from 'markdown-it';
 import markdownItAttrs from 'markdown-it-attrs';
-import { autoHeadingIds } from '../markdown/auto-heading-ids.js';
-import { slugify } from '../utils/slugify.js';
+import { autoHeadingIds } from '../auto-heading-ids.js';
+import { slugify } from '../../utils/slugify.js';
 
 function makeMd() {
 	return markdownit().use(markdownItAttrs).use(autoHeadingIds, { slugify });

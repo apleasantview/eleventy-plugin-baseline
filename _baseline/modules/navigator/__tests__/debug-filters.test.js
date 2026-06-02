@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import debug from '../../navigator/utils/debug.js';
+import debug from '../utils/debug.js';
 
 const sample = { b: 2, a: 1, c: 3 };
 

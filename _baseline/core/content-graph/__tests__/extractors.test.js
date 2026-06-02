@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseHTML } from 'linkedom';
-import { extractGraph } from '../content-graph/extractors.js';
+import { extractGraph } from '../extractors.js';
 
 function extract(html) {
 	const { document } = parseHTML(`<!doctype html><html><body><main><article>${html}</article></main></body></html>`);

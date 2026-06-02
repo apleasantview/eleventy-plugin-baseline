@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPageContext, applyTitleTemplate, resolveTitle } from '../build.js';
+import { createPageContext, applyTitleTemplate, resolveTitle, buildBreadcrumbs } from '../build.js';
 
 // Drive the public builder and read the merged `head` it produces. These guard
 // the dedupe regression: distinct tags must survive the settings + front-matter
