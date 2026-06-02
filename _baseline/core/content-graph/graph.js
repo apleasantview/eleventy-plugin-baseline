@@ -68,6 +68,7 @@ export function buildGraph(pages, options = {}) {
 				slug: ctx.entry?.slug,
 				description: ctx.entry?.description,
 				section: ctx.entry?.section,
+				breadcrumbs: ctx.entry?.breadcrumbs,
 				type: ctx.entry?.type,
 				lang: ctx.page?.lang,
 				locale: ctx.page?.locale,

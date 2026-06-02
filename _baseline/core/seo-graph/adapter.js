@@ -167,19 +167,20 @@ export function assembleSchemaGraph(data) {
 	const ogImage = typeof ogImageRaw === 'string' ? { url: ogImageRaw } : ogImageRaw;
 	const primaryImageNode = buildImage(ogImage, { pageUrl: canonical }, ids);
 
-	const segments = node?.section || data.section || [];
-	const breadcrumbNode = segments.length
+	// Trail is resolved once in page-context, carried onto the graph node by the
+	// prepass (the adapter's only cross-pass channel — _pageContext is not in
+	// scope here). We just absolutise the root-relative URLs. The last crumb's
+	// URL is the page's canonical, so buildBreadcrumbList resolves it to the
+	// WebPage @id.
+	const crumbs = node?.breadcrumbs || [];
+	const breadcrumbNode = crumbs.length
 		? buildBreadcrumbList(
 				{
 					url: canonical,
-					items: [
-						{ name: 'Home', url: `${siteRoot}/` },
-						...segments.map((seg, i) => ({
-							name: seg,
-							// Last crumb resolves to this page's WebPage @id; earlier ones link the section path.
-							url: i === segments.length - 1 ? canonical : `${siteRoot}/${segments.slice(0, i + 1).join('/')}/`
-						}))
-					]
+					items: crumbs.map((crumb) => ({
+						name: crumb.label,
+						url: crumb.url ? `${siteRoot}${crumb.url}` : canonical
+					}))
 				},
 				ids
 			)

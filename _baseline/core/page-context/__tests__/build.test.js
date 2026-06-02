@@ -175,3 +175,57 @@ describe('resolveTitle', () => {
 		expect(out).toBe('Baseline – Skip the setup');
 	});
 });
+
+describe('buildBreadcrumbs', () => {
+	it('returns nothing without a section or url', () => {
+		expect(buildBreadcrumbs({ section: [], url: '/docs/' })).toEqual([]);
+		expect(buildBreadcrumbs({ section: ['docs'], url: undefined })).toEqual([]);
+	});
+
+	it('appends a leaf page as its own crumb, ancestors title-cased', () => {
+		const crumbs = buildBreadcrumbs({
+			section: ['docs', 'module'],
+			url: '/docs/module/head/',
+			title: 'head'
+		});
+		expect(crumbs).toEqual([
+			{ label: 'Home', url: '/' },
+			{ label: 'Docs', url: '/docs/' },
+			{ label: 'Module', url: '/docs/module/' },
+			{ label: 'head', url: '/docs/module/head/', current: true }
+		]);
+	});
+
+	it('relabels the last segment when the page IS its section index', () => {
+		const crumbs = buildBreadcrumbs({
+			section: ['docs', 'module'],
+			url: '/docs/module/',
+			title: 'Modules'
+		});
+		expect(crumbs).toEqual([
+			{ label: 'Home', url: '/' },
+			{ label: 'Docs', url: '/docs/' },
+			{ label: 'Modules', url: '/docs/module/', current: true }
+		]);
+	});
+
+	it('prefixes every url with the language for a non-default language', () => {
+		const crumbs = buildBreadcrumbs({
+			section: ['docs', 'module'],
+			url: '/nl/docs/module/head/',
+			title: 'head',
+			lang: 'nl',
+			isDefaultLang: false
+		});
+		expect(crumbs[0]).toEqual({ label: 'Home', url: '/nl/' });
+		expect(crumbs[2]).toEqual({ label: 'Module', url: '/nl/docs/module/' });
+		expect(crumbs[3]).toEqual({ label: 'head', url: '/nl/docs/module/head/', current: true });
+	});
+
+	it('does not prefix when the language is absent or default', () => {
+		const def = buildBreadcrumbs({ section: ['docs'], url: '/docs/', title: 'Docs', lang: 'en', isDefaultLang: true });
+		expect(def[0].url).toBe('/');
+		const none = buildBreadcrumbs({ section: ['docs'], url: '/docs/', title: 'Docs', lang: 'en' });
+		expect(none[0].url).toBe('/');
+	});
+});

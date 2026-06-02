@@ -1,5 +1,6 @@
 import { setEntry } from '../registry.js';
 import { slugify } from '../utils/slugify.js';
+import { titleCaseSlug } from '../utils/title-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
@@ -42,6 +43,46 @@ export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, sepa
 	if (typeof globalTemplate === 'string') return applyTitleTemplate(globalTemplate, tokens);
 	if (!isHome && pageTitle && siteTitle && pageTitle !== siteTitle) return `${pageTitle}${separator}${siteTitle}`;
 	return base;
+}
+
+/**
+ * Resolve a breadcrumb trail from the page's ancestor section path.
+ *
+ * `section` is the containing-directory chain, not a path that ends at the
+ * page: a leaf (/docs/module/head/) and its section index (/docs/module/)
+ * share the same section. The tell is the URL. When the page IS its section
+ * index, the last segment names it (relabelled with the page title); otherwise
+ * the page is a leaf and gets appended as its own crumb. The final crumb keeps
+ * its URL so the schema renderer can wire its @id, and is flagged `current` so
+ * the visible renderer knows not to link it. In multilang, a deliberately
+ * non-default language prefixes every URL with `/{lang}`.
+ *
+ * @param {{ section?: string[], url?: string, title?: string, lang?: string, isDefaultLang?: boolean }} input
+ * @returns {Array<{ label: string, url: string, current?: boolean }>}
+ */
+export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang } = {}) {
+	if (!section?.length || !url) return [];
+
+	// Only a deliberately non-default language prefixes the path; absence
+	// (no multilang) keeps the root, never a spurious `/{lang}`.
+	const base = isDefaultLang === false && lang ? `/${lang}` : '';
+
+	const crumbs = [{ label: 'Home', url: `${base}/` }];
+	let acc = base;
+	for (const seg of section) {
+		acc += `/${seg}`;
+		crumbs.push({ label: titleCaseSlug(seg), url: `${acc}/` });
+	}
+
+	const sectionUrl = `${base}/${section.join('/')}/`;
+	if (url === sectionUrl) {
+		crumbs[crumbs.length - 1].label = title ?? crumbs[crumbs.length - 1].label;
+	} else {
+		crumbs.push({ label: title ?? titleCaseSlug(section[section.length - 1]), url });
+	}
+
+	crumbs[crumbs.length - 1].current = true;
+	return crumbs;
 }
 
 /**
@@ -132,7 +173,14 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			slug: slugify(rawSlug),
 			section,
 			type: data?.type,
-			head: data?.head
+			head: data?.head,
+			breadcrumbs: buildBreadcrumbs({
+				section,
+				url: data?.page?.url,
+				title: data?.seo?.title ?? data?.title,
+				lang: data?.page?.lang,
+				isDefaultLang: data?.page?.isDefaultLang
+			})
 		};
 	}
 
