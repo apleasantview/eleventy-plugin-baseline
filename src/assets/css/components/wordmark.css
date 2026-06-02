@@ -1,0 +1,8 @@
+.c-wordmark__svg {
+	padding-block: var(--space-inset-2xs);
+}
+
+.c-wordmark__svg > svg {
+	max-width: 220px;
+	height: auto;
+}

@@ -4,9 +4,7 @@
 		<div class="c-header">
 			<div class="c-header__block">
 				<div class="c-header__content">
-					<p>
-						<strong><a class="c-header__link" href="{{ "/" | locale_url }}">{{ settings.title }}</a></strong>
-					</p>
+					{% include "components/wordmark.njk" %}
 					<small>{{ settings.tagline }}</small>
 				</div>
 				{%- include "components/navigation.njk" %}

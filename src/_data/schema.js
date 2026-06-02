@@ -1,6 +1,8 @@
 // schema.org identity for the site: who published it.
 // Cascade key: schema (`schema.organization`, `schema.person`).
 // Read by the seo-graph substrate; null fields are dropped from the graph.
+const siteUrl = process.env.URL || 'http://localhost:8080/';
+
 export default {
 	organization: {
 		'@type': 'Organization',
@@ -15,7 +17,7 @@ export default {
 		taxID: '60532955', // KvK
 		vatID: null,
 		foundingDate: null,
-		logo: null, // TODO: baseline-site logo asset
+		logo: { url: new URL('/logo.png', siteUrl).href, width: 400, height: 400 },
 		sameAs: [
 			'https://mastodon.social/@crisverstraeten',
 			'https://github.com/apleasantview',
