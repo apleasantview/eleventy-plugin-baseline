@@ -147,6 +147,17 @@ describe('image degrade (two-tier)', () => {
 		expect(one(graph, 'WebPage').primaryImageOfPage['@id']).toBe(image['@id']);
 	});
 
+	// Rule: a page-level `seo.ogImage` resolves the same as the site default,
+	// matching the OG projection's source chain (no drift between meta and graph).
+	it('reads a page-level seo.ogImage override', () => {
+		const graph = assembleSchemaGraph(
+			bag({ seo: { ogImage: { url: '/page-og.png', width: 1200, height: 630 } } })
+		);
+		const image = one(graph, 'ImageObject');
+		expect(image).toBeTruthy();
+		expect(one(graph, 'WebPage').primaryImageOfPage['@id']).toBe(image['@id']);
+	});
+
 	// Rule: a bare-path image (no dimensions) yields no node and no ref — the
 	// url-only og:image lives in the OG projection (3b), not the graph.
 	it('omits the ImageObject node when the image has no dimensions', () => {

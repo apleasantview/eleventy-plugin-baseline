@@ -163,7 +163,7 @@ export function assembleSchemaGraph(data) {
 		ids
 	);
 
-	const ogImageRaw = data.ogImage ?? settings.seo?.ogImage;
+	const ogImageRaw = data.ogImage ?? data.seo?.ogImage ?? settings.seo?.ogImage;
 	const ogImage = typeof ogImageRaw === 'string' ? { url: ogImageRaw } : ogImageRaw;
 	const primaryImageNode = buildImage(ogImage, { pageUrl: canonical }, ids);
 

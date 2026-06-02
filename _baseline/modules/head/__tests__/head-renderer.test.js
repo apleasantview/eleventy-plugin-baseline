@@ -213,6 +213,15 @@ describe('renderHead', () => {
 		expect(metaByProp(nodes, 'article:author').map((n) => n.attrs.content)).toEqual(['Ada', 'Grace']);
 	});
 
+	it('emits repeated article:tag without collapsing them', () => {
+		const nodes = nodesOf(
+			runHead(makeSeeds(), {
+				seo: { openGraph: { title: 'Post', type: 'article', article: { tags: ['eleventy', 'seo'] } } }
+			})
+		);
+		expect(metaByProp(nodes, 'article:tag').map((n) => n.attrs.content)).toEqual(['eleventy', 'seo']);
+	});
+
 	it('emits the JSON-LD graph wrapped in its @context envelope', () => {
 		const graph = [{ '@type': 'WebSite', '@id': 'https://www.example.com/#/schema.org/WebSite' }];
 		const nodes = nodesOf(runHead(makeSeeds(), { seo: { graph } }));

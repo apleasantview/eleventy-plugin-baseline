@@ -191,6 +191,27 @@ describe('article:* gating', () => {
 		);
 		expect(openGraph.article.authors).toEqual(['Acme']);
 	});
+
+	// Rule: article:tag mirrors the `topics` convention, always as an array.
+	it('projects topics as article tags', () => {
+		const { openGraph } = buildSocialProjections(
+			articleBag({ topics: ['eleventy', 'seo'] }),
+			'https://www.example.com/blog/hello/'
+		);
+		expect(openGraph.article.tags).toEqual(['eleventy', 'seo']);
+	});
+
+	it('coerces a single string topic to a one-element tag array', () => {
+		const { openGraph } = buildSocialProjections(
+			articleBag({ topics: 'eleventy' }),
+			'https://www.example.com/blog/hello/'
+		);
+		expect(openGraph.article.tags).toEqual(['eleventy']);
+	});
+
+	it('omits article tags when no topics are set', () => {
+		expect(buildSocialProjections(articleBag(), 'https://www.example.com/blog/hello/').openGraph.article.tags).toBeUndefined();
+	});
 });
 
 describe('twitter duplicate suppression', () => {

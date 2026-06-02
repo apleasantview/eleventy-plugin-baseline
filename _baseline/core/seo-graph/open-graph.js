@@ -106,6 +106,9 @@ export function buildSocialProjections(data, canonicalUrl) {
 		if (dates.datePublished) article.publishedTime = dates.datePublished.toISOString();
 		if (dates.dateModified) article.modifiedTime = dates.dateModified.toISOString();
 		if (data.sectionLabel) article.section = data.sectionLabel;
+		// article:tag mirrors the `topics` convention (the same value the graph emits
+		// as schema.org keywords); always an array, OG tags are repeated tags.
+		if (data.topics?.length) article.tags = Array.isArray(data.topics) ? data.topics : [data.topics];
 		const author = schema.person?.name ?? schema.organization?.name;
 		if (author) article.authors = [author];
 		og.article = article;

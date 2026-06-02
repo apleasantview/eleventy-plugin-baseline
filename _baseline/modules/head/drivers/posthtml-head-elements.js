@@ -91,7 +91,7 @@ function emitMeta(meta, render, options, canonical) {
  * Map the resolved seo projection to head nodes. The substrate hands over short
  * structured keys; this driver owns the og:/twitter: vocabulary. Single-valued
  * tags ride the deduped meta flow; multi-valued ones (og:locale:alternate,
- * repeated article:author) go in `multi` to skip the property-keyed dedupe.
+ * repeated article:author / article:tag) go in `multi` to skip the property-keyed dedupe.
  * The JSON-LD graph rides `scripts` (the adapter returns a bare @graph array,
  * wrapped in its @context envelope here).
  *
@@ -135,6 +135,9 @@ function emitSeo(seo) {
 		prop('article:section', og.article.section);
 		for (const author of asArray(og.article.authors)) {
 			if (author) multi.push(mkMeta({ property: 'article:author', content: author }));
+		}
+		for (const tag of asArray(og.article.tags)) {
+			if (tag) multi.push(mkMeta({ property: 'article:tag', content: tag }));
 		}
 	}
 
