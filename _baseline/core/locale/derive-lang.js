@@ -1,9 +1,8 @@
 /**
  * Extract the short language subtag from a BCP 47 tag.
  *
- * `'en-US'` → `'en'`, `'zh-Hant-HK'` → `'zh'`. Normalises internally via
- * `Intl.Locale`; caller passes raw input. Returns null for empty input
- * or tags `Intl.Locale` rejects.
+ * `'en-US'` → `'en'`, `'zh-Hant-HK'` → `'zh'`. Normalises via `Intl.Locale`;
+ * null for empty input or tags it rejects.
  *
  * @param {unknown} locale
  * @returns {string | null}

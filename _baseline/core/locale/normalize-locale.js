@@ -1,10 +1,9 @@
 /**
  * Normalize a BCP 47 locale tag to conventional casing using `Intl.Locale`.
  *
- * `Intl.Locale` handles language-script-region casing (lang lowercase,
- * script title-case, region uppercase) plus variant and extension subtag
- * rules without reimplementing the spec. Returns null for empty/whitespace
- * input or tags `Intl.Locale` rejects.
+ * `Intl.Locale` handles language-script-region casing and subtag rules without
+ * reimplementing the spec. Returns null for empty/whitespace input or tags it
+ * rejects.
  *
  * @param {unknown} raw
  * @returns {string | null}

@@ -1,9 +1,8 @@
 /**
  * Normalize a short language code: lowercase and trim.
  *
- * The substrate's lightest helper. Replaces the inline `normalizeLanguageCode`
- * one-liner currently duplicated in multilang and sitemap. Returns an empty
- * string for null/undefined input; coerces non-string input via `String()`.
+ * The substrate's lightest helper. Empty string for null/undefined; coerces
+ * non-string input via `String()`.
  *
  * @param {unknown} raw
  * @returns {string}

@@ -5,10 +5,8 @@ import { deriveLang } from './derive-lang.js';
 /**
  * Resolve the effective `{ lang, locale }` default from settings.
  *
- * defaultLocale is preferred; defaultLanguage is a writer-side alias.
- * When both are set, defaultLocale wins silently. When only
- * defaultLanguage is given, locale is derived via `Intl.Locale` (which
- * returns the bare language subtag as a valid BCP 47 tag).
+ * defaultLocale wins; defaultLanguage is a writer-side alias. Given only
+ * defaultLanguage, locale is derived via `Intl.Locale`.
  *
  * @param {{ defaultLanguage?: string, defaultLocale?: string }} settings
  * @returns {{ lang: string, locale: string | null }}
