@@ -190,6 +190,9 @@ export function assembleSchemaGraph(data) {
 
 	const dates = resolveDates(data);
 
+	// schema.org keywords from the `topics` front-matter convention; native `tags` untouched.
+	const keywords = data.topics?.length ? data.topics : undefined;
+
 	const webPage = buildWebPage(
 		{
 			url: canonical,
@@ -201,7 +204,8 @@ export function assembleSchemaGraph(data) {
 			dateModified: dates.dateModified,
 			breadcrumb: breadcrumbNode ? { '@id': breadcrumbNode['@id'] } : undefined,
 			primaryImage: primaryImageNode ? { '@id': primaryImageNode['@id'] } : undefined,
-			workTranslation: workTranslation.length ? workTranslation : undefined
+			workTranslation: workTranslation.length ? workTranslation : undefined,
+			keywords
 		},
 		ids,
 		data.pageType || 'WebPage'
@@ -221,7 +225,8 @@ export function assembleSchemaGraph(data) {
 						inLanguage: locale,
 						datePublished: dates.datePublished,
 						dateModified: dates.dateModified,
-						articleSection: data.sectionLabel
+						articleSection: data.sectionLabel,
+						keywords
 					},
 					ids,
 					data.articleType || 'Article'

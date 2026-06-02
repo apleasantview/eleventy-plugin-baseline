@@ -168,6 +168,27 @@ describe('schema.pieces seam', () => {
 	});
 });
 
+describe('keywords (topics convention)', () => {
+	// Rule: the `topics` front-matter convention rides onto schema.org keywords,
+	// passed through verbatim — array shape preserved, no coercion.
+	it('carries topics onto the WebPage as keywords', () => {
+		const graph = assembleSchemaGraph(bag({ topics: ['eleventy', 'seo'] }));
+		expect(one(graph, 'WebPage').keywords).toEqual(['eleventy', 'seo']);
+	});
+
+	// Guard: an empty topics list emits no keywords property at all (the `?.length`
+	// check). Without it the node would carry a stray `keywords: []`.
+	it('emits no keywords when topics is empty', () => {
+		expect(one(assembleSchemaGraph(bag({ topics: [] })), 'WebPage')).not.toHaveProperty('keywords');
+	});
+
+	// The Article node carries keywords too when the page is editorial.
+	it('carries topics onto the Article as keywords', () => {
+		const graph = assembleSchemaGraph(bag({ topics: ['eleventy'], type: 'article', page: { url: '/b/' }, title: 'B' }));
+		expect(one(graph, 'Article').keywords).toEqual(['eleventy']);
+	});
+});
+
 describe('translations', () => {
 	// Rule: workTranslation links navigator siblings sharing a translationKey,
 	// excludes the current page, and ignores unrelated keys.
