@@ -17,4 +17,5 @@ pageType: 'FAQPage'
 
 {%- endfor %}
 
-<pre>{{ _hook('faq') }}</pre>
+{# render-time hook: enriches this page's FAQPage node with mainEntity (side-effect, prints nothing) #}
+{{ _hook('faq') }}
