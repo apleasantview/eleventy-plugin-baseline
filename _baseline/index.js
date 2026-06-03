@@ -51,9 +51,10 @@ const INTERNAL_KEYS = [
 	'_snapshot',
 	'eleventyComputed._pageContext',
 	'eleventyComputed._node',
-	'eleventyComputed._edges',
+	'eleventyComputed._seoGraph',
 	'eleventyComputed._backlinks',
-	'eleventyComputed._outgoing'
+	'eleventyComputed._outgoing',
+	'eleventyComputed._edges'
 ];
 
 // Base logger outputs regardless of options.
@@ -175,13 +176,14 @@ export default function baseline(settings = {}, options = {}) {
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
-			// We leave eleventyComputed callback kEys alone, the rest are reserved-empty.
+			// We leave eleventyComputed callback keys alone, the rest are reserved-empty.
 			if (
 				key === 'eleventyComputed._pageContext' ||
 				key === 'eleventyComputed._node' ||
-				key === 'eleventyComputed._edges' ||
+				key === 'eleventyComputed._seoGraph' ||
 				key === 'eleventyComputed._backlinks' ||
-				key === 'eleventyComputed._outgoing'
+				key === 'eleventyComputed._outgoing' ||
+				key === 'eleventyComputed._edges'
 			)
 				return;
 			eleventyConfig.addGlobalData(key, {});

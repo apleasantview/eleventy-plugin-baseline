@@ -39,7 +39,7 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  *
  * @param {Object} args
  * @param {Object} args.seeds - Page context for the current page.
- * @param {Object} [args.seo] - Resolved seo namespace (url, graph, openGraph, twitter).
+ * @param {Object} [args.seo] - Resolved _seoGraph namespace (url, schema, openGraph, twitter).
  * @param {Array<Object>} args.alternates - hreflang link descriptors.
  * @param {Object} args.options - Head options (titleSeparator, showGenerator).
  * @param {string} args.placeholderTag - Placeholder element to replace.
@@ -148,8 +148,8 @@ function emitSeo(seo) {
 	name('twitter:description', tw.description);
 	name('twitter:image', tw.image);
 
-	if (seo.graph?.length) {
-		const content = JSON.stringify({ '@context': 'https://schema.org', '@graph': seo.graph });
+	if (seo.schema?.length) {
+		const content = JSON.stringify({ '@context': 'https://schema.org', '@graph': seo.schema });
 		scripts.push(mkScript({ type: 'application/ld+json', content }));
 	}
 

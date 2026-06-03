@@ -47,8 +47,8 @@ export function resolveCanonicalUrl({ seo, data, settings, page }) {
  * SEO namespace builder factory.
  *
  * Returns `buildSeoNamespace(data)` which normalises the cascade into a
- * resolved `seo` object: canonical fields, OG/Twitter projections, and the
- * assembled JSON-LD graph at `seo.graph`.
+ * resolved `_seoGraph` object: canonical fields, OG/Twitter projections, and the
+ * assembled JSON-LD graph at `_seoGraph.schema`.
  *
  * @param {{
  *   scope: { values: Map },
@@ -73,7 +73,7 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 		});
 		if (url) seoOut.url = url;
 
-		seoOut.graph = assembleSchemaGraph(data);
+		seoOut.schema = assembleSchemaGraph(data);
 
 		const social = buildSocialProjections(data, url);
 		seoOut.openGraph = social.openGraph;

@@ -224,14 +224,14 @@ describe('renderHead', () => {
 
 	it('emits the JSON-LD graph wrapped in its @context envelope', () => {
 		const graph = [{ '@type': 'WebSite', '@id': 'https://www.example.com/#/schema.org/WebSite' }];
-		const nodes = nodesOf(runHead(makeSeeds(), { seo: { graph } }));
+		const nodes = nodesOf(runHead(makeSeeds(), { seo: { schema: graph } }));
 		const script = nodes.find((n) => n.tag === 'script' && n.attrs?.type === 'application/ld+json');
 		expect(script).toBeTruthy();
 		expect(JSON.parse(script.content[0])).toEqual({ '@context': 'https://schema.org', '@graph': graph });
 	});
 
 	it('emits no JSON-LD script when the graph is empty', () => {
-		const nodes = nodesOf(runHead(makeSeeds(), { seo: { graph: [] } }));
+		const nodes = nodesOf(runHead(makeSeeds(), { seo: { schema: [] } }));
 		expect(nodes.some((n) => n.tag === 'script' && n.attrs?.type === 'application/ld+json')).toBe(false);
 	});
 

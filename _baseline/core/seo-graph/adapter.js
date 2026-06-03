@@ -2,7 +2,7 @@
 //
 // Translates Baseline's cascade (settings, schema identity, navigator nodes,
 // dates) into seo-graph-core's piece builders, assembles the JSON-LD @graph,
-// and returns it for storage under data.seo.graph. Auto-builds a generic spine
+// and returns it for storage under data._seoGraph.schema. Auto-builds a generic spine
 // (WebSite, Organization/Person, WebPage, Article, BreadcrumbList, image and
 // translation refs); domain shapes ride in untouched via the schema.pieces seam.
 

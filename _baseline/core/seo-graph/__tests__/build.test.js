@@ -181,10 +181,10 @@ describe('createSeoNamespace', () => {
 		expect(out.twitter.card).toBe('summary_large_image');
 	});
 
-	it('wires the assembled graph into seo.graph', () => {
+	it('wires the assembled graph into seo.schema', () => {
 		const build = makeBuilder();
 		const out = build({ seo: {}, settings, page: { url: '/posts/hello/' } });
-		expect(Array.isArray(out.graph)).toBe(true);
-		expect(out.graph.length).toBeGreaterThan(0);
+		expect(Array.isArray(out.schema)).toBe(true);
+		expect(out.schema.length).toBeGreaterThan(0);
 	});
 });

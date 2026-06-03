@@ -4,7 +4,7 @@ import { createSeoNamespace } from './build.js';
 
 const SCOPE_NAME = 'core:seo-graph';
 const LOG_NAME = 'seo-graph';
-const COMPUTED_KEY = 'eleventyComputed.seo';
+const COMPUTED_KEY = 'eleventyComputed._seoGraph';
 
 /**
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
@@ -27,7 +27,7 @@ export function registerSeoGraph(eleventyConfig, coreContext) {
 
 	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
 		return (data) => {
-			if (shouldSkip(data)) return data.seo ?? null;
+			if (shouldSkip(data)) return data._seoGraph ?? null;
 			return memoize(scope, data, buildSeoNamespace);
 		};
 	});

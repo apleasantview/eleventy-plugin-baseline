@@ -71,7 +71,7 @@ export function buildSocialProjections(data, canonicalUrl) {
 	// Editorial `article` projects og:type article (and unlocks article:*);
 	// an explicit seo.ogType wins, then the site default, then 'website'.
 	const entryType = data.type || node?.type;
-	const type = seo.ogType ?? (entryType === 'article' ? 'article' : settings.seo?.openGraph?.type ?? 'website');
+	const type = seo.ogType ?? (entryType === 'article' ? 'article' : (settings.seo?.openGraph?.type ?? 'website'));
 
 	// og:url falls back to the absolute page URL when canonical is omitted
 	// (noindex), so share previews stay stable.

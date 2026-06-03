@@ -43,7 +43,7 @@ export default function (data) {
 	// resolved graph exists (a corpus with no entries either way).
 	let identityNodes = null;
 	for (const seo of Object.values(seoByUrl)) {
-		const graph = seo?.graph;
+		const graph = seo?.schema;
 		if (!Array.isArray(graph)) continue;
 		const website = graph.find((n) => n['@type'] === 'WebSite');
 		if (!website) continue;
@@ -68,7 +68,7 @@ export default function (data) {
 		.filter((node) => node?.type === schemaType)
 		.map((node) => {
 			const seo = seoByUrl[node.url];
-			const primary = pickPrimary(seo?.graph);
+			const primary = pickPrimary(seo?.schema);
 			// A navigator node with no resolved graph (or graph-less page) is not a
 			// corpus entry — skip rather than emit one missing its identity.
 			if (!primary) return null;
