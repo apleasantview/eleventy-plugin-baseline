@@ -14,6 +14,10 @@ export const data = {
 	permalink: ({ node }) => {
 		const url = node.url;
 
+		// Non-rendering source (permalink: false, e.g. data-carrier records):
+		// no url, so no markdown sibling. Bail.
+		if (!url) return false;
+
 		// Homepage
 		if (url === '/') {
 			return '/index.md';
