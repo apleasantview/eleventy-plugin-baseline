@@ -45,6 +45,13 @@ export default async function (eleventyConfig) {
 		});
 	});
 
+	eleventyConfig.addCollection('faq', function (collectionApi) {
+		const faq = collectionApi.getFilteredByGlob('src/content/faq/**/*.md');
+		return faq.sort(function (a, b) {
+			return a.data.order - b.data.order;
+		});
+	});
+
 	// --- Content blocks are dressed in shortcodes ---
 	// Alert block: wraps content in a styled alert component (info, warning, etc.).
 	eleventyConfig.addPairedNunjucksShortcode('alertBlock', function (content, alert = 'info') {
