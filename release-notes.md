@@ -84,3 +84,24 @@ shapes changed to make room for it.
   instead of throwing on them.
 - An object-form page-level `seo.ogImage` now also emits a JSON-LD ImageObject,
   not just the `og:image` tag, so the graph and the social tag share one image.
+
+### Reading list
+
+Where to go deeper on the surfaces that changed.
+
+**SEO**
+
+- [The head module](https://www.eleventy-baseline.dev/docs/module/head/)
+- [Site settings](https://www.eleventy-baseline.dev/docs/core-reference/site-settings/)
+- [Custom schema](https://www.eleventy-baseline.dev/docs/feature-guide/custom-schema/)
+
+**Content graph**
+
+- [The reference](https://www.eleventy-baseline.dev/docs/core-reference/content-graph/)
+- [Globals](https://www.eleventy-baseline.dev/docs/core-reference/globals/)
+- [The navigator module](https://www.eleventy-baseline.dev/docs/module/navigator/)
+
+**Multilingual**
+
+- [The multilang module](https://www.eleventy-baseline.dev/docs/module/multilang/)
+- [Filters](https://www.eleventy-baseline.dev/docs/core-reference/filters/)
