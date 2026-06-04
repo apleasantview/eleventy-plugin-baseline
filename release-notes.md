@@ -50,6 +50,9 @@ shapes changed to make room for it.
   - Open Graph and Twitter Card meta tags
   - the canonical link (omitted on noindex pages)
 
+  The graph construction is an adapter to Joost de Valk's
+  [`@jdevalk/seo-graph-core`](https://www.npmjs.com/package/@jdevalk/seo-graph-core).
+
   Identity comes from `_data/schema.js` and `settings.seo`. Per page, `pageType`
   and `articleType` override the schema `@type`, and `ogImage` sets the share
   image (the object form `{ url, width, height, alt }` emits a dimensioned
