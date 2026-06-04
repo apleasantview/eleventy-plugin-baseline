@@ -14,6 +14,9 @@
  * @property {string} [url]
  * @property {boolean} [noindex]
  * @property {string} [defaultLanguage]
+ * Short language code; a writer-side alias for defaultLocale.
+ * @property {string} [defaultLocale]
+ * BCP 47 default locale; preferred when both are set.
  * @property {Record<string, unknown>} [languages]
  * @property {Object} [head]
  */

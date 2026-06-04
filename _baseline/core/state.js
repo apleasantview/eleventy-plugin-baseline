@@ -39,6 +39,7 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 		url: settings.url,
 		noindex: settings.noindex ?? false,
 		defaultLanguage: settings.defaultLanguage,
+		defaultLocale: settings.defaultLocale,
 		languages: settings.languages,
 		head: settings.head,
 		seo: settings.seo

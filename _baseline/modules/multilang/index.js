@@ -71,7 +71,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 
 	if (!isMultilingual) {
-		log.info('Multilang inactive, needs options.multilang, settings.defaultLanguage, and languages');
+		log.info('Multilang inactive, needs options.multilang, settings.defaultLanguage or defaultLocale, and languages');
 		return;
 	}
 
