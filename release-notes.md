@@ -82,3 +82,5 @@ shapes changed to make room for it.
   one host) are no longer collapsed to one in the head.
 - The sitemap and the markdown alternates skip `permalink:false` records
   instead of throwing on them.
+- An object-form page-level `seo.ogImage` now also emits a JSON-LD ImageObject,
+  not just the `og:image` tag, so the graph and the social tag share one image.
