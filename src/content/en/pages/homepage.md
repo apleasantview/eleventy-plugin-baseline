@@ -33,7 +33,7 @@ Your layouts, styles, scripts, and editorial structure stay yours. Keep the defa
 
 The site you are reading runs on Baseline. What you are looking at is the system itself in use, not an illustration of it.
 
-Open any docs page and try it: the table of contents is built from the rendered HTML, the "Linked from" footer reads the content graph, the language switcher reads the settings. All wired by the same system you are reading about.
+Open any docs page and try it: the table of contents is built from the rendered HTML, the "Linked from" footer reads the content graph, the language switcher reads the settings, and the structured-data graph in the head is that same content graph, projected for search engines. All wired by the same system you are reading about.
 
 View source. Browse the repo. Run it locally. It's visible.
 

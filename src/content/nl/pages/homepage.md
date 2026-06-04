@@ -29,7 +29,7 @@ Je layouts, stijlen, scripts en redactionele structuur blijven van jou. Houd de 
 
 De site die je nu leest draait op Baseline. Wat je voor je hebt is het systeem zelf in gebruik, geen illustratie ervan.
 
-Open een willekeurige docs-pagina en probeer het: de inhoudsopgave wordt gebouwd uit de gerenderde HTML, de "Linked from"-footer leest de content graph, de taalwisselaar leest de settings. Allemaal aangesloten op hetzelfde systeem waar je over leest.
+Open een willekeurige docs-pagina en probeer het: de inhoudsopgave wordt gebouwd uit de gerenderde HTML, de "Linked from"-footer leest de content graph, de taalwisselaar leest de settings, en de graph met gestructureerde data in de head is diezelfde content graph, geprojecteerd voor zoekmachines. Allemaal aangesloten op hetzelfde systeem waar je over leest.
 
 Bekijk de broncode. Blader door de repo. Draai het lokaal. Het is zichtbaar.
 
@@ -69,7 +69,7 @@ De [[quickstart | quickstart]] loopt de volledige setup door. De [[docs | docs]]
 
 ### Doorlopende releases
 
-Baseline verschijnt continu. Elke release brengt het werk verder, gemarkeerd als `0.1.0-next.X`. De volgende stabiele release landt samen met Eleventy v4. Pin een versie als je er iets serieus bovenop bouwt.
+Baseline verschijnt continu. Elke release brengt het werk verder, gemarkeerd als `0.1.0-next.X`. Pin een versie als je er iets serieus bovenop bouwt.
 
 Als de docs een gedrag beweren dat je niet kunt reproduceren, dan kloppen de docs waarschijnlijk niet. [Open dan een issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
 

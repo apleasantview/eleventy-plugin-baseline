@@ -30,7 +30,7 @@ Vos layouts, vos styles, vos scripts et votre structure éditoriale restent les 
 
 Le site que vous lisez tourne sur Baseline. Ce que vous regardez, c'est le système lui-même en usage, pas une illustration de celui-ci.
 
-Ouvrez n'importe quelle page de la documentation et essayez : la table des matières est construite à partir du HTML rendu, le pied de page "Linked from" lit le graphe de contenu, le sélecteur de langue lit les réglages. Le tout câblé par le même système dont vous êtes en train de lire la description.
+Ouvrez n'importe quelle page de la documentation et essayez : la table des matières est construite à partir du HTML rendu, le pied de page "Linked from" lit le graphe de contenu, le sélecteur de langue lit les réglages, et le graphe de données structurées dans le `head` est ce même graphe de contenu, projeté pour les moteurs de recherche. Le tout câblé par le même système dont vous êtes en train de lire la description.
 
 Regardez le code source. Parcourez le dépôt. Lancez-le en local. Tout est visible.
 
@@ -70,7 +70,7 @@ Le [[quickstart | guide de démarrage rapide]] détaille l'installation complèt
 
 ### Versions glissantes
 
-Baseline est livré en continu. Chaque version fait avancer le travail, étiquetée `0.1.0-next.X`. La prochaine version stable arrivera en même temps qu'Eleventy v4. Épinglez une version quand vous construisez quelque chose de sérieux par-dessus.
+Baseline est livré en continu. Chaque version fait avancer le travail, étiquetée `0.1.0-next.X`. Épinglez une version quand vous construisez quelque chose de sérieux par-dessus.
 
 Si la documentation décrit un comportement que vous n'arrivez pas à reproduire, c'est probablement la documentation qui a tort. Merci d'[ouvrir une issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
 
