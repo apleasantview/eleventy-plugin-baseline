@@ -9,16 +9,7 @@
 
 	<!-- content -->
 	<div class="l-document__content u-flow">
-		<nav class="c-breadcrumbs" aria-label="Breadcrumb">
-			<ol>
-				{%- for c in _pageContext.entry.breadcrumbs %}
-					<li>
-						{%- if c.current %}<span aria-current="page">{{ c.label }}</span>
-						{%- else %}<a href="{{ c.url }}">{{ c.label }}</a>{%- endif %}
-					</li>
-				{%- endfor %}
-			</ol>
-		</nav>
+		{% include "components/c-breadcrumbs.njk" %}
 		<article class="u-flow">
 			<h1>{{ title }}</h1>
 			{{ content | safe }}

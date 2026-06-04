@@ -1,0 +1,13 @@
+<nav class="c-breadcrumbs" aria-label="Breadcrumb">
+	<ol class="c-breadcrumbs__list">
+		{%- for c in _pageContext.entry.breadcrumbs %}
+			<li class="c-breadcrumbs__item">
+				{%- if c.current %}
+					<span aria-current="page">{{ c.label }}</span>
+				{%- else %}
+					<a href="{{ c.url }}">{{ c.label }}</a>
+				{%- endif %}
+			</li>
+		{%- endfor %}
+	</ol>
+</nav>

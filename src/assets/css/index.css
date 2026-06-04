@@ -30,6 +30,7 @@
 @import './components/wordmark.css';
 @import './components/footer.css';
 @import './components/navigation.css';
+@import './components/breadcrumbs.css';
 @import './components/docs-toc.css';
 @import './components/docs-toc--details.css';
 @import './components/docs-toc--sidebar.css';
