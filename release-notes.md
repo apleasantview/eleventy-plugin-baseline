@@ -18,25 +18,41 @@ shapes changed to make room for it.
 
 ### Breaking
 
+- **If you hand-wired SEO, unplug it first.** `<baseline-head>` now emits the
+  JSON-LD graph, Open Graph, Twitter, and canonical itself (see Added). If your
+  site still injects its own, the two coexist rather than replace, so remove your
+  hand-wired SEO from the cascade and let the plugin own it. Symptom: two
+  `<script type="application/ld+json">` blocks in one `<head>`.
 - **Content graph edges dropped `type`.** It only ever mirrored `internal`, so
   read that instead: `!edge.internal` where you had `edge.type === 'external'`,
   `edge.internal` where you had `edge.type === 'link'`. Edges now carry `rel`,
   the link's `rel` tokens as a lowercased array, for link-audit and SEO use.
-- **Authored SEO identity moved.** `_data/seo.js` is now `_data/schema.js`, and
-  its cascade key `seo` is now `schema`. Site-wide SEO defaults (`ogImage`,
-  Open Graph, Twitter) live under `settings.seo`. Rename the file and the key,
-  move the defaults across.
+- **The SEO identity file moved.** If you kept site identity (`organization` /
+  `person`) in `_data/seo.js`, rename the file to `_data/schema.js` and its
+  cascade key from `seo` to `schema`. Site-wide SEO defaults (`ogImage`, Open
+  Graph, Twitter) now live under `settings.seo`. This is only the identity. The
+  per-page `seo:` presentation keys (`seo.title`, `seo.description`,
+  `seo.ogImage`, `seo.canonical`, and the rest) are unchanged and stay under
+  `seo`. Rename those to `schema` and your title and description overrides go
+  silently empty.
 - **`page.locale` is a string now.** It used to be an object; it is a BCP 47
   tag (`'en-US'`). The three values it held are top-level: `page.lang` (the
   short code), `page.translationKey`, and `page.isDefaultLang`. In settings,
   `settings.languages.<code>` gains a `locale` field and drops `languageCode`.
   Update any template reading `page.locale.lang` to `page.lang`, and the same
-  for `.translationKey` / `.isDefaultLang`.
+  for `.translationKey` / `.isDefaultLang`. The content-graph node flattened
+  identically: `node.locale` is a string, with `node.lang`,
+  `node.translationKey`, and `node.isDefaultLang` top-level. Symptom:
+  `og:locale` or `inLanguage` falling back to the site default on a
+  non-default-language page.
 - **Graph membership gates on `_internal`, not `eleventyExcludeFromCollections`.**
   A page kept out of collections can now appear in the graph, which is usually
   what you want. To keep a page out of the graph, set
   `baselineExcludeFromGraph: true` (or `_internal: true` for synthetic
-  templates).
+  templates). Audit any page that used `eleventyExcludeFromCollections` alone to
+  stay out of the graph (404s, utility pages): they now reach the graph and the
+  JSON-LD corpus until you add the flag. Symptom: a 404 or utility page in
+  `_navigator.nodes` or emitting its own WebPage JSON-LD.
 - **JSON-LD `@id`s are keyed on the canonical URL.** Per-page and corpus graphs
   moved together, so they stay internally consistent. Any external consumer
   keyed on the old `#webpage` fragments needs re-keying.
