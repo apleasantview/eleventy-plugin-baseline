@@ -6,9 +6,9 @@
 @import './settings/custom-media.css';
 
 /* 02. Tools */
+@import './tools/document.css' layer(tokens);
 
 /* 03. Generic */
-@import './generic/semantic-tokens.css' layer(tokens);
 @import './generic/modern-reset.css' layer(reset);
 @import './generic/skip-link.css';
 
@@ -17,29 +17,33 @@
 @import './elements/headings.css';
 @import './elements/hr.css';
 
-/* 05. Layouts & Objects */
-@import './layouts/document.css';
-@import './layouts/fluid-grid.css';
-
-/* 06. Blocks & Components */
+/* 05. Blocks */
 @import './blocks/alert.css';
 @import './blocks/step.css';
 @import './blocks/table.css';
-@import './components/top-bar.css';
-@import './components/header.css';
-@import './components/wordmark.css';
-@import './components/footer.css';
-@import './components/navigation.css';
-@import './components/breadcrumbs.css';
-@import './components/docs-toc.css';
-@import './components/docs-toc--details.css';
-@import './components/docs-toc--sidebar.css';
 
-/* 07. Utilities */
-@import './utilities/flow.css';
-@import './utilities/wrapper.css';
-@import './utilities/overflow.css';
-@import './utilities/prism.css';
+/* 06. Layouts & Objects */
+@import './layouts/l-document.css';
+@import './layouts/l-fluid-grid.css';
+
+/* 07. Components */
+@import './components/c-top-bar.css';
+@import './components/c-header.css';
+@import './components/c-wordmark.css';
+@import './components/c-footer.css';
+@import './components/c-navigation.css';
+@import './components/c-breadcrumbs.css';
+@import './components/c-docs-toc.css';
+@import './components/c-docs-toc--details.css';
+@import './components/c-docs-toc--sidebar.css';
+
+/* 08. Utilities */
+@import './utilities/u-flow.css';
+@import './utilities/u-wrapper.css';
+@import './utilities/u-overflow.css';
+
+/* 09. Vendors */
+@import './vendors/prism.css';
 
 /* CSS is organised followng ITCSS and BEMIT naming conventions, see:
 * @link https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/
