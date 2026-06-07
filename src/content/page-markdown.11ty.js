@@ -8,8 +8,12 @@ export const data = {
 	pagination: {
 		data: 'collections.all',
 		size: 1,
-		alias: 'node'
-		// before: (paginationData) => paginationData.filter((p) => p.data?.translationKey)
+		alias: 'node',
+		// Drop permalink:false records (data-carriers carry url:false) before
+		// paginating. A size:1 paginated template whose permalink fn returns
+		// false for some chunks suppresses all its writes, so keep url-less
+		// records out of the set rather than bailing inside permalink.
+		before: (paginationData) => paginationData.filter((p) => p.url)
 	},
 	permalink: ({ node }) => {
 		const url = node.url;
