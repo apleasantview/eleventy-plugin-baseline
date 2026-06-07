@@ -1,8 +1,14 @@
+---
+version: 0.1.0-next.42
+released: 2026-06-04
+---
+
 # Release notes
 
 What changed in `@apleasantview/eleventy-plugin-baseline`. A rolling file: it
-carries the release being prepared, and clears with each release to start fresh
-on the next one. The full history is in the git log.
+carries the release being prepared above the last shipped one, marked by the
+`released` date in the front matter. Shipped sections are cleared in a later
+tidy, not on release day. The full history is in the git log.
 
 Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift,
 break, and get renamed between releases. Where a change needs you to do
