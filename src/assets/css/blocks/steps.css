@@ -20,7 +20,7 @@
 }
 
 .c-docs-steps--compact {
-	ul:only-child {
+	ul:first-child {
 		list-style: none;
 		padding: 0;
 	}

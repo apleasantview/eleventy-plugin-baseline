@@ -64,7 +64,7 @@ export default async function (eleventyConfig) {
 
 	// Steps Block: wraps lists in a styled list component.
 	eleventyConfig.addPairedNunjucksShortcode('stepsBlock', function (content, steps = 'default') {
-		const res = this.env.render('blocks/step.njk', {
+		const res = this.env.render('blocks/steps.njk', {
 			content: content,
 			type: steps
 		});
