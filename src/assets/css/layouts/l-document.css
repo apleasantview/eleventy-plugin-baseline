@@ -25,7 +25,7 @@
 	@media (--screen-lg) {
 		& {
 			grid-template-columns:
-				[sidebar] minmax(min(0px, 100%), 320px)
+				[sidebar] minmax(min(0px, 100%), 304px)
 				[content] minmax(min(0px, 100%), 860px);
 			align-items: baseline;
 			column-gap: var(--space-3xl);
