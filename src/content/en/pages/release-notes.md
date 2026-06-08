@@ -10,15 +10,14 @@ layout: 'layouts/docs.njk'
 
 {% deckBlock %}
 
-What changed in `@apleasantview/eleventy-plugin-baseline`. A rolling file: it carries the release being prepared above the last shipped one, marked by the `released` date in the front matter. Shipped sections are cleared in a later tidy, not on release day. The full history is in the git log.
+Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift, break, and get renamed between releases. Pin a version when you build something serious on top.
 
-Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift, break, and get renamed between releases. Where a change needs you to do something, the line you have to change is right there with it.
+Install from npm:  
+`npm install @apleasantview/eleventy-plugin-baseline --save-exact`
 
 {% enddeckBlock %}
 
----
-
-## 0.1.0-next.42
+## v0.1.0-next.42
 
 Mostly an SEO release. `<baseline-head>` now emits the structured data, social tags, and canonical link that used to be hand-wired per site. A handful of shapes changed to make room for it.
 
@@ -33,8 +32,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
   `<baseline-head>` now emits the JSON-LD graph, Open Graph, Twitter, and canonical itself (see Added).
 
   If your site still injects its own, the two coexist rather than replace, so remove your hand-wired SEO from the cascade and let the plugin own it.
-
-  _Symptom: two `<script type="application/ld+json">` blocks in one `<head>`_.
+  - _Symptom: two `<script type="application/ld+json">` blocks in one `<head>`_.
 
 - **Content graph edges dropped `type`.**
 
@@ -55,8 +53,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
   In settings, `settings.languages.<code>` gains a `locale` field and drops `languageCode`. Update any template reading `page.locale.lang` to `page.lang`, and the same for `.translationKey` / `.isDefaultLang`.
 
   The content-graph node flattened identically: `node.locale` is a string, with `node.lang`, `node.translationKey`, and `node.isDefaultLang` top-level.
-
-  _Symptom: `og:locale` or `inLanguage` falling back to the site default on a non-default-language page._
+  - _Symptom: `og:locale` or `inLanguage` falling back to the site default on a non-default-language page._
 
 - **Graph membership gates on `_internal`, not `eleventyExcludeFromCollections`.**
 
@@ -65,8 +62,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
   To keep a page out of the graph, set `baselineExcludeFromGraph: true` (or `_internal: true` for synthetic templates).
 
   Audit any page that used `eleventyExcludeFromCollections` alone to stay out of the graph (404s, utility pages): they now reach the graph and the JSON-LD corpus until you add the flag.
-
-  _Symptom: a 404 or utility page in `_navigator.nodes` or emitting its own WebPage JSON-LD._
+  - _Symptom: a 404 or utility page in `_navigator.nodes` or emitting its own WebPage JSON-LD._
 
 - **JSON-LD `@id`s are keyed on the canonical URL.**
 
