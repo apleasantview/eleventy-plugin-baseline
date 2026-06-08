@@ -1,3 +1,7 @@
+.c-wordmark {
+	max-width: fit-content;
+}
+
 .c-wordmark__svg {
 	padding-block: var(--space-inset-2xs);
 }
