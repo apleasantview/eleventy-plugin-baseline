@@ -10,3 +10,7 @@
 .u-flow > h2 + pre {
 	margin-block-start: var(--flow-space-heading);
 }
+
+.u-flow > .deck {
+	margin-block-start: var(--flow-space);
+}

@@ -71,6 +71,7 @@ export default async function (eleventyConfig) {
 		return res;
 	});
 
+	// Table block: does something with tables.
 	eleventyConfig.addPairedNunjucksShortcode('tableBlock', function (content, responsive = 'false') {
 		const res = this.env.render('blocks/table.njk', {
 			content: content,
@@ -79,6 +80,15 @@ export default async function (eleventyConfig) {
 		return res;
 	});
 
+	// Deck block: nice editorial summaries.
+	eleventyConfig.addPairedNunjucksShortcode('deckBlock', function (content) {
+		const res = this.env.render('blocks/deck.njk', {
+			content: content
+		});
+		return res;
+	});
+
+	// ---- Filters ---
 	eleventyConfig.addFilter('unique', (array, key) => {
 		if (!Array.isArray(array)) return [];
 

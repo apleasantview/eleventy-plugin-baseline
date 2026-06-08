@@ -8,9 +8,13 @@ released: '2026-06-04'
 layout: 'layouts/docs.njk'
 ---
 
+{% deckBlock %}
+
 What changed in `@apleasantview/eleventy-plugin-baseline`. A rolling file: it carries the release being prepared above the last shipped one, marked by the `released` date in the front matter. Shipped sections are cleared in a later tidy, not on release day. The full history is in the git log.
 
 Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift, break, and get renamed between releases. Where a change needs you to do something, the line you have to change is right there with it.
+
+{% enddeckBlock %}
 
 ---
 

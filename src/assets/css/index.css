@@ -18,6 +18,7 @@
 @import './elements/hr.css';
 
 /* 05. Blocks */
+@import './blocks/deck.css';
 @import './blocks/alert.css';
 @import './blocks/steps.css';
 @import './blocks/table.css';

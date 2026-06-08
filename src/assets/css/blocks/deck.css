@@ -1,0 +1,9 @@
+.deck {
+	--flow-space: var(--flow-space-snug);
+
+	p {
+		font-size: var(--text-size-secondary);
+		color: var(--color-text-muted);
+		max-width: none;
+	}
+}
