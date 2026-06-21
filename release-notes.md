@@ -1,6 +1,6 @@
 ---
-version: 0.1.0-next.42
-released: 2026-06-04
+version: 0.1.0-next.43
+released: 2026-06-21
 ---
 
 # Release notes
@@ -13,6 +13,17 @@ tidy, not on release day. The full history is in the git log.
 Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift,
 break, and get renamed between releases. Where a change needs you to do
 something, the line you have to change is right there with it.
+
+---
+
+## 0.1.0-next.43
+
+### Fixed
+
+- Wikilinks (`[[slug]]`) now resolve on single-language sites. Slug
+  registration was gated on a multilang-only flag, so a site with no
+  `languages` configured registered nothing and every wikilink rendered as
+  literal text. Nothing to change on your end; they just work now.
 
 ---
 

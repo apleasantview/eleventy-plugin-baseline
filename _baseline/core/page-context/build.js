@@ -325,7 +325,11 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		if (inspectionKey) setEntry(scope, inspectionKey, context);
 
 		if (slugIndex && entry.slug && page.url) {
-			const eligible = page.isDefaultLang === true;
+			// Register the default-language slug, and any slug on a monolingual
+			// site (where isDefaultLang is undefined). Only a genuine non-default
+			// translation (isDefaultLang === false) is skipped — the multilang
+			// plugin hops to those via the translation map.
+			const eligible = page.isDefaultLang !== false;
 			if (eligible) {
 				slugIndex.set(entry.slug, page.url, page.inputPath);
 			}

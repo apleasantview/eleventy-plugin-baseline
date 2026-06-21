@@ -65,6 +65,41 @@ describe('buildHead dedupe', () => {
 	});
 });
 
+// Drive the public builder and capture what it registers in the slug index.
+// This guards the monolingual wikilink regression: registration was gated on
+// `isDefaultLang === true`, but that flag is set only by the multilang module,
+// so a single-language site registered nothing and every wikilink missed.
+function registeredSlugs(pageInput) {
+	const calls = [];
+	const build = createPageContext({
+		scope: { values: new Map() },
+		slugIndex: { set: (slug, url, inputPath) => calls.push({ slug, url, inputPath }) },
+		settings: { url: 'https://www.example.com' },
+		runtime: {},
+		options: {}
+	});
+	build({ page: pageInput, title: 'About' });
+	return calls;
+}
+
+describe('slug index registration', () => {
+	it('registers a slug on a monolingual page (isDefaultLang undefined)', () => {
+		const calls = registeredSlugs({ url: '/about/', fileSlug: 'about', inputPath: './about.md' });
+		expect(calls).toEqual([{ slug: 'about', url: '/about/', inputPath: './about.md' }]);
+	});
+
+	it('registers the default-language slug in a multilingual site', () => {
+		const calls = registeredSlugs({ url: '/en/about/', fileSlug: 'about', isDefaultLang: true });
+		expect(calls).toHaveLength(1);
+		expect(calls[0].url).toBe('/en/about/');
+	});
+
+	it('skips a genuine non-default translation', () => {
+		const calls = registeredSlugs({ url: '/nl/over/', fileSlug: 'over', isDefaultLang: false });
+		expect(calls).toEqual([]);
+	});
+});
+
 describe('applyTitleTemplate', () => {
 	it('replaces %s with the page title', () => {
 		expect(applyTitleTemplate('%s', { title: 'About' })).toBe('About');
