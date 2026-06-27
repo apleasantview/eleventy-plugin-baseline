@@ -2,9 +2,10 @@
 	<div class="c-navigation-footer__inner">
 		<span class="u-label">System</span>
 		<ul class="c-navigation-footer__group">
-			<li><a href="/navigator-core.html" class="c-navigation-footer-item">Navigator</a></li>
-			<li><a href="/system/internal-links" class="c-navigation-footer-item">Internal links</a></li>
-			<li><a href="/system/outgoing-links" class="c-navigation-footer-item">Outgoing links</a></li>
+			{% for item in navigation.footer %}
+				{% set active = 'active' if (item.url == permalink) %}
+				<li><a class="c-navigation-footer-item {{ active }}" href="{{ item.url }}">{{ item.label }}</a></li>
+			{% endfor %}
 		</ul>
 	</div>
 </div>
