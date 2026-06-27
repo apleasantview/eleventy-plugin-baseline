@@ -1,0 +1,17 @@
+.c-navigation-footer {
+	max-width: fit-content;
+}
+
+.c-navigation-footer__group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-xs);
+	justify-content: space-between;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.c-navigation-footer-item {
+	font-size: var(--text-size-secondary);
+}

@@ -33,6 +33,7 @@
 @import './components/c-wordmark.css';
 @import './components/c-footer.css';
 @import './components/c-navigation.css';
+@import './components/c-navigation-footer.css';
 @import './components/c-breadcrumbs.css';
 @import './components/c-docs-toc.css';
 @import './components/c-docs-toc--details.css';
@@ -42,6 +43,7 @@
 @import './utilities/u-flow.css';
 @import './utilities/u-wrapper.css';
 @import './utilities/u-overflow.css';
+@import './utilities/u-label.css';
 
 /* 09. Vendors */
 @import './vendors/prism.css';

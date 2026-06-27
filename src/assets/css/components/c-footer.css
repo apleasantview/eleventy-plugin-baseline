@@ -3,3 +3,11 @@
 	padding-block-start: var(--space-inset-xs);
 	padding-block-end: var(--space-inset-xs);
 }
+
+.c-footer__inner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-m);
+	align-items: flex-start;
+	justify-content: space-between;
+}

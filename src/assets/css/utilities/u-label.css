@@ -1,0 +1,7 @@
+.u-label {
+	font-size: var(--text-size-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--color-text-muted);
+	display: block;
+}
