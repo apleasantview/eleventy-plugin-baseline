@@ -69,7 +69,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root[data-theme='dark'] {
+	:root {
 		--pf-text: #e5e5e5;
 		--pf-text-secondary: #a0a0a0;
 		--pf-text-muted: #949494;
@@ -97,6 +97,5 @@
 .c-search pagefind-modal-trigger {
 	display: inline-block;
 	width: 100%;
-	translate: calc(var(--space-3xs) * -1);
 	padding-block-end: var(--space-xs);
 }
