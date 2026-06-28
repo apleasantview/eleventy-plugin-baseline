@@ -1,4 +1,5 @@
 <nav class="c-docs-toc{{ variant }}">
+	{%- include "components/c-search.njk" %}
 	<div class="c-docs-toc__row">
 		<p>
 			<strong
@@ -16,7 +17,6 @@
 		{%- set topicPath = topicSection | join("/") %}
 		{%- set topicHref = "/" ~ topicPath ~ "/" %}
 		{%- if loop.index0 >= 1 %}
-
 			<div class="c-docs-toc__item {{ "active" if topicPath === currentPath }}">
 				<div class="c-docs-toc__row">
 					<p>

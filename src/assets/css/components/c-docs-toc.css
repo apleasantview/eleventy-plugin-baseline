@@ -71,6 +71,6 @@
 }
 
 .c-docs-toc hr {
-	margin-top: var(--space-l);
-	margin-bottom: var(--space-l);
+	margin-top: var(--space-m);
+	margin-bottom: var(--space-m-l);
 }

@@ -6,6 +6,7 @@
 
 	ul {
 		display: flex;
+		flex-wrap: wrap;
 		list-style: none;
 		gap: var(--space-cluster-s);
 		padding: 0;
@@ -17,6 +18,10 @@
 	li {
 		margin: 0;
 	}
+}
+
+.c-navigation__content--text-right {
+	text-align: right;
 }
 
 .c-navigation__link {
