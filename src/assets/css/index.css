@@ -1,33 +1,20 @@
-/* 01. Settings */
-@import './settings/colors.css';
-@import './settings/colors-dark.css';
-@import './settings/type.css';
-@import './settings/space.css';
-@import './settings/custom-media.css';
+/* CSS Profile - https://apv-css-profile.netlify.app/ */
 
-/* 02. Tools */
-@import './tools/document.css' layer(tokens);
+/* 01. Profile - identity layer */
+@import './profile/colors.css';
+@import './profile/colors-dark.css';
+@import './profile/type.css';
+@import './profile/space.css';
+@import './profile/custom-media.css';
+@import './profile/skip-link.css';
 
-/* 03. Generic */
-@import './generic/modern-reset.css' layer(reset);
-@import './generic/skip-link.css';
+/* 02. Resets - normalized browser defaults */
+@import './resets/modern-reset.css' layer(reset);
 
-/* 04. Elements */
-@import './elements/base.css';
-@import './elements/headings.css';
-@import './elements/hr.css';
+/* 03. Document - presentation layer */
+@import './document/document.css' layer(tokens);
 
-/* 05. Blocks */
-@import './blocks/deck.css';
-@import './blocks/alert.css';
-@import './blocks/steps.css';
-@import './blocks/table.css';
-
-/* 06. Layouts & Objects */
-@import './layouts/l-document.css';
-@import './layouts/l-fluid-grid.css';
-
-/* 07. Components */
+/* 04. Components - shared UI */
 @import './components/c-top-bar.css';
 @import './components/c-header.css';
 @import './components/c-wordmark.css';
@@ -39,17 +26,6 @@
 @import './components/c-docs-toc--details.css';
 @import './components/c-docs-toc--sidebar.css';
 
-/* 08. Utilities */
-@import './utilities/u-flow.css';
-@import './utilities/u-wrapper.css';
-@import './utilities/u-overflow.css';
-@import './utilities/u-label.css';
-
-/* 09. Vendors */
+/* 05. Vendors - third-party CSS */
 @import './vendors/prism.css';
 @import './vendors/pagefind.css';
-
-/* CSS is organised followng ITCSS and BEMIT naming conventions, see:
-* @link https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/
-* @link https://benmarshall.me/itcss/
-*/
