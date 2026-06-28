@@ -10,7 +10,7 @@
 	<!-- content -->
 	<div class="l-document__content u-flow">
 		{% include "components/c-breadcrumbs.njk" %}
-		<article class="u-flow">
+		<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
 			<h1>{{ title }}</h1>
 			{{ content | safe }}
 		</article>
