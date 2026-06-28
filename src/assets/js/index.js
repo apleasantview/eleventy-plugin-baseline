@@ -23,6 +23,7 @@ const reflectPreference = () => {
 	document.firstElementChild.setAttribute('data-theme', theme.value);
 
 	document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
+	document.querySelector('#pf-theme')?.setAttribute('data-pf-theme', theme.value);
 };
 
 const theme = {
