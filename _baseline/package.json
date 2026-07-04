@@ -1,6 +1,6 @@
 {
   "name": "@apleasantview/eleventy-plugin-baseline",
-  "version": "0.1.0-next.43",
+  "version": "0.1.0-next.44",
   "description": "An experimental Swiss army knife toolkit for Eleventy",
   "type": "module",
   "exports": {
@@ -18,7 +18,7 @@
     "!**/*.test.js"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "keywords": [
     "eleventy-plugin",
@@ -43,21 +43,21 @@
     "@11ty/eleventy-utils": "^2.0.7",
     "@jdevalk/seo-graph-core": "^0.6.2",
     "@rviscomi/capo.js": "^2.1.0",
-    "cssnano": "^7.1.2",
-    "dotenv": "^17.2.3",
-    "esbuild": "0.27.0",
+    "cssnano": "^8.0.2",
+    "dotenv": "^17.4.2",
+    "esbuild": "0.28.1",
     "kleur": "^4.1.5",
     "linkedom": "^0.18.12",
     "luxon": "^3.7.2",
     "markdown-it": "^14.1.1",
-    "markdown-it-attrs": "^4.3.1",
-    "postcss": "^8.5.6",
+    "markdown-it-attrs": "^5.0.0",
+    "postcss": "^8.5.16",
     "postcss-import": "^16.1.1",
     "postcss-import-ext-glob": "^2.1.1",
     "postcss-load-config": "^6.0.1",
-    "postcss-preset-env": "^10.4.0",
+    "postcss-preset-env": "^11.3.2",
     "slugify": "^1.6.6",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "sideEffects": false
 }

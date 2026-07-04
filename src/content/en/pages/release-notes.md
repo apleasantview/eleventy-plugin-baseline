@@ -3,8 +3,8 @@ title: 'Release notes'
 slug: 'release-notes'
 description: 'Eleventy Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift, break, and get renamed between releases. Where a change needs you to do something, the line you have to change is right there with it.'
 date: '2026-06-04'
-version: '0.1.0-next.42'
-released: '2026-06-04'
+version: '0.1.0-next.44'
+released: '2026-07-04'
 layout: 'layouts/docs.njk'
 ---
 
@@ -17,13 +17,47 @@ Install from npm:
 
 {% enddeckBlock %}
 
+## v0.1.0-next.44
+
+A housekeeping release: the supported Node range and the dependency versions Baseline declares.
+
+---
+
+### Changed
+
+{% stepsBlock 'compact' %}
+
+- **Node 22 is the floor now.**
+
+  `engines` moved from `>=20` to `>=22`, because Node 20 reached end-of-life in April 2026. If you are on Node 20 or 21, move to 22 or 24 (both current LTS). Nothing in the plugin needs syntax newer than Node 22 already has; this is about not advertising a dead line.
+
+- **Internal dependencies advanced to match what Baseline is built on.**
+
+  Most notably `postcss-preset-env` (10 to 11) and `markdown-it-attrs` (4 to 5). The versions the plugin declares now match the ones its own docs site has been building on, so what ships is what gets tested. If you pin Baseline's transitive dependencies yourself, note the two majors; otherwise there is nothing to do.
+
+{% endstepsBlock %}
+
+---
+
+## v0.1.0-next.43
+
+A single fix: wikilinks on single-language sites.
+
+---
+
+### Fixed
+
+- Wikilinks (`[[slug]]`) now resolve on single-language sites. Slug registration was gated on a multilang-only flag, so a site with no `languages` configured registered nothing and every wikilink rendered as literal text. Nothing to change on your end; they just work now.
+
+---
+
 ## v0.1.0-next.42
 
 Mostly an SEO release. `<baseline-head>` now emits the structured data, social tags, and canonical link that used to be hand-wired per site. A handful of shapes changed to make room for it.
 
 ---
 
-## Breaking
+### Breaking
 
 {% stepsBlock 'compact' %}
 
@@ -72,7 +106,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
 
 ---
 
-## Added
+### Added
 
 {% stepsBlock 'compact' %}
 
@@ -115,7 +149,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
 
 ---
 
-## Fixed
+### Fixed
 
 - Same-host links with different `rel` (a `preconnect` and a `dns-prefetch` to one host) are no longer collapsed to one in the head.
 - The sitemap and the markdown alternates skip `permalink:false` records instead of throwing on them.
@@ -123,7 +157,7 @@ Mostly an SEO release. `<baseline-head>` now emits the structured data, social t
 
 ---
 
-## Reading list
+### Reading list
 
 Where to go deeper on the surfaces that changed.
 
