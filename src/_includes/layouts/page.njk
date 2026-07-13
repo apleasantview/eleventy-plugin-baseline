@@ -20,4 +20,8 @@
 		<div style="margin-block-start: var(--space-2xl)"></div>
 	</div>
 </div>
+
+{% if slug == 'not-found' %}
+	<script>document.addEventListener('DOMContentLoaded', function () { plausible('404'); });</script>
+{% endif %}
 {%- endblock %}
