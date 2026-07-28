@@ -14,7 +14,7 @@ This is a working plugin, not a finished product. Things might shift, break, or 
 npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
-Requires Eleventy 3.x and Node >=20.
+Requires Eleventy 3.x and Node >=22.
 
 ## Usage
 

@@ -31,7 +31,7 @@ The repo serves dual purposes. `_baseline/` is the plugin itself – what gets p
 npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
-Requires Eleventy 3.x and Node >=20.
+Requires Eleventy 3.x and Node >=22.
 
 ## Usage
 
