@@ -1,7 +1,7 @@
 ---
 title: 'About Eleventy Baseline'
 slug: 'about'
-description: 'How a personal client-work starter became an opinionated infrastructure plugin for Eleventy.'
+description: 'How a personal client-work starter became a build framework for Eleventy.'
 date: 2026-05-23
 permalink: '/about/'
 translationKey: 'about'
@@ -9,7 +9,7 @@ type: 'about'
 pageType: 'AboutPage'
 ---
 
-_Baseline is an opinionated Eleventy plugin that handles the structural decisions you'd otherwise wire up on every project. Looking for the marketing pitch? It's over on the [docs overview](https://www.eleventy-baseline.dev/docs/introduction/overview/)._
+_Baseline is a build framework for Eleventy: the structural decisions you'd otherwise wire up on every project, already made. Looking for the pitch? That's the [homepage](/)._
 
 _This page is the longer, more honest story._
 
@@ -61,7 +61,7 @@ The architecture keeps reshaping itself alongside the features: founding pieces 
 
 One other thing has nagged me for a while: Eleventy almost never gets named alongside Astro and Hugo, and Astro arrived later and overtook it almost immediately. The plugin doesn't fix that. But the hunch driving the work is that the gap isn't about capability. It's about that same distance, the one between "I've installed it" and "I've got a site running." Astro closes it out of the box. Baseline tries to close it for Eleventy.
 
-Next on the horizon: getting SEO right, and possibly a media management module.
+The SEO layer landed in June: `<baseline-head>` now emits the structured-data graph, the social tags and the canonical with no per-site wiring. Next on the horizon: a media management module.
 
 ---
 
