@@ -1,80 +1,106 @@
 ---
 title: 'Eleventy Baseline'
 slug: 'home'
-description: 'Eleventy Baseline is a plugin for Eleventy that provides a ready-made site foundation with assets, metadata, and a live content graph that keeps rendered output in sync.'
+description: 'Eleventy Baseline is a build framework for Eleventy. Assets, head tags, sitemaps and structured data, ready on the first build.'
 date: 2026-05-17
 permalink: '/'
 translationKey: homepage
+layout: 'layouts/home.njk'
 ---
 
-Every working Eleventy site rebuilds the same foundation: asset compilation, head tags, sitemap, image handling. The same groundwork every time.
+<small><a href="/release-notes">v{{ _baseline.version }} rolled out</a></small>
 
-And every site hits the same limit. Your front matter is readable from anywhere. The rendered output is not.
+# The build framework for Eleventy sites.
 
-So you end up writing the same workarounds: a backlinks index built from filenames, a table of contents re-parsed from Markdown, structured data hand-rolled per page.
+{{ settings.languages[lang].tagline }} {style="--flow-space-heading:0.5em"}
 
-All of it running parallel to the rendered output, drifting out of sync the moment anything is renamed.
+Eleventy is a static site generator that leaves the structural decisions to you. Most Eleventy projects end up making the same ones: asset pipeline, images, SEO, structured data, multilingual support, sitemaps and deployment glue.
 
-Eleventy Baseline provides both, ready on day one. Already built, with a live reflection of everything you render. Your project still belongs to you.
-
----
-
-## In practice
-
-Baseline is a working foundation for Eleventy sites.
-
-Images render at the right widths in modern formats, lazy by default. Links between pages live by name, so folder moves do not break them. The head tags fill from one settings file, with page-level overrides where needed.
-
-Your layouts, styles, scripts, and editorial structure stay yours. Keep the defaults where they help, and override where you need to.
-
----
-
-## Built on Baseline
-
-The site you are reading runs on Baseline. What you are looking at is the system itself in use, not an illustration of it.
-
-Open any docs page and try it: the table of contents is built from the rendered HTML, the "Linked from" footer reads the content graph, the language switcher reads the settings, and the structured-data graph in the head is that same content graph, projected for search engines. All wired by the same system you are reading about.
-
-View source. Browse the repo. Run it locally. It's visible.
-
----
-
-## The three-layer architecture
-
-Responsibilities stay separated, and each layer has one job. Changes stay predictable as the site grows.
-
-### State
-
-Your settings and options, normalised once at startup. Every module reads the same shape.
-
-### Runtime
-
-What the build knows about itself: the templates, the translations, the content graph. Modules read from here instead of from each other.
-
-### Modules
-
-The features that read from both: assets, head, multilang, navigator, sitemap. None of them call each other; they read what they need from runtime.
-
-Full breakdown in the [[docs | docs]].
+Baseline is those decisions already implemented and fitted together in one plugin, following Eleventy's own conventions.
 
 ---
 
 ## Install and start
 
-Install the packages, register Baseline in your Eleventy config, and run the dev server.
-
 ```bash
 npm install @11ty/eleventy @11ty/eleventy-img
 npm install @apleasantview/eleventy-plugin-baseline
-npm run dev
 ```
 
-The [[quickstart | quickstart]] walks through the full setup. The [[docs | docs]] cover the concept, modules and the architecture. The [[simple-baseline-site | simple site tutorial]] builds a small site from zero.
+Install the packages, register Baseline in your Eleventy config, and run the dev server. The [[quickstart | quickstart]] walks through the full setup.
 
-### Rolling releases
+If you are new to Eleventy, the [[introduction | introduction chapter]] will get you on your way.
 
-Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Pin a version when you build something serious on top.
+---
+
+## What you get
+
+### Assets
+
+The asset pipeline, wired. One entry point per directory (`index.css`, `index.js`), CSS through PostCSS and JS through esbuild. Images render at the right widths in modern formats, lazy by default.
+
+### SEO
+
+The head tags fill from one settings file, with page-level overrides where needed. Beyond the basics, `<baseline-head>` emits a JSON-LD structured-data graph, Open Graph, Twitter Cards, and a canonical link, with no per-page wiring.
+
+The structured-data construction follows the model of `seo-graph-core`, by Joost de Valk of Yoast.
+
+### Multilingual
+
+Directory-based multilingual support: per-language collections, translation mapping, hreflang, and i18n filters. Multilingual sites get per-language sitemaps plus an index.
+
+---
+
+## Built on standards and conventions
+
+Eleventy underneath. Content as the source of truth. Nothing shipped to the browser that the page does not need. Baseline does not prescribe components, CSS methodology or frontend framework.
+
+### Build sites with Eleventy
+
+Baseline sits on Eleventy rather than around it. The data cascade, the template languages and the plugin API stay exactly as documented, so what you already know still applies. Images run through Eleventy's own image plugin: AVIF and WebP, responsive image sizes, lazy by default.
+
+[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]]
+
+### Write content-first websites
+
+Markdown and front matter are the source of truth, Nunjucks where a page needs logic. The build keeps a graph of what you actually rendered, so pages link to each other by name and your structure comes out of your content instead of being maintained beside it.
+
+[[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[content-graph | content graph]]
+
+### Develop with progressive enhancements
+
+Write your HTML templates first, then CSS, then JavaScript where the page earns it. Your own `postcss.config.js` is picked up as written and esbuild handles the bundle. Baseline currently ships no client-side runtime and nothing to hydrate.
+
+[[head | HTML]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
+
+---
+
+## One content graph underneath
+
+Backlinks, wikilinks that survive a folder move, breadcrumbs and structured data all come from the same underlying content graph.
+
+Eleventy can read your front matter from anywhere. It cannot read the page it just built. Baseline reads the finished HTML and hands the result to every template as a graph.
+
+---
+
+## Running on Baseline
+
+The site you are reading runs on Baseline. What you are looking at is the system itself in use, not a demonstration site.
+
+Open any docs page: the table of contents is built from the rendered HTML, the "Linked from" footer reads the content graph, and the structured data in the head is that same graph, projected for search engines.
+
+View source. Browse the repo. Run it locally. It's visible.
+
+---
+
+## Open source
+
+Baseline is MIT-licensed and free, developed in the open by [a pleasant view](https://www.apleasantview.com).
+
+[[commercial-support | Commercial support]] is available for adoption, migration, custom modules, structured data work, or full site builds.
+
+## Rolling releases
+
+Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
 
 If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
-
-Commercial support available from [a pleasant view](https://www.apleasantview.com).

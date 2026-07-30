@@ -2,7 +2,7 @@ const siteUrl = process.env.URL || 'http://localhost:8080/';
 
 export default {
 	title: 'Eleventy Baseline',
-	tagline: 'Start building your site and skip the recurring setup work.',
+	tagline: 'Start building your site and skip the setup work.',
 	url: siteUrl,
 	noindex: false,
 
@@ -13,21 +13,21 @@ export default {
 			locale: 'en',
 			languageName: 'English',
 			title: 'Eleventy Baseline',
-			tagline: 'Start building your site and skip the recurring setup work.'
+			tagline: 'Start building your site and skip the setup work.'
 		},
 		nl: {
 			contentDir: 'content/nl/',
 			locale: 'nl',
 			languageName: 'Nederlands',
 			title: 'Eleventy Baseline',
-			tagline: 'Start met het bouwen aan je site en sla de terugkerende setup over.'
+			tagline: 'Start met het bouwen aan je site en sla de setup over.'
 		},
 		fr: {
 			contentDir: 'content/fr/',
 			locale: 'fr',
 			languageName: 'Français',
 			title: 'Eleventy Baseline',
-			tagline: 'Commencez à construire votre site sans repasser par la même configuration.'
+			tagline: 'Commencez à construire votre site sans vous occuper de la configuration.'
 		}
 	},
 
