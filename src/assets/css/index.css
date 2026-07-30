@@ -15,7 +15,7 @@
 @import './document/document.css';
 
 /* 04. Components - shared UI */
-@import './components/c-top-bar.css';
+@import './components/c-preferences-bar.css';
 @import './components/c-header.css';
 @import './components/c-wordmark.css';
 @import './components/c-footer.css';
