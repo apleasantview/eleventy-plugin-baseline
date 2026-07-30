@@ -8,15 +8,15 @@ translationKey: homepage
 layout: 'layouts/home.njk'
 ---
 
-<small><a href="/release-notes">v{{ _baseline.version }} uitgerold</a></small>
+<small><a href="/release-notes">v{{ _baseline.version }} uitgebracht</a></small>
 
 # Het build framework voor Eleventy-sites.
 
 {{ settings.languages[lang].tagline }} {style="--flow-space-heading:0.5em"}
 
-Eleventy is een static site generator die de structurele beslissingen aan jou overlaat. De meeste Eleventy-projecten nemen uiteindelijk dezelfde beslissingen: asset pipeline, afbeeldingen, SEO, gestructureerde data, meertaligheid, sitemaps en deployment-lijm.
+Eleventy is een static site generator die de structurele beslissingen aan jou overlaat. De meeste Eleventy-projecten nemen uiteindelijk dezelfde beslissingen: een asset pipeline, afbeeldingen, head-tags, gestructureerde data, meertaligheid, sitemaps.
 
-Baseline neemt die beslissingen voor je, geïmplementeerd en samengebracht in één plugin, volgens de conventies van Eleventy zelf. Een framework in wat het beslist, een plugin in hoe het installeert.
+Baseline bundelt die beslissingen, al gemaakt en op elkaar afgestemd, in één plugin die de conventies van Eleventy zelf volgt. Een framework in wat het beslist, een plugin in hoe het installeert.
 
 ---
 
@@ -27,9 +27,9 @@ npm install @11ty/eleventy @11ty/eleventy-img
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
-Installeer de packages, registreer Baseline in je Eleventy-config en start de dev-server.
+Installeer de packages, registreer Baseline in je Eleventy-config en start de dev-server. De [[quickstart | quickstart]] loopt de volledige setup door.
 
-De [[quickstart | quickstart]] loopt de volledige setup door. Ben je nieuw met Eleventy, dan helpt het [[introduction | introductiehoofdstuk]] je op weg.
+Ben je nieuw met Eleventy, dan helpt het [[introduction | introductiehoofdstuk]] je op weg.
 
 ---
 
@@ -37,17 +37,27 @@ De [[quickstart | quickstart]] loopt de volledige setup door. Ben je nieuw met E
 
 ### Assets
 
-De asset pipeline, aangesloten. Eén entry point per map (`index.css`, `index.js`), CSS via PostCSS en JS via esbuild. Afbeeldingen renderen in de juiste breedtes en moderne formaten, standaard lazy.
+De asset pipeline, aangesloten. Eén entry point per assetmap: `index.css` loopt via PostCSS, `index.js` via esbuild. Afbeeldingen renderen in de juiste breedtes en moderne formaten, standaard lazy.
 
 ### SEO
 
-De head-tags worden gevuld vanuit één settings-bestand, met overrides op paginaniveau waar nodig. Daarnaast zendt `<baseline-head>` een JSON-LD-graph met gestructureerde data uit, plus Open Graph, Twitter Cards en een canonical link, zonder bedrading per pagina.
+De head-tags worden gevuld vanuit één settings-bestand, met overrides op paginaniveau waar nodig. `<baseline-head>` zendt een canonical link uit, Open Graph, Twitter Cards en een JSON-LD-graph met gestructureerde data, zonder bedrading per pagina.
 
 De opbouw van de gestructureerde data volgt het model van `seo-graph-core`, van Joost de Valk van Yoast.
 
 ### Meertaligheid
 
-Meertaligheid op basis van mappen: collecties per taal, vertalingsmapping, hreflang en i18n-filters. Meertalige sites krijgen een sitemap per taal plus een index.
+Meertaligheid op basis van mappen: collecties per taal, vertalingsmapping, hreflang en i18n-filters. Sitemaps komen per taal, met een index erbovenop.
+
+---
+
+## Eén content graph eronder
+
+Backlinks, wikilinks die een mapverplaatsing overleven, breadcrumbs en de gestructureerde data in de head zijn allemaal projecties van één content graph.
+
+Zonder die graph onderhoud je elk daarvan met de hand: een backlinks-index op basis van bestandsnamen, een inhoudsopgave die opnieuw uit de Markdown wordt geparset, gestructureerde data pagina per pagina geschreven. Allemaal loopt het uit de pas zodra je een bestand hernoemt.
+
+Baseline bouwt die graph uit de HTML nadat die gerenderd is, dus hij is altijd wat je echt hebt uitgeleverd.
 
 ---
 
@@ -57,27 +67,15 @@ Baseline zit op Eleventy, niet eromheen. De data cascade, de templatetalen en de
 
 Baseline schrijft geen componenten, CSS-methodologie of frontend framework voor, en levert geen client-side runtime.
 
-[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
-
----
-
-## Eén content graph eronder
-
-Backlinks, wikilinks die een mapverplaatsing overleven, breadcrumbs en gestructureerde data komen allemaal uit dezelfde onderliggende content graph.
-
-Zonder die graph onderhoud je elk daarvan met de hand: een backlinks-index op basis van bestandsnamen, een inhoudsopgave die opnieuw uit de Markdown wordt geparset, gestructureerde data pagina per pagina geschreven. Allemaal loopt het uit de pas zodra je een bestand hernoemt.
-
-Baseline leest de HTML nadat die gerenderd is, dus de graph is altijd wat je echt hebt uitgeleverd.
+Onder de motorkap: [Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
 ---
 
 ## Draait op Baseline
 
-De site die je nu leest draait op Baseline. Wat je voor je hebt is het systeem zelf in gebruik, geen demonstratiesite.
+De site die je nu leest draait op Baseline. Open een willekeurige docs-pagina: de inhoudsopgave wordt gebouwd uit de gerenderde HTML, de "Linked from"-footer leest de content graph, en de gestructureerde data in de head is diezelfde graph, geprojecteerd voor zoekmachines.
 
-Open een willekeurige docs-pagina: de inhoudsopgave wordt gebouwd uit de gerenderde HTML, de "Linked from"-footer leest de content graph, en de gestructureerde data in de head is diezelfde graph, geprojecteerd voor zoekmachines.
-
-Bekijk de broncode. Blader door de repo. Draai het lokaal. Het is zichtbaar.
+Bekijk de broncode. Blader door de repo. Draai het lokaal.
 
 [[about:nl | Lees het langere verhaal erachter]].
 
