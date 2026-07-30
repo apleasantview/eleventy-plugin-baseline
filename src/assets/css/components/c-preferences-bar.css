@@ -1,0 +1,19 @@
+.c-preferences-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-xs);
+	padding-block-start: 0.25rem;
+	padding-block-end: 0.25rem;
+	max-width: 100%;
+}
+
+.c-preferences-bar a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
