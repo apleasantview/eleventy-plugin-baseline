@@ -1,9 +1,11 @@
+{%- set lang = lang or settings.defaultLanguage %}
+{%- set nav = navigation[lang] or navigation[settings.defaultLanguage] %}
 <div class="c-navigation-footer">
 	<div class="c-navigation-footer__inner">
 		<span class="u-label">System</span>
 		<ul class="c-navigation-footer__group">
-			{% for item in navigation.footer %}
-				{% set active = 'active' if (item.url == permalink) %}
+			{% for item in nav.footer %}
+				{% set active = 'active' if (item.url == page.url) %}
 				<li><a class="c-navigation-footer-item {{ active }}" href="{{ item.url }}">{{ item.label }}</a></li>
 			{% endfor %}
 		</ul>
