@@ -1,0 +1,19 @@
+.c-lang-switcher {
+	max-width: fit-content;
+	padding-block: var(--space-inset-3xs);
+}
+
+.c-lang-switcher__inner {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-s);
+}
+
+.c-lang-switcher__item {
+	margin-top: 0;
+	font-size: var(--text-size-secondary);
+}
+
+.c-lang-switcher__item:hover {
+	background-color: var(--color-surface-hover);
+}

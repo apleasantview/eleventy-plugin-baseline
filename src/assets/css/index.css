@@ -16,6 +16,7 @@
 
 /* 04. Components - shared UI */
 @import './components/c-preferences-bar.css';
+@import './components/c-language-switcher.css';
 @import './components/c-header.css';
 @import './components/c-wordmark.css';
 @import './components/c-footer.css';
