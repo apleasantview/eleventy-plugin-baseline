@@ -19,6 +19,7 @@ Baseline wordt gebouwd en onderhouden door Cristovao Verstraeten bij [a pleasant
 - **Ernaartoe migreren.** Een bestaande site overzetten, inclusief de delen die Baseline niet voor je beslist.
 - **Uitbreiden.** Eigen modules, schema voor je eigen contenttypes, en integraties met de rest van je stack.
 - **Gestructureerde data.** Een correcte, volledige JSON-LD-graph uit je site krijgen, en die zo houden.
+- **Agent discovery.** Je content leesbaar maken voor AI-agents en LLM-crawlers zonder dat ze je HTML moeten parsen: `llms.txt`, JSON-LD-corpora, markdown-alternatieven, een discovery-manifest. Het staat allemaal live op deze site.
 - **De hele site bouwen.** Ontworpen en gebouwd op Baseline, van begin tot eind.
 - **Prioritaire ondersteuning.** Rechtstreeks contact wanneer iets je blokkeert.
 

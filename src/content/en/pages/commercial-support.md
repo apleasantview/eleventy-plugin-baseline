@@ -19,6 +19,7 @@ Baseline is built and maintained by Cristovao Verstraeten at [a pleasant view](h
 - **Migrating onto it.** Moving an existing site across, including the parts Baseline does not decide for you.
 - **Extending it.** Custom modules, schema for your own content types, and integrations with the rest of your stack.
 - **Structured data.** Getting a correct, complete JSON-LD graph out of your site, and keeping it that way.
+- **Agent discovery.** Making your content readable by AI agents and LLM crawlers without them parsing your HTML: `llms.txt`, JSON-LD corpora, markdown alternates, a discovery manifest. All of it is live on this site.
 - **Building the whole site.** Designed and built on Baseline, start to finish.
 - **Priority support.** Direct access when something is blocking you.
 

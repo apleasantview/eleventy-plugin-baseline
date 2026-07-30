@@ -19,6 +19,7 @@ Baseline est développé et maintenu par Cristovao Verstraeten chez [a pleasant 
 - **Migrer vers Baseline.** Faire basculer un site existant, y compris les parties que Baseline ne décide pas à votre place.
 - **L'étendre.** Modules sur mesure, schema pour vos propres types de contenu, et intégrations avec le reste de votre stack.
 - **Données structurées.** Obtenir un graphe JSON-LD correct et complet, et le maintenir ainsi.
+- **Découverte par les agents.** Rendre votre contenu lisible par les agents IA et les crawlers de LLM sans qu'ils aient à analyser votre HTML : `llms.txt`, corpus JSON-LD, alternatives markdown, un manifeste de découverte. Tout cela est en ligne sur ce site.
 - **Construire le site entier.** Conçu et construit sur Baseline, du début à la fin.
 - **Support prioritaire.** Un accès direct quand quelque chose vous bloque.
 
