@@ -1,6 +1,6 @@
 # Eleventy Baseline
 
-Baseline makes the structural decisions that Eleventy leaves open: directory layout, asset pipeline, image handling, SEO, sitemaps.
+Baseline is a build framework for Eleventy. It makes the structural decisions Eleventy leaves open: directory layout, asset pipeline, image handling, SEO, sitemaps. A framework in what it decides, a plugin in how it installs.
 
 If you've started a new Eleventy project and found yourself wiring up the same things for the third time, this is for you. Directory structure, template engine, image formats, meta tags, asset bundling, sitemap – decisions that are individually small but collectively slow you down. Baseline makes them together, so they fit together. You get to skip the setup and start building.
 
