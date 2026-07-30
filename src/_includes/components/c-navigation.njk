@@ -9,7 +9,7 @@
 						<a class="c-navigation__link" href="{{ item.url }}" {%- if page.url == item.url %} aria-current="page"{%- endif %}>{{ item.label }}</a>
 					</li>
 				{%- endfor %}
-				<li>|</li>
+				<li aria-hidden>|</li>
 				<li>
 					<a class="c-navigation__link" href="https://github.com/apleasantview/eleventy-plugin-baseline" target="_blank">
 						<!-- prettier-ignore-start -->
