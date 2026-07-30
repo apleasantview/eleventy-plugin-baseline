@@ -16,7 +16,7 @@ layout: 'layouts/home.njk'
 
 Eleventy est un générateur de sites statiques qui vous laisse les décisions structurelles. La plupart des projets Eleventy finissent par prendre les mêmes : pipeline d'assets, images, SEO, données structurées, multilingue, sitemaps et colle de déploiement.
 
-Baseline, ce sont ces décisions déjà prises et assemblées dans un seul plugin, en suivant les conventions d'Eleventy.
+Baseline, ce sont ces décisions déjà prises et assemblées dans un seul plugin, en suivant les conventions d'Eleventy. Un framework par ce qu'il décide, un plugin par sa façon de s'installer.
 
 ---
 
@@ -53,25 +53,11 @@ Support multilingue basé sur les dossiers : collections par langue, table de tr
 
 ## Construit sur des standards et des conventions
 
-Eleventy en dessous. Le contenu comme source de vérité. Rien d'envoyé au navigateur dont la page n'a pas besoin. Baseline n'impose ni composants, ni méthodologie CSS, ni framework frontend.
+Baseline se pose sur Eleventy plutôt qu'autour. La data cascade, les langages de template et l'API de plugins restent exactement tels que documentés : ce que vous savez déjà s'applique toujours. Le Markdown et le front matter sont la source de vérité, Nunjucks là où une page a besoin de logique. D'abord le HTML, puis le CSS, puis le JavaScript là où la page le mérite.
 
-### Construisez des sites avec Eleventy
+Baseline n'impose ni composants, ni méthodologie CSS, ni framework frontend, et ne livre aucun runtime côté client.
 
-Baseline se pose sur Eleventy plutôt qu'autour. La data cascade, les langages de template et l'API de plugins restent exactement tels que documentés : ce que vous savez déjà s'applique toujours. Les images passent par le plugin image d'Eleventy : AVIF et WebP, tailles responsives, lazy loading par défaut.
-
-[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]]
-
-### Écrivez des sites orientés contenu
-
-Le Markdown et le front matter sont la source de vérité, Nunjucks là où une page a besoin de logique. Le build conserve un graphe de ce que vous avez réellement rendu, si bien que les pages se lient entre elles par leur nom et que votre structure découle de votre contenu au lieu d'être maintenue à côté.
-
-[[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[content-graph | graphe de contenu]]
-
-### Développez en amélioration progressive
-
-Écrivez d'abord vos templates HTML, puis le CSS, puis le JavaScript là où la page le mérite. Votre propre `postcss.config.js` est repris tel quel et esbuild se charge du bundle. Baseline ne livre pour l'instant aucun runtime côté client, et rien à hydrater.
-
-[[head | HTML]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
+[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
 ---
 
@@ -79,7 +65,9 @@ Le Markdown et le front matter sont la source de vérité, Nunjucks là où une 
 
 Les backlinks, les wikilinks qui survivent au déplacement d'un dossier, le fil d'Ariane et les données structurées viennent tous du même graphe de contenu.
 
-Eleventy peut lire votre front matter depuis n'importe où. Il ne peut pas lire la page qu'il vient de construire. Baseline lit le HTML fini et transmet le résultat à chaque template sous forme de graphe.
+Sans lui, vous maintenez chacun d'eux à la main : un index de backlinks construit à partir des noms de fichiers, une table des matières reparsée depuis le Markdown, des données structurées écrites page par page. Tout cela se désynchronise dès que vous renommez un fichier.
+
+Baseline lit le HTML une fois rendu : le graphe correspond donc toujours à ce que vous avez réellement livré.
 
 ---
 
@@ -91,13 +79,15 @@ Ouvrez n'importe quelle page de la documentation : la table des matières est co
 
 Regardez le code source. Parcourez le dépôt. Lancez-le en local. Tout est visible.
 
+[[about:fr | Lisez l'histoire qui va avec]].
+
 ---
 
 ## Open source
 
-Baseline est sous licence MIT et gratuit, développé au grand jour par [a pleasant view](https://www.apleasantview.com).
+Baseline est sous licence MIT et gratuit, développé au grand jour et maintenu par [a pleasant view](https://www.apleasantview.com).
 
-Un [[commercial-support:fr|support commercial]] est disponible : adoption, migration, modules sur mesure, travail sur les données structurées, ou construction complète du site.
+Un [[commercial-support:fr|support commercial]] est disponible directement auprès du mainteneur.
 
 ## Versions glissantes
 

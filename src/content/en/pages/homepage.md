@@ -16,7 +16,7 @@ layout: 'layouts/home.njk'
 
 Eleventy is a static site generator that leaves the structural decisions to you. Most Eleventy projects end up making the same ones: asset pipeline, images, SEO, structured data, multilingual support, sitemaps and deployment glue.
 
-Baseline is those decisions already implemented and fitted together in one plugin, following Eleventy's own conventions.
+Baseline is those decisions already implemented and fitted together in one plugin, following Eleventy's own conventions. A framework in what it decides, a plugin in how it installs.
 
 ---
 
@@ -53,25 +53,11 @@ Directory-based multilingual support: per-language collections, translation mapp
 
 ## Built on standards and conventions
 
-Eleventy underneath. Content as the source of truth. Nothing shipped to the browser that the page does not need. Baseline does not prescribe components, CSS methodology or frontend framework.
+Baseline sits on Eleventy rather than around it. The data cascade, the template languages and the plugin API stay exactly as documented, so what you already know still applies. Markdown and front matter are the source of truth, Nunjucks where a page needs logic. HTML first, then CSS, then JavaScript where the page earns it.
 
-### Build sites with Eleventy
+Baseline does not prescribe components, a CSS methodology or a frontend framework, and it ships no client-side runtime.
 
-Baseline sits on Eleventy rather than around it. The data cascade, the template languages and the plugin API stay exactly as documented, so what you already know still applies. Images run through Eleventy's own image plugin: AVIF and WebP, responsive image sizes, lazy by default.
-
-[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]]
-
-### Write content-first websites
-
-Markdown and front matter are the source of truth, Nunjucks where a page needs logic. The build keeps a graph of what you actually rendered, so pages link to each other by name and your structure comes out of your content instead of being maintained beside it.
-
-[[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[content-graph | content graph]]
-
-### Develop with progressive enhancements
-
-Write your HTML templates first, then CSS, then JavaScript where the page earns it. Your own `postcss.config.js` is picked up as written and esbuild handles the bundle. Baseline currently ships no client-side runtime and nothing to hydrate.
-
-[[head | HTML]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
+[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
 ---
 
@@ -79,7 +65,9 @@ Write your HTML templates first, then CSS, then JavaScript where the page earns 
 
 Backlinks, wikilinks that survive a folder move, breadcrumbs and structured data all come from the same underlying content graph.
 
-Eleventy can read your front matter from anywhere. It cannot read the page it just built. Baseline reads the finished HTML and hands the result to every template as a graph.
+Without it you maintain each of those by hand: a backlinks index built from filenames, a table of contents re-parsed from Markdown, structured data written page by page. All of it drifting the moment you rename a file.
+
+Baseline reads the HTML after it renders, so the graph is always what you actually shipped.
 
 ---
 
@@ -91,13 +79,15 @@ Open any docs page: the table of contents is built from the rendered HTML, the "
 
 View source. Browse the repo. Run it locally. It's visible.
 
+[[about | Read the longer story behind it]].
+
 ---
 
 ## Open source
 
-Baseline is MIT-licensed and free, developed in the open by [a pleasant view](https://www.apleasantview.com).
+Baseline is MIT-licensed and free, developed in the open and maintained by [a pleasant view](https://www.apleasantview.com).
 
-[[commercial-support | Commercial support]] is available for adoption, migration, custom modules, structured data work, or full site builds.
+[[commercial-support | Commercial support]] is available directly from the maintainer.
 
 ## Rolling releases
 

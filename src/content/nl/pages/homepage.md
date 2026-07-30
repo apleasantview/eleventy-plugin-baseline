@@ -16,7 +16,7 @@ layout: 'layouts/home.njk'
 
 Eleventy is een static site generator die de structurele beslissingen aan jou overlaat. De meeste Eleventy-projecten nemen uiteindelijk dezelfde beslissingen: asset pipeline, afbeeldingen, SEO, gestructureerde data, meertaligheid, sitemaps en deployment-lijm.
 
-Baseline neemt die beslissingen voor je, geïmplementeerd en samengebracht in één plugin, volgens de conventies van Eleventy zelf.
+Baseline neemt die beslissingen voor je, geïmplementeerd en samengebracht in één plugin, volgens de conventies van Eleventy zelf. Een framework in wat het beslist, een plugin in hoe het installeert.
 
 ---
 
@@ -53,25 +53,11 @@ Meertaligheid op basis van mappen: collecties per taal, vertalingsmapping, hrefl
 
 ## Gebouwd op standaarden en conventies
 
-Eleventy eronder. Content als bron van waarheid. Niets naar de browser gestuurd dat de pagina niet nodig heeft. Baseline schrijft geen componenten, CSS-methodologie of frontend framework voor.
+Baseline zit op Eleventy, niet eromheen. De data cascade, de templatetalen en de plugin-API blijven precies zoals gedocumenteerd, dus wat je al weet geldt nog steeds. Markdown en front matter zijn de bron van waarheid, Nunjucks waar een pagina logica nodig heeft. Eerst HTML, dan CSS, dan JavaScript waar de pagina het verdient.
 
-### Bouw sites met Eleventy
+Baseline schrijft geen componenten, CSS-methodologie of frontend framework voor, en levert geen client-side runtime.
 
-Baseline zit op Eleventy, niet eromheen. De data cascade, de templatetalen en de plugin-API blijven precies zoals gedocumenteerd, dus wat je al weet geldt nog steeds. Afbeeldingen lopen via Eleventy's eigen image plugin: AVIF en WebP, responsieve afbeeldingsformaten, standaard lazy.
-
-[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]]
-
-### Schrijf content-first websites
-
-Markdown en front matter zijn de bron van waarheid, Nunjucks waar een pagina logica nodig heeft. De build houdt een graph bij van wat je daadwerkelijk gerenderd hebt, zodat pagina's op naam naar elkaar linken en je structuur uit je content voortkomt in plaats van ernaast onderhouden te worden.
-
-[[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[content-graph | content graph]]
-
-### Ontwikkel met progressive enhancement
-
-Schrijf eerst je HTML-templates, dan CSS, dan JavaScript waar de pagina het verdient. Je eigen `postcss.config.js` wordt gebruikt zoals je hem schrijft en esbuild verzorgt de bundle. Baseline levert momenteel geen client-side runtime en niets om te hydrateren.
-
-[[head | HTML]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
+[Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
 ---
 
@@ -79,7 +65,9 @@ Schrijf eerst je HTML-templates, dan CSS, dan JavaScript waar de pagina het verd
 
 Backlinks, wikilinks die een mapverplaatsing overleven, breadcrumbs en gestructureerde data komen allemaal uit dezelfde onderliggende content graph.
 
-Eleventy kan je front matter overal lezen. De pagina die het net gebouwd heeft, kan het niet lezen. Baseline leest de afgewerkte HTML en geeft het resultaat als graph door aan elke template.
+Zonder die graph onderhoud je elk daarvan met de hand: een backlinks-index op basis van bestandsnamen, een inhoudsopgave die opnieuw uit de Markdown wordt geparset, gestructureerde data pagina per pagina geschreven. Allemaal loopt het uit de pas zodra je een bestand hernoemt.
+
+Baseline leest de HTML nadat die gerenderd is, dus de graph is altijd wat je echt hebt uitgeleverd.
 
 ---
 
@@ -91,13 +79,15 @@ Open een willekeurige docs-pagina: de inhoudsopgave wordt gebouwd uit de gerende
 
 Bekijk de broncode. Blader door de repo. Draai het lokaal. Het is zichtbaar.
 
+[[about:nl | Lees het langere verhaal erachter]].
+
 ---
 
 ## Open source
 
-Baseline is MIT-gelicentieerd en gratis, ontwikkeld in de openbaarheid door [a pleasant view](https://www.apleasantview.com).
+Baseline is MIT-gelicentieerd en gratis, ontwikkeld in de openbaarheid en onderhouden door [a pleasant view](https://www.apleasantview.com).
 
-[[commercial-support:nl | Commerciële ondersteuning]] is beschikbaar voor adoptie, migratie, eigen modules, werk aan gestructureerde data of volledige sitebuilds.
+[[commercial-support:nl | Commerciële ondersteuning]] krijg je rechtstreeks van de maintainer.
 
 ## Doorlopende releases
 
