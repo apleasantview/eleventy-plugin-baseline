@@ -1,14 +1,14 @@
 .c-header {
-	padding-block-start: var(--space-inset-xs);
-	padding-block-end: var(--space-inset-xs);
+	margin-block-start: var(--space-xs);
+	margin-block-end: var(--space-2xs);
+	padding-block: var(--space-3xs);
 }
 
-.c-header__block {
+.c-header__group {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	column-gap: var(--space-3xl);
-	row-gap: var(--space-cluster-l);
+	gap: var(--space-cluster-m);
 	align-items: center;
 }
 

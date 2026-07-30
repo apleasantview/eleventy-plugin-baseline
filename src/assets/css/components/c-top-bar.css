@@ -7,3 +7,12 @@
 	padding-block-start: 0.25rem;
 	padding-block-end: 0.25rem;
 }
+
+.c-top-bar a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}

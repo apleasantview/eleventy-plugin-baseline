@@ -84,7 +84,7 @@
 	--space-fluid-s-2xl: var(--space-s-2xl);
 
 	/* An exception for wrapper values */
-	--wrapper-max-width: 120rem;
+	--wrapper-max-width: 105.25rem;
 	--wrapper-margin-inline: auto;
 	--wrapper-padding-inline: var(--space-fluid-s-xl);
 
@@ -92,5 +92,5 @@
 	--flow-space-snug: var(--space-stack-xs);
 
 	/* Headings flow-space */
-	--flow-space-heading: var(--space-stack-l);
+	--flow-space-heading: var(--space-stack-m);
 }

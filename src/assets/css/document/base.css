@@ -45,8 +45,6 @@ main > * + * {
 	margin-block-start: var(--flow-space, 1em);
 }
 
-header,
-main,
 footer {
 	padding-block: var(--space-inset-2xs);
 }

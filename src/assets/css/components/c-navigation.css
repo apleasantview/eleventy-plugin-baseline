@@ -1,8 +1,15 @@
 .c-navigation {
+	padding-block: var(--space-3xs);
+}
+
+.c-navigation__inner {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--space-m);
+	row-gap: var(--space-xs);
 	max-width: 100%;
-	align-items: flex-end;
+	align-items: center;
 
 	ul {
 		display: flex;

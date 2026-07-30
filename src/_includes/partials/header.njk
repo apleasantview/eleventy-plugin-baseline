@@ -1,14 +1,3 @@
 <header>
-	<div class="u-wrapper">
-		{% include "components/c-top-bar.njk" %}
-		<div class="c-header">
-			<div class="c-header__block">
-				<div class="c-header__content">
-					{% include "components/c-wordmark.njk" %}
-					<small>{{ settings.tagline }}</small>
-				</div>
-				{%- include "components/c-navigation.njk" %}
-			</div>
-		</div>
-	</div>
+	{% include "components/c-header.njk" %}
 </header>

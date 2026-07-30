@@ -12,7 +12,7 @@
 @import './resets/modern-reset.css' layer(reset);
 
 /* 03. Document - presentation layer */
-@import './document/document.css' layer(tokens);
+@import './document/document.css';
 
 /* 04. Components - shared UI */
 @import './components/c-top-bar.css';
