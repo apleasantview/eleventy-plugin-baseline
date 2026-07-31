@@ -1,7 +1,7 @@
 ---
 title: 'Release notes'
 slug: 'release-notes'
-description: 'Eleventy Baseline ships on a rolling release cadence (`0.1.0-next.X`). Things shift, break, and get renamed between releases. Where a change needs you to do something, the line you have to change is right there with it.'
+description: 'Baseline ships on a rolling release cadence (0.1.0-next.X). Every entry names what changed and the line you have to change with it.'
 date: '2026-06-04'
 version: '0.1.0-next.44'
 released: '2026-07-04'
