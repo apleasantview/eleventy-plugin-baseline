@@ -10,21 +10,21 @@
 	row-gap: var(--space-xs);
 	max-width: 100%;
 	align-items: center;
+}
 
-	ul {
-		display: flex;
-		flex-wrap: wrap;
-		list-style: none;
-		gap: var(--space-cluster-s);
-		padding: 0;
-		margin: 0;
-		align-items: center;
-		justify-content: flex-end;
-	}
+.c-navigation__group {
+	display: flex;
+	flex-wrap: wrap;
+	list-style: none;
+	gap: var(--space-cluster-s);
+	padding: 0;
+	margin: 0;
+	align-items: center;
+	justify-content: flex-end;
+}
 
-	li {
-		margin: 0;
-	}
+.c-navigation__group li {
+	margin: 0;
 }
 
 .c-navigation__content--text-right {
