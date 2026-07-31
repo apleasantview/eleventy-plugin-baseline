@@ -4,7 +4,7 @@
 const title = 'FAQ';
 const slug = 'faq';
 const description =
-	'Common questions about Eleventy Baseline: lock-in, scope, production-readiness, tooling, SEO, and support.';
+	'Does Baseline lock you in? Is it production-ready? Answers on scope, tooling, SEO, and where to get help.';
 const date = '2026-06-02';
 const permalink = '/faq/';
 const layout = 'layouts/page.njk';
