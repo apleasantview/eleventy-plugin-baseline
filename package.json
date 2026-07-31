@@ -39,7 +39,9 @@
     "baseline": "npx @11ty/eleventy --config _baseline/eleventy.config.js --serve",
     "release": "bash _baseline/release.sh",
     "release:tag": "bash _baseline/release.sh tag",
-    "release:local": "bash _baseline/release.sh local"
+    "release:local": "bash _baseline/release.sh local",
+    "indexnow": "node tasks/indexnow.mjs",
+    "indexnow:submit": "node tasks/indexnow.mjs --submit"
   },
   "author": "Cristovao Verstraeten",
   "license": "ISC",
