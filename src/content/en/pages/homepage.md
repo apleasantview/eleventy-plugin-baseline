@@ -85,10 +85,12 @@ View source. Browse the repo. Run it locally.
 
 Baseline is MIT-licensed and free, developed in the open and maintained by [a pleasant view](https://www.apleasantview.com).
 
+For community support and questions about Eleventy itself, join the [Eleventy Discord](https://www.11ty.dev/blog/discord/) server.
+
 [[commercial-support | Commercial support]] is available directly from the maintainer.
 
 ## Rolling releases
 
 Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
 
-If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
+For bugs or doc errors, Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. 
