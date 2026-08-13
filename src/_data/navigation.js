@@ -6,7 +6,7 @@ export default {
 		],
 
 		footer: [
-			{ label: 'Navigator', url: '/navigator-core.html' },
+			{ label: 'Sitemap', url: '/sitemap/' },
 			{ label: 'Internal links', url: '/system/internal-links/' },
 			{ label: 'Outgoing links', url: '/system/outgoing-links/' }
 		]
