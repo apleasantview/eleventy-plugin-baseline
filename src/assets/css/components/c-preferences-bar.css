@@ -7,4 +7,5 @@
 	padding-block-start: 0.25rem;
 	padding-block-end: 0.25rem;
 	max-width: 100%;
+	color: var(--color-text-muted);
 }

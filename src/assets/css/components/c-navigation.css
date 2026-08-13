@@ -21,6 +21,7 @@
 	margin: 0;
 	align-items: center;
 	justify-content: flex-end;
+	color: var(--color-text-muted);
 }
 
 .c-navigation__group li {
