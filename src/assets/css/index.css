@@ -7,6 +7,7 @@
 @import './profile/space.css';
 @import './profile/custom-media.css';
 @import './profile/skip-link.css';
+@import './profile/sr-only.css';
 
 /* 02. Resets - normalized browser defaults */
 @import './resets/modern-reset.css' layer(reset);

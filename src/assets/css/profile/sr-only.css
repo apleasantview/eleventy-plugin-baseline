@@ -1,0 +1,13 @@
+/* Visually hidden, still announced by screen readers. !important throughout so a
+ * more specific rule can't accidentally un-hide it (it's a utility contract). */
+.sr-only {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	margin: -1px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	overflow: hidden !important;
+	clip-path: inset(50%) !important; /* collapses the 1px box (modern replacement for clip) */
+	white-space: nowrap !important; /* keep on one line so it isn't wrapped into the clip */
+}
