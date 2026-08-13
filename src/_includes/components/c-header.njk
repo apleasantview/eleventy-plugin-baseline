@@ -1,10 +1,10 @@
 <div class="c-header">
-	<div class="c-header__inner u-wrapper">
+	<div class="c-header__inner">
+		{% include "components/c-wordmark.njk" %}
+		{%- include "components/c-search.njk" %}
 		<div class="c-header__group">
-			{% include "components/c-wordmark.njk" %}
 			{%- include "components/c-navigation.njk" %}
 			{% include "components/c-preferences-bar.njk" %}
-			{%- include "components/c-search.njk" %}
 		</div>
 	</div>
 </div>

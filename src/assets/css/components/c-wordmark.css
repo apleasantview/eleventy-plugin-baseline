@@ -2,11 +2,7 @@
 	max-width: fit-content;
 }
 
-.c-wordmark__svg {
-	padding-block: var(--space-inset-2xs);
-}
-
-.c-wordmark__svg > svg {
-	max-width: 220px;
+.c-wordmark > svg {
+	max-width: 100%;
 	height: auto;
 }

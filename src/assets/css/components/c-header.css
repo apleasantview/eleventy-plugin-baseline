@@ -1,11 +1,21 @@
 .c-header {
-	margin-block-start: var(--space-xs);
-	margin-block-end: var(--space-2xs);
-	padding-block: var(--space-3xs);
+	padding-block: var(--space-s);
+	width: 100%;
+	background-color: var(--bg-alt);
+}
+
+.c-header__inner {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--space-cluster-m);
+	align-items: center;
+	padding-inline: var(--wrapper-padding-inline);
 }
 
 .c-header__group {
 	display: flex;
+	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: space-between;
 	gap: var(--space-cluster-m);
