@@ -1,7 +1,7 @@
 blockquote {
 	--flow-space: var(--space-stack-m);
-	border: 0.0625em solid var(--color-border);
-	border-left: 0.24em solid var(--alert-type, var(--color-border-strong));
+	border: 0.0625em solid var(--color-border-subtle);
+	border-left: 0.24em solid var(--alert-type, var(--color-solid));
 	padding-block: 0.5em;
 	padding-inline: 1em;
 	box-sizing: content-box;
@@ -9,22 +9,22 @@ blockquote {
 	vertical-align: middle;
 	margin-block: var(--space-inset-m);
 	border-radius: 0 0.25em 0.25em 0;
-	background-color: var(--color-surface-subtle);
+	background-color: var(--color-background-subtle);
 
 	&.alert-info {
-		--alert-type: var(--color-accent);
+		--alert-type: var(--color-accent-solid);
 	}
 
 	&.alert-success {
-		--alert-type: var(--color-success);
+		--alert-type: var(--color-success-solid);
 	}
 
 	&.alert-warning {
-		--alert-type: var(--color-warning);
+		--alert-type: var(--color-warning-solid);
 	}
 
 	&.alert-danger {
-		--alert-type: var(--color-danger);
+		--alert-type: var(--color-danger-solid);
 	}
 }
 

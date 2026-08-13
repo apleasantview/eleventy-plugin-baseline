@@ -1,0 +1,89 @@
+/* Colour primitives — raw ramps, no semantics.
+ * Hues taken from profile/colors.css. Nothing here should be used directly in
+ * components; the semantic tokens (--bg, --text, --blue…) map onto these.
+ * Lightness steps are shared across every ramp; chroma peaks where each hue
+ * can actually hold it in sRGB, so color-yellow tops out lighter than color-red.
+ */
+:root {
+	/* Black & White */
+	--color-black: #000000;
+	--color-white: #ffffff;
+
+	/* ⚪ Neutral (warm, hue 95) — surfaces, borders */
+	--color-neutral-50: oklch(0.98 0.005 95);
+	--color-neutral-100: oklch(0.96 0.01 95);
+	--color-neutral-200: oklch(0.92 0.012 95);
+	--color-neutral-300: oklch(0.87 0.02 95);
+	--color-neutral-400: oklch(0.75 0.03 95);
+	--color-neutral-500: oklch(0.64 0.03 95);
+	--color-neutral-600: oklch(0.55 0.028 95);
+	--color-neutral-700: oklch(0.45 0.025 95);
+	--color-neutral-800: oklch(0.36 0.02 95);
+	--color-neutral-900: oklch(0.28 0.015 95);
+	--color-neutral-950: oklch(0.2 0.012 95);
+
+	/* 🔘 Slate (cool, hue 255) — text, dark-theme surfaces */
+	--color-slate-50: oklch(0.97 0.01 255);
+	--color-slate-100: oklch(0.94 0.015 255);
+	--color-slate-200: oklch(0.88 0.02 255);
+	--color-slate-300: oklch(0.8 0.02 255);
+	--color-slate-400: oklch(0.68 0.02 255);
+	--color-slate-500: oklch(0.56 0.025 255);
+	--color-slate-600: oklch(0.45 0.02 255);
+	--color-slate-700: oklch(0.36 0.025 255);
+	--color-slate-800: oklch(0.28 0.02 255);
+	--color-slate-900: oklch(0.2 0.02 255);
+	--color-slate-950: oklch(0.14 0.015 255);
+
+	/* 🔵 Blue (hue 255) — links, primary actions */
+	--color-blue-50: oklch(0.97 0.03 255);
+	--color-blue-100: oklch(0.94 0.05 255);
+	--color-blue-200: oklch(0.88 0.08 255);
+	--color-blue-300: oklch(0.8 0.115 255);
+	--color-blue-400: oklch(0.72 0.145 255);
+	--color-blue-500: oklch(0.64 0.16 255);
+	--color-blue-600: oklch(0.57 0.16 255);
+	--color-blue-700: oklch(0.49 0.148 255);
+	--color-blue-800: oklch(0.41 0.125 255);
+	--color-blue-900: oklch(0.33 0.1 255);
+	--color-blue-950: oklch(0.24 0.072 255);
+
+	/* 🟢 Green (hue 150) — success */
+	--color-green-50: oklch(0.97 0.03 150);
+	--color-green-100: oklch(0.94 0.055 150);
+	--color-green-200: oklch(0.88 0.09 150);
+	--color-green-300: oklch(0.8 0.125 150);
+	--color-green-400: oklch(0.72 0.15 150);
+	--color-green-500: oklch(0.64 0.165 150);
+	--color-green-600: oklch(0.57 0.16 150);
+	--color-green-700: oklch(0.49 0.14 150);
+	--color-green-800: oklch(0.41 0.115 150);
+	--color-green-900: oklch(0.33 0.095 150);
+	--color-green-950: oklch(0.24 0.07 150);
+
+	/* 🟡 Yellow (hue 95) — warnings. Chroma peaks at 300–400, not 500. */
+	--color-yellow-50: oklch(0.97 0.03 95);
+	--color-yellow-100: oklch(0.94 0.055 95);
+	--color-yellow-200: oklch(0.88 0.09 95);
+	--color-yellow-300: oklch(0.8 0.12 95);
+	--color-yellow-400: oklch(0.72 0.145 95);
+	--color-yellow-500: oklch(0.64 0.135 95);
+	--color-yellow-600: oklch(0.57 0.12 95);
+	--color-yellow-700: oklch(0.49 0.1 95);
+	--color-yellow-800: oklch(0.41 0.085 95);
+	--color-yellow-900: oklch(0.33 0.065 95);
+	--color-yellow-950: oklch(0.24 0.05 95);
+
+	/* 🔴 Red (hue 30) — errors */
+	--color-red-50: oklch(0.97 0.035 30);
+	--color-red-100: oklch(0.94 0.06 30);
+	--color-red-200: oklch(0.88 0.1 30);
+	--color-red-300: oklch(0.8 0.135 30);
+	--color-red-400: oklch(0.72 0.16 30);
+	--color-red-500: oklch(0.64 0.175 30);
+	--color-red-600: oklch(0.57 0.18 30);
+	--color-red-700: oklch(0.49 0.165 30);
+	--color-red-800: oklch(0.41 0.14 30);
+	--color-red-900: oklch(0.33 0.11 30);
+	--color-red-950: oklch(0.24 0.085 30);
+}

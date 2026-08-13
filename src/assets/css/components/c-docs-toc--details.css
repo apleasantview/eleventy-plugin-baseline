@@ -2,7 +2,7 @@
 	box-sizing: content-box;
 	padding-block: calc(var(--space-inset-xs) * 0.8);
 	padding-inline: var(--space-inset-2xs);
-	border: 0.08em solid var(--color-border-strong);
+	border: 0.08em solid var(--color-border);
 	border-radius: 0.375em;
 	margin-block: var(--space-stack-s);
 

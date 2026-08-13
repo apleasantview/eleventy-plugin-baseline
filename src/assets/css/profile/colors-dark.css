@@ -2,7 +2,7 @@
  * Targets :root when data-theme="dark" is present to avoid clobbering defaults.
  */
 @media (prefers-color-scheme: dark) {
-	:root {
+	:root:not([data-theme='light']) {
 		color-scheme: dark;
 		/* Backgrounds */
 		--bg: oklch(0.2 0.01 245);

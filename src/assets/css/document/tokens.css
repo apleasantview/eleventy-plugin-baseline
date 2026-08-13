@@ -7,29 +7,41 @@
  */
 
 /* Tier 2: application-level roles */
+
 :root {
+	color-scheme: light;
+
+	--bg: var(--color-background);
+	--bg-alt: var(--color-background-subtle);
+
+	--border: var(--color-border-subtle);
+	--border-strong: var(--color-border);
+
+	--color-green: var(--color-success-solid);
+	--color-green-hover: var(--color-success-solid-hover);
+	--color-yellow: var(--color-warning-surface-active);
+	--color-yellow-hover: var(--color-warning-border);
+	--color-red: var(--color-error-solid-hover);
+	--color-red-hover: var(--color-error-text-muted);
+
 	/* Color roles */
 	--color-surface-default: var(--bg);
 	--color-surface-subtle: var(--bg-alt);
 
-	--color-text-primary: var(--text);
-	--color-text-muted: var(--text-muted);
-
 	--color-border: var(--border);
 	--color-border-strong: var(--border-strong);
 
-	--color-accent: var(--blue);
-	--color-accent-hover: var(--blue-hover);
+	--color-success: var(--color-green);
+	--color-success-hover: var(--color-green-hover);
 
-	--color-success: var(--green);
-	--color-success-hover: var(--green-hover);
+	--color-warning: var(--color-yellow);
+	--color-warning-hover: var(--color-yellow-hover);
 
-	--color-warning: var(--yellow);
-	--color-warning-hover: var(--yellow-hover);
+	--color-danger: var(--color-red);
+	--color-danger-hover: var(--color-red-hover);
+}
 
-	--color-danger: var(--red);
-	--color-danger-hover: var(--red-hover);
-
+:root {
 	/* Typography roles */
 	--font-family-body:
 		system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
@@ -54,7 +66,31 @@
 	--text-weight-regular: 400;
 	--text-weight-strong: 600;
 	--text-weight-heavy: 700;
+}
 
+:root {
+	/* Table blocks */
+	color-scheme: light;
+	--table-border: #e5e7eb;
+	--table-bg-even: transparent;
+	--table-bg-odd: transparent;
+	--table-header-bg: transparent;
+	--table-text: currentColor;
+}
+
+@media (prefers-color-scheme: dark) {
+	/* Table blocks */
+	:root:not([data-theme='light']) {
+		color-scheme: dark;
+		--table-border: #374151;
+		--table-bg-even: transparent;
+		--table-bg-odd: hsla(230 10 16 / 0.5);
+		--table-header-bg: transparent;
+		--table-text: currentColor;
+	}
+}
+
+:root {
 	/* Spacing roles */
 	--space-inset-2xs: var(--space-2xs);
 	--space-inset-xs: var(--space-xs);
@@ -93,4 +129,31 @@
 
 	/* Headings flow-space */
 	--flow-space-heading: var(--space-stack-m);
+}
+
+@media (prefers-contrast: more) {
+	body {
+		--GRAD: 700;
+	}
+}
+@media (prefers-contrast: less) {
+	body {
+		--GRAD: -50;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		--GRAD: -50;
+	}
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+	body {
+		--GRAD: 150;
+	}
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: less) {
+	body {
+		--GRAD: -150;
+	}
 }

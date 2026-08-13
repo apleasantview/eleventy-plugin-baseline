@@ -1,22 +1,22 @@
-.c-lang-switcher {
+.c-theme-switcher {
 	max-width: fit-content;
 	padding-block: var(--space-inset-3xs);
 }
 
-.c-lang-switcher__inner {
+.c-theme-switcher__inner {
 	display: flex;
 	align-items: flex-start;
 	gap: var(--space-s);
 }
 
-.c-lang-switcher__item {
+.c-theme-switcher__item {
 	margin-top: 0;
 	font-size: var(--text-size-secondary);
 	color: var(--color-text-muted);
 	text-decoration: none;
 }
 
-.c-lang-switcher__item:hover {
+.c-theme-switcher__item:hover {
 	color: var(--color-text);
 	text-decoration: underline;
 }

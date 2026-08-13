@@ -1,7 +1,7 @@
 .c-header {
 	padding-block: var(--space-s);
 	width: 100%;
-	background-color: var(--bg-alt);
+	background-color: var(--color-background-subtle);
 }
 
 .c-header__inner {
@@ -23,7 +23,7 @@
 }
 
 .c-header__link {
-	color: var(--color-text-primary);
+	color: var(--color-text);
 	text-decoration: none;
 
 	&:hover {

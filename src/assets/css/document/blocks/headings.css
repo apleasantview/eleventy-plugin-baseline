@@ -13,7 +13,7 @@ h2 {
 	--flow-space: var(--flow-space-heading);
 	font-size: var(--text-size-title);
 	padding-block-end: var(--space-inset-s);
-	border-bottom: 1px solid var(--color-border-strong);
+	border-bottom: 1px solid var(--color-border-subtle);
 }
 
 h3 {

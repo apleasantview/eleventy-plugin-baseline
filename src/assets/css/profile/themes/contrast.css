@@ -1,0 +1,55 @@
+/* High-contrast theme, authored, for users who ask for more contrast.
+ * Triggered by `prefers-contrast: more`. It layers on top of light OR dark,
+ * so it cranks the contrast-critical roles in both directions: darker text and
+ * stronger borders on light, lighter text and stronger borders on dark.
+ * Distinct from forced-colors.css (that's the OS's own high-contrast palette).
+ * Imported after dark.css so it wins; roles not listed keep their theme value.
+ * Step choices are tuneable; verify against a contrast checker when it matters. */
+@media (prefers-contrast: more) {
+	/* Light context (base direction) */
+	:root {
+		--color-text: var(--color-neutral-950);
+		--color-text-muted: var(--color-neutral-700);
+		--color-border-subtle: var(--color-neutral-400);
+		--color-border: var(--color-neutral-600);
+		--color-border-hover: var(--color-neutral-700);
+		--color-accent-text: var(--color-blue-800);
+		--color-accent-border: var(--color-blue-700);
+		--color-success-text: var(--color-green-800);
+		--color-warning-text: var(--color-amber-800);
+		--color-danger-text: var(--color-red-800);
+		--color-info-text: var(--color-blue-800);
+	}
+
+	/* Dark context, system preference */
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--color-text: var(--color-neutral-50);
+			--color-text-muted: var(--color-neutral-200);
+			--color-border-subtle: var(--color-neutral-500);
+			--color-border: var(--color-neutral-400);
+			--color-border-hover: var(--color-neutral-300);
+			--color-accent-text: var(--color-blue-300);
+			--color-accent-border: var(--color-blue-400);
+			--color-success-text: var(--color-green-300);
+			--color-warning-text: var(--color-amber-300);
+			--color-danger-text: var(--color-red-300);
+			--color-info-text: var(--color-blue-300);
+		}
+	}
+
+	/* Dark context, explicit */
+	:root[data-theme='dark'] {
+		--color-text: var(--color-neutral-50);
+		--color-text-muted: var(--color-neutral-200);
+		--color-border-subtle: var(--color-neutral-500);
+		--color-border: var(--color-neutral-400);
+		--color-border-hover: var(--color-neutral-300);
+		--color-accent-text: var(--color-blue-300);
+		--color-accent-border: var(--color-blue-400);
+		--color-success-text: var(--color-green-300);
+		--color-warning-text: var(--color-amber-300);
+		--color-danger-text: var(--color-red-300);
+		--color-info-text: var(--color-blue-300);
+	}
+}

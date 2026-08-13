@@ -1,8 +1,9 @@
 /* CSS Profile - https://apv-css-profile.netlify.app/ */
 
 /* 01. Profile - identity layer */
-@import './profile/colors.css';
-@import './profile/colors-dark.css';
+@import './profile/primitives/colors.css';
+@import './profile/semantic/colors.css';
+@import './profile/themes/dark.css';
 @import './profile/type.css';
 @import './profile/space.css';
 @import './profile/custom-media.css';
@@ -16,17 +17,7 @@
 @import './document/document.css';
 
 /* 04. Components - shared UI */
-@import './components/c-preferences-bar.css';
-@import './components/c-language-switcher.css';
-@import './components/c-header.css';
-@import './components/c-wordmark.css';
-@import './components/c-footer.css';
-@import './components/c-navigation.css';
-@import './components/c-navigation-footer.css';
-@import './components/c-breadcrumbs.css';
-@import './components/c-docs-toc.css';
-@import './components/c-docs-toc--details.css';
-@import './components/c-docs-toc--sidebar.css';
+@import './components/components.css';
 
 /* 05. Vendors - third-party CSS */
 @import './vendors/prism.css';

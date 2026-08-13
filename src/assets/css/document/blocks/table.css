@@ -1,11 +1,3 @@
-:root {
-	--table-border: #e5e7eb;
-	--table-bg-even: transparent;
-	--table-bg-odd: transparent;
-	--table-header-bg: transparent;
-	--table-text: currentColor;
-}
-
 div:has(> table) {
 	width: 100%;
 	overflow-x: auto;
@@ -49,14 +41,4 @@ thead > th {
 	position: sticky;
 	top: 0;
 	z-index: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--table-border: #374151;
-		--table-bg-even: transparent;
-		--table-bg-odd: hsla(230 10 16 / 0.5);
-		--table-header-bg: transparent;
-		--table-text: currentColor;
-	}
 }

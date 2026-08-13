@@ -3,39 +3,12 @@ body {
 	font-variation-settings: 'GRAD' var(--GRAD);
 }
 
-@media (prefers-contrast: more) {
-	body {
-		--GRAD: 700;
-	}
-}
-@media (prefers-contrast: less) {
-	body {
-		--GRAD: -50;
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	body {
-		--GRAD: -50;
-	}
-}
-@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
-	body {
-		--GRAD: 150;
-	}
-}
-@media (prefers-color-scheme: dark) and (prefers-contrast: less) {
-	body {
-		--GRAD: -150;
-	}
-}
-
 body {
 	font-family: var(--font-family-body);
 	font-size: var(--text-size-body);
 	line-height: var(--text-lineheight-loose);
-	color: var(--color-text-primary);
-	background-color: var(--color-surface-default);
+	color: var(--color-text);
+	background-color: var(--color-background);
 	display: flex;
 	flex-direction: column;
 }
@@ -62,11 +35,11 @@ li {
 }
 
 a {
-	color: var(--color-accent);
+	color: var(--color-accent-text);
 	word-break: keep-all;
 
 	&:hover {
-		color: var(--color-accent-hover);
+		color: var(--color-accent-text-muted);
 	}
 
 	&[aria-current] {
@@ -82,7 +55,7 @@ a {
 		width: 100%;
 		height: 100%;
 		scale: 116% 140%;
-		background-color: var(--color-surface-subtle);
+		background-color: var(--color-background-subtle);
 		border-radius: 0.1em;
 	}
 }
@@ -118,11 +91,11 @@ ul {
 
 pre,
 code:not(pre code) {
-	background: var(--color-surface-subtle);
+	background: var(--color-background-subtle);
 }
 
 pre {
-	border: 0.0625em solid var(--color-border-strong);
+	border: 0.0625em solid var(--color-border);
 	padding: 0.5em;
 	padding-inline-end: 0.75em;
 	box-sizing: content-box;

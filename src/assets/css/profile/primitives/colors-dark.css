@@ -1,0 +1,173 @@
+/* Colour primitives, dark. Same token names as primitives/colors.css, opposite
+ * direction: 50 is darkest and 950 is lightest, so a rung keeps its job across
+ * themes and the semantic layer needs no dark counterpart. --color-background
+ * points at step 50 either way; only what step 50 means changes.
+ *
+ * The ladder is not linear. Steps 50 to 400 climb slowly through chrome values,
+ * then 500 jumps to the vivid brand step, as Radix dark scales do. Neutral turns
+ * cool here (hue 245) because the dark theme has always used cool surfaces.
+ * Black and white are absolute and are not redefined.
+ */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		/* ⚪ Neutral (cool, hue 245) — surfaces, borders */
+		--color-neutral-950: oklch(0.2 0.01 245);
+		--color-neutral-900: oklch(0.26 0.01 245);
+		--color-neutral-800: oklch(0.31 0.012 245);
+		--color-neutral-700: oklch(0.36 0.015 245);
+		--color-neutral-600: oklch(0.42 0.018 245);
+		--color-neutral-500: oklch(0.72 0.02 245);
+		--color-neutral-400: oklch(0.77 0.018 245);
+		--color-neutral-300: oklch(0.82 0.015 245);
+		--color-neutral-200: oklch(0.87 0.012 245);
+		--color-neutral-100: oklch(0.92 0.01 245);
+		--color-neutral-50: oklch(0.96 0.008 245);
+
+		/* 🔘 Slate (cool, hue 255) — text */
+		--color-slate-950: oklch(0.2 0.02 255);
+		--color-slate-900: oklch(0.26 0.02 255);
+		--color-slate-800: oklch(0.31 0.022 255);
+		--color-slate-700: oklch(0.36 0.025 255);
+		--color-slate-600: oklch(0.42 0.03 255);
+		--color-slate-500: oklch(0.72 0.025 255);
+		--color-slate-400: oklch(0.77 0.022 255);
+		--color-slate-300: oklch(0.82 0.02 255);
+		--color-slate-200: oklch(0.87 0.018 255);
+		--color-slate-100: oklch(0.92 0.02 255);
+		--color-slate-50: oklch(0.96 0.015 255);
+
+		/* 🔵 Blue (hue 250) — links, primary actions */
+		--color-blue-50: oklch(0.2 0.03 250);
+		--color-blue-100: oklch(0.26 0.05 250);
+		--color-blue-200: oklch(0.31 0.07 250);
+		--color-blue-300: oklch(0.36 0.09 250);
+		--color-blue-400: oklch(0.42 0.11 250);
+		--color-blue-500: oklch(0.72 0.17 250);
+		--color-blue-600: oklch(0.77 0.16 250);
+		--color-blue-700: oklch(0.82 0.14 250);
+		--color-blue-800: oklch(0.87 0.1 250);
+		--color-blue-900: oklch(0.92 0.07 250);
+		--color-blue-950: oklch(0.96 0.04 250);
+
+		/* 🟢 Green (hue 150) — success */
+		--color-green-50: oklch(0.2 0.03 150);
+		--color-green-100: oklch(0.26 0.05 150);
+		--color-green-200: oklch(0.31 0.07 150);
+		--color-green-300: oklch(0.36 0.09 150);
+		--color-green-400: oklch(0.42 0.11 150);
+		--color-green-500: oklch(0.72 0.15 150);
+		--color-green-600: oklch(0.77 0.145 150);
+		--color-green-700: oklch(0.82 0.13 150);
+		--color-green-800: oklch(0.87 0.1 150);
+		--color-green-900: oklch(0.92 0.075 150);
+		--color-green-950: oklch(0.96 0.045 150);
+
+		/* 🟡 Yellow (hue 95) — warnings. Step 500 is a dull gold here; the dark
+		 * theme's yellow sits nearer 0.88, which is step 800 on this ladder. */
+		--color-yellow-50: oklch(0.2 0.025 95);
+		--color-yellow-100: oklch(0.26 0.04 95);
+		--color-yellow-200: oklch(0.31 0.055 95);
+		--color-yellow-300: oklch(0.36 0.07 95);
+		--color-yellow-400: oklch(0.42 0.085 95);
+		--color-yellow-500: oklch(0.72 0.145 95);
+		--color-yellow-600: oklch(0.77 0.15 95);
+		--color-yellow-700: oklch(0.82 0.15 95);
+		--color-yellow-800: oklch(0.87 0.14 95);
+		--color-yellow-900: oklch(0.92 0.12 95);
+		--color-yellow-950: oklch(0.96 0.08 95);
+
+		/* 🔴 Red (hue 25) — errors */
+		--color-red-50: oklch(0.2 0.035 25);
+		--color-red-100: oklch(0.26 0.055 25);
+		--color-red-200: oklch(0.31 0.075 25);
+		--color-red-300: oklch(0.36 0.095 25);
+		--color-red-400: oklch(0.42 0.115 25);
+		--color-red-500: oklch(0.72 0.175 25);
+		--color-red-600: oklch(0.77 0.165 25);
+		--color-red-700: oklch(0.82 0.14 25);
+		--color-red-800: oklch(0.87 0.11 25);
+		--color-red-900: oklch(0.92 0.08 25);
+		--color-red-950: oklch(0.96 0.05 25);
+	}
+}
+
+:root[data-theme='dark'] {
+	/* ⚪ Neutral (cool, hue 245) — surfaces, borders */
+	--color-neutral-50: oklch(0.2 0.01 245);
+	--color-neutral-100: oklch(0.26 0.01 245);
+	--color-neutral-200: oklch(0.31 0.012 245);
+	--color-neutral-300: oklch(0.36 0.015 245);
+	--color-neutral-400: oklch(0.42 0.018 245);
+	--color-neutral-500: oklch(0.72 0.02 245);
+	--color-neutral-600: oklch(0.77 0.018 245);
+	--color-neutral-700: oklch(0.82 0.015 245);
+	--color-neutral-800: oklch(0.87 0.012 245);
+	--color-neutral-900: oklch(0.92 0.01 245);
+	--color-neutral-950: oklch(0.96 0.008 245);
+
+	/* 🔘 Slate (cool, hue 255) — text */
+	--color-slate-50: oklch(0.2 0.02 255);
+	--color-slate-100: oklch(0.26 0.02 255);
+	--color-slate-200: oklch(0.31 0.022 255);
+	--color-slate-300: oklch(0.36 0.025 255);
+	--color-slate-400: oklch(0.42 0.03 255);
+	--color-slate-500: oklch(0.72 0.025 255);
+	--color-slate-600: oklch(0.77 0.022 255);
+	--color-slate-700: oklch(0.82 0.02 255);
+	--color-slate-800: oklch(0.87 0.018 255);
+	--color-slate-900: oklch(0.92 0.02 255);
+	--color-slate-950: oklch(0.96 0.015 255);
+
+	/* 🔵 Blue (hue 250) — links, primary actions */
+	--color-blue-50: oklch(0.2 0.03 250);
+	--color-blue-100: oklch(0.26 0.05 250);
+	--color-blue-200: oklch(0.31 0.07 250);
+	--color-blue-300: oklch(0.36 0.09 250);
+	--color-blue-400: oklch(0.42 0.11 250);
+	--color-blue-500: oklch(0.72 0.17 250);
+	--color-blue-600: oklch(0.77 0.16 250);
+	--color-blue-700: oklch(0.82 0.14 250);
+	--color-blue-800: oklch(0.87 0.1 250);
+	--color-blue-900: oklch(0.92 0.07 250);
+	--color-blue-950: oklch(0.96 0.04 250);
+
+	/* 🟢 Green (hue 150) — success */
+	--color-green-50: oklch(0.2 0.03 150);
+	--color-green-100: oklch(0.26 0.05 150);
+	--color-green-200: oklch(0.31 0.07 150);
+	--color-green-300: oklch(0.36 0.09 150);
+	--color-green-400: oklch(0.42 0.11 150);
+	--color-green-500: oklch(0.72 0.15 150);
+	--color-green-600: oklch(0.77 0.145 150);
+	--color-green-700: oklch(0.82 0.13 150);
+	--color-green-800: oklch(0.87 0.1 150);
+	--color-green-900: oklch(0.92 0.075 150);
+	--color-green-950: oklch(0.96 0.045 150);
+
+	/* 🟡 Yellow (hue 95) — warnings. Step 500 is a dull gold here; the dark
+	 * theme's yellow sits nearer 0.88, which is step 800 on this ladder. */
+	--color-yellow-50: oklch(0.2 0.025 95);
+	--color-yellow-100: oklch(0.26 0.04 95);
+	--color-yellow-200: oklch(0.31 0.055 95);
+	--color-yellow-300: oklch(0.36 0.07 95);
+	--color-yellow-400: oklch(0.42 0.085 95);
+	--color-yellow-500: oklch(0.72 0.145 95);
+	--color-yellow-600: oklch(0.77 0.15 95);
+	--color-yellow-700: oklch(0.82 0.15 95);
+	--color-yellow-800: oklch(0.87 0.14 95);
+	--color-yellow-900: oklch(0.92 0.12 95);
+	--color-yellow-950: oklch(0.96 0.08 95);
+
+	/* 🔴 Red (hue 25) — errors */
+	--color-red-50: oklch(0.2 0.035 25);
+	--color-red-100: oklch(0.26 0.055 25);
+	--color-red-200: oklch(0.31 0.075 25);
+	--color-red-300: oklch(0.36 0.095 25);
+	--color-red-400: oklch(0.42 0.115 25);
+	--color-red-500: oklch(0.72 0.175 25);
+	--color-red-600: oklch(0.77 0.165 25);
+	--color-red-700: oklch(0.82 0.14 25);
+	--color-red-800: oklch(0.87 0.11 25);
+	--color-red-900: oklch(0.92 0.08 25);
+	--color-red-950: oklch(0.96 0.05 25);
+}

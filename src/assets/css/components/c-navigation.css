@@ -32,21 +32,21 @@
 }
 
 .c-navigation__link {
-	color: var(--color-text-primary);
+	color: var(--color-text);
 	text-decoration: none;
 	font-size: var(--text-size-secondary);
 
 	&:hover {
-		color: var(--color-accent-hover);
+		color: var(--color-accent-text);
 		text-decoration: underline;
 	}
 
 	&[aria-current] {
-		color: var(--color-text-primary);
+		color: var(--color-accent-text);
 	}
 
 	&[aria-current]:hover {
-		color: var(--color-accent-hover);
+		color: var(--color-accent-text);
 	}
 
 	svg {

@@ -1,0 +1,74 @@
+/* Forced-colors theme, the OS's own high-contrast palette.
+ * Triggered by `forced-colors: active` (e.g. Windows Contrast themes). The
+ * browser swaps colours for the user's system palette; here we point the role
+ * contract at the matching system colours so the design stays intentional
+ * instead of being guessed at. No light/dark split; the OS decides direction.
+ * Imported last so it wins when active.
+ *
+ * Pairs with resets/forms.css: `appearance: none` strips a control's
+ * native system colours, so this hands them back. Reset and restore are one duty. */
+@media (forced-colors: active) {
+	:root {
+		/* Surfaces → the page canvas */
+		--color-background: Canvas;
+		--color-background-subtle: Canvas;
+
+		--color-surface: Canvas;
+		--color-surface-hover: Canvas;
+		--color-surface-active: Canvas;
+
+		/* Borders → must stay visible */
+		--color-border-subtle: CanvasText;
+		--color-border: CanvasText;
+		--color-border-hover: CanvasText;
+
+		/* Neutral solids (pair with Canvas for text on them) */
+		--color-solid: CanvasText;
+		--color-solid-hover: CanvasText;
+		--color-on-solid: Canvas;
+
+		/* Text */
+		--color-text-muted: GrayText;
+		--color-text: CanvasText;
+
+		/* Accent → the system's interactive colours */
+		--color-accent-surface: Canvas;
+		--color-accent-surface-hover: Canvas;
+
+		--color-accent-border: Highlight;
+
+		--color-accent-solid: Highlight;
+		--color-accent-solid-hover: Highlight;
+		--color-accent-on-solid: HighlightText;
+
+		--color-accent-text: LinkText;
+
+		--color-link-visited: VisitedText;
+
+		/* Status families collapse: the OS palette has no "success" colour, so
+		 * here the meaning must travel by icon/word, never the colour alone. */
+		--color-success-surface: Canvas;
+		--color-success-border: CanvasText;
+		--color-success-text: CanvasText;
+		--color-success-solid: CanvasText;
+		--color-success-on-solid: Canvas;
+
+		--color-warning-surface: Canvas;
+		--color-warning-border: CanvasText;
+		--color-warning-text: CanvasText;
+		--color-warning-solid: CanvasText;
+		--color-warning-on-solid: Canvas;
+
+		--color-danger-surface: Canvas;
+		--color-danger-border: CanvasText;
+		--color-danger-text: CanvasText;
+		--color-danger-solid: CanvasText;
+		--color-danger-on-solid: Canvas;
+
+		--color-info-surface: Canvas;
+		--color-info-border: CanvasText;
+		--color-info-text: CanvasText;
+		--color-info-solid: CanvasText;
+		--color-info-on-solid: Canvas;
+	}
+}

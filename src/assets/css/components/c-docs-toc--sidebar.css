@@ -20,7 +20,11 @@
 		margin: 0;
 	}
 
-	.c-docs-toc__link[aria-current]::after {
+	li .c-docs-toc__link[aria-current] {
+		color: var(--color-accent-text);
+	}
+
+	li .c-docs-toc__link[aria-current]::after {
 		scale: 124%;
 	}
 

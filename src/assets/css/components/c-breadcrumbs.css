@@ -26,16 +26,16 @@
 	color: #bbb;
 }
 
-.c-breadcrumbs a {
+.c-breadcrumbs__item a {
 	color: inherit;
 	text-decoration: none;
 }
 
-.c-breadcrumbs a:hover {
+.c-breadcrumbs__item a:hover {
 	text-decoration: underline;
 }
 
-.c-breadcrumbs [aria-current='page'] {
+.c-breadcrumbs__item [aria-current='page'] {
 	color: currentColor;
-	font-weight: 500;
+	font-weight: 600;
 }
