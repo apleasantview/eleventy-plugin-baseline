@@ -11,7 +11,6 @@
 
 .c-theme-switcher__item {
 	margin-top: 0;
-	font-size: var(--text-size-secondary);
 	color: var(--color-text-muted);
 	text-decoration: none;
 }

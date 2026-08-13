@@ -13,5 +13,5 @@
 }
 
 .c-navigation-footer-item {
-	font-size: var(--text-size-secondary);
+	font-size: var(--text-size-muted);
 }

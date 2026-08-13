@@ -9,7 +9,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	gap: var(--space-cluster-m);
+	column-gap: var(--space-cluster-m);
 	align-items: center;
 	padding-inline: var(--wrapper-padding-inline);
 }
