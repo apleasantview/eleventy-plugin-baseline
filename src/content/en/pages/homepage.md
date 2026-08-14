@@ -8,11 +8,11 @@ translationKey: homepage
 layout: 'layouts/home.njk'
 ---
 
-<div class="reveal-stagger">
+<div class="reveal-stagger u-flow">
 
 <div class="c-breadcrumbs" style="--i: 1;"><a href="/release-notes/">v{{ _baseline.version }} shipped</a></div>
 
-<div style="--i: 1;">
+<div class="u-flow" style="--i: 1;">
 
 # The build framework for Eleventy sites.
 
@@ -26,7 +26,7 @@ Baseline is those decisions already made and fitted together in one plugin, foll
 
 ---
 
-<div style="--i: 2;">
+<div class="u-flow" style="--i: 2;">
 
 ## Install and start
 
@@ -43,7 +43,7 @@ If you are new to Eleventy, the [[introduction | introduction chapter]] will get
 
 ---
 
-<div style="--i: 3;">
+<div class="u-flow" style="--i: 3;">
 
 ## Built on standards and conventions
 
@@ -57,7 +57,7 @@ Under the hood: [Eleventy](https://www.11ty.dev/) · [[image-shortcode | elevent
 
 ---
 
-<div style="--i: 4;">
+<div class="u-flow" style="--i: 4;">
 
 ## Running on Baseline
 
@@ -71,7 +71,7 @@ View source. Browse the repo. Run it locally.
 
 ---
 
-<div style="--i: 5;">
+<div class="u-flow" style="--i: 5;">
 
 ## Open source
 
@@ -85,13 +85,13 @@ For community support and questions about Eleventy itself, join the [Eleventy Di
 
 ---
 
-<div style="--i: 6;">
+<div class="u-flow" style="--i: 6;">
 
 ## Rolling releases
 
 Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
 
-For bugs or doc errors, Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. 
+For bugs or doc errors, Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong.
 
 </div>
 
