@@ -1,6 +1,8 @@
 @import './tokens.css' layer(tokens);
 @import './base.css';
 
+@import './anim/reveal.css';
+
 @import './block/headings.css';
 @import './block/hr.css';
 @import './block/deck.css';

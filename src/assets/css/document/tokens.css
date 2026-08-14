@@ -157,3 +157,22 @@
 		--GRAD: -150;
 	}
 }
+
+:root {
+	/* easings */
+
+	/* animations — off by default */
+	--anim-reveal-distance: 0;
+	--anim-reveal-ease: none;
+	--anim-reveal-duration: 0;
+	--anim-reveal-stagger: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	:root {
+		--anim-reveal-distance: 1.25rem; /* how far it rises */
+		--anim-reveal-ease: cubic-bezier(0.2, 0, 0, 1);
+		--anim-reveal-duration: 600ms;
+		--anim-reveal-stagger: 100ms;
+	}
+}

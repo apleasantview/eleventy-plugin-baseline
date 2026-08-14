@@ -8,7 +8,11 @@ translationKey: homepage
 layout: 'layouts/home.njk'
 ---
 
-<div class="c-breadcrumbs"><a href="/release-notes/">v{{ _baseline.version }} shipped</a></div>
+<div class="reveal-stagger">
+
+<div class="c-breadcrumbs" style="--i: 1;"><a href="/release-notes/">v{{ _baseline.version }} shipped</a></div>
+
+<div style="--i: 1;">
 
 # The build framework for Eleventy sites.
 
@@ -18,7 +22,11 @@ Eleventy is a static site generator that leaves the structural decisions to you.
 
 Baseline is those decisions already made and fitted together in one plugin, following Eleventy's own conventions. A framework in what it decides, a plugin in how it installs.
 
+</div>
+
 ---
+
+<div style="--i: 2;">
 
 ## Install and start
 
@@ -31,7 +39,11 @@ Install the packages, register Baseline in your Eleventy config, and run the dev
 
 If you are new to Eleventy, the [[introduction | introduction chapter]] will get you on your way.
 
+</div>
+
 ---
+
+<div style="--i: 3;">
 
 ## Built on standards and conventions
 
@@ -41,7 +53,11 @@ Baseline does not prescribe components, a CSS methodology or a frontend framewor
 
 Under the hood: [Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
+</div>
+
 ---
+
+<div style="--i: 4;">
 
 ## Running on Baseline
 
@@ -51,7 +67,11 @@ View source. Browse the repo. Run it locally.
 
 [[about | Read the longer story behind it]].
 
+</div>
+
 ---
+
+<div style="--i: 5;">
 
 ## Open source
 
@@ -61,8 +81,18 @@ For community support and questions about Eleventy itself, join the [Eleventy Di
 
 [[commercial-support | Commercial support]] is available directly from the maintainer.
 
+</div>
+
+---
+
+<div style="--i: 6;">
+
 ## Rolling releases
 
 Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
 
 For bugs or doc errors, Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong. 
+
+</div>
+
+</div>

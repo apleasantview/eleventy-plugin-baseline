@@ -1,0 +1,31 @@
+.reveal-stagger > *:not(hr) {
+	--i: 0;
+	animation-name: reveal-up;
+	animation-duration: var(--anim-reveal-duration);
+	animation-timing-function: var(--anim-reveal-ease);
+	animation-fill-mode: both;
+	animation-delay: calc(var(--i) * var(--anim-reveal-stagger));
+}
+
+@supports (animation-timeline: view()) {
+	.reveal,
+	.reveal-group > *:not(hr) {
+		animation-timeline: view();
+		animation-name: reveal-up;
+		animation-fill-mode: both;
+		/* Scroll sets the pace; a curve on top fights the finger. */
+		animation-timing-function: linear;
+		animation-range: entry 0% entry 100%;
+	}
+}
+
+@keyframes reveal-up {
+	from {
+		opacity: 0;
+		transform: translateY(var(--anim-reveal-distance));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
