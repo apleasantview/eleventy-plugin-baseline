@@ -17,11 +17,6 @@ body {
 	flex-direction: column;
 }
 
-header > * + *,
-main > * + * {
-	margin-block-start: var(--flow-space, 1em);
-}
-
 footer {
 	padding-block: var(--space-inset-2xs);
 }

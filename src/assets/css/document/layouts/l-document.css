@@ -14,7 +14,9 @@
 	}
 
 	.l-document__content {
+		--wrapper-max-width: 60rem;
 		grid-column: content;
+		box-sizing: content-box;
 	}
 
 	.l-document__aside {
@@ -22,7 +24,7 @@
 	}
 
 	@media (--screen-lg) {
-		& {
+		&:has(.l-document__sidebar) {
 			grid-template-columns:
 				[sidebar] minmax(min(0px, 100%), 304px)
 				[content] minmax(min(0px, 100%), 960px);

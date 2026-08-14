@@ -1,16 +1,11 @@
 {% extends "layouts/base.njk" %}
 
 {%- block content %}
-{%- include "components/c-docs-toc--details.njk" %}
+
 <div class="l-document">
 
-	<!-- sidebar -->
-	<div class="l-document__sidebar">
-		{% include "components/c-docs-toc--sidebar.njk" %}
-	</div>
-
 	<!-- content -->
-	<div class="l-document__content u-flow">
+	<div class="l-document__content u-flow u-wrapper">
 		{% include "components/c-breadcrumbs.njk" %}
 		<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
 			<h1>{{ title }}</h1>

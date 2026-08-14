@@ -1,22 +1,18 @@
 {% extends "layouts/base.njk" %}
 
 {%- block content %}
-{%- include "components/c-docs-toc--details.njk" %}
+
 <div class="l-document">
 
-	<!-- sidebar -->
-	<div class="l-document__sidebar">
-
-		{% include "components/c-docs-toc--sidebar.njk" %}
-	</div>
-
 	<!-- content -->
-	<div class="l-document__content u-flow">
-		{% include "components/c-breadcrumbs.njk" %}
-		<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
-			{{ content | safe }}
-		</article>
-		<div style="margin-block-start: var(--space-2xl)"></div>
+	<div class="l-document__content">
+		<div class="u-flow u-wrapper">
+			{% include "components/c-breadcrumbs.njk" %}
+			<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
+				{{ content | safe }}
+			</article>
+			<div style="margin-block-start: var(--space-2xl)"></div>
+		</div>
 	</div>
 </div>
 
