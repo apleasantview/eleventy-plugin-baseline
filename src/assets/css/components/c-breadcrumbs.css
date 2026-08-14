@@ -1,7 +1,6 @@
 .c-breadcrumbs {
-	margin-bottom: 1rem;
 	font-size: 0.875rem;
-	color: var(--color-text-muted, #666);
+	color: var(--color-text-muted);
 	padding-block: var(--space-inset-2xs);
 }
 

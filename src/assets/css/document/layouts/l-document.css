@@ -5,7 +5,7 @@
 	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
 	padding-block-start: var(--space-inset-xs);
 	padding-block-end: var(--space-inset-xs);
-	align-items: baseline;
+	align-items: start;
 	column-gap: var(--space-s-2xl);
 	justify-content: center;
 
@@ -28,8 +28,8 @@
 .l-document__content {
 	--wrapper-max-width: 60rem;
 	--wrapper-padding-inline: var(--space-xs);
+	--wrapper-content-box: border-box;
 	grid-column: content;
-	box-sizing: content-box;
 }
 
 .l-document__sidebar,
@@ -56,6 +56,11 @@
 .l-document__aside {
 	grid-column: aside;
 	padding-inline: var(--space-xs);
+
+	> aside {
+		margin-block-start: var(--space-3xs);
+		padding-block: var(--space-s);
+	}
 
 	@media (--screen-lg) {
 		& {

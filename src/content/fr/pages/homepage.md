@@ -8,7 +8,7 @@ translationKey: homepage
 layout: 'layouts/home.njk'
 ---
 
-<small><a href="/release-notes/">v{{ _baseline.version }} est sortie</a></small>
+<div class="c-breadcrumbs"><a href="/release-notes/">v{{ _baseline.version }} est sortie</a></div>
 
 # Le build framework pour les sites Eleventy.
 
