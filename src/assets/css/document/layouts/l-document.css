@@ -39,6 +39,7 @@
 
 .l-document__sidebar {
 	grid-column: sidebar;
+	padding-inline: var(--space-xs);
 
 	@media (--screen-lg) {
 		& {
@@ -54,6 +55,7 @@
 
 .l-document__aside {
 	grid-column: aside;
+	padding-inline: var(--space-xs);
 
 	@media (--screen-lg) {
 		& {

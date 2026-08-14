@@ -12,7 +12,6 @@
 	column-gap: var(--space-3xl);
 	row-gap: var(--space-m);
 	align-items: center;
-	padding-inline: var(--space-s);
 }
 
 .c-header__group {
