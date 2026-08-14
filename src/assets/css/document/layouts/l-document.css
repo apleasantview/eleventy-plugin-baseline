@@ -1,10 +1,14 @@
 .l-document {
 	--content-max-width: 60rem;
 	--content-min-width: 288px;
+	--wrapper-max-width: 60rem;
+	--wrapper-margin-inline: 0;
+	--wrapper-padding-inline: 0;
+	--wrapper-content-box: content-box;
 	display: grid;
 	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
-	padding-block-start: var(--space-inset-xs);
-	padding-block-end: var(--space-inset-xs);
+	padding-block: var(--space-inset-xs);
+	padding-inline: var(--space-inset-s);
 	align-items: start;
 	column-gap: var(--space-s-2xl);
 	justify-content: center;
@@ -26,9 +30,6 @@
 }
 
 .l-document__content {
-	--wrapper-max-width: 60rem;
-	--wrapper-padding-inline: var(--space-xs);
-	--wrapper-content-box: border-box;
 	grid-column: content;
 }
 
