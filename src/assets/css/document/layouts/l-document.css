@@ -6,7 +6,7 @@
 	padding-block-start: var(--space-inset-xs);
 	padding-block-end: var(--space-inset-xs);
 	align-items: baseline;
-	column-gap: var(--space-3xl);
+	column-gap: var(--space-s-2xl);
 	justify-content: center;
 
 	@media (--screen-lg) {

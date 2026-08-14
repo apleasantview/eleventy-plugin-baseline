@@ -18,10 +18,6 @@ body {
 }
 
 footer {
-	padding-block: var(--space-inset-2xs);
-}
-
-footer {
 	margin-block-start: auto;
 	line-height: var(--text-lineheight-tight);
 }

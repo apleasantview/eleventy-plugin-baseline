@@ -120,7 +120,7 @@
 	--space-fluid-s-2xl: var(--space-s-2xl);
 
 	/* An exception for wrapper values */
-	--wrapper-max-width: 110.25rem;
+	--wrapper-max-width: 107rem;
 	--wrapper-margin-inline: auto;
 	--wrapper-padding-inline: var(--space-s);
 
