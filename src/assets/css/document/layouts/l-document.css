@@ -7,7 +7,7 @@
 	--wrapper-content-box: content-box;
 	display: grid;
 	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
-	padding-block: var(--space-inset-xs);
+	padding-block: var(--space-inset-s);
 	padding-inline: var(--space-inset-s);
 	align-items: start;
 	column-gap: var(--space-s-2xl);

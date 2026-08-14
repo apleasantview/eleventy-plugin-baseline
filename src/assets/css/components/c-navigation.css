@@ -22,6 +22,7 @@
 	align-items: center;
 	justify-content: flex-end;
 	color: var(--color-text-muted);
+	line-height: 1;
 }
 
 .c-navigation__group li {

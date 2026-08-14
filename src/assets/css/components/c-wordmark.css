@@ -7,7 +7,7 @@
 	vertical-align: center;
 }
 
-.c-wordmark > svg {
-	max-width: 100%;
+.c-wordmark a > svg {
+	width: 100%;
 	height: auto;
 }

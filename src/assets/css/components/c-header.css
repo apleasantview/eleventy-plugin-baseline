@@ -1,6 +1,6 @@
 .c-header {
 	--wrapper-max-width: 100%;
-	padding-block: var(--space-xs);
+	padding-block: var(--space-2xs);
 	width: 100%;
 	background-color: var(--color-background-subtle);
 	border-bottom: 1px solid var(--color-border);
@@ -13,6 +13,7 @@
 	column-gap: var(--space-3xl);
 	row-gap: var(--space-m);
 	align-items: center;
+	min-height: 48px;
 }
 
 .c-header__group {

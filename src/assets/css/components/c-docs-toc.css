@@ -45,18 +45,19 @@
 
 	&:not(li > a) {
 		display: inline-block;
-		padding-inline-start: 0;
-		color: var(--color-text-primary);
+		padding-inline: 0.25em;
+		color: var(--color-text);
 		text-decoration: none;
 		max-width: 45ch;
+		border: 1px solid transparent;
 	}
 
 	&[aria-current]:not(li > a) {
-		color: var(--color-text-primary);
+		color: var(--color-text);
 		border: none;
 		max-width: 45ch;
 		padding-inline: 0.25em;
-		translate: -0.25em;
+		border: 1px solid transparent;
 	}
 }
 
