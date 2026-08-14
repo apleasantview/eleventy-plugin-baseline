@@ -33,34 +33,6 @@ If you are new to Eleventy, the [[introduction | introduction chapter]] will get
 
 ---
 
-## What you get
-
-### Assets
-
-The asset pipeline, wired. One entry point per asset directory: `index.css` runs through PostCSS, `index.js` through esbuild. Images render at the right widths in modern formats, lazy by default.
-
-### SEO
-
-The head tags fill from one settings file, with page-level overrides where needed. `<baseline-head>` emits a canonical link, Open Graph, Twitter Cards and a JSON-LD structured-data graph, with no per-page wiring.
-
-The structured-data construction follows the model of `seo-graph-core`, by Joost de Valk of Yoast.
-
-### Multilingual
-
-Directory-based multilingual support: per-language collections, translation mapping, hreflang, and i18n filters. Sitemaps come per language, with an index on top.
-
----
-
-## One content graph underneath
-
-Backlinks, wikilinks that survive a folder move, breadcrumbs and the structured data in the head are all projections of one content graph.
-
-Without it, each of those is a thing you maintain by hand: a backlinks index built from filenames, a table of contents re-parsed from Markdown, structured data written page by page. All of it drifting the moment you rename a file.
-
-Baseline builds that graph from the HTML after it renders, so it is always what you actually shipped.
-
----
-
 ## Built on standards and conventions
 
 Baseline sits on Eleventy rather than around it. The data cascade, the template languages and the plugin API stay exactly as documented, so what you already know still applies. Markdown and front matter are the source of truth, Nunjucks where a page needs logic. HTML first, then CSS, then JavaScript where the page earns it.
