@@ -2,7 +2,7 @@
 	--content-max-width: 60rem;
 	--content-min-width: 288px;
 	--wrapper-max-width: 60rem;
-	--wrapper-margin-inline: 0;
+	--wrapper-margin-inline: auto;
 	--wrapper-padding-inline: 0;
 	--wrapper-content-box: content-box;
 	display: grid;
