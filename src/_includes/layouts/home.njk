@@ -3,10 +3,9 @@
 {%- block content %}
 
 <div class="l-document">
-
 	<!-- content -->
 	<div class="l-document__content">
-		<div class="u-flow u-wrapper">
+		<div class="u-wrapper">
 			{% include "components/c-breadcrumbs.njk" %}
 			<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
 				{{ content | safe }}

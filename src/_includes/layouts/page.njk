@@ -3,15 +3,16 @@
 {%- block content %}
 
 <div class="l-document">
-
 	<!-- content -->
-	<div class="l-document__content u-flow u-wrapper">
-		{% include "components/c-breadcrumbs.njk" %}
-		<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
-			<h1>{{ title }}</h1>
-			{{ content | safe }}
-		</article>
-		<div style="margin-block-start: var(--space-2xl)"></div>
+	<div class="l-document__content">
+		<div class="u-wrapper">
+			{% include "components/c-breadcrumbs.njk" %}
+			<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
+				<h1>{{ title }}</h1>
+				{{ content | safe }}
+			</article>
+			<div style="margin-block-start: var(--space-2xl)"></div>
+		</div>
 	</div>
 </div>
 
