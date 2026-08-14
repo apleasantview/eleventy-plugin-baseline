@@ -94,9 +94,13 @@
 	}
 }
 
+.c-search {
+	max-width: 480px;
+	min-width: 288px;
+}
+
 .c-search pagefind-modal-trigger {
 	display: inline-block;
+	vertical-align: center;
 	width: 100%;
-	min-width: 288px;
-	margin-top: 0.7em;
 }

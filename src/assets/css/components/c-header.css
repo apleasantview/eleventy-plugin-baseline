@@ -9,9 +9,10 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	column-gap: var(--space-cluster-m);
+	column-gap: var(--space-3xl);
+	row-gap: var(--space-m);
 	align-items: center;
-	padding-inline: var(--wrapper-padding-inline);
+	padding-inline: var(--space-s);
 }
 
 .c-header__group {
@@ -20,7 +21,7 @@
 	flex-wrap: wrap;
 	justify-content: space-between;
 	gap: var(--space-cluster-m);
-	align-items: center;
+	align-items: baseline;
 }
 
 .c-header__link {

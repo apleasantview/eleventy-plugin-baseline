@@ -2,6 +2,11 @@
 	max-width: fit-content;
 }
 
+.c-wordmark a {
+	display: inline-block;
+	vertical-align: center;
+}
+
 .c-wordmark > svg {
 	max-width: 100%;
 	height: auto;
