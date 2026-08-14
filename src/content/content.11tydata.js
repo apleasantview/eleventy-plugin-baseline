@@ -15,10 +15,11 @@ export default {
 	type: 'page',
 	permalink: function (data) {
 		if (data.page.inputPath.includes('11tydata.js')) return false;
+		const path = data.section[0] === 'root' ? data.section.slice(1) : data.section;
 		const slug = data.slug ? this.slugify(data.slug) : data.page.fileSlug;
 		const isDefaultLang = !data.lang || data.lang === data.settings?.defaultLanguage;
 		const prefix = isDefaultLang ? '' : `/${data.lang}`;
-		const sections = (data.section ?? []).map((s) => this.slugify(s));
+		const sections = (path ?? []).map((s) => this.slugify(s));
 		return `${prefix}/${[...sections, slug].join('/')}/`;
 	},
 	eleventyComputed: {

@@ -6,6 +6,7 @@ date: '2026-06-04'
 version: '0.1.0-next.44'
 released: '2026-07-04'
 layout: 'layouts/docs.njk'
+permalink: '/release-notes/'
 ---
 
 {% deckBlock %}

@@ -71,6 +71,7 @@ export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang
 	let acc = base;
 	for (const seg of section) {
 		acc += `/${seg}`;
+		if (seg === 'root') continue;
 		crumbs.push({ label: titleCaseSlug(seg), url: `${acc}/` });
 	}
 
