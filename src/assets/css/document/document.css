@@ -1,18 +1,18 @@
 @import './tokens.css' layer(tokens);
 @import './base.css';
 
-@import './blocks/headings.css';
-@import './blocks/hr.css';
-@import './blocks/deck.css';
-@import './blocks/alert.css';
-@import './blocks/steps.css';
-@import './blocks/table.css';
+@import './block/headings.css';
+@import './block/hr.css';
+@import './block/deck.css';
+@import './block/alert.css';
+@import './block/steps.css';
+@import './block/table.css';
 
-@import './layouts/l-document.css';
-@import './layouts/l-fluid-grid.css';
+@import './layout/l-document.css';
+@import './layout/l-fluid-grid.css';
 
-@import './utils/u-flow.css';
-@import './utils/u-wrapper.css';
-@import './utils/u-overflow.css';
-@import './utils/u-label.css';
-@import './utils/u-viz-hidden.css';
+@import './util/u-flow.css';
+@import './util/u-wrapper.css';
+@import './util/u-overflow.css';
+@import './util/u-label.css';
+@import './util/u-viz-hidden.css';
