@@ -2,6 +2,19 @@
 command = "npm run build"
 publish = "dist"
 
+# The site's own claim about where it lives. Baseline reads settings.url and
+# nothing else, so this is the only place production supplies it. Netlify's
+# own URL is deliberately unused: one name, stated here.
+[context.production.environment]
+  BASE_URL = "https://www.eleventy-baseline.dev/"
+
+# Previews claim their own address rather than production's. Without this the
+# build still succeeds, but canonicals, OG tags and the schema graph are all
+# absent, which is the layer most worth reading before a merge. Set on the
+# command because netlify.toml does not expand variables in [environment].
+[context.deploy-preview]
+  command = "BASE_URL=$DEPLOY_PRIME_URL npm run build"
+
 [[headers]]
   for = "/*"
   [headers.values]

@@ -1,4 +1,9 @@
-const siteUrl = process.env.URL || 'http://localhost:8080/';
+const siteUrl = process.env.BASE_URL;
+
+// Identity has no floor: without an origin there is nothing to resolve these
+// against, and a relative URL inside JSON-LD is worse than an absent one.
+// Missing BASE_URL costs the image, not the build.
+const absolute = (path) => (siteUrl ? new URL(path, siteUrl).href : undefined);
 
 export default {
 	title: 'Eleventy Baseline',
@@ -53,7 +58,9 @@ export default {
 
 	seo: {
 		preserveQueryParams: false,
-		ogImage: { url: new URL('/og.jpg', siteUrl).href, width: 1200, height: 630, alt: 'Eleventy Baseline' },
+		ogImage: siteUrl
+			? { url: absolute('/og.jpg'), width: 1200, height: 630, alt: 'Eleventy Baseline' }
+			: null,
 		openGraph: { type: 'website' },
 		twitter: { card: 'summary_large_image' }
 	}
