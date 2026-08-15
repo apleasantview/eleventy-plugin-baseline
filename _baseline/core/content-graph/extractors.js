@@ -24,11 +24,10 @@ import { slugify } from '../utils/slugify.js';
  * Scope:
  *   Owns the per-page extractor shape and the article/main/body boundary
  *   rule.
- *   Does not own backlink inversion (backlinks.js) or origin assembly
- *   (the composition root passes knownOrigins in).
+ *   Does not own backlink inversion (backlinks.js).
  *
  * Data flow:
- *   parsed document + knownOrigins → per-page record
+ *   parsed document → per-page record
  */
 
 // Live DOM id wins (matches anchored markup); fall back to a slugified id
@@ -85,12 +84,14 @@ function finalizeSection({ heading, parts }) {
 	return { heading, text };
 }
 
-function extractLinks(root, currentPage, knownOrigins) {
+// Hrefs arrive path-only: the pre-pass build runs HtmlBasePlugin at its default
+// base, so nothing rewrote them to absolute. An absolute href here is one the
+// author wrote by hand, and stays external even when it points at this site.
+function extractLinks(root, currentPage) {
 	const anchors = root.querySelectorAll('a[href]');
 
 	return Array.from(anchors).map((a) => {
-		const raw = a.getAttribute('href');
-		const href = normaliseHref(raw, knownOrigins);
+		const href = a.getAttribute('href');
 
 		return {
 			internal: isInternal(href),
@@ -109,22 +110,6 @@ function extractRel(el) {
 	const raw = el.getAttribute('rel');
 	if (!raw) return [];
 	return Array.from(new Set(raw.trim().toLowerCase().split(/\s+/).filter(Boolean)));
-}
-
-// HtmlBasePlugin rewrites internal hrefs to absolute URLs at render time
-// (using process.env.URL or the dev server origin). Strip a known origin
-// so hrefs land back as path-only; leave external URLs alone.
-function normaliseHref(href, knownOrigins) {
-	if (!href) return href;
-	try {
-		const url = new URL(href);
-		if (knownOrigins?.has(url.origin)) {
-			return url.pathname + url.search + url.hash;
-		}
-		return href;
-	} catch {
-		return href;
-	}
 }
 
 function isInternal(href) {
@@ -171,7 +156,6 @@ export function extractGraph(document, options = {}) {
 
 	const text = root.textContent?.trim();
 	const currentpage = options.url;
-	const knownOrigins = options.knownOrigins;
 
 	return {
 		node: {
@@ -180,6 +164,6 @@ export function extractGraph(document, options = {}) {
 			sections: extractSections(root),
 			images: extractImages(root)
 		},
-		edges: extractLinks(root, currentpage, knownOrigins)
+		edges: extractLinks(root, currentpage)
 	};
 }

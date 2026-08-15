@@ -4,7 +4,7 @@ import { extractGraph } from '../extractors.js';
 
 function extract(html) {
 	const { document } = parseHTML(`<!doctype html><html><body><main><article>${html}</article></main></body></html>`);
-	return extractGraph(document, { url: '/test/', knownOrigins: new Set() });
+	return extractGraph(document, { url: '/test/' });
 }
 
 describe('extractSections', () => {

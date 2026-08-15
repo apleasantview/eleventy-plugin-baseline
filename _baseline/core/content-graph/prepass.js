@@ -70,7 +70,6 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  * @param {string} output
  * @param {(namespace: string) => { info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
  * @param {object} [options]
- * @param {Set<string>} [options.knownOrigins] - Origins to strip from internal hrefs during extraction.
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, scopedLog, options = {}) {
@@ -83,8 +82,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
-	// knownOrigins is consumed by the graph builder, not Eleventy.
-	const { knownOrigins, ...elevOptions } = options;
+	const elevOptions = options;
 
 	let graph;
 	try {
@@ -99,7 +97,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 			}
 		});
 		const pages = await elev.toJSON();
-		graph = buildGraph(pages, { knownOrigins, log: graphLog });
+		graph = buildGraph(pages, { log: graphLog });
 
 		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');

@@ -123,9 +123,9 @@ export default function baseline(settings = {}, options = {}) {
 
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
-	baseLog.info('Settings and options resolved, modules loaded');
+	baseLog.info('Settings and options resolved');
 
-	// Scoped logging.
+	// Scoped logging helper.
 	function scopedLog(name) {
 		return createLogger(name, { verbose: state.options.verbose });
 	}
@@ -137,42 +137,16 @@ export default function baseline(settings = {}, options = {}) {
 	 * composes global APIs, filters, shortcodes, and feature modules.
 	 */
 	const plugin = async function (eleventyConfig) {
+		// The pre-pass runs Eleventy inside Eleventy. The inner build renders
+		// only to be parsed, so it wants path-only hrefs rather than absolute
+		// ones, which is what keeps graph edges keyed the same way as page.url.
+		const isPrepass = process.env[PREPASS_SENTINEL] === '1';
+
 		// --- Eleventy compatibility check ---
 		try {
 			eleventyConfig.versionCheck('>=3.0');
 		} catch (e) {
 			baseLog.error('Eleventy version mismatch.', e.message);
-		}
-
-		// --- Pre-pass wiring ---
-		// One mechanic: the pre-pass runs at the start of every Eleventy
-		// build cycle via `eleventy.before`. Initial build, watch rebuild,
-		// production build — all the same path. Templates always render
-		// against a graph rebuilt from current source. The sentinel keeps
-		// the inner Eleventy from re-attaching the hook on re-entry.
-		if (process.env[PREPASS_SENTINEL] !== '1') {
-			const prepassLog = scopedLog('pre-pass');
-
-			// Origins HtmlBasePlugin may have rewritten internal hrefs to.
-			// Stripped during link extraction so backlinks key on path-only.
-			const knownOrigins = new Set(['http://localhost:8080']);
-			for (const candidate of [settings.url, process.env.URL]) {
-				if (!candidate) continue;
-				try {
-					knownOrigins.add(new URL(candidate).origin);
-				} catch {
-					prepassLog.info('No known origins, using localhost only');
-				}
-			}
-
-			eleventyConfig.on('eleventy.before', async () => {
-				contentGraph = await runPrepass(
-					eleventyConfig.directories?.input,
-					eleventyConfig.directories?.output,
-					scopedLog,
-					{ quietMode: true, knownOrigins }
-				);
-			});
 		}
 
 		INTERNAL_KEYS.forEach((key) => {
@@ -203,15 +177,32 @@ export default function baseline(settings = {}, options = {}) {
 			options: state.options
 		});
 
-		if (!settings.url) {
+		if (!state.settings.url) {
 			baseLog.warn('settings.url missing, canonical URLs will be relative');
 		}
 
-		registerGlobals(eleventyConfig);
-
 		eleventyConfig.addPlugin(HtmlBasePlugin, {
-			baseHref: process.env.URL || eleventyConfig.pathPrefix
+			baseHref: isPrepass ? '/' : state.settings.url || eleventyConfig.pathPrefix
 		});
+
+		// --- Pre-pass wiring ---
+		// One mechanic: the pre-pass runs at the start of every Eleventy
+		// build cycle via `eleventy.before`. Initial build, watch rebuild,
+		// production build — all the same path. Templates always render
+		// against a graph rebuilt from current source. The sentinel keeps
+		// the inner Eleventy from re-attaching the hook on re-entry.
+		if (!isPrepass) {
+			eleventyConfig.on('eleventy.before', async () => {
+				contentGraph = await runPrepass(
+					eleventyConfig.directories?.input,
+					eleventyConfig.directories?.output,
+					scopedLog,
+					{ quietMode: true }
+				);
+			});
+		}
+
+		registerGlobals(eleventyConfig);
 
 		// --- Feature exposure to templates ---
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
