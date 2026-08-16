@@ -10,3 +10,25 @@
 	--step-4: clamp(2.0736rem, 1.9872rem + 0.384vw, 2.3328rem);
 	--step-5: clamp(2.4883rem, 2.3846rem + 0.4608vw, 2.7994rem);
 }
+
+:root {
+	--step-px--2: 12px;
+	--step-px--1: 14px;
+	--step-px-0: 16px;
+	--step-px-1: 20px;
+	--step-px-2: 24px;
+	--step-px-3: 28px;
+	--step-px-4: 34px;
+	--step-px-5: 40px;
+}
+
+:root {
+	--step-rem--2: 0.75rem; /* 12px */
+	--step-rem--1: 0.875rem; /* 14px */
+	--step-rem-0: 1rem; /* 16px */
+	--step-rem-1: 1.25rem; /* 20px */
+	--step-rem-2: 1.5rem; /* 24px */
+	--step-rem-3: 1.75rem; /* 28px */
+	--step-rem-4: 2.125rem; /* 34px */
+	--step-rem-5: 2.5rem; /* 40px */
+}
