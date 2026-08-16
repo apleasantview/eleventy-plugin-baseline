@@ -25,20 +25,29 @@ table {
 	}
 }
 
-tr {
-	& > * {
-		border-bottom: 1px solid var(--table-border);
-		padding: 0.75rem 0.5rem;
-		text-wrap: pretty;
-	}
-
-	& > th {
-		font-weight: 600;
-	}
+tr > * {
+	padding: 0.75rem 0.5rem;
+	text-wrap: pretty;
 }
 
-thead > th {
-	position: sticky;
-	top: 0;
-	z-index: 1;
+th {
+	font-weight: 600;
+}
+
+/* Rules top and tail the rows. The stripes carry the row-to-row scanning,
+ * so there is no border between them. */
+thead th {
+	border-bottom: 2px solid var(--table-border);
+}
+
+tbody > tr:last-child > * {
+	border-bottom: 1px solid var(--table-border);
+}
+
+tbody > tr:nth-child(odd) {
+	background: var(--table-bg-odd);
+}
+
+tbody > tr:nth-child(even) {
+	background: var(--table-bg-even);
 }

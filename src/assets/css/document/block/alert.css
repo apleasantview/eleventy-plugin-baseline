@@ -24,7 +24,7 @@ blockquote {
 	}
 
 	&.alert-danger {
-		--alert-type: var(--color-danger-solid);
+		--alert-type: var(--color-danger);
 	}
 }
 

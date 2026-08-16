@@ -9,6 +9,8 @@ export default {
 			{ label: 'Sitemap', url: '/sitemap/' },
 			{ label: 'Internal links', url: '/system/internal-links/' },
 			{ label: 'Outgoing links', url: '/system/outgoing-links/' }
+			// { label: 'Profile test', url: '/system/profile-test/' },
+			// { label: 'Document test', url: '/system/document-test/' }
 		]
 	},
 
@@ -19,7 +21,7 @@ export default {
 		],
 
 		footer: [
-			{ label: 'Navigator', url: '/navigator-core.html' },
+			{ label: 'Sitemap', url: '/sitemap/' },
 			{ label: 'Interne links', url: '/system/internal-links/' },
 			{ label: 'Uitgaande links', url: '/system/outgoing-links/' }
 		]
@@ -32,7 +34,7 @@ export default {
 		],
 
 		footer: [
-			{ label: 'Navigator', url: '/navigator-core.html' },
+			{ label: 'Sitemap', url: '/sitemap/' },
 			{ label: 'Liens internes', url: '/system/internal-links/' },
 			{ label: 'Liens sortants', url: '/system/outgoing-links/' }
 		]

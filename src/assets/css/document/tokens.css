@@ -69,25 +69,14 @@
 }
 
 :root {
-	/* Table blocks */
+	/* Table blocks. Routed through the semantic roles, so the dark and
+	 * [data-theme] cases come from the profile rather than a second copy here. */
 	color-scheme: light;
-	--table-border: #e5e7eb;
+	--table-border: var(--color-border-subtle);
 	--table-bg-even: transparent;
-	--table-bg-odd: transparent;
+	--table-bg-odd: var(--color-background-subtle);
 	--table-header-bg: transparent;
 	--table-text: currentColor;
-}
-
-@media (prefers-color-scheme: dark) {
-	/* Table blocks */
-	:root:not([data-theme='light']) {
-		color-scheme: dark;
-		--table-border: #374151;
-		--table-bg-even: transparent;
-		--table-bg-odd: hsla(230 10 16 / 0.5);
-		--table-header-bg: transparent;
-		--table-text: currentColor;
-	}
 }
 
 :root {
