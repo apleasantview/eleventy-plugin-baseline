@@ -1,53 +1,37 @@
-div:has(> table) {
-	width: 100%;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-}
-
 table {
-	width: 100%;
+	--border-width-default: 1px;
 	border-collapse: collapse;
-	table-layout: auto;
-	color: var(--table-text);
-	font-size: var(--text-size-body);
-	line-height: 1.5;
-	caption-side: bottom;
-	margin-bottom: var(--space-inset-s);
-	text-align: left;
-
-	& > thead {
-		background: var(--table-header-bg);
-		vertical-align: bottom;
-	}
-
-	& > tbody {
-		vertical-align: top;
-	}
+	width: 100%;
+	margin-block: var(--space-s);
 }
 
-tr > * {
-	padding: 0.75rem 0.5rem;
+caption {
+	caption-side: bottom;
+	padding-block: 0.5em;
+	color: var(--color-text-muted);
+	font-size: 0.925em;
+}
+
+th,
+td {
+	border: var(--border-width-default) solid var(--color-border);
+	padding: 0.5em 0.75em;
+	vertical-align: middle;
 	text-wrap: pretty;
 }
 
 th {
-	font-weight: 600;
+	text-align: left;
+	background: var(--color-background-subtle);
 }
 
-/* Rules top and tail the rows. The stripes carry the row-to-row scanning,
- * so there is no border between them. */
-thead th {
-	border-bottom: 2px solid var(--table-border);
+th,
+td:first-child {
+	font-family: var(--font-family-mono);
+	font-size: var(--text-size-secondary);
+	line-height: 1.2;
 }
 
-tbody > tr:last-child > * {
-	border-bottom: 1px solid var(--table-border);
-}
-
-tbody > tr:nth-child(odd) {
-	background: var(--table-bg-odd);
-}
-
-tbody > tr:nth-child(even) {
-	background: var(--table-bg-even);
+.u-overflow--x td {
+	white-space: nowrap;
 }

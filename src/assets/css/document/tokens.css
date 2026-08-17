@@ -73,8 +73,8 @@
 	 * [data-theme] cases come from the profile rather than a second copy here. */
 	color-scheme: light;
 	--table-border: var(--color-border-subtle);
-	--table-bg-even: transparent;
-	--table-bg-odd: var(--color-background-subtle);
+	--table-bg-odd: transparent;
+	--table-bg-even: var(--color-surface);
 	--table-header-bg: transparent;
 	--table-text: currentColor;
 }
