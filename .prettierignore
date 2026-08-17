@@ -2,6 +2,9 @@
 build
 coverage
 **/*.md
+# Emits Markdown, not HTML. Prettier treats .njk as HTML and rewraps the prose,
+# which collapses the headings and lists onto shared lines and destroys the file.
+src/content/llms.txt.njk
 package.json
 package-lock.json
 _baseline/**/*.html
