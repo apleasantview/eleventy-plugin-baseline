@@ -177,8 +177,14 @@ export default function baseline(settings = {}, options = {}) {
 			options: state.options
 		});
 
+		// State drops a settings.url it cannot use, so the two cases arrive here
+		// looking the same. Say which one it was.
 		if (!state.settings.url) {
-			baseLog.warn('settings.url missing, canonical URLs will be relative');
+			baseLog.warn(
+				settings.url
+					? `settings.url is not an absolute http(s) URL ("${settings.url}"), ignoring it. Canonical, Open Graph and JSON-LD will be omitted.`
+					: 'settings.url missing, canonical, Open Graph and JSON-LD will be omitted'
+			);
 		}
 
 		eleventyConfig.addPlugin(HtmlBasePlugin, {
