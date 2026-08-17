@@ -1,18 +1,18 @@
 ---
 title: 'Profile test'
 slug: 'profile-test'
-description: 'Every design token the site defines: colour primitives, semantic roles, the type scale and the space scale.'
-date: 2026-08-16
+description: 'Every design token the site defines, grouped by tier: raw primitives, semantic roles, and the applied values on top.'
+date: 2026-08-17
 ---
 
-Flip the theme switcher to check both palettes, and resize the window to watch the fluid scales move.
+Every token the site defines, in the three tiers it is organised in. **Primitives** are raw values with no meaning attached. **Semantics** are the roles components reach for, each pointing at a primitive. **Applied** is the thin layer on top, in `document/tokens.css`.
+
+Flip the theme switcher to check both palettes, and resize the window to watch the fluid scales move. A token whose value reads `unset` is defined nowhere the bundle can see.
 
 <style>
 	.sg-chip {
 		display: block;
-		width: 100%;
-		min-width: 4rem;
-		max-width: 4rem;
+		width: 4rem;
 		height: 1.5rem;
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 0.25rem;
@@ -27,25 +27,12 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 		border-radius: 0.15rem;
 	}
 	.sg-value {
-		font-family: monospace;
-		word-break: break-all;
 		color: var(--color-text-muted);
-	}
-	.sg-row {
-		display: flex;
-		align-items: baseline;
-		gap: var(--space-s);
-		padding-block: var(--space-2xs);
-		border-block-end: 1px solid var(--color-border-subtle);
-	}
-	.sg-row__label {
-		flex: 0 0 11rem;
-		font-family: monospace;
-		font-size: var(--text-size-muted);
-		color: var(--color-text-muted);
+		white-space: nowrap;
 	}
 	.sg-bar {
 		height: 1rem;
+		min-width: 1px;
 		background: var(--color-accent-solid);
 		border-radius: 0.125rem;
 	}
@@ -59,9 +46,29 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 <span class="sg-chip" data-token="{{ token }}"><span style="background: var({{ token }})"></span></span>
 {%- endmacro %}
 
-## Colour
+{% macro sample(tokens, prop, text, extra) -%}
+<div class="u-overflow--x"><table><thead><tr><th>Token</th><th>Value</th><th>Sample</th></tr></thead><tbody>
+{%- for t in tokens %}
+<tr><td><code>{{ t }}</code></td><td class="sg-value" data-token="{{ t }}"></td><td style="{{ prop }}: var({{ t }}){% if extra %}; {{ extra }}{% endif %}">{{ text }}</td></tr>
+{%- endfor %}
+</tbody></table></div>
+{%- endmacro %}
 
-### Primitives
+{% macro bars(tokens) -%}
+<div class="u-overflow--x"><table><thead><tr><th>Token</th><th>Value</th><th>Size</th></tr></thead><tbody>
+{%- for t in tokens %}
+<tr><td><code>{{ t }}</code></td><td class="sg-value" data-token="{{ t }}"></td><td><div class="sg-bar" style="width: min(var({{ t }}), 100%)"></div></td></tr>
+{%- endfor %}
+</tbody></table></div>
+{%- endmacro %}
+
+## Primitives
+
+Raw values, no meaning attached. Nothing in a component should name one of these directly.
+
+### Colour
+
+Source: `profile/primitives/colors.css`. Eleven rungs per ramp, lightness steps shared across every ramp; chroma peaks where each hue can hold it in sRGB, which is why yellow tops out lighter than red.
 
 {% set rungs = [
 	['50', 'Lightest tint. Callout and alert backgrounds.'],
@@ -84,10 +91,14 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 
 </summary>
 
+{% tableBlock true %}
+
 | Token | Swatch | Description |
 | --- | --- | --- |
 | `--color-black` | {{ chip('--color-black') }} | Pure black. No role maps to it. |
 | `--color-white` | {{ chip('--color-white') }} | Pure white. Carries text on solid fills. |
+
+{% endtableBlock %}
 
 </details>
 
@@ -109,16 +120,160 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 
 </summary>
 
+{{ ramp[2] }}
+
+{% tableBlock true %}
+
 | Token | Swatch | Description |
 | --- | --- | --- |
 {%- for rung in rungs %}
 | `--color-{{ ramp[0] }}-{{ rung[0] }}` | {{ chip('--color-' + ramp[0] + '-' + rung[0]) }} | {{ rung[1] }} |
 {%- endfor %}
 
+{% endtableBlock %}
+
 </details>
 {% endfor %}
 
-### Semantics
+### Type
+
+Source: `profile/primitives/typography.css`.
+
+<details>
+<summary>
+
+#### Families
+
+</summary>
+
+{{ sample(['--font-family-sans', '--font-family-mono'], 'font-family', 'Baseline sets the table') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Fixed scale
+
+</summary>
+
+The rem scale. For anything that should not move with the viewport.
+
+{{ sample(['--font-size--2', '--font-size--1', '--font-size-0', '--font-size-1', '--font-size-2', '--font-size-3', '--font-size-4', '--font-size-5'], 'font-size', 'Baseline sets the table') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Fluid scale
+
+</summary>
+
+The Utopia scale, interpolating between 320px and 1280px at 14px to 16px, ratio 1.125. These are what the size roles read, so this is the set to watch while resizing.
+
+{{ sample(['--font-size-fluid--2', '--font-size-fluid--1', '--font-size-fluid-0', '--font-size-fluid-1', '--font-size-fluid-2', '--font-size-fluid-3', '--font-size-fluid-4', '--font-size-fluid-5'], 'font-size', 'Baseline sets the table') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Weights
+
+</summary>
+
+{{ sample(['--font-weight-light', '--font-weight-normal', '--font-weight-medium', '--font-weight-semibold', '--font-weight-bold'], 'font-weight', 'Baseline sets the table') }}
+
+Weight has no semantic layer on purpose: the primitives are already the application keywords, so a role would only rename them.
+
+</details>
+
+<details>
+<summary>
+
+#### Line height
+
+</summary>
+
+{{ sample(['--line-height-flush', '--line-height-tight', '--line-height-normal', '--line-height-loose'], 'line-height', 'Baseline sets the table, and this line wraps so the leading is visible rather than theoretical.', 'max-width: 34ch') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Tracking
+
+</summary>
+
+{{ sample(['--letter-spacing-tight', '--letter-spacing-normal', '--letter-spacing-loose', '--letter-spacing-wide', '--letter-spacing-wider'], 'letter-spacing', 'Baseline sets the table') }}
+
+</details>
+
+### Space
+
+Source: `profile/primitives/spacing.css`.
+
+<details>
+<summary>
+
+#### Named edges
+
+</summary>
+
+Two values outside the rhythm. `--space-void` is a deliberate absence rather than a forgotten zero; `--space-hairline` is one device pixel and does not scale with rem.
+
+{{ bars(['--space-void', '--space-hairline']) }}
+
+</details>
+
+<details>
+<summary>
+
+#### The rhythm
+
+</summary>
+
+Fixed rem steps, numbered by their 4px multiple.
+
+{{ bars(['--space-1', '--space-2', '--space-3', '--space-4', '--space-5', '--space-6', '--space-7', '--space-8', '--space-12', '--space-16', '--space-32']) }}
+
+</details>
+
+<details>
+<summary>
+
+#### Fluid steps
+
+</summary>
+
+{{ bars(['--space-fluid-1', '--space-fluid-2', '--space-fluid-3', '--space-fluid-4', '--space-fluid-5', '--space-fluid-6', '--space-fluid-7', '--space-fluid-8', '--space-fluid-9']) }}
+
+</details>
+
+<details>
+<summary>
+
+#### Fluid pairs
+
+</summary>
+
+One-up pairs interpolate between two adjacent steps as the viewport grows. The custom pairs jump further.
+
+{{ bars(['--space-fluid-1-2', '--space-fluid-2-3', '--space-fluid-3-4', '--space-fluid-4-5', '--space-fluid-5-6', '--space-fluid-6-7', '--space-fluid-7-8', '--space-fluid-8-9', '--space-fluid-4-6', '--space-fluid-4-7', '--space-fluid-4-8']) }}
+
+</details>
+
+---
+
+## Semantics
+
+The roles components actually name. Each points at a primitive, so swapping a theme swaps the mapping and never the role.
+
+### Colour
+
+Source: `profile/semantic/colors.css`. Thirteen roles, repeated across five families. The role says what a thing is for; the family says which register it speaks in.
 
 {% set roles = [
 	['background', 'The page itself.'],
@@ -153,24 +308,132 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 
 {{ family[2] }}
 
+{% tableBlock true %}
+
 | Token | Swatch | Description |
 | --- | --- | --- |
 {%- for role in roles %}
 | `--{{ family[0] }}-{{ role[0] }}` | {{ chip('--' + family[0] + '-' + role[0]) }} | {{ role[1] }} |
 {%- endfor %}
 
+{% endtableBlock %}
+
 </details>
 {% endfor %}
 
-### Applied roles
+### Type
+
+Source: `profile/semantic/typography.css`.
 
 <details>
 <summary>
 
-#### Shorthands and component defaults
+#### Families
 
 </summary>
 
+Three names so any one of them can move without the others.
+
+{{ sample(['--font-family-body', '--font-family-heading', '--font-family-code'], 'font-family', 'Baseline sets the table') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Sizes
+
+</summary>
+
+What the site reaches for when it wants a size. Each maps onto a fluid step.
+
+{{ sample(['--text-size-muted', '--text-size-secondary', '--text-size-code', '--text-size-body', '--text-size-lede', '--text-size-title', '--text-size-display'], 'font-size', 'Baseline sets the table') }}
+
+</details>
+
+<details>
+<summary>
+
+#### Line height and tracking
+
+</summary>
+
+{{ sample(['--text-lineheight-heading', '--text-lineheight-code', '--text-lineheight-loose'], 'line-height', 'Baseline sets the table, and this line wraps so the leading is visible rather than theoretical.', 'max-width: 34ch') }}
+
+`--text-lineheight-body` is listed under Applied below, because `document/tokens.css` redefines it.
+
+{{ sample(['--text-letterspacing-body', '--text-letterspacing-heading'], 'letter-spacing', 'Baseline sets the table') }}
+
+Both are `wide` today. Two names because they could diverge tomorrow, the way `--font-family-heading` can.
+
+</details>
+
+<details>
+<summary>
+
+#### Measure and links
+
+</summary>
+
+`--text-inlinesize-body` caps the reading measure; `--text-inlinesize-heading` is `fit-content`. Link underlines are tuned through the two `--link-underline-*` values.
+
+{{ bars(['--text-inlinesize-body', '--link-underline-thickness', '--link-underline-offset']) }}
+
+</details>
+
+### Space
+
+Source: `profile/semantic/spacing.css`. Three axes: `inset` is padding inside a container, `gap` is the space between items in a row, `flow` is vertical rhythm between prose.
+
+<details>
+<summary>
+
+#### Inset
+
+</summary>
+
+{{ bars(['--space-inset-3xs', '--space-inset-2xs', '--space-inset-xs', '--space-inset-s', '--space-inset-m', '--space-inset-l', '--space-inset-xl', '--space-inset-2xl', '--space-inset-3xl']) }}
+
+</details>
+
+<details>
+<summary>
+
+#### Gap
+
+</summary>
+
+{{ bars(['--space-gap-2xs', '--space-gap-xs', '--space-gap-s', '--space-gap-m', '--space-gap-l']) }}
+
+</details>
+
+<details>
+<summary>
+
+#### Flow
+
+</summary>
+
+Defined in `em` rather than `rem`, so they scale with local text. No primitive maps to them: a one-to-one rename earns no layer.
+
+{{ bars(['--flow-space-2xs', '--flow-space-xs', '--flow-space-s', '--flow-space-m', '--flow-space-xl']) }}
+
+</details>
+
+---
+
+## Applied
+
+Source: `document/tokens.css`. Shorthands and component defaults sitting one tier above the semantic roles.
+
+<details>
+<summary>
+
+#### Colour shorthands
+
+</summary>
+
+{% tableBlock true %}
 
 | Token | Swatch | Description |
 | --- | --- | --- |
@@ -181,131 +444,19 @@ Flip the theme switcher to check both palettes, and resize the window to watch t
 | `--color-success` | {{ chip('--color-success') }} | Success at solid strength. |
 | `--color-warning` | {{ chip('--color-warning') }} | Warning at surface strength, which reads better than the solid. |
 | `--color-danger` | {{ chip('--color-danger') }} | Error at solid-hover strength. The danger alert border. |
-| `--table-border` | {{ chip('--table-border') }} | Table header and closing rules. |
-| `--table-bg-odd` | {{ chip('--table-bg-odd') }} | The stripe on odd table rows. |
-| `--table-bg-even` | {{ chip('--table-bg-even') }} | The stripe on even table rows. Transparent by default. |
-| `--table-header-bg` | {{ chip('--table-header-bg') }} | Header row fill. Transparent by default. |
 
-</details>
-
-## Type
-
-### Scale
-
-<details>
-<summary>
-
-#### Eight steps
-
-</summary>
-
-
-{% for token in ['--step-rem--2', '--step-rem--1', '--step-rem-0', '--step-rem-1', '--step-rem-2', '--step-rem-3', '--step-rem-4', '--step-rem-5'] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ token }}<br><span class="sg-value" data-token="{{ token }}"></span></div>
-	<div style="font-size: var({{ token }})">Baseline sets the table</div>
-</div>
-{%- endfor %}
-
-</details>
-
-### Roles
-
-<details>
-<summary>
-
-#### Named roles
-
-</summary>
-
-
-{% for role in ['--text-size-muted', '--text-size-secondary', '--text-size-body', '--text-size-lede', '--text-size-title', '--text-size-display'] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ role }}<br><span class="sg-value" data-token="{{ role }}"></span></div>
-	<div style="font-size: var({{ role }})">Baseline sets the table</div>
-</div>
-{%- endfor %}
+{% endtableBlock %}
 
 </details>
 
 <details>
 <summary>
 
-#### Weights and line heights
+#### Type
 
 </summary>
 
-<div class="sg-row"><div class="sg-row__label">--text-weight-regular</div><div style="font-weight: var(--text-weight-regular)">Regular, 400</div></div>
-<div class="sg-row"><div class="sg-row__label">--text-weight-strong</div><div style="font-weight: var(--text-weight-strong)">Strong, 600</div></div>
-<div class="sg-row"><div class="sg-row__label">--text-weight-heavy</div><div style="font-weight: var(--text-weight-heavy)">Heavy, 700</div></div>
-
-<br>
-
-Line heights are `--text-lineheight-tight` at 1.2, `--text-lineheight-default` at 1.5, and `--text-lineheight-loose` at 1.7. Letter spacing runs `--text-letter-tight` at -0.01em, `--text-letter-default` at 0, and `--text-letter-loose` at 0.01em.
-
-</details>
-
-## Space
-
-### Scale
-
-<details>
-<summary>
-
-#### Nine steps
-
-</summary>
-
-
-{% for token in ['--space-3xs', '--space-2xs', '--space-xs', '--space-s', '--space-m', '--space-l', '--space-xl', '--space-2xl', '--space-3xl'] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ token }}<br><span class="sg-value" data-token="{{ token }}"></span></div>
-	<div class="sg-bar" style="width: var({{ token }})"></div>
-</div>
-{%- endfor %}
-
-</details>
-
-<details>
-<summary>
-
-#### Pairs
-
-</summary>
-
-
-{% for token in ['--space-3xs-2xs', '--space-2xs-xs', '--space-xs-s', '--space-s-m', '--space-m-l', '--space-l-xl', '--space-xl-2xl', '--space-2xl-3xl', '--space-s-l', '--space-s-xl', '--space-s-2xl'] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ token }}<br><span class="sg-value" data-token="{{ token }}"></span></div>
-	<div class="sg-bar" style="width: var({{ token }})"></div>
-</div>
-{%- endfor %}
-
-</details>
-
-### Roles
-
-<details>
-<summary>
-
-#### Spacing roles
-
-</summary>
-
-Five groups of names on top of the scale: `inset` for padding, `inline` for horizontal gaps, `stack` for vertical rhythm, `cluster` and `fluid` for the pairs. Components name these, not the raw steps.
-
-{% for token in [
-	'--space-inset-2xs', '--space-inset-xs', '--space-inset-s', '--space-inset-m', '--space-inset-l',
-	'--space-inline-tight', '--space-inline-compact', '--space-inline-default', '--space-inline-comfortable',
-	'--space-stack-3xs', '--space-stack-2xs', '--space-stack-xs', '--space-stack-s', '--space-stack-m', '--space-stack-l', '--space-stack-xl',
-	'--space-cluster-s', '--space-cluster-m', '--space-cluster-l',
-	'--space-fluid-s-l', '--space-fluid-s-xl', '--space-fluid-s-2xl'
-] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ token }}<br><span class="sg-value" data-token="{{ token }}"></span></div>
-	<div class="sg-bar" style="width: var({{ token }})"></div>
-</div>
-{%- endfor %}
+{{ sample(['--text-lineheight-body', '--text-lineheight-footer'], 'line-height', 'Baseline sets the table, and this line wraps so the leading is visible rather than theoretical.', 'max-width: 34ch') }}
 
 </details>
 
@@ -316,14 +467,9 @@ Five groups of names on top of the scale: `inset` for padding, `inline` for hori
 
 </summary>
 
-`--flow-space` is the gap between siblings inside `.u-flow`, and the wrapper values cap the measure.
+`--flow-space` is the live gap between siblings inside `.u-flow`, with `--flow-space-snug` for tighter blocks and `--flow-space-heading` above headings.
 
-{% for token in ['--flow-space', '--flow-space-snug', '--flow-space-heading', '--wrapper-max-width', '--wrapper-padding-inline'] %}
-<div class="sg-row">
-	<div class="sg-row__label">{{ token }}<br><span class="sg-value" data-token="{{ token }}"></span></div>
-	<div class="sg-bar" style="width: min(var({{ token }}), 100%)"></div>
-</div>
-{%- endfor %}
+{{ bars(['--flow-space', '--flow-space-snug', '--flow-space-heading', '--wrapper-max-width', '--wrapper-padding-inline']) }}
 
 </details>
 
