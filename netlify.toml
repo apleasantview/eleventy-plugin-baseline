@@ -6,10 +6,10 @@ publish = "dist"
 # nothing else, so this is the only place production supplies it. Netlify's
 # own URL is deliberately unused: one name, stated here.
 [context.production.environment]
-  BASE_URL = "https://www.eleventy-baseline.dev/"
+  BASELINE_URL = "https://www.eleventy-baseline.dev/"
 
 [context.branch-deploy]
-  command = "BASE_URL=$DEPLOY_PRIME_URL npm run build"
+  command = "BASELINE_URL=$DEPLOY_PRIME_URL npm run build"
 
 [[headers]]
   for = "/*"

@@ -150,7 +150,7 @@ Inline `code` sits in a paragraph. Fenced blocks get Prism, server-side, with `t
 ```js
 export default {
 	title: 'Eleventy Baseline',
-	url: process.env.BASE_URL,
+	url: process.env.BASELINE_URL,
 	defaultLanguage: 'en'
 };
 ```

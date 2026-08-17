@@ -1,8 +1,6 @@
-const siteUrl = process.env.BASE_URL;
-
-// Identity has no floor: without an origin there is nothing to resolve these
-// against, and a relative URL inside JSON-LD is worse than an absent one.
-// Missing BASE_URL costs the image, not the build.
+// Parse and scheme-check. Anything that is not an http(s) URL resolves to undefined.
+const baseUrl = URL.parse(process.env.BASELINE_URL ?? '');
+const siteUrl = baseUrl?.protocol === 'https:' || baseUrl?.protocol === 'http:' ? baseUrl.href : undefined;
 const absolute = (path) => (siteUrl ? new URL(path, siteUrl).href : undefined);
 
 export default {

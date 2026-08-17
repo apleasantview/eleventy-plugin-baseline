@@ -1,11 +1,5 @@
-// schema.org identity for the site: who published it.
-// Cascade key: schema (`schema.organization`, `schema.person`).
-// Read by the seo-graph substrate; null fields are dropped from the graph.
-const siteUrl = process.env.BASE_URL;
-
-// Without an origin there is nothing to resolve the logo against, and a
-// relative URL inside JSON-LD is worse than an absent one. Null is dropped
-// from the graph on the way out.
+const baseUrl = URL.parse(process.env.BASELINE_URL ?? '');
+const siteUrl = baseUrl?.protocol === 'https:' || baseUrl?.protocol === 'http:' ? baseUrl.href : undefined;
 const absolute = (path) => (siteUrl ? new URL(path, siteUrl).href : undefined);
 
 export default {
