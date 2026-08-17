@@ -45,6 +45,19 @@ export default async function (eleventyConfig) {
 		});
 	});
 
+	// Releases collection: one page per published version, newest first.
+	// An entry written before it shipping should have `draft: true`.
+	eleventyConfig.addCollection('releases', function (collectionApi) {
+		const releases = collectionApi.getFilteredByGlob('src/content/release-notes/*.md');
+		return releases
+			.filter(function (item) {
+				return item.data.version;
+			})
+			.sort(function (a, b) {
+				return b.data.version.localeCompare(a.data.version, undefined, { numeric: true });
+			});
+	});
+
 	eleventyConfig.addCollection('faq', function (collectionApi) {
 		const faq = collectionApi.getFilteredByGlob('src/content/faq/**/*.md');
 		return faq.sort(function (a, b) {
