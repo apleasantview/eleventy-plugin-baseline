@@ -20,28 +20,28 @@
 /* @link https://utopia.fyi/space/calculator?c=320,14,1.125,1280,16,1.125,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l|s-xl|s-2xl&g=s,l,2xl,12 */
 
 :root {
-	--space-fluid-3xs: clamp(0.25rem, 0.25rem + 0vw, 0.25rem);
-	--space-fluid-2xs: clamp(0.4375rem, 0.4167rem + 0.1042vw, 0.5rem);
-	--space-fluid-xs: clamp(0.6875rem, 0.6667rem + 0.1042vw, 0.75rem);
-	--space-fluid-s: clamp(0.875rem, 0.8333rem + 0.2083vw, 1rem);
-	--space-fluid-m: clamp(1.3125rem, 1.25rem + 0.3125vw, 1.5rem);
-	--space-fluid-l: clamp(1.75rem, 1.6667rem + 0.4167vw, 2rem);
-	--space-fluid-xl: clamp(2.625rem, 2.5rem + 0.625vw, 3rem);
-	--space-fluid-2xl: clamp(3.5rem, 3.3333rem + 0.8333vw, 4rem);
-	--space-fluid-3xl: clamp(5.25rem, 5rem + 1.25vw, 6rem);
+	--space-fluid-1: clamp(0.25rem, 0.25rem + 0vw, 0.25rem);
+	--space-fluid-2: clamp(0.4375rem, 0.4167rem + 0.1042vw, 0.5rem);
+	--space-fluid-3: clamp(0.6875rem, 0.6667rem + 0.1042vw, 0.75rem);
+	--space-fluid-4: clamp(0.875rem, 0.8333rem + 0.2083vw, 1rem);
+	--space-fluid-5: clamp(1.3125rem, 1.25rem + 0.3125vw, 1.5rem);
+	--space-fluid-6: clamp(1.75rem, 1.6667rem + 0.4167vw, 2rem);
+	--space-fluid-7: clamp(2.625rem, 2.5rem + 0.625vw, 3rem);
+	--space-fluid-8: clamp(3.5rem, 3.3333rem + 0.8333vw, 4rem);
+	--space-fluid-9: clamp(5.25rem, 5rem + 1.25vw, 6rem);
 
 	/* One-up pairs */
-	--space-fluid-3xs-2xs: clamp(0.25rem, 0.1667rem + 0.4167vw, 0.5rem);
-	--space-fluid-2xs-xs: clamp(0.4375rem, 0.3333rem + 0.5208vw, 0.75rem);
-	--space-fluid-xs-s: clamp(0.6875rem, 0.5833rem + 0.5208vw, 1rem);
-	--space-fluid-s-m: clamp(0.875rem, 0.6667rem + 1.0417vw, 1.5rem);
-	--space-fluid-m-l: clamp(1.3125rem, 1.0833rem + 1.1458vw, 2rem);
-	--space-fluid-l-xl: clamp(1.75rem, 1.3333rem + 2.0833vw, 3rem);
-	--space-fluid-xl-2xl: clamp(2.625rem, 2.1667rem + 2.2917vw, 4rem);
-	--space-fluid-2xl-3xl: clamp(3.5rem, 2.6667rem + 4.1667vw, 6rem);
+	--space-fluid-1-2: clamp(0.25rem, 0.1667rem + 0.4167vw, 0.5rem);
+	--space-fluid-2-3: clamp(0.4375rem, 0.3333rem + 0.5208vw, 0.75rem);
+	--space-fluid-3-4: clamp(0.6875rem, 0.5833rem + 0.5208vw, 1rem);
+	--space-fluid-4-5: clamp(0.875rem, 0.6667rem + 1.0417vw, 1.5rem);
+	--space-fluid-5-6: clamp(1.3125rem, 1.0833rem + 1.1458vw, 2rem);
+	--space-fluid-6-7: clamp(1.75rem, 1.3333rem + 2.0833vw, 3rem);
+	--space-fluid-7-8: clamp(2.625rem, 2.1667rem + 2.2917vw, 4rem);
+	--space-fluid-8-9: clamp(3.5rem, 2.6667rem + 4.1667vw, 6rem);
 
 	/* Custom pairs */
-	--space-fluid-s-l: clamp(0.875rem, 0.5rem + 1.875vw, 2rem);
-	--space-fluid-s-xl: clamp(0.875rem, 0.1667rem + 3.5417vw, 3rem);
-	--space-fluid-s-2xl: clamp(0.875rem, -0.1667rem + 5.2083vw, 4rem);
+	--space-fluid-4-6: clamp(0.875rem, 0.5rem + 1.875vw, 2rem);
+	--space-fluid-4-7: clamp(0.875rem, 0.1667rem + 3.5417vw, 3rem);
+	--space-fluid-4-8: clamp(0.875rem, -0.1667rem + 5.2083vw, 4rem);
 }
