@@ -1,6 +1,6 @@
 import { setEntry } from '../registry.js';
 import { slugify } from '../utils/slugify.js';
-import { titleCaseSlug } from '../utils/title-case-slug.js';
+import { sentenceCaseSlug } from '../utils/sentence-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
@@ -81,14 +81,14 @@ export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang
 	for (const seg of section) {
 		acc += `/${seg}`;
 		if (seg === 'root') continue;
-		crumbs.push({ label: titleCaseSlug(seg), url: `${acc}/` });
+		crumbs.push({ label: sentenceCaseSlug(seg), url: `${acc}/` });
 	}
 
 	const sectionUrl = `${base}/${section.join('/')}/`;
 	if (url === sectionUrl) {
 		crumbs[crumbs.length - 1].label = title ?? crumbs[crumbs.length - 1].label;
 	} else {
-		crumbs.push({ label: title ?? titleCaseSlug(section[section.length - 1]), url });
+		crumbs.push({ label: title ?? sentenceCaseSlug(section[section.length - 1]), url });
 	}
 
 	crumbs[crumbs.length - 1].current = true;
