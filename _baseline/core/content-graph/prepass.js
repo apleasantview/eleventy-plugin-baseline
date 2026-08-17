@@ -88,6 +88,13 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	try {
 		const elev = new Eleventy(input, output, {
 			...elevOptions,
+
+			// Inherit the outer run. A nested instance stamps these onto process.env
+			// for the whole process, so letting them default rewrites the real run as
+			// build/script and every serve-only behaviour downstream stops firing.
+			runMode: process.env.ELEVENTY_RUN_MODE,
+			source: process.env.ELEVENTY_SOURCE,
+
 			dryRun: true,
 			// Surface fields the graph and backlink enrichment read off `data`.
 			config: function (eleventyConfig) {

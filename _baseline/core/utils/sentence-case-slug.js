@@ -1,8 +1,7 @@
 /**
  * Sentence-case a URL slug for display: "core-reference" → "Core reference".
- * The rough inverse of {@link slugify}: splits on hyphens/underscores and
- * capitalises the first word only. Sentence case rather than title case so a
- * derived breadcrumb label reads the same way an authored one does.
+ * The rough inverse of {@link slugify}. Sentence case, not title case, so a
+ * derived breadcrumb label reads the way an authored one does.
  *
  * @param {string} slug
  * @returns {string}
