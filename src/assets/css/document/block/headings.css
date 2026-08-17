@@ -1,7 +1,3 @@
-:heading {
-	margin-block-start: 1.5em;
-}
-
 h1 {
 	font-size: var(--text-size-display);
 	margin-top: var(--flow-space);

@@ -54,23 +54,9 @@ a {
 	}
 }
 
-:heading {
-	margin-block-start: 1.5em;
-}
-
-h1 {
-	font-size: var(--text-size-display);
-	margin-top: var(--flow-space);
-}
-
-h2 {
-	--flow-space: var(--flow-space-heading);
-	font-size: var(--text-size-title);
-}
-
-h3 {
-	--flow-space: var(--flow-space-heading);
-	font-size: var(--text-size-lede);
+img,
+svg {
+	height: auto;
 }
 
 ol {
