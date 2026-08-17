@@ -134,6 +134,7 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 			layout: null,
 			eleventyExcludeFromCollections: true,
 			_internal: false,
+			noindex: true,
 
 			// Debug control surface
 			inspectorDepth

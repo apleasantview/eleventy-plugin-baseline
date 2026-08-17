@@ -217,6 +217,26 @@ describe('buildBreadcrumbs', () => {
 		expect(buildBreadcrumbs({ section: ['docs'], url: undefined })).toEqual([]);
 	});
 
+	it('returns nothing for the site root itself', () => {
+		expect(buildBreadcrumbs({ section: ['root'], url: '/', title: 'Eleventy Baseline' })).toEqual([]);
+		expect(
+			buildBreadcrumbs({
+				section: ['root'],
+				url: '/fr/',
+				title: 'Eleventy Baseline',
+				lang: 'fr',
+				isDefaultLang: false
+			})
+		).toEqual([]);
+	});
+
+	it('gives a top-level page a Home crumb, no crumb for the root segment', () => {
+		expect(buildBreadcrumbs({ section: ['root'], url: '/about/', title: 'About' })).toEqual([
+			{ label: 'Home', url: '/' },
+			{ label: 'About', url: '/about/', current: true }
+		]);
+	});
+
 	it('appends a leaf page as its own crumb, ancestors title-cased', () => {
 		const crumbs = buildBreadcrumbs({
 			section: ['docs', 'module'],
@@ -255,6 +275,21 @@ describe('buildBreadcrumbs', () => {
 		expect(crumbs[0]).toEqual({ label: 'Home', url: '/nl/' });
 		expect(crumbs[2]).toEqual({ label: 'Module', url: '/nl/docs/module/' });
 		expect(crumbs[3]).toEqual({ label: 'head', url: '/nl/docs/module/head/', current: true });
+	});
+
+	it('translates the first crumb with homeLabel, falling back to Home', () => {
+		const fr = buildBreadcrumbs({
+			section: ['root'],
+			url: '/fr/about/',
+			title: 'À propos',
+			lang: 'fr',
+			isDefaultLang: false,
+			homeLabel: 'Accueil'
+		});
+		expect(fr[0]).toEqual({ label: 'Accueil', url: '/fr/' });
+
+		const unset = buildBreadcrumbs({ section: ['root'], url: '/about/', title: 'About' });
+		expect(unset[0].label).toBe('Home');
 	});
 
 	it('does not prefix when the language is absent or default', () => {

@@ -1,4 +1,5 @@
 export default {
 	lang: 'nl',
-	layout: 'layouts/page.njk'
+	layout: 'layouts/page.njk',
+	section: ['root']
 };

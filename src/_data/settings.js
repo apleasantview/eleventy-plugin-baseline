@@ -18,21 +18,24 @@ export default {
 			locale: 'en',
 			languageName: 'English',
 			title: 'Eleventy Baseline',
-			tagline: 'Start building your site and skip the setup work.'
+			tagline: 'Start building your site and skip the setup work.',
+			homeLabel: 'Home'
 		},
 		nl: {
 			contentDir: 'content/nl/',
 			locale: 'nl',
 			languageName: 'Nederlands',
 			title: 'Eleventy Baseline',
-			tagline: 'Start met het bouwen aan je site en sla de setup over.'
+			tagline: 'Start met het bouwen aan je site en sla de setup over.',
+			homeLabel: 'Home'
 		},
 		fr: {
 			contentDir: 'content/fr/',
 			locale: 'fr',
 			languageName: 'Français',
 			title: 'Eleventy Baseline',
-			tagline: 'Commencez à construire votre site sans vous occuper de la configuration.'
+			tagline: 'Commencez à construire votre site sans vous occuper de la configuration.',
+			homeLabel: 'Accueil'
 		}
 	},
 

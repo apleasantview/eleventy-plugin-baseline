@@ -1,4 +1,5 @@
 export default {
 	lang: 'fr',
-	layout: 'layouts/page.njk'
+	layout: 'layouts/page.njk',
+	section: ['root']
 };

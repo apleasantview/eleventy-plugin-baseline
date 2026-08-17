@@ -57,17 +57,26 @@ export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, sepa
  * the visible renderer knows not to link it. In multilang, a deliberately
  * non-default language prefixes every URL with `/{lang}`.
  *
- * @param {{ section?: string[], url?: string, title?: string, lang?: string, isDefaultLang?: boolean }} input
+ * `root` is a reserved segment: it marks a page as sitting directly at the site
+ * root, names no directory of its own, and so contributes no crumb.
+ *
+ * `homeLabel` translates the first crumb, and comes from the page's language
+ * entry in `settings.languages`. Falls back to `Home`.
+ *
+ * @param {{ section?: string[], url?: string, title?: string, lang?: string, isDefaultLang?: boolean, homeLabel?: string }} input
  * @returns {Array<{ label: string, url: string, current?: boolean }>}
  */
-export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang } = {}) {
+export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang, homeLabel } = {}) {
 	if (!section?.length || !url) return [];
 
 	// Only a deliberately non-default language prefixes the path; absence
 	// (no multilang) keeps the root, never a spurious `/{lang}`.
 	const base = isDefaultLang === false && lang ? `/${lang}` : '';
 
-	const crumbs = [{ label: 'Home', url: `${base}/` }];
+	// The site root is its own Home crumb, so it has no trail to show.
+	if (url === `${base}/`) return [];
+
+	const crumbs = [{ label: homeLabel ?? 'Home', url: `${base}/` }];
 	let acc = base;
 	for (const seg of section) {
 		acc += `/${seg}`;
@@ -180,7 +189,8 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 				url: data?.page?.url,
 				title: data?.seo?.title ?? data?.title,
 				lang: data?.page?.lang,
-				isDefaultLang: data?.page?.isDefaultLang
+				isDefaultLang: data?.page?.isDefaultLang,
+				homeLabel: settings.languages?.[data?.page?.lang]?.homeLabel
 			})
 		};
 	}
