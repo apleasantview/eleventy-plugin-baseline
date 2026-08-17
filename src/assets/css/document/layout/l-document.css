@@ -35,8 +35,15 @@
 	grid-column: content;
 }
 
-.l-document__navigation {
+.l-document__breadcrumbs > * {
+	max-width: var(--content-max-width);
+	margin-inline: auto;
+}
+
+.l-document__navigation > * {
 	margin-block-start: var(--space-inset-xl);
+	max-width: var(--content-max-width);
+	margin-inline: auto;
 }
 
 .l-document__sidebar,
