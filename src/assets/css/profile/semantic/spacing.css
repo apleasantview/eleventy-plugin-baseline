@@ -1,0 +1,30 @@
+/* Semantic spacing roles */
+:root {
+	/* Padding blocks (inset) for containers */
+	--space-inset-3xs: var(--space-1);
+	--space-inset-2xs: var(--space-2);
+	--space-inset-xs: var(--space-3);
+	--space-inset-s: var(--space-4);
+	--space-inset-m: var(--space-5);
+	--space-inset-l: var(--space-6);
+	--space-inset-xl: var(--space-7);
+	--space-inset-2xl: var(--space-8);
+
+	/* Gap between items in a row or wrapping cluster; the CSS `gap` property.
+	* (Sibling axes: `inset` padding inside a container; `flow` vertical rhythm
+	* between prose, below.) */
+	--space-gap-xs: var(--space-2);
+	--space-gap-s: var(--space-3);
+	--space-gap-m: var(--space-4);
+	--space-gap-l: var(--space-5);
+	--space-gap-xl: var(--space-7);
+
+	/* Flow (vertical rhythm between flowing elements).
+	 * em-based so it scales with local text; defined directly, no rem primitive
+	 * maps to it, and a 1:1 rename earns no layer. Trimmed to what's in use. */
+	--flow-space-2xs: 0.5em;
+	--flow-space-xs: 0.75em;
+	--flow-space-s: 1em;
+	--flow-space-m: 1.25em;
+	--flow-space-xl: 1.75em;
+}

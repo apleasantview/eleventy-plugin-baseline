@@ -1,5 +1,5 @@
 blockquote {
-	--flow-space: var(--space-stack-m);
+	--flow-space: var(--space-inset-m);
 	border: 0.0625em solid var(--color-border-subtle);
 	border-left: 0.24em solid var(--alert-type, var(--color-solid));
 	padding-block: 0.5em;

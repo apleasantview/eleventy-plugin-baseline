@@ -1,13 +1,13 @@
 .c-navigation {
-	padding-block: var(--space-3xs);
+	padding-block: var(--space-inset-3xs);
 }
 
 .c-navigation__inner {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	gap: var(--space-m);
-	row-gap: var(--space-xs);
+	gap: var(--space-gap-m);
+	row-gap: var(--space-gap-xs);
 	max-width: 100%;
 	align-items: center;
 }
@@ -16,7 +16,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	list-style: none;
-	gap: var(--space-cluster-s);
+	gap: var(--space-gap-s);
 	padding: 0;
 	margin: 0;
 	align-items: center;

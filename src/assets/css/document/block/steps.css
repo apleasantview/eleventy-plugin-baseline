@@ -6,12 +6,12 @@
 	}
 
 	li > p:first-child + p {
-		margin-top: var(--space-stack-2xs);
+		margin-top: var(--space-inset-2xs);
 	}
 
 	> ol:first-of-type > li + li,
 	> ul:first-of-type > li + li {
-		margin-block-start: var(--space-stack-s);
+		margin-block-start: var(--space-inset-s);
 	}
 
 	li > * + * {

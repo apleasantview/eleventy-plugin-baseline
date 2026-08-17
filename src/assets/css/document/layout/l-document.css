@@ -10,7 +10,7 @@
 	padding-block: var(--space-inset-s);
 	padding-inline: var(--space-inset-s);
 	align-items: start;
-	column-gap: var(--space-s-2xl);
+	column-gap: var(--space-gap-xl);
 	justify-content: center;
 
 	@media (--screen-lg) {
@@ -40,12 +40,12 @@
 
 .l-document__sidebar {
 	grid-column: sidebar;
-	padding-inline: var(--space-xs);
+	padding-inline: var(--space-inset-xs);
 
 	@media (--screen-lg) {
 		& {
 			display: block;
-			top: var(--space-stack-l);
+			top: var(--space-inset-l);
 			max-height: calc(95vh - 6rem);
 			overflow-y: auto;
 			scrollbar-width: thin;
@@ -56,11 +56,11 @@
 
 .l-document__aside {
 	grid-column: aside;
-	padding-inline: var(--space-xs);
+	padding-inline: var(--space-inset-xs);
 
 	> aside {
-		margin-block-start: var(--space-3xs);
-		padding-block: var(--space-s);
+		margin-block-start: var(--space-inset-3xs);
+		padding-block: var(--space-inset-s);
 	}
 
 	@media (--screen-lg) {
@@ -68,7 +68,7 @@
 			display: block;
 			width: 100%;
 			position: sticky;
-			top: var(--space-stack-l);
+			top: var(--space-inset-l);
 			max-height: calc(95vh - 6rem);
 			overflow-y: auto;
 			scrollbar-width: thin;

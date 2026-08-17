@@ -1,10 +1,11 @@
 /* 01. Profile - identity layer */
 @import './primitives/colors.css';
 @import './primitives/typography.css';
-@import './primitives/space.css';
+@import './primitives/spacing.css';
 @import './primitives/custom-media.css';
 @import './semantic/colors.css';
 @import './semantic/typography.css';
+@import './semantic/spacing.css';
 @import './themes/dark.css';
 @import './accessibility/skip-link.css';
 @import './accessibility/sr-only.css';

@@ -24,7 +24,7 @@
 
 	.c-docs-toc {
 		padding-inline: var(--space-inset-2xs);
-		margin-block: var(--space-stack-2xs);
+		margin-block: var(--space-inset-2xs);
 	}
 
 	li .c-docs-toc__link[aria-current]::after {
@@ -36,10 +36,10 @@
 .c-docs-toc__summary {
 	width: 100%;
 	display: flex;
-	gap: var(--space-inset-2xs);
+	gap: var(--space-gap-2xs);
 	align-items: center;
-	padding-block: var(--space-2xs);
-	padding-inline: var(--space-xs);
+	padding-block: var(--space-inset-2xs);
+	padding-inline: var(--space-inset-xs);
 
 	&::marker {
 		content: '';

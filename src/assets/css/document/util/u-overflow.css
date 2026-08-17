@@ -1,5 +1,5 @@
 .u-overflow--x {
 	overflow-x: auto;
-	padding-block: var(--space-s);
+	padding-block: var(--space-inset-s);
 	-webkit-overflow-scrolling: touch;
 }

@@ -6,7 +6,7 @@
 .c-theme-switcher__inner {
 	display: flex;
 	align-items: flex-start;
-	gap: var(--space-s);
+	gap: var(--space-gap-s);
 }
 
 .c-theme-switcher__item {

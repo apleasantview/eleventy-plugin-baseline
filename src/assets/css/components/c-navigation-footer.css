@@ -5,7 +5,7 @@
 .c-navigation-footer__group {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--space-xs);
+	gap: var(--space-gap-xs);
 	justify-content: space-between;
 	list-style: none;
 	padding: 0;

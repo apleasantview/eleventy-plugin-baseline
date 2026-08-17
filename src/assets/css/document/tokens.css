@@ -34,6 +34,17 @@
 	--text-lineheight-body: var(--text-lineheight-loose);
 	--text-lineheight-footer: var(--text-lineheight-tight);
 
+	/* An exception for wrapper values */
+	--wrapper-max-width: 107rem;
+	--wrapper-margin-inline: auto;
+	--wrapper-padding-inline: var(--space-inset-s);
+
+	--flow-space: var(--flow-space-s);
+	--flow-space-snug: var(--flow-space-xs);
+
+	/* Headings flow-space */
+	--flow-space-heading: var(--flow-space-m);
+
 	/* easings */
 
 	/* animations — off by default */
@@ -41,48 +52,6 @@
 	--anim-reveal-ease: none;
 	--anim-reveal-duration: 0;
 	--anim-reveal-stagger: 0;
-}
-
-:root {
-	/* Spacing roles */
-	--space-inset-3xs: var(--space-3xs);
-	--space-inset-2xs: var(--space-2xs);
-	--space-inset-xs: var(--space-xs);
-	--space-inset-s: var(--space-s);
-	--space-inset-m: var(--space-m);
-	--space-inset-l: var(--space-l);
-
-	--space-inline-tight: var(--space-2xs);
-	--space-inline-compact: var(--space-xs);
-	--space-inline-default: var(--space-s);
-	--space-inline-comfortable: var(--space-m);
-
-	--space-stack-3xs: var(--space-3xs);
-	--space-stack-2xs: var(--space-2xs);
-	--space-stack-xs: var(--space-xs);
-	--space-stack-s: var(--space-s);
-	--space-stack-m: var(--space-m);
-	--space-stack-l: var(--space-l);
-	--space-stack-xl: var(--space-xl);
-
-	--space-cluster-s: var(--space-xs-s);
-	--space-cluster-m: var(--space-s-m);
-	--space-cluster-l: var(--space-m-l);
-
-	--space-fluid-s-l: var(--space-s-l);
-	--space-fluid-s-xl: var(--space-s-xl);
-	--space-fluid-s-2xl: var(--space-s-2xl);
-
-	/* An exception for wrapper values */
-	--wrapper-max-width: 107rem;
-	--wrapper-margin-inline: auto;
-	--wrapper-padding-inline: var(--space-s);
-
-	--flow-space: var(--space-stack-s);
-	--flow-space-snug: var(--space-stack-xs);
-
-	/* Headings flow-space */
-	--flow-space-heading: var(--space-stack-m);
 }
 
 @media (prefers-contrast: more) {
