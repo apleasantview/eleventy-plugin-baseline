@@ -4,7 +4,7 @@
 	max-width: 100%;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(288px, 100%), 1fr));
-	column-gap: var(--space-gap-xl);
+	column-gap: var(--space-gap-l);
 }
 
 .l-fluid-grid__block > :nth-child(1) {

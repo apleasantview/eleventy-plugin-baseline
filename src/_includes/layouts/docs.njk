@@ -3,25 +3,20 @@
 {%- block content %}
 {%- include "components/c-docs-toc--details.njk" %}
 <div class="l-document">
+	<div class="l-document__breadcrumbs">{% include "components/c-breadcrumbs.njk" %}</div>
 	<!-- sidebar -->
-	<div class="l-document__sidebar">
-		{% include "components/c-docs-toc--sidebar.njk" %}
-	</div>
+	<div class="l-document__sidebar">{% include "components/c-docs-toc--sidebar.njk" %}</div>
 	<!-- content -->
 	<div class="l-document__content">
 		<div class="u-wrapper">
-			{% include "components/c-breadcrumbs.njk" %}
 			<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
 				<h1>{{ title }}</h1>
 				{{ content | safe }}
 			</article>
-			<div style="margin-block-start: var(-space-inset-2xl); border-top: 1px solid var(--color-border);">
-				{%- include "partials/docs-nav.njk" %}
-			</div>
-			<div style="margin-block-start: var(-space-inset-2xl)"></div>
 		</div>
 	</div>
 	<!-- aside -->
 	<div class="l-document__aside">{% include "partials/document-aside.njk" %}</div>
+	<div class="l-document__navigation">{%- include "partials/docs-nav.njk" %}</div>
 </div>
 {%- endblock %}

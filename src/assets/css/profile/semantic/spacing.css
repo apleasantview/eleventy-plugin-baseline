@@ -9,15 +9,16 @@
 	--space-inset-l: var(--space-fluid-6);
 	--space-inset-xl: var(--space-fluid-7);
 	--space-inset-2xl: var(--space-fluid-8);
+	--space-inset-3xl: var(--space-fluid-9);
 
 	/* Gap between items in a row or wrapping cluster; the CSS `gap` property.
 	* (Sibling axes: `inset` padding inside a container; `flow` vertical rhythm
 	* between prose, below.) */
-	--space-gap-xs: var(--space-fluid-2);
-	--space-gap-s: var(--space-fluid-3);
-	--space-gap-m: var(--space-fluid-4);
-	--space-gap-l: var(--space-fluid-5);
-	--space-gap-xl: var(--space-fluid-7);
+	--space-gap-2xs: var(--space-fluid-2);
+	--space-gap-xs: var(--space-fluid-3);
+	--space-gap-s: var(--space-fluid-4);
+	--space-gap-m: var(--space-fluid-5);
+	--space-gap-l: var(--space-fluid-6);
 
 	/* Flow (vertical rhythm between flowing elements).
 	 * em-based so it scales with local text; defined directly, no rem primitive

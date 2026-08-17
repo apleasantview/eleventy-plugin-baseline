@@ -10,7 +10,7 @@
 	padding-block: var(--space-inset-s);
 	padding-inline: var(--space-inset-s);
 	align-items: start;
-	column-gap: var(--space-gap-xl);
+	column-gap: var(--space-gap-l);
 	justify-content: center;
 
 	@media (--screen-lg) {
@@ -29,8 +29,14 @@
 	}
 }
 
-.l-document__content {
+.l-document__content,
+.l-document__breadcrumbs,
+.l-document__navigation {
 	grid-column: content;
+}
+
+.l-document__navigation {
+	margin-block-start: var(--space-inset-xl);
 }
 
 .l-document__sidebar,

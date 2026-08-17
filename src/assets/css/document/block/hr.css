@@ -2,6 +2,6 @@ hr {
 	border: 0;
 	border-top: 1px solid;
 	color: transparent;
-	margin-top: var(--space-inset-l);
-	margin-bottom: var(--space-inset-l);
+	margin-top: var(--space-inset-s);
+	margin-bottom: var(--space-inset-s);
 }
