@@ -1,12 +1,12 @@
 .c-docs-toc,
 .c-docs-toc--sidebar {
 	> div:not(.c-docs-toc__children) {
-		margin-block-start: var(--space-inset-m);
+		margin-block-start: var(--space-inset-s);
 		margin-block-end: var(--space-inset-s);
 	}
 
 	* + p {
-		margin-block-start: var(--space-inset-m);
+		margin-block-start: var(--space-inset-s);
 	}
 
 	.c-docs-toc__block {
@@ -14,7 +14,7 @@
 		flex-wrap: wrap;
 		column-gap: var(--space-gap-s);
 		row-gap: var(--space-gap-xs);
-		margin-block-start: var(--space-m);
+		margin-block-start: var(--space-inset-s);
 		padding: 0;
 		list-style: none;
 	}
@@ -75,6 +75,6 @@
 }
 
 .c-docs-toc hr {
-	margin-top: var(--space-m);
-	margin-bottom: var(--space-m-l);
+	margin-top: var(--space-inset-s);
+	margin-bottom: var(--space-inset-s);
 }

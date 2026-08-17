@@ -72,7 +72,7 @@
 	padding-inline: var(--space-inset-xs);
 
 	> aside {
-		margin-block-start: var(--space-inset-3xs);
+		margin-block: var(--space-inset-3xs);
 		padding-block: var(--space-inset-s);
 	}
 
