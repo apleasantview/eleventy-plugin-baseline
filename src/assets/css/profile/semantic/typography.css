@@ -1,0 +1,38 @@
+/* Semantic typography roles */
+:root {
+	--font-family-body: var(--font-family-sans);
+	--font-family-heading: var(--font-family-sans);
+	--font-family-code: var(--font-family-mono);
+
+	--text-size-body: var(--font-size-fluid-0);
+	--text-size-secondary: var(--font-size-fluid--1);
+	--text-size-muted: var(--font-size-fluid--2);
+	--text-size-lede: var(--font-size-fluid-1);
+	--text-size-title: var(--font-size-fluid-2);
+	--text-size-display: var(--font-size-fluid-4);
+	--text-size-code: var(--font-size-fluid--1);
+
+	/* Line-height, a decision per use, same shape as letter-spacing (its sibling).
+	 * Body breathes (normal); headings sit tight; code matches body for now. The
+	 * loose primitive stays in the lexicon for when a role reaches for it. */
+	--text-lineheight-body: var(--line-height-normal);
+	--text-lineheight-heading: var(--line-height-tight);
+	--text-lineheight-code: var(--line-height-normal);
+	--text-lineheight-loose: var(--line-height-loose);
+
+	/* Weight has no role layer: the primitives (light/normal/medium/semibold/bold)
+	 * are already the application keywords, so a role would only rename them.
+	 * Elements consume --font-weight-* directly until a weight bears real meaning. */
+
+	/* Tracking is a decision per use, even when two uses land on the same value;
+	 * body and heading could diverge tomorrow, the way font-family-heading can. */
+	--text-letterspacing-body: var(--letter-spacing-wide);
+	--text-letterspacing-heading: var(--letter-spacing-wide);
+
+	--text-inlinesize-body: 75ch;
+	--text-inlinesize-heading: fit-content;
+
+	/* Link roles */
+	--link-underline-thickness: 0.05em;
+	--link-underline-offset: 0.2em;
+}

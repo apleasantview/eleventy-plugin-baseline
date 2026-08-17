@@ -12,14 +12,14 @@ body {
 body {
 	font-family: var(--font-family-body);
 	font-size: var(--text-size-body);
-	line-height: var(--text-lineheight-loose);
+	line-height: var(--text-lineheight-body);
 	display: flex;
 	flex-direction: column;
 }
 
 footer {
 	margin-block-start: auto;
-	line-height: var(--text-lineheight-tight);
+	line-height: var(--text-lineheight-footer);
 }
 
 p,

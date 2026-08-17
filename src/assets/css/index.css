@@ -1,14 +1,7 @@
 /* CSS Profile - https://apv-css-profile.netlify.app/ */
 
 /* 01. Profile - identity layer */
-@import './profile/primitives/colors.css';
-@import './profile/semantic/colors.css';
-@import './profile/themes/dark.css';
-@import './profile/type.css';
-@import './profile/space.css';
-@import './profile/custom-media.css';
-@import './profile/skip-link.css';
-@import './profile/sr-only.css';
+@import './profile/profile.css';
 
 /* 02. Resets - normalized browser defaults */
 @import './resets/modern-reset.css' layer(reset);
