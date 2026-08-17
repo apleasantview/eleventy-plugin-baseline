@@ -45,10 +45,10 @@
 		--color-success-solid: var(--color-green-500);
 		--color-success-on-solid: var(--color-white);
 
-		--color-warning-surface: var(--color-amber-950);
-		--color-warning-border: var(--color-amber-800);
-		--color-warning-text: var(--color-amber-400);
-		--color-warning-solid: var(--color-amber-500);
+		--color-warning-surface: var(--color-yellow-950);
+		--color-warning-border: var(--color-yellow-800);
+		--color-warning-text: var(--color-yellow-400);
+		--color-warning-solid: var(--color-yellow-500);
 		--color-warning-on-solid: var(--color-slate-950);
 
 		--color-danger-surface: var(--color-red-950);

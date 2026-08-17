@@ -28,19 +28,19 @@
 	max-width: 45ch;
 
 	&:hover {
-		color: var(--color-accent-hover);
+		color: var(--color-accent-text-muted);
 		text-decoration: underline;
 	}
 
 	&[aria-current] {
 		border-left: 0.2em solid currentColor;
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		margin: 0;
 		transform: translateX(-0.03em);
 	}
 
 	&[aria-current]:hover {
-		color: var(--color-accent-hover);
+		color: var(--color-accent-text-muted);
 	}
 
 	&:not(li > a) {

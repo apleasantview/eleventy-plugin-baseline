@@ -34,15 +34,6 @@
 	--text-lineheight-body: var(--text-lineheight-loose);
 	--text-lineheight-footer: var(--text-lineheight-tight);
 
-	/* Table blocks. Routed through the semantic roles, so the dark and
-	 * [data-theme] cases come from the profile rather than a second copy here. */
-	color-scheme: light;
-	--table-border: var(--color-border-subtle);
-	--table-bg-odd: transparent;
-	--table-bg-even: var(--color-surface);
-	--table-header-bg: transparent;
-	--table-text: currentColor;
-
 	/* easings */
 
 	/* animations — off by default */
@@ -54,6 +45,7 @@
 
 :root {
 	/* Spacing roles */
+	--space-inset-3xs: var(--space-3xs);
 	--space-inset-2xs: var(--space-2xs);
 	--space-inset-xs: var(--space-xs);
 	--space-inset-s: var(--space-s);
