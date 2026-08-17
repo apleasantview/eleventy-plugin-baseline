@@ -48,12 +48,12 @@
 		'Helvetica Neue', sans-serif;
 	--font-family-heading: var(--font-family-body);
 
-	--text-size-body: var(--step-rem-0);
-	--text-size-secondary: var(--step-rem--1);
-	--text-size-muted: var(--step-rem--2);
-	--text-size-lede: var(--step-rem-1);
-	--text-size-title: var(--step-rem-2);
-	--text-size-display: var(--step-rem-4);
+	--text-size-body: var(--step-0);
+	--text-size-secondary: var(--step--1);
+	--text-size-muted: var(--step--2);
+	--text-size-lede: var(--step-1);
+	--text-size-title: var(--step-2);
+	--text-size-display: var(--step-4);
 
 	--text-lineheight-tight: 1.2;
 	--text-lineheight-default: 1.5;
