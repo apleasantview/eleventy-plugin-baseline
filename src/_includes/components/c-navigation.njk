@@ -5,7 +5,12 @@
 		<ul class="c-navigation__group">
 			{%- for item in nav.main %}
 				<li>
-					<a class="c-navigation__link" href="{{ item.url }}" {%- if page.url == item.url %} aria-current="page"{%- endif %}>{{ item.label }}</a>
+					<a
+						class="c-navigation__link"
+						href="{{ item.url }}"
+						{%- if page.url == item.url %}aria-current="page"{%- endif %}
+						>{{ item.label }}</a
+					>
 				</li>
 			{%- endfor %}
 			<li aria-hidden>|</li>
@@ -19,4 +24,3 @@
 		</ul>
 	</div>
 </nav>
-

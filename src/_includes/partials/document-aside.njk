@@ -2,74 +2,81 @@
 	<div class="u-flow">
 		{% set toc = _node.headings %}
 		{% if toc.length %}
-		<nav class="toc" aria-labelledby="toc-title">
-			<details open>
-				<summary id="toc-title">On this page</summary>
-				<ol class="toc-list" style="list-style: none; padding-inline: 0.75rem;">
-				{% for heading in toc.slice(1) %}
-					<li class="toc-item toc-level-{{ heading.level }}" style="margin-top: 0.5rem;">
-						{% if heading.level > 2 %}
-						<span style="padding-inline: 0.5rem;">- <a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
-							{{ heading.text | truncate(24, true, '...') }}
-						</a>
-						</span>
-						{% else %}
-						<a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
-							{{ heading.text }}
-						</a>
-						{% endif %}
-					</li>
-				{% endfor %}
-				</ol>
-			</details>
-		</nav>
+			<nav class="toc" aria-labelledby="toc-title">
+				<details open>
+					<summary id="toc-title">On this page</summary>
+					<ol class="toc-list" style="list-style: none; padding-inline: 0.75rem;">
+						{% for heading in toc.slice(1) %}
+							<li class="toc-item toc-level-{{ heading.level }}" style="margin-top: 0.5rem;">
+								{% if heading.level > 2 %}
+									<span style="padding-inline: 0.5rem;"
+										>-
+										<a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
+											{{ heading.text | truncate(24, true, '...') }}
+										</a>
+									</span>
+								{% else %}
+									<a href="#{{ heading.id }}" style="color: var(--color-text-muted); text-decoration: none;">
+										{{ heading.text }}
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+					</ol>
+				</details>
+			</nav>
 		{% endif %}
 
 		{% set backlinks = _backlinks %}
 		{% if backlinks.length %}
-		<nav aria-labelledby="backlinks-title">
-			<details>
-				<summary id="backlinks-title">Linked from</summary>
-				<ul class="backlinks u-flow--snug" style="list-style: none; padding-inline: 0.75rem; font-size: var(--text-size-secondary);">
-				{% for from, links in backlinks | groupby('from') %}
-				{% set node = _navigator.nodes[from] %}
-					<li style="padding-block-end: 0.5rem;">
-						<a href="{{ from }}">{{ node.title or from }}</a> ({{ links | length }})
-						{% if node.excerpt %}
-						<div style="line-height: var(--text-lineheight-tight);">
-							<small><em>"{{ node.excerpt | truncate(90, true, "...") }}"</em></small>
-						</div>
-						{% endif %}
-					</li>
-				{% endfor %}
-				</ul>
-			</details>
-		</nav>
+			<nav aria-labelledby="backlinks-title">
+				<details>
+					<summary id="backlinks-title">Linked from</summary>
+					<ul
+						class="backlinks u-flow--snug"
+						style="list-style: none; padding-inline: 0.75rem; font-size: var(--text-size-secondary);"
+					>
+						{% for from, links in backlinks | groupby('from') %}
+							{% set node = _navigator.nodes[from] %}
+							<li style="padding-block-end: 0.5rem;">
+								<a href="{{ from }}">{{ node.title or from }}</a> ({{ links | length }})
+								{% if node.excerpt %}
+									<div style="line-height: var(--text-lineheight-tight);">
+										<small><em>"{{ node.excerpt | truncate(90, true, "...") }}"</em></small>
+									</div>
+								{% endif %}
+							</li>
+						{% endfor %}
+					</ul>
+				</details>
+			</nav>
 		{% endif %}
-		
-		
+
 		{% set outgoing = _outgoing %}
 		{% if outgoing.length %}
-		<nav aria-labelledby="outgoing-title">
-			<details>
-				<summary id="outgoing-title">Outgoing links</summary>
-				<ul class="outgoing u-flow" style="list-style: none; padding-inline: 0.75rem; font-size: var(--text-size-secondary);">
-				{% for to, links in outgoing | groupby('to') %}
-				{% set node = _navigator.nodes[to] %}
-				{% if not links[0].internal %}
-					<li style="padding-block-end: 0.5rem;">
-						<a href="{{ to }}">{{ node.title or to }}</a> ({{ links | length }})
-						{% if node.excerpt %}
-						<div style="line-height: var(--text-lineheight-tight);">
-							<small><em>"{{ node.excerpt | truncate(90, true, "...") }}"</em></small>
-						</div>
-						{% endif %}
-					</li>
-				{% endif %}
-				{% endfor %}
-				</ul>
-			</details>
-		</nav>
+			<nav aria-labelledby="outgoing-title">
+				<details>
+					<summary id="outgoing-title">Outgoing links</summary>
+					<ul
+						class="outgoing u-flow"
+						style="list-style: none; padding-inline: 0.75rem; font-size: var(--text-size-secondary);"
+					>
+						{% for to, links in outgoing | groupby('to') %}
+							{% set node = _navigator.nodes[to] %}
+							{% if not links[0].internal %}
+								<li style="padding-block-end: 0.5rem;">
+									<a href="{{ to }}">{{ node.title or to }}</a> ({{ links | length }})
+									{% if node.excerpt %}
+										<div style="line-height: var(--text-lineheight-tight);">
+											<small><em>"{{ node.excerpt | truncate(90, true, "...") }}"</em></small>
+										</div>
+									{% endif %}
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</details>
+			</nav>
 		{% endif %}
 	</div>
 </aside>

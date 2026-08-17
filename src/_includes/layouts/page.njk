@@ -1,22 +1,25 @@
 {% extends "layouts/base.njk" %}
 
 {%- block content %}
-
-<div class="l-document">
-	<div class="l-document__breadcrumbs">{% include "components/c-breadcrumbs.njk" %}</div>
-	<!-- content -->
-	<div class="l-document__content">
-		<div class="u-wrapper">
-			<article class="u-flow"{% if not baselineExcludeFromGraph %} data-pagefind-body{% endif %}>
-				<h1>{{ title }}</h1>
-				{{ content | safe }}
-			</article>
-			<div style="margin-block-start: var(--space-inset-s)"></div>
+	<div class="l-document">
+		<div class="l-document__breadcrumbs">{% include "components/c-breadcrumbs.njk" %}</div>
+		<!-- content -->
+		<div class="l-document__content">
+			<div class="u-wrapper">
+				<article class="u-flow" {% if not baselineExcludeFromGraph %}data-pagefind-body{% endif %}>
+					<h1>{{ title }}</h1>
+					{{ content | safe }}
+				</article>
+				<div style="margin-block-start: var(--space-inset-s)"></div>
+			</div>
 		</div>
 	</div>
-</div>
 
-{% if slug == 'not-found' %}
-	<script>document.addEventListener('DOMContentLoaded', function () { plausible('404'); });</script>
-{% endif %}
+	{% if slug == 'not-found' %}
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				plausible('404');
+			});
+		</script>
+	{% endif %}
 {%- endblock %}

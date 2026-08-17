@@ -1,13 +1,13 @@
 <div class="c-lan-switcher">
 	<div class="c-lang-switcher__inner">
-		
-			{%- for item, value in settings.languages %}
-				{%- if item === settings.defaultLanguage %}
-					<a lang="{{ item }}" hreflang="{{ item }}" href="/"  class="c-lang-switcher__item">{{ value.languageName }}</a>
-				{%- else %}
-					<a lang="{{ item }}" hreflang="{{ item }}" href="/{{ item }}/" class="c-lang-switcher__item">{{ value.languageName }}</a>
-				{%- endif %}
-			{%- endfor %}
-
+		{%- for item, value in settings.languages %}
+			{%- if item === settings.defaultLanguage %}
+				<a lang="{{ item }}" hreflang="{{ item }}" href="/" class="c-lang-switcher__item">{{ value.languageName }}</a>
+			{%- else %}
+				<a lang="{{ item }}" hreflang="{{ item }}" href="/{{ item }}/" class="c-lang-switcher__item"
+					>{{ value.languageName }}</a
+				>
+			{%- endif %}
+		{%- endfor %}
 	</div>
 </div>

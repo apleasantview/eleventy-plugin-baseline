@@ -4,14 +4,18 @@
 		{% if t %}
 			{% for lang, config in settings.languages %}
 				{% if t[lang] %}
-					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ t[lang].url }}" class="c-lang-switcher__item">{{ config.languageName }}</a>
+					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ t[lang].url }}" class="c-lang-switcher__item"
+						>{{ config.languageName }}</a
+					>
 				{% endif %}
 			{% endfor %}
 		{% else %}
 			{% set home = collections.translationsMap.homepage %}
 			{% for lang, config in settings.languages %}
 				{% if home[lang] %}
-					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ home[lang].url }}" class="c-lang-switcher__item">{{ config.languageName }}</a>
+					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ home[lang].url }}" class="c-lang-switcher__item"
+						>{{ config.languageName }}</a
+					>
 				{% endif %}
 			{% endfor %}
 		{% endif %}
