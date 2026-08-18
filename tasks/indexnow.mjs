@@ -84,7 +84,7 @@ function collectUrls() {
 
 /**
  * Guard against announcing a build that is not on the production host.
- * settings.js reads BASE_URL and nothing else, so a local build carries
+ * settings.js reads BASELINE_URL and nothing else, so a local build carries
  * whatever `.env` says.
  *
  * @param {string[]} urls
@@ -94,7 +94,7 @@ function assertProductionUrls(urls) {
 	if (wrong.length) {
 		throw new Error(
 			`${wrong.length} URL(s) are not on https://${HOST}/ — first is ${wrong[0]}.\n` +
-				`Rebuild with BASE_URL=https://${HOST}/ before submitting.`
+				`Rebuild with BASELINE_URL=https://${HOST}/ before submitting.`
 		);
 	}
 }

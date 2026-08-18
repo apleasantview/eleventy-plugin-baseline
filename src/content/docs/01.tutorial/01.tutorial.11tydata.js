@@ -1,4 +1,4 @@
 export default {
 	section: ['docs', 'tutorial'],
-	sectionLabel: 'Tutorial'
+	sectionLabel: 'Tutorials'
 };
