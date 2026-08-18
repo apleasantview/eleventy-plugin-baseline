@@ -136,6 +136,26 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 			_internal: false,
 			noindex: true,
 
+			// Passed as data rather than written into the template: `<baseline-head>`
+			// replaces the whole `<head>`, so markup around it lands outside one.
+			head: {
+				style: [
+					{
+						content: [
+							'._navigator__wrapper:not(#\\#):not(#\\#) {',
+							'box-sizing: content-box;',
+							'max-width: 60rem;',
+							'padding-inline: clamp(1rem, 0.2083rem + 3.5185vw, 3.375rem);',
+							'margin-inline: auto;',
+							'}',
+							'._navigator__wrapper:not(#\\#):not(#\\#) > * + * {',
+							'margin-block-start: 1.25rem;',
+							'}'
+						].join('')
+					}
+				]
+			},
+
 			// Debug control surface
 			inspectorDepth
 		});
