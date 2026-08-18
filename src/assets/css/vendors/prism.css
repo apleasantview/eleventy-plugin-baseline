@@ -19,6 +19,7 @@
 	--prism-keyword: #000000;
 	--prism-function: #4f4f4f;
 	--prism-deleted: #333333;
+	--prism-inserted: #333333;
 	--prism-class: #333333;
 	--prism-builtin: #757575;
 	--prism-property: #333333;
@@ -86,6 +87,7 @@
 	--prism-function: oklch(0.52 0.14 95); /* yellow-olive */
 	--prism-constant: oklch(0.5 0.18 50); /* orange */
 	--prism-deleted: oklch(0.45 0.2 30); /* red */
+	--prism-inserted: oklch(0.48 0.2 150); /* green, pairs with deleted */
 	--prism-class: oklch(0.5 0.16 220); /* teal */
 	--prism-builtin: oklch(0.45 0.18 340); /* magenta */
 	--prism-property: oklch(0.52 0.14 90); /* gold */
@@ -115,6 +117,8 @@
 		--prism-function: oklch(0.83 0.1 95); /* yellow-olive */
 		--prism-constant: oklch(0.78 0.08 50); /* orange, softened */
 		--prism-deleted: oklch(0.76 0.1 25); /* red, softened */
+	--prism-inserted: oklch(0.78 0.12 150); /* green, pairs with deleted */
+		--prism-inserted: oklch(0.78 0.12 150); /* green, pairs with deleted */
 		--prism-class: oklch(0.82 0.12 220); /* teal */
 		--prism-builtin: oklch(0.8 0.1 330); /* magenta, softened */
 		--prism-property: oklch(0.82 0.07 90); /* gold, softened */
@@ -244,9 +248,14 @@ code[class*='language-'] ::selection {
 }
 
 .token.url,
-.token.symbol,
-.token.inserted {
+.token.symbol {
 	color: var(--prism-symbol);
+}
+
+/* Upstream groups `inserted` with url/symbol, which renders additions blue
+   against red deletions. A diff should read as a pair. */
+.token.inserted {
+	color: var(--prism-inserted);
 }
 
 .token.constant {
