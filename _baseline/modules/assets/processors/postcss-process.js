@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import postcss from 'postcss';
 import loadPostCSSConfig from 'postcss-load-config';
-import fallbackPostCSSConfig from '../configs/postcss.config.js';
+import buildFallbackPostCSSConfig from '../configs/postcss.config.js';
 import { createLogger } from '../../../core/logging/index.js';
 
 /**
@@ -52,7 +52,7 @@ async function getPostCSSConfig() {
 		cachedConfig = await loadPostCSSConfig({}, configRoot);
 	} catch {
 		// If none is found, fall back to the bundled Baseline config to keep builds working.
-		const { plugins, ...options } = fallbackPostCSSConfig;
+		const { plugins, ...options } = buildFallbackPostCSSConfig();
 		cachedConfig = { plugins, options };
 	}
 	return cachedConfig;

@@ -44,7 +44,6 @@
     "@jdevalk/seo-graph-core": "^0.6.2",
     "@rviscomi/capo.js": "^2.1.0",
     "cssnano": "^8.0.2",
-    "dotenv": "^17.4.2",
     "esbuild": "0.28.1",
     "kleur": "^4.1.5",
     "linkedom": "^0.18.12",

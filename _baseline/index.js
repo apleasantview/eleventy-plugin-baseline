@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { createRequire } from 'node:module';
 
 import { HtmlBasePlugin } from '@11ty/eleventy';
@@ -31,12 +30,6 @@ const __require = createRequire(import.meta.url);
 const { name, version } = __require('./package.json');
 const eleventyVersion = process.env.ELEVENTY_VERSION;
 // const absoluteRoot = process.env.ELEVENTY_ROOT; -> Safekeeping.
-
-const mode = process.env.ELEVENTY_ENV;
-// eslint-disable-next-line no-unused-vars
-const isDev = mode === 'development';
-// eslint-disable-next-line no-unused-vars
-const isProd = mode === 'production';
 
 // Whitelist of reserved global data keys used internally across the plugin.
 // Positive side effect is they all get listed in order and merge data to the same key.
@@ -105,6 +98,13 @@ let contentGraph = null;
  * @param {import('./core/types.js').BaselineOptions} [options]
  */
 export default function baseline(settings = {}, options = {}) {
+	// Baseline no longer loads `.env` itself.
+	const mode = process.env.ELEVENTY_ENV;
+	// eslint-disable-next-line no-unused-vars
+	const isDev = mode === 'development';
+	// eslint-disable-next-line no-unused-vars
+	const isProd = mode === 'production';
+
 	// --- Legacy compatibility layer ---
 	if (isLegacyShape(settings, arguments.length)) {
 		const normalized = normalizeLegacyShape(settings);
