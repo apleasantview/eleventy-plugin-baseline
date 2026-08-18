@@ -1,0 +1,17 @@
+# Line endings
+#
+# Everything text is stored LF in the repository and checked out LF, on every
+# platform. Development happens on Windows with Git Bash, where `core.autocrlf`
+# was doing this job locally; that is a per-machine setting a second contributor
+# would not inherit.
+
+* text=auto eol=lf
+
+# release.sh is executed by a shell. LF is not cosmetic there.
+*.sh text eol=lf
+
+# Binary. Never normalise, never diff as text.
+*.png binary
+*.jpg binary
+*.ico binary
+*.webmanifest text eol=lf
