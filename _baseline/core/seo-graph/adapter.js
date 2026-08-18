@@ -163,9 +163,13 @@ export function assembleSchemaGraph(data) {
 		ids
 	);
 
-	const ogImageRaw = data.ogImage ?? data.seo?.ogImage ?? settings.seo?.ogImage;
-	const ogImage = typeof ogImageRaw === 'string' ? { url: ogImageRaw } : ogImageRaw;
-	const primaryImageNode = buildImage(ogImage, { pageUrl: canonical }, ids);
+	// Page-level only, deliberately narrower than the og:image chain in
+	// open-graph.js: `settings.seo.ogImage` is a social fallback, and inheriting
+	// it here would claim a site-wide share card as the image representing this
+	// page. No page image, no node and no primaryImageOfPage.
+	const pageImageRaw = data.ogImage ?? data.seo?.ogImage;
+	const pageImage = typeof pageImageRaw === 'string' ? { url: pageImageRaw } : pageImageRaw;
+	const primaryImageNode = buildImage(pageImage, { pageUrl: canonical }, ids);
 
 	// Trail is resolved once in page-context, carried onto the graph node by the
 	// prepass (the adapter's only cross-pass channel — _pageContext is not in

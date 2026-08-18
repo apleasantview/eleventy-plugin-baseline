@@ -140,15 +140,14 @@ describe('image degrade (two-tier)', () => {
 	// the WebPage gains a primaryImageOfPage ref to that node.
 	it('emits an ImageObject node and primaryImageOfPage ref when dimensions are known', () => {
 		const graph = assembleSchemaGraph(
-			bag({ settings: { url: siteUrl, title: 'Demo', seo: { ogImage: { url: '/og.png', width: 1200, height: 630 } } } })
+			bag({ ogImage: { url: '/page-og.png', width: 1200, height: 630 } })
 		);
 		const image = one(graph, 'ImageObject');
 		expect(image).toBeTruthy();
 		expect(one(graph, 'WebPage').primaryImageOfPage['@id']).toBe(image['@id']);
 	});
 
-	// Rule: a page-level `seo.ogImage` resolves the same as the site default,
-	// matching the OG projection's source chain (no drift between meta and graph).
+	// Rule: `seo.ogImage` is the second page-level spelling and resolves the same.
 	it('reads a page-level seo.ogImage override', () => {
 		const graph = assembleSchemaGraph(
 			bag({ seo: { ogImage: { url: '/page-og.png', width: 1200, height: 630 } } })
@@ -159,13 +158,37 @@ describe('image degrade (two-tier)', () => {
 	});
 
 	// Rule: a bare-path image (no dimensions) yields no node and no ref — the
-	// url-only og:image lives in the OG projection (3b), not the graph.
+	// url-only og:image lives in the OG projection (3b), not the graph. Uses a
+	// page-level image on purpose, so dimensions are the only reason it fails.
 	it('omits the ImageObject node when the image has no dimensions', () => {
+		const graph = assembleSchemaGraph(bag({ ogImage: '/page-og.png' }));
+		expect(byType(graph, 'ImageObject')).toHaveLength(0);
+		expect(one(graph, 'WebPage').primaryImageOfPage).toBeUndefined();
+	});
+
+	// Rule: the site-wide `settings.seo.ogImage` is a social fallback and does
+	// not become a claim about this page, however well-dimensioned it is. It
+	// still reaches og:image; that chain lives in open-graph.js and is tested
+	// there.
+	it('ignores the site-wide ogImage, even with dimensions', () => {
 		const graph = assembleSchemaGraph(
-			bag({ settings: { url: siteUrl, title: 'Demo', seo: { ogImage: '/og.png' } } })
+			bag({ settings: { url: siteUrl, title: 'Demo', seo: { ogImage: { url: '/og.png', width: 1200, height: 630 } } } })
 		);
 		expect(byType(graph, 'ImageObject')).toHaveLength(0);
 		expect(one(graph, 'WebPage').primaryImageOfPage).toBeUndefined();
+	});
+
+	// A page image wins over the site fallback rather than merging with it.
+	it('uses the page image when both are set', () => {
+		const graph = assembleSchemaGraph(
+			bag({
+				ogImage: { url: '/page-og.png', width: 800, height: 600 },
+				settings: { url: siteUrl, title: 'Demo', seo: { ogImage: { url: '/og.png', width: 1200, height: 630 } } }
+			})
+		);
+		const image = one(graph, 'ImageObject');
+		expect(image.url).toBe('/page-og.png');
+		expect(one(graph, 'WebPage').primaryImageOfPage['@id']).toBe(image['@id']);
 	});
 });
 
@@ -237,7 +260,8 @@ describe('graph integrity (verification gate)', () => {
 				page: { url: '/blog/hello/', date: new Date('2026-01-02'), lang: 'en' },
 				title: 'Hello',
 				description: 'A post',
-				settings: { url: siteUrl, title: 'Acme', seo: { ogImage: { url: '/og.png', width: 1200, height: 630 } } },
+				ogImage: { url: '/page-og.png', width: 1200, height: 630 },
+				settings: { url: siteUrl, title: 'Acme' },
 				_navigator: {
 					nodes: {
 						'/blog/hello/': { url: '/blog/hello/', section: ['blog'], translationKey: 'hello', lang: 'en' },
