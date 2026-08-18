@@ -1,3 +1,6 @@
+// Loaded here so the file reads its own environment, whatever imported it first.
+import 'dotenv/config';
+
 // Parse and scheme-check. Anything that is not an http(s) URL resolves to undefined.
 const baseUrl = URL.parse(process.env.BASELINE_URL ?? '');
 const siteUrl = baseUrl?.protocol === 'https:' || baseUrl?.protocol === 'http:' ? baseUrl.href : undefined;
