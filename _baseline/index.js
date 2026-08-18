@@ -20,12 +20,14 @@ import { registerPageContext } from './core/page-context/index.js';
 import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugify } from './core/utils/slugify.js';
+import { resolveDefault } from './core/locale/index.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 import {
 	registerGlobals,
 	markdownFilter,
 	relatedPostsFilter,
 	isStringFilter,
+	createTFilter,
 	imageShortcode
 } from './core/surface/index.js';
 
@@ -376,6 +378,16 @@ export default function baseline(settings = {}, options = {}) {
 		eleventyConfig.addFilter('markdownify', markdownFilter);
 		eleventyConfig.addFilter('relatedPosts', relatedPostsFilter);
 		eleventyConfig.addFilter('isString', isStringFilter);
+
+		// String translation, registered whether or not multilang is active: a
+		// single-language site still benefits from one place for its UI strings.
+		eleventyConfig.addFilter(
+			't',
+			createTFilter({
+				getDefaultLanguage: () => resolveDefault(state.settings).lang,
+				log: scopedLog('translate')
+			})
+		);
 
 		// --- Shortcodes ---
 		eleventyConfig.addShortcode('image', imageShortcode);

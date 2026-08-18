@@ -11,6 +11,7 @@ import { registerDateGlobal } from '../dates/index.js';
 export { markdownFilter } from '../markdown/markdownify.js';
 export { relatedPostsFilter } from './filters/related-posts.js';
 export { isStringFilter } from './filters/isString.js';
+export { createTFilter } from './filters/t.js';
 
 // --- Shortcodes ---
 export { imageShortcode } from './image-shortcode.js';
