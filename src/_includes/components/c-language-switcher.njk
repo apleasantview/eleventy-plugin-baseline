@@ -1,19 +1,39 @@
 <div class="c-lang-switcher">
 	<div class="c-lang-switcher__inner">
-		{% set t = collections.translationsMap[translationKey] %}
-		{% if t %}
+		{# page.translations lists siblings only, so the current language is added back
+		here. Iterating settings.languages keeps the order the config declares. #}
+		{% if page.translationKey %}
 			{% for lang, config in settings.languages %}
-				{% if t[lang] %}
-					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ t[lang].url }}" class="c-lang-switcher__item"
+				{% if lang == page.lang %}
+					<a
+						lang="{{ lang }}"
+						hreflang="{{ lang }}"
+						href="{{ page.url }}"
+						aria-current="page"
+						class="c-lang-switcher__item"
 						>{{ config.languageName }}</a
 					>
+				{% else %}
+					{% for entry in page.translations %}
+						{% if entry.lang == lang %}
+							<a
+								lang="{{ entry.lang }}"
+								hreflang="{{ entry.lang }}"
+								href="{{ entry.url }}"
+								class="c-lang-switcher__item"
+								>{{ entry.label }}</a
+							>
+						{% endif %}
+					{% endfor %}
 				{% endif %}
 			{% endfor %}
 		{% else %}
-			{% set home = collections.translationsMap.homepage %}
+			{# Untranslated page: offer the homepages instead. Still reads the collection
+			because there is no by-key lookup on the graph index yet. #}
+			{% set homepages = collections.translationsMap.homepage %}
 			{% for lang, config in settings.languages %}
-				{% if home[lang] %}
-					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ home[lang].url }}" class="c-lang-switcher__item"
+				{% if homepages[lang] %}
+					<a lang="{{ lang }}" hreflang="{{ lang }}" href="{{ homepages[lang].url }}" class="c-lang-switcher__item"
 						>{{ config.languageName }}</a
 					>
 				{% endif %}

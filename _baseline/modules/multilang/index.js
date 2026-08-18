@@ -7,6 +7,7 @@ import {
 	resolveDefault
 } from '../../core/locale/index.js';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
+import { registerTranslations } from './register-translations.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
@@ -31,9 +32,10 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  * Lifecycle:
  *   build-time   → normalise languages, attach I18nPlugin, register filters
  *                  and computed page.lang / page.locale / page.translationKey
- *                  / page.isDefaultLang
+ *                  / page.isDefaultLang / page.translations
  *   cascade-time → translationsMap and translations collections build the
- *                  per-translationKey map and write it to the store
+ *                  per-translationKey map and write it to the store;
+ *                  page.translations groups the content graph instead
  *
  * Why this exists:
  *   I18nPlugin handles locale-aware routing but not translation
@@ -43,8 +45,8 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  *
  * Scope:
  *   Owns language normalisation, per-page flat locale fields (lang, locale,
- *   translationKey, isDefaultLang), the translations and translationsMap
- *   collections, and the i18n filters (i18nTranslationsFor,
+ *   translationKey, isDefaultLang, translations), the translations and
+ *   translationsMap collections, and the i18n filters (i18nTranslationsFor,
  *   i18nTranslationIn, i18nDefaultTranslation). Does not own URL routing
  *   (I18nPlugin) or hreflang rendering (head).
  *
@@ -124,6 +126,9 @@ export function multilangCore(eleventyConfig, moduleContext) {
 		'eleventyComputed.page.isDefaultLang',
 		() => (data) => resolvePageLang(data) === defaultLanguage
 	);
+
+	// Sibling translations, grouped off the content graph rather than a collection.
+	registerTranslations(eleventyConfig, { runtime, languages, defaultLanguage });
 
 	// Build a set of allowed language codes for validation during collection building.
 	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLang));
