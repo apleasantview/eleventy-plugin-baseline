@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import i18nDefaultTranslation from '../filters/i18n-default-translation.js';
+import defaultTranslation from '../filters/default-translation.js';
 
 const collection = [
 	{ url: '/en/about/', translationKey: 'about', lang: 'en', isDefaultLang: true },
@@ -8,10 +8,10 @@ const collection = [
 	{ url: '/en/orphan/' }
 ];
 
-describe('i18nDefaultTranslation', () => {
+describe('defaultTranslation', () => {
 	it('returns the default-language entry matching the translationKey', () => {
 		const page = { translationKey: 'about', lang: 'nl', isDefaultLang: false };
-		const result = i18nDefaultTranslation(page, collection);
+		const result = defaultTranslation(page, collection);
 		expect(result).toEqual({
 			url: '/en/about/',
 			translationKey: 'about',
@@ -22,7 +22,7 @@ describe('i18nDefaultTranslation', () => {
 
 	it('returns null when the page has no translationKey', () => {
 		const page = { lang: 'en', isDefaultLang: true };
-		expect(i18nDefaultTranslation(page, collection)).toBeNull();
+		expect(defaultTranslation(page, collection)).toBeNull();
 	});
 
 	it('returns null when no entry for the translationKey is the default language', () => {
@@ -31,17 +31,17 @@ describe('i18nDefaultTranslation', () => {
 			{ url: '/fr/about/', translationKey: 'about', lang: 'fr', isDefaultLang: false }
 		];
 		const page = { translationKey: 'about', lang: 'nl', isDefaultLang: false };
-		expect(i18nDefaultTranslation(page, nonDefault)).toBeNull();
+		expect(defaultTranslation(page, nonDefault)).toBeNull();
 	});
 
 	it('returns null when no entry matches the translationKey', () => {
 		const page = { translationKey: 'contact', lang: 'en', isDefaultLang: true };
-		expect(i18nDefaultTranslation(page, collection)).toBeNull();
+		expect(defaultTranslation(page, collection)).toBeNull();
 	});
 
 	it('skips entries without a translationKey', () => {
 		const page = { translationKey: 'about', lang: 'nl', isDefaultLang: false };
-		const result = i18nDefaultTranslation(page, collection);
+		const result = defaultTranslation(page, collection);
 		expect(result).not.toBeNull();
 		expect(result.isDefaultLang).toBe(true);
 	});

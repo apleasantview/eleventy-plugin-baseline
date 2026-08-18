@@ -5,7 +5,7 @@
  * @param {string} lang
  * @returns {object|null}
  */
-export default function i18nTranslationIn(page, collection, lang) {
+export default function translationIn(page, collection, lang) {
 	if (!page?.translationKey) return null;
 
 	return (

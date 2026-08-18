@@ -9,9 +9,9 @@ import {
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import { registerTranslations } from './register-translations.js';
 import { resolveLocaleForLang } from './utils/resolve-locale-for-lang.js';
-import i18nTranslationsFor from './filters/i18n-translations-for.js';
-import i18nTranslationIn from './filters/i18n-translation-in.js';
-import i18nDefaultTranslation from './filters/i18n-default-translation.js';
+import translationsFor from './filters/translations-for.js';
+import translationIn from './filters/translation-in.js';
+import defaultTranslation from './filters/default-translation.js';
 
 /**
  * Multilang (module)
@@ -26,8 +26,9 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  *   module
  *
  * System role:
- *   Wraps Eleventy's I18nPlugin and feeds the translation-map store that
- *   head reads at transform-time. Sitemap reuses the same normalised
+ *   Wraps Eleventy's I18nPlugin and feeds two transform-time stores: the
+ *   graph-built index head reads for hreflang, and the collection-built map
+ *   wikilinks reads for its lang hop. Sitemap reuses the same normalised
  *   language map.
  *
  * Lifecycle:
@@ -40,15 +41,14 @@ import i18nDefaultTranslation from './filters/i18n-default-translation.js';
  *
  * Why this exists:
  *   I18nPlugin handles locale-aware routing but not translation
- *   relationships. Head needs a transform-time-readable hreflang map; the
- *   collection populates it once and the store carries it across the
- *   lifecycle boundary.
+ *   relationships. Consumers outside the cascade need those relationships
+ *   at transform-time, and the stores carry them across that boundary.
  *
  * Scope:
  *   Owns language normalisation, per-page flat locale fields (lang, locale,
  *   translationKey, isDefaultLang, translations), the translations and
- *   translationsMap collections, and the i18n filters (i18nTranslationsFor,
- *   i18nTranslationIn, i18nDefaultTranslation). Does not own URL routing
+ *   translationsMap collections, and the relational filters (translationsFor,
+ *   translationIn, defaultTranslation). Does not own URL routing
  *   (I18nPlugin) or hreflang rendering (head).
  *
  * Data flow:
@@ -201,7 +201,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 
 	// --- Filters ---
 	// Relational helpers for cross-language lookups in templates.
-	eleventyConfig.addFilter('i18nTranslationsFor', i18nTranslationsFor);
-	eleventyConfig.addFilter('i18nTranslationIn', i18nTranslationIn);
-	eleventyConfig.addFilter('i18nDefaultTranslation', i18nDefaultTranslation);
+	eleventyConfig.addFilter('translationsFor', translationsFor);
+	eleventyConfig.addFilter('translationIn', translationIn);
+	eleventyConfig.addFilter('defaultTranslation', defaultTranslation);
 }

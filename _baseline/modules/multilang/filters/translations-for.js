@@ -4,7 +4,7 @@
  * @param {Array<object>} collection
  * @returns {Array<object>}
  */
-export default function i18nTranslationsFor(page, collection) {
+export default function translationsFor(page, collection) {
 	if (!page?.translationKey) return [];
 	return collection.filter((p) => p.translationKey === page.translationKey);
 }

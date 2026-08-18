@@ -4,7 +4,7 @@
  * @param {Array<object>} collection
  * @returns {object|null}
  */
-export default function i18nDefaultTranslation(page, collection) {
+export default function defaultTranslation(page, collection) {
 	if (!page?.translationKey) return null;
 	return (
 		collection.find((p) => p.translationKey === page.translationKey && p.isDefaultLang) || null

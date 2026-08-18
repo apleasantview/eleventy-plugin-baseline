@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import i18nTranslationsFor from '../filters/i18n-translations-for.js';
+import translationsFor from '../filters/translations-for.js';
 
 const collection = [
 	{ url: '/en/about/', translationKey: 'about', lang: 'en', isDefaultLang: true },
@@ -9,27 +9,27 @@ const collection = [
 	{ url: '/en/orphan/' }
 ];
 
-describe('i18nTranslationsFor', () => {
+describe('translationsFor', () => {
 	it('returns all entries matching the translationKey', () => {
 		const page = { translationKey: 'about', lang: 'en', isDefaultLang: true };
-		const result = i18nTranslationsFor(page, collection);
+		const result = translationsFor(page, collection);
 		expect(result).toHaveLength(3);
 		expect(result.map((p) => p.lang).sort()).toEqual(['en', 'fr', 'nl']);
 	});
 
 	it('returns [] when the page has no translationKey', () => {
 		const page = { lang: 'en', isDefaultLang: true };
-		expect(i18nTranslationsFor(page, collection)).toEqual([]);
+		expect(translationsFor(page, collection)).toEqual([]);
 	});
 
 	it('returns [] when no entries match', () => {
 		const page = { translationKey: 'missing', lang: 'en', isDefaultLang: true };
-		expect(i18nTranslationsFor(page, collection)).toEqual([]);
+		expect(translationsFor(page, collection)).toEqual([]);
 	});
 
 	it('skips entries without a translationKey', () => {
 		const page = { translationKey: 'about', lang: 'en', isDefaultLang: true };
-		const result = i18nTranslationsFor(page, collection);
+		const result = translationsFor(page, collection);
 		expect(result.every((p) => p.translationKey)).toBe(true);
 	});
 });
