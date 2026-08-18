@@ -2,6 +2,7 @@ import { getScope, setEntry, getEntry } from './registry.js';
 
 const SCOPE_NAME = 'core:translation-map-store';
 const KEY = 'translationMap';
+const INDEX_KEY = 'translationIndex';
 
 /**
  * Translation map store (runtime substrate)
@@ -42,5 +43,27 @@ export function createTranslationMapStore(eleventyConfig) {
 	return {
 		set: (map) => setEntry(scope, KEY, map),
 		get: () => getEntry(scope, KEY) ?? null
+	};
+}
+
+/**
+ * Second bridge, same scope: the graph-built translation index, written by
+ * multilang when it first groups the content graph and read by head for
+ * hreflang.
+ *
+ * Kept separate from the map above because the two have different producers
+ * and different availability. The map is built by a collection, so it exists
+ * in the pre-pass too, which is what wikilinks needs. The index is built from
+ * the content graph, which the pre-pass is busy producing and cannot read.
+ *
+ * @param {import('@11ty/eleventy').UserConfig} eleventyConfig
+ * @returns {{set: (index: object) => void, get: () => object | null}}
+ */
+export function createTranslationIndexStore(eleventyConfig) {
+	const scope = getScope(eleventyConfig, SCOPE_NAME);
+
+	return {
+		set: (index) => setEntry(scope, INDEX_KEY, index),
+		get: () => getEntry(scope, INDEX_KEY) ?? null
 	};
 }

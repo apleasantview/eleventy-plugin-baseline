@@ -94,8 +94,10 @@ export function headCore(eleventyConfig, moduleContext) {
 
 		const translationKey = seeds.page?.translationKey;
 
+		// Reads the graph-built index rather than the collection-built map: same
+		// shape, one source, and it drops the full page `data` the map carries.
 		const alternates = translationKey
-			? buildAlternates(translationKey, runtime.translationMap.get(), seeds.site?.url)
+			? buildAlternates(translationKey, runtime.translationIndex.get(), seeds.site?.url)
 			: [];
 
 		return renderHead({

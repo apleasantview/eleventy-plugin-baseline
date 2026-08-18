@@ -11,7 +11,10 @@ import { deriveBaselineState } from './core/state.js';
 import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
-import { createTranslationMapStore } from './core/translation-map-store.js';
+import {
+	createTranslationMapStore,
+	createTranslationIndexStore
+} from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
 import { registerPageContext } from './core/page-context/index.js';
 import { registerSeoGraph } from './core/seo-graph/index.js';
@@ -263,6 +266,7 @@ export default function baseline(settings = {}, options = {}) {
 		// --- Runtime stores (self-attach their lifecycle listeners) ---
 		const contentMapStore = createContentMapStore(eleventyConfig);
 		const translationMapStore = createTranslationMapStore(eleventyConfig);
+		const translationIndexStore = createTranslationIndexStore(eleventyConfig);
 		const slugIndex = createSlugIndex(eleventyConfig);
 
 		// --- Module helpers (derived state) ---
@@ -280,6 +284,7 @@ export default function baseline(settings = {}, options = {}) {
 					return contentGraph;
 				},
 				translationMap: translationMapStore,
+				translationIndex: translationIndexStore,
 				slugIndex
 			},
 			directories,

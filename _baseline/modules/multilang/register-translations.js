@@ -46,6 +46,9 @@ export function registerTranslations(eleventyConfig, context) {
 		if (graph !== indexedGraph) {
 			indexedGraph = graph;
 			translationIndex = buildTranslationIndex(graph.nodes, { languages, defaultLanguage });
+			// Published for head, which reads it at transform-time.
+			// The first computed read below always beats the first head read.
+			runtime.translationIndex?.set(translationIndex);
 		}
 
 		return translationIndex;

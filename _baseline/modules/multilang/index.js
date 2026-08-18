@@ -8,6 +8,7 @@ import {
 } from '../../core/locale/index.js';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import { registerTranslations } from './register-translations.js';
+import { resolveLocaleForLang } from './utils/resolve-locale-for-lang.js';
 import i18nTranslationsFor from './filters/i18n-translations-for.js';
 import i18nTranslationIn from './filters/i18n-translation-in.js';
 import i18nDefaultTranslation from './filters/i18n-default-translation.js';
@@ -101,8 +102,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 
 	function resolvePageLocale(data) {
 		if (data.locale) return normalizeLocale(data.locale);
-		const lang = resolvePageLang(data);
-		return normalizeLocale(languages?.[lang]?.locale) ?? defaultLocale;
+		return resolveLocaleForLang(resolvePageLang(data), languages, defaultLocale);
 	}
 
 	// --- Computed per-page fields ---
@@ -134,8 +134,17 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLang));
 
 	// Build both the map (keyed by translationKey → lang) and the flat list.
-	// Shared logic for both collections — called once per collection registration.
+	// Both collections need the same walk, so it runs once per build and both
+	// read the result. Reset on `eleventy.before` so serve-mode rebuilds
+	// recompute rather than serving the previous build's pages.
+	let built = null;
+	eleventyConfig.on('eleventy.before', () => {
+		built = null;
+	});
+
 	const buildTranslations = (collection) => {
+		if (built) return built;
+
 		const map = {};
 		const list = [];
 
@@ -160,17 +169,20 @@ export function multilangCore(eleventyConfig, moduleContext) {
 			const safeCopy = DeepCopy(page, { lang, locale, translationKey, isDefaultLang });
 			list.push(safeCopy);
 
+			// Same four fields as the graph-built index. The full page `data` bag
+			// used to ride along here and survive into the store; wikilinks, the
+			// only remaining reader, needs url and title.
 			if (!map[translationKey]) map[translationKey] = {};
 			map[translationKey][lang] = {
 				title: page.data.title,
 				url: page.url,
 				lang,
-				isDefaultLang,
-				data: page.data
+				isDefaultLang
 			};
 		}
 
-		return { map, list };
+		built = { map, list };
+		return built;
 	};
 
 	// --- Collections ---
