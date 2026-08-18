@@ -1,5 +1,5 @@
-{% set hidden = ' u-viz-hidden' if slug == 'home' else '' %}
-<nav class="c-breadcrumbs{{ hidden }}" aria-label="Breadcrumb">
+{%- if _pageContext.entry.breadcrumbs | length %}
+<nav class="c-breadcrumbs" aria-label="Breadcrumb">
 	<ol class="c-breadcrumbs__list">
 		{%- for c in _pageContext.entry.breadcrumbs %}
 			<li class="c-breadcrumbs__item">
@@ -12,3 +12,4 @@
 		{%- endfor %}
 	</ol>
 </nav>
+{%- endif %}
