@@ -66,7 +66,7 @@ The plugin registers everything on load. No setup beyond the config above.
 - Wikilinks in Markdown – `[[slug]]`, `[[slug:lang]]`, `[[slug#anchor]]`, `[[slug|alias]]`, combinable. Forward links only.
 - Auto heading IDs – every heading gets a stable slugified `id` with WordPress-style dedup; manual `{#id}` always wins.
 - Element attributes in Markdown – `{#id .class key="value"}` syntax attaches attributes to any block element (via `markdown-it-attrs`).
-- Filters: `markdownify`, `relatedPosts`, `isString`
+- Filters: `markdownify`, `relatedPosts`, `isString`, `t` (UI-string translation, reading `_data/translations/`)
 - A date-formatting global
 - Drafts preprocessor – drafts stay out of production builds automatically
 - Static passthrough (`src/static/` → site root)
@@ -77,7 +77,7 @@ The plugin registers everything on load. No setup beyond the config above.
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `assets`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Bundles JS via esbuild and processes CSS via PostCSS. Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical-path assets                            |
 | `head`      | `<head>` tags handled for you by dropping `<baseline-head>` in your layout: charset, viewport, title, description, robots, canonical, hreflang, plus a full SEO payload (Open Graph, Twitter Cards, and a JSON-LD structured-data graph) |
-| `multilang` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                                                                                                          |
+| `multilang` | Directory-based multilingual support. Per-page `page.translations`, the translation map, hreflang, and translation filters. Wraps Eleventy's I18n plugin                                                                                                          |
 | `navigator` | The content-graph read surface (`_navigator`: nodes, edges, backlinks), plus debug tooling: globals for inspecting template data, debug filters (`_inspect`, `_json`, `_keys`), and an optional virtual debug page                       |
 | `sitemap`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                                                                                                    |
 

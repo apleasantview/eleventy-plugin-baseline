@@ -83,7 +83,7 @@ The plugin registers everything on load. No setup beyond the config above.
 - Wikilinks in Markdown – `[[slug]]`, `[[slug:lang]]`, `[[slug#anchor]]`, `[[slug|alias]]`, combinable. Forward links only.
 - Auto heading IDs – every heading gets a stable slugified `id` with WordPress-style dedup; manual `{#id}` always wins.
 - Element attributes in Markdown – `{#id .class key="value"}` syntax attaches attributes to any block element (via `markdown-it-attrs`).
-- Filters: `markdownify`, `relatedPosts`, `isString`
+- Filters: `markdownify`, `relatedPosts`, `isString`, `t` (UI-string translation, reading `_data/translations/`)
 - A date-formatting global
 - Drafts preprocessor – drafts stay out of production builds automatically
 - Static passthrough (`src/static/` → site root)
@@ -94,7 +94,7 @@ The plugin registers everything on load. No setup beyond the config above.
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `assets`    | The asset pipeline. One entry point per directory (`index.css`, `index.js`). Bundles JS via esbuild and processes CSS via PostCSS. Inline filters (`inlinePostCSS`, `inlineESbuild`) for critical-path assets                            |
 | `head`      | `<head>` tags handled for you by dropping `<baseline-head>` in your layout: charset, viewport, title, description, robots, canonical, hreflang, plus a full SEO payload (Open Graph, Twitter Cards, and a JSON-LD structured-data graph) |
-| `multilang` | Directory-based multilingual support. Per-language collections, translation mapping, i18n filters. Wraps Eleventy's I18n plugin                                                                                                          |
+| `multilang` | Directory-based multilingual support. Per-page `page.translations`, the translation map, hreflang, and translation filters. Wraps Eleventy's I18n plugin                                                                                                          |
 | `navigator` | The content-graph read surface (`_navigator`: nodes, edges, backlinks), plus debug tooling: globals for inspecting template data, debug filters (`_inspect`, `_json`, `_keys`), and an optional virtual debug page                       |
 | `sitemap`   | XML sitemap. Every page is included unless you exclude it. Multilingual sites get per-language sitemaps plus an index                                                                                                                    |
 
@@ -120,7 +120,7 @@ project root and under `src/`. Both share the same `package.json` and `node_modu
 │   │   ├── content-graph/        # Pre-pass substrate (extractors, graph, prepass, backlinks)
 │   │   ├── content-map-store.js  # Eleventy contentMap accessor
 │   │   ├── dates/                # Date substrate (`date` global, git-backed publish/modified resolver)
-│   │   ├── locale/               # Locale primitives (BCP 47 normalisation, lang/locale resolution)
+│   │   ├── locale/               # Locale primitives (BCP 47 normalisation, lang/locale resolution, string translation)
 │   │   ├── logging/              # Namespaced logger, banner, pre-pass quips
 │   │   ├── markdown/             # Markdown substrate: auto-heading-ids, wikilinks, attrs, markdownify, safeUse
 │   │   ├── page-context/         # Per-page normalised context registry
@@ -130,14 +130,14 @@ project root and under `src/`. Both share the same `package.json` and `node_modu
 │   │   ├── slug-index.js         # Default-language slug → url map (read by wikilinks)
 │   │   ├── state.js              # Settings/options → frozen state derivation
 │   │   ├── surface/              # Public-registration surface: filters, image shortcode, date global
-│   │   ├── translation-map-store.js
+│   │   ├── translation-map-store.js  # Two stores: the collection-built map and the graph-built index
 │   │   ├── types.js              # Shared JSDoc typedefs
 │   │   ├── utils/                # Small focused helpers (one per file)
 │   │   └── virtual-dir.js        # Synthesised dir keys (assets, public)
 │   └── modules/                  # Feature modules
 │       ├── assets/               # Asset pipeline (esbuild + PostCSS)
 │       ├── head/                 # <head> injection via PostHTML
-│       ├── multilang/            # Multilingual support, hreflang, i18n filters
+│       ├── multilang/            # Multilingual support, hreflang, translation filters
 │       ├── navigator/            # Runtime-introspection page and public read surface
 │       └── sitemap/              # Sitemap generation
 │
