@@ -10,7 +10,7 @@ This is a working plugin, not a finished product. Things might shift, break, or 
 
 ## Who might enjoy this
 
-- Developers who want a ready-to-go Eleventy setup without adopting a framework that owns their project
+- Developers who want the structural decisions made for them without handing over the project
 - Anyone tired of copying the same asset pipeline, head template, and image shortcode between projects
 - People who want to understand the reasoning rather than blindly accept a default
 
