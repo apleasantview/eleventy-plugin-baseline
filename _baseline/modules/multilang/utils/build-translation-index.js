@@ -14,7 +14,7 @@
  * @param {Object} [context]
  * @param {Record<string, Object>} [context.languages] - Normalised language map; when non-empty, langs outside it are skipped.
  * @param {string} [context.defaultLanguage] - Falls back to comparing against this when a node carries no isDefaultLang.
- * @returns {Record<string, Record<string, { url: string, lang: string, label: string, title: string|undefined, isDefaultLang: boolean }>>}
+ * @returns {Record<string, Record<string, { url: string, lang: string, label: string, title: string|undefined, description: string|undefined, isDefaultLang: boolean }>>}
  */
 export function buildTranslationIndex(nodes, context = {}) {
 	const { languages = {}, defaultLanguage } = context;
@@ -33,13 +33,14 @@ export function buildTranslationIndex(nodes, context = {}) {
 		if (!index[key]) index[key] = {};
 
 		// Last node wins on a duplicate key + lang pair, same as before.
-		// `label` names the language, `title` names the page: both are needed
-		// because a sibling's title is otherwise unreachable from a template.
+		// `label` names the language, `title` and `description` name the page:
+		// a sibling's own copy is otherwise unreachable without a second lookup.
 		index[key][lang] = {
 			url: node.url,
 			lang,
 			label: languages[lang]?.languageName ?? lang,
 			title: node.title,
+			description: node.description,
 			isDefaultLang: node.isDefaultLang ?? lang === defaultLanguage
 		};
 	}

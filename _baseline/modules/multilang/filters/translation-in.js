@@ -1,16 +1,12 @@
 /**
- * Get a specific language variant for the current page.
- * @param {object} page
- * @param {Array<object>} collection
+ * One named language variant of a page, or null when it does not exist.
+ *
+ * @param {{translationKey?: string}} page
+ * @param {Record<string, Record<string, object>>|null} map
  * @param {string} lang
  * @returns {object|null}
  */
-export default function translationIn(page, collection, lang) {
-	if (!page?.translationKey) return null;
-
-	return (
-		collection.find(
-			(p) => p.translationKey === page.translationKey && p.lang === lang
-		) || null
-	);
+export default function translationIn(page, map, lang) {
+	const variants = page?.translationKey ? map?.[page.translationKey] : null;
+	return variants?.[lang] ?? null;
 }

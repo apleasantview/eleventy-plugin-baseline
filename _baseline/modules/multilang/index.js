@@ -1,5 +1,4 @@
 import { I18nPlugin } from '@11ty/eleventy';
-import { DeepCopy } from '@11ty/eleventy-utils';
 import {
 	normalizeLang,
 	normalizeLocale,
@@ -35,9 +34,8 @@ import defaultTranslation from './filters/default-translation.js';
  *   build-time   → normalise languages, attach I18nPlugin, register filters
  *                  and computed page.lang / page.locale / page.translationKey
  *                  / page.isDefaultLang / page.translations
- *   cascade-time → translationsMap and translations collections build the
- *                  per-translationKey map and write it to the store;
- *                  page.translations groups the content graph instead
+ *   cascade-time → the translationsMap collection walks every keyed page and
+ *                  writes the store; page.translations groups the graph instead
  *
  * Why this exists:
  *   I18nPlugin handles locale-aware routing but not translation
@@ -46,15 +44,15 @@ import defaultTranslation from './filters/default-translation.js';
  *
  * Scope:
  *   Owns language normalisation, per-page flat locale fields (lang, locale,
- *   translationKey, isDefaultLang, translations), the translations and
- *   translationsMap collections, and the relational filters (translationsFor,
- *   translationIn, defaultTranslation). Does not own URL routing
- *   (I18nPlugin) or hreflang rendering (head).
+ *   translationKey, isDefaultLang, translations), the translationsMap
+ *   collection, and the relational filters (translationsFor, translationIn,
+ *   defaultTranslation). Does not own URL routing (I18nPlugin), hreflang
+ *   rendering (head), or string translation (the `t` filter).
  *
  * Data flow:
  *   settings.languages + page.lang/locale/translationKey → normalisation
- *   + I18nPlugin → collections + flat computed page fields +
- *   translation-map store → head, sitemap
+ *   + I18nPlugin → collection + flat computed page fields + two stores
+ *   → head, wikilinks, sitemap
  *
  * @param {import("@11ty/eleventy/src/UserConfig.js").default} eleventyConfig
  * @param {Object} moduleContext
@@ -133,10 +131,9 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	// Build a set of allowed language codes for validation during collection building.
 	const allowedLanguages = new Set(Object.keys(languages).map(normalizeLang));
 
-	// Build both the map (keyed by translationKey → lang) and the flat list.
-	// Both collections need the same walk, so it runs once per build and both
-	// read the result. Reset on `eleventy.before` so serve-mode rebuilds
-	// recompute rather than serving the previous build's pages.
+	// Walk every page with a translationKey into the map. Runs once per build
+	// and is reset on `eleventy.before` so serve-mode rebuilds recompute rather
+	// than serving the previous build's pages.
 	let built = null;
 	eleventyConfig.on('eleventy.before', () => {
 		built = null;
@@ -146,7 +143,6 @@ export function multilangCore(eleventyConfig, moduleContext) {
 		if (built) return built;
 
 		const map = {};
-		const list = [];
 
 		for (const page of collection.getAll()) {
 			const translationKey = page.data.translationKey;
@@ -160,48 +156,43 @@ export function multilangCore(eleventyConfig, moduleContext) {
 				continue;
 			}
 
-			const isDefaultLang = lang === defaultLanguage;
-			const locale = resolvePageLocale(page.data);
-
-			// Attach flat per-page fields. Mirrors the eleventyComputed shape
-			// so collection consumers read item.lang / item.locale /
-			// item.translationKey / item.isDefaultLang directly.
-			const safeCopy = DeepCopy(page, { lang, locale, translationKey, isDefaultLang });
-			list.push(safeCopy);
-
-			// Same four fields as the graph-built index. The full page `data` bag
-			// used to ride along here and survive into the store; wikilinks, the
-			// only remaining reader, needs url and title.
+			// Same shape as the graph-built index, deliberately: two producers,
+			// one record. The full page `data` bag used to ride along here and
+			// survive into the store, which is what made it expensive.
 			if (!map[translationKey]) map[translationKey] = {};
 			map[translationKey][lang] = {
-				title: page.data.title,
 				url: page.url,
 				lang,
-				isDefaultLang
+				label: languages[lang]?.languageName ?? lang,
+				title: page.data.title,
+				description: page.data.description,
+				isDefaultLang: lang === defaultLanguage
 			};
 		}
 
-		built = { map, list };
+		built = map;
 		return built;
 	};
 
-	// --- Collections ---
+	// --- Collection ---
 
-	// Map form: translationsMap[translationKey][lang] → page metadata.
+	// Map form: translationsMap[translationKey][lang] → page metadata. Also the
+	// only writer of the store, which wikilinks reads while markdown renders.
 	eleventyConfig.addCollection('translationsMap', (collection) => {
-		const map = buildTranslations(collection).map;
+		const map = buildTranslations(collection);
 		runtime.translationMap.set(map);
 		return map;
 	});
 
-	// Flat list: all translatable pages with locale data attached.
-	eleventyConfig.addCollection('translations', (collection) => {
-		return buildTranslations(collection).list;
-	});
-
 	// --- Filters ---
-	// Relational helpers for cross-language lookups in templates.
-	eleventyConfig.addFilter('translationsFor', translationsFor);
-	eleventyConfig.addFilter('translationIn', translationIn);
-	eleventyConfig.addFilter('defaultTranslation', defaultTranslation);
+	// Relational helpers for cross-language lookups in templates. They read the
+	// store rather than a passed collection, so the call site stays short and
+	// `translations` is free for the string layer's global data. The store is
+	// collection-built, which means it exists in the pre-pass; the graph-built
+	// index does not, and a filter rendering links needs the earlier one.
+	const withMap = (fn) => (page, ...rest) => fn(page, runtime.translationMap.get(), ...rest);
+
+	eleventyConfig.addFilter('translationsFor', withMap(translationsFor));
+	eleventyConfig.addFilter('translationIn', withMap(translationIn));
+	eleventyConfig.addFilter('defaultTranslation', withMap(defaultTranslation));
 }

@@ -52,13 +52,7 @@ describe('buildTranslationIndex', () => {
 		const index = buildTranslationIndex(nodes, { languages, defaultLanguage: 'en' });
 		const entry = index.about.en;
 
-		expect(Object.keys(entry).sort()).toEqual([
-			'isDefaultLang',
-			'label',
-			'lang',
-			'title',
-			'url'
-		]);
+		expect(Object.keys(entry).sort()).toEqual(['description', 'isDefaultLang', 'label', 'lang', 'title', 'url']);
 		expect(entry.isDefaultLang).toBe(true);
 	});
 
