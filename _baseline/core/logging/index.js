@@ -54,11 +54,12 @@ export * from './quips.js';
 export function createLogger(namespace, { verbose = false } = {}) {
 	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
 
-	// Pre-pass gate: silence baseline's own info during the inner Eleventy
-	// run so modules don't double-log every line they emit again during the
-	// real build. Env-var contract scoped to runPrepass's execution (set in
+	// Pre-pass gate: silence baseline's own info and warnings during the inner
+	// Eleventy run so modules don't double-log every line they emit again during
+	// the real build. Env-var contract scoped to runPrepass's execution (set in
 	// try, cleared in finally). Eleventy's own `[11ty]` output is governed
 	// by its `quietMode` and stays untouched here.
+	// `error` stays ungated: a pre-pass that fails may be the only place it says so.
 	const isPrepass = () => process.env.BASELINE_PREPASS_ACTIVE === '1';
 
 	return {
@@ -68,6 +69,7 @@ export function createLogger(namespace, { verbose = false } = {}) {
 			console.log(chalk.gray(label), ...args);
 		},
 		warn: (...args) => {
+			if (isPrepass()) return;
 			console.warn(chalk.yellow().bold(label), ...args);
 		},
 		error: (...args) => {
