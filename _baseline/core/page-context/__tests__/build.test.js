@@ -251,6 +251,32 @@ describe('buildBreadcrumbs', () => {
 		]);
 	});
 
+	// Rule: an ancestor crumb reads as its section index page titles itself,
+	// not as the folder is spelled. The index is keyed by crumb url, so a
+	// section with no index page keeps the slug-derived label.
+	it('takes ancestor labels from the section label index when it has them', () => {
+		const crumbs = buildBreadcrumbs({
+			section: ['docs', 'module'],
+			url: '/docs/module/head/',
+			title: 'head',
+			sectionLabels: { '/docs/': 'Documentation' }
+		});
+		expect(crumbs.map((c) => c.label)).toEqual(['Home', 'Documentation', 'Module', 'head']);
+	});
+
+	// The current crumb carries the page's own title and the index must not
+	// reach it: a section index page would otherwise be relabelled from itself,
+	// which is harmless here but wrong the moment the two ever differ.
+	it('leaves the current crumb alone even when the index holds its url', () => {
+		const crumbs = buildBreadcrumbs({
+			section: ['docs'],
+			url: '/docs/',
+			title: 'Documentation',
+			sectionLabels: { '/docs/': 'Something else' }
+		});
+		expect(crumbs.at(-1)).toEqual({ label: 'Documentation', url: '/docs/', current: true });
+	});
+
 	it('relabels the last segment when the page IS its section index', () => {
 		const crumbs = buildBreadcrumbs({
 			section: ['docs', 'module'],

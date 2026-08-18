@@ -2,6 +2,7 @@ import { parseHTML } from 'linkedom';
 
 import { extractGraph } from './extractors.js';
 import { buildBacklinkIndex } from './backlinks.js';
+import { buildSectionLabelIndex, relabelBreadcrumbs } from './section-labels.js';
 
 /**
  * Content graph (runtime substrate)
@@ -93,6 +94,13 @@ export function buildGraph(pages, options = {}) {
 			continue;
 		}
 	}
+
+	// Ancestor crumb labels come from each section index page's own title, which
+	// is a cross-page read no single page can do while its own trail is built.
+	// Here the node set is complete, and this is the last moment before anything
+	// consumes it: the seo adapter reads the trail off the node, so correcting
+	// it here is what keeps the BreadcrumbList and the visible nav agreeing.
+	relabelBreadcrumbs(nodes, buildSectionLabelIndex(nodes));
 
 	const backlinks = buildBacklinkIndex(edges, nodes, sourceMeta);
 

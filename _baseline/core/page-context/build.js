@@ -4,6 +4,7 @@ import { sentenceCaseSlug } from '../utils/sentence-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
+import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
 
 /**
  * Apply a title template, replacing tokens with resolved values. Tokens:
@@ -63,10 +64,15 @@ export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, sepa
  * `homeLabel` translates the first crumb, and comes from the page's language
  * entry in `settings.languages`. Falls back to `Home`.
  *
- * @param {{ section?: string[], url?: string, title?: string, lang?: string, isDefaultLang?: boolean, homeLabel?: string }} input
+ * `sectionLabels` maps a crumb URL to the title its section index page gives
+ * itself, so `/docs/` reads as its page does rather than as its folder does.
+ * Absent during the pre-pass, where no graph exists yet; the pre-pass corrects
+ * its own output once the node set is complete (see `section-labels.js`).
+ *
+ * @param {{ section?: string[], url?: string, title?: string, lang?: string, isDefaultLang?: boolean, homeLabel?: string, sectionLabels?: Record<string, string> }} input
  * @returns {Array<{ label: string, url: string, current?: boolean }>}
  */
-export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang, homeLabel } = {}) {
+export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang, homeLabel, sectionLabels } = {}) {
 	if (!section?.length || !url) return [];
 
 	// Only a deliberately non-default language prefixes the path; absence
@@ -76,19 +82,24 @@ export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang
 	// The site root is its own Home crumb, so it has no trail to show.
 	if (url === `${base}/`) return [];
 
+	// `root` names no directory, so it contributes neither a crumb nor a path
+	// segment. Dropping it once here keeps the crumb URLs and the section URL
+	// below reading from the same list.
+	const segments = section.filter((seg) => seg !== 'root');
+
 	const crumbs = [{ label: homeLabel ?? 'Home', url: `${base}/` }];
 	let acc = base;
-	for (const seg of section) {
+	for (const seg of segments) {
 		acc += `/${seg}`;
-		if (seg === 'root') continue;
-		crumbs.push({ label: sentenceCaseSlug(seg), url: `${acc}/` });
+		const crumbUrl = `${acc}/`;
+		crumbs.push({ label: sectionLabels?.[crumbUrl] ?? sentenceCaseSlug(seg), url: crumbUrl });
 	}
 
-	const sectionUrl = `${base}/${section.join('/')}/`;
-	if (url === sectionUrl) {
+	const sectionUrl = `${base}/${segments.join('/')}/`;
+	if (segments.length && url === sectionUrl) {
 		crumbs[crumbs.length - 1].label = title ?? crumbs[crumbs.length - 1].label;
 	} else {
-		crumbs.push({ label: title ?? sentenceCaseSlug(section[section.length - 1]), url });
+		crumbs.push({ label: title ?? sentenceCaseSlug(segments[segments.length - 1] ?? ''), url });
 	}
 
 	crumbs[crumbs.length - 1].current = true;
@@ -123,6 +134,22 @@ export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang
  */
 export function createPageContext({ scope, slugIndex, settings, runtime, options, log }) {
 	const separator = options.head?.titleSeparator ?? ' – ';
+
+	// Memoised on graph identity: a serve-mode rebuild swaps the graph object,
+	// which is the signal to rebuild the index. Empty during the pre-pass, where
+	// no graph exists and the labels are corrected afterwards instead.
+	let labelledGraph = null;
+	let sectionLabels = {};
+
+	function getSectionLabels() {
+		const graph = runtime.contentGraph;
+		if (!graph) return undefined;
+		if (graph !== labelledGraph) {
+			labelledGraph = graph;
+			sectionLabels = buildSectionLabelIndex(graph.nodes);
+		}
+		return sectionLabels;
+	}
 
 	function buildSite(lang, userSettings) {
 		const langEntry = lang ? userSettings.languages?.[lang] : undefined;
@@ -190,7 +217,8 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 				title: data?.seo?.title ?? data?.title,
 				lang: data?.page?.lang,
 				isDefaultLang: data?.page?.isDefaultLang,
-				homeLabel: settings.languages?.[data?.page?.lang]?.homeLabel
+				homeLabel: settings.languages?.[data?.page?.lang]?.homeLabel,
+				sectionLabels: getSectionLabels()
 			})
 		};
 	}
