@@ -19,6 +19,11 @@ publish = "dist"
   to = "/docs/core-reference/content-helpers/"
   status = 301
 
+[[redirects]]
+  from = "/docs/feature-guide/deployment-url-checks/"
+  to = "/docs/how-to/deployment-url-checks/"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]
