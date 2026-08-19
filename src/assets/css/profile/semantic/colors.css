@@ -3,8 +3,8 @@
 
 	/* ⚪ Neutral, page chrome. Surfaces and borders run warm (hue 95),
 	 * text runs cool (hue 255), as the original tokens did. */
-	--color-background: var(--color-slate-50);
-	--color-background-subtle: var(--color-slate-100);
+	--color-background: var(--color-white);
+	--color-background-subtle: var(--color-slate-50);
 
 	--color-surface: var(--color-slate-100);
 	--color-surface-hover: var(--color-slate-200);
@@ -31,14 +31,14 @@
 
 	--color-accent-border-subtle: var(--color-blue-300);
 	--color-accent-border: var(--color-blue-400);
-	--color-accent-border-hover: var(--color-blue-400);
+	--color-accent-border-hover: var(--color-blue-500);
 
 	--color-accent-solid: var(--color-blue-500);
 	--color-accent-solid-hover: var(--color-blue-600);
-	--color-accent-on-solid: var(--color-blue-50);
+	--color-accent-on-solid: var(--color-white);
 
-	--color-accent-text-muted: var(--color-blue-500);
-	--color-accent-text: var(--color-blue-700);
+	--color-accent-text-muted: var(--color-blue-700);
+	--color-accent-text: var(--color-blue-900);
 
 	/* 🟢 Green, success */
 	--color-success-background: var(--color-green-50);
@@ -46,15 +46,15 @@
 
 	--color-success-surface: var(--color-green-200);
 	--color-success-surface-hover: var(--color-green-300);
-	--color-success-surface-active: var(--color-green-300);
+	--color-success-surface-active: var(--color-green-400);
 
 	--color-success-border-subtle: var(--color-green-300);
 	--color-success-border: var(--color-green-400);
-	--color-success-border-hover: var(--color-green-400);
+	--color-success-border-hover: var(--color-green-500);
 
 	--color-success-solid: var(--color-green-500);
 	--color-success-solid-hover: var(--color-green-600);
-	--color-success-on-solid: var(--color-green-50);
+	--color-success-on-solid: var(--color-white);
 
 	--color-success-text-muted: var(--color-green-700);
 	--color-success-text: var(--color-green-900);
@@ -66,34 +66,36 @@
 
 	--color-warning-surface: var(--color-yellow-200);
 	--color-warning-surface-hover: var(--color-yellow-300);
-	--color-warning-surface-active: var(--color-yellow-300);
+	--color-warning-surface-active: var(--color-yellow-400);
 
 	--color-warning-border-subtle: var(--color-yellow-300);
 	--color-warning-border: var(--color-yellow-400);
-	--color-warning-border-hover: var(--color-yellow-400);
+	--color-warning-border-hover: var(--color-yellow-500);
 
 	--color-warning-solid: var(--color-yellow-500);
 	--color-warning-solid-hover: var(--color-yellow-600);
-	--color-warning-on-solid: var(--color-yellow-50);
+	--color-warning-on-solid: var(--color-slate-950);
 
 	--color-warning-text-muted: var(--color-yellow-700);
 	--color-warning-text: var(--color-yellow-900);
 
-	/* 🔴 Red, errors */
+	/* 🔴 Red, errors. `error` is the family name everywhere; the themes used to
+	 * say `danger` and nothing consumed it. `--color-danger` in document/tokens.css
+	 * is a separate single token and is not this. */
 	--color-error-background: var(--color-red-50);
 	--color-error-background-subtle: var(--color-red-100);
 
 	--color-error-surface: var(--color-red-200);
 	--color-error-surface-hover: var(--color-red-300);
-	--color-error-surface-active: var(--color-red-300);
+	--color-error-surface-active: var(--color-red-400);
 
 	--color-error-border-subtle: var(--color-red-300);
 	--color-error-border: var(--color-red-400);
-	--color-error-border-hover: var(--color-red-400);
+	--color-error-border-hover: var(--color-red-500);
 
 	--color-error-solid: var(--color-red-500);
 	--color-error-solid-hover: var(--color-red-600);
-	--color-error-on-solid: var(--color-red-50);
+	--color-error-on-solid: var(--color-white);
 
 	--color-error-text-muted: var(--color-red-700);
 	--color-error-text: var(--color-red-900);

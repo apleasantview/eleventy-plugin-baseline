@@ -59,16 +59,10 @@
 		--color-warning-solid: CanvasText;
 		--color-warning-on-solid: Canvas;
 
-		--color-danger-surface: Canvas;
-		--color-danger-border: CanvasText;
-		--color-danger-text: CanvasText;
-		--color-danger-solid: CanvasText;
-		--color-danger-on-solid: Canvas;
-
-		--color-info-surface: Canvas;
-		--color-info-border: CanvasText;
-		--color-info-text: CanvasText;
-		--color-info-solid: CanvasText;
-		--color-info-on-solid: Canvas;
+		--color-error-surface: Canvas;
+		--color-error-border: CanvasText;
+		--color-error-text: CanvasText;
+		--color-error-solid: CanvasText;
+		--color-error-on-solid: Canvas;
 	}
 }

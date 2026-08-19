@@ -8,48 +8,45 @@
 @media (prefers-contrast: more) {
 	/* Light context (base direction) */
 	:root {
-		--color-text: var(--color-neutral-950);
-		--color-text-muted: var(--color-neutral-700);
-		--color-border-subtle: var(--color-neutral-400);
-		--color-border: var(--color-neutral-600);
-		--color-border-hover: var(--color-neutral-700);
+		--color-text: var(--color-slate-950);
+		--color-text-muted: var(--color-slate-700);
+		--color-border-subtle: var(--color-slate-400);
+		--color-border: var(--color-slate-600);
+		--color-border-hover: var(--color-slate-700);
 		--color-accent-text: var(--color-blue-800);
 		--color-accent-border: var(--color-blue-700);
 		--color-success-text: var(--color-green-800);
 		--color-warning-text: var(--color-yellow-800);
-		--color-danger-text: var(--color-red-800);
-		--color-info-text: var(--color-blue-800);
+		--color-error-text: var(--color-red-800);
 	}
 
 	/* Dark context, system preference */
 	@media (prefers-color-scheme: dark) {
 		:root:not([data-theme='light']) {
-			--color-text: var(--color-neutral-50);
-			--color-text-muted: var(--color-neutral-200);
-			--color-border-subtle: var(--color-neutral-500);
-			--color-border: var(--color-neutral-400);
-			--color-border-hover: var(--color-neutral-300);
+			--color-text: var(--color-slate-50);
+			--color-text-muted: var(--color-slate-200);
+			--color-border-subtle: var(--color-slate-500);
+			--color-border: var(--color-slate-400);
+			--color-border-hover: var(--color-slate-300);
 			--color-accent-text: var(--color-blue-300);
 			--color-accent-border: var(--color-blue-400);
 			--color-success-text: var(--color-green-300);
 			--color-warning-text: var(--color-yellow-300);
-			--color-danger-text: var(--color-red-300);
-			--color-info-text: var(--color-blue-300);
+			--color-error-text: var(--color-red-300);
 		}
 	}
 
 	/* Dark context, explicit */
 	:root[data-theme='dark'] {
-		--color-text: var(--color-neutral-50);
-		--color-text-muted: var(--color-neutral-200);
-		--color-border-subtle: var(--color-neutral-500);
-		--color-border: var(--color-neutral-400);
-		--color-border-hover: var(--color-neutral-300);
+		--color-text: var(--color-slate-50);
+		--color-text-muted: var(--color-slate-200);
+		--color-border-subtle: var(--color-slate-500);
+		--color-border: var(--color-slate-400);
+		--color-border-hover: var(--color-slate-300);
 		--color-accent-text: var(--color-blue-300);
 		--color-accent-border: var(--color-blue-400);
 		--color-success-text: var(--color-green-300);
 		--color-warning-text: var(--color-yellow-300);
-		--color-danger-text: var(--color-red-300);
-		--color-info-text: var(--color-blue-300);
+		--color-error-text: var(--color-red-300);
 	}
 }
