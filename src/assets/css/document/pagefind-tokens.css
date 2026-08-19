@@ -1,5 +1,6 @@
 :root {
 	/* Colors */
+	color-scheme: light;
 	--pf-text: #1a1a1a;
 	--pf-text-secondary: #666;
 	--pf-text-muted: #767676;
@@ -69,7 +70,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
+	:root:not([data-theme='light']) {
+		color-scheme: dark;
 		--pf-text: #e5e5e5;
 		--pf-text-secondary: #a0a0a0;
 		--pf-text-muted: #949494;
