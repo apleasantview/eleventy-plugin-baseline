@@ -1,4 +1,7 @@
 @import './tokens.css' layer(tokens);
+@import './pagefind-tokens.css';
+@import './prism-tokens.css';
+
 @import './base.css';
 
 @import './anim/reveal.css';
