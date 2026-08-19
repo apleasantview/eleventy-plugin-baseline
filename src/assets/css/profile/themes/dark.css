@@ -37,8 +37,8 @@
 		--color-accent-border: var(--color-blue-600);
 		--color-accent-border-hover: var(--color-blue-500);
 
-		--color-accent-solid: var(--color-blue-500);
-		--color-accent-solid-hover: var(--color-blue-400);
+		--color-accent-solid: var(--color-blue-400);
+		--color-accent-solid-hover: var(--color-blue-300);
 
 		--color-accent-text-muted: var(--color-blue-400);
 		--color-accent-text: var(--color-blue-300);
@@ -133,8 +133,8 @@
 	--color-accent-border: var(--color-blue-600);
 	--color-accent-border-hover: var(--color-blue-500);
 
-	--color-accent-solid: var(--color-blue-500);
-	--color-accent-solid-hover: var(--color-blue-400);
+	--color-accent-solid: var(--color-blue-400);
+	--color-accent-solid-hover: var(--color-blue-300);
 
 	--color-accent-text-muted: var(--color-blue-400);
 	--color-accent-text: var(--color-blue-300);
