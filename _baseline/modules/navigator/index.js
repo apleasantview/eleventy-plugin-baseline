@@ -87,7 +87,7 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 	// paginate over `_navigator.backlinks` or read `_navigator.graph` directly.
 	eleventyConfig.addGlobalData('_navigator', () => ({
 		nodes: runtime.contentGraph?.nodes ?? {},
-		edges: runtime.contentGraph?.edges ?? {},
+		edges: runtime.contentGraph?.edges ?? [],
 		backlinks: runtime.contentGraph?.backlinks ?? {}
 	}));
 
