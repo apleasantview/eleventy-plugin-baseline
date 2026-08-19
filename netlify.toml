@@ -11,6 +11,14 @@ publish = "dist"
 [context.branch-deploy]
   command = "BASELINE_URL=$DEPLOY_PRIME_URL npm run build"
 
+# Docs restructure, 2026-08-19. Content helpers moved from the concept chapter
+# to core reference: it is authoring-syntax lookup, not a "why" page. The slug
+# is unchanged, so every wikilink still resolves; only the chapter prefix moved.
+[[redirects]]
+  from = "/docs/concept/content-helpers/"
+  to = "/docs/core-reference/content-helpers/"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]
