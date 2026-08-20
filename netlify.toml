@@ -41,7 +41,12 @@ publish = "dist"
 
 [[redirects]]
   from = "/docs/tutorial/add-your-first-page/"
-  to = "/docs/tutorial/add-pages-and-posts/"
+  to = "/docs/tutorial/front-matter-and-slugs/"
+  status = 301
+
+[[redirects]]
+  from = "/docs/tutorial/add-pages-and-posts/"
+  to = "/docs/tutorial/front-matter-and-slugs/"
   status = 301
 
 [[headers]]
