@@ -4,4 +4,5 @@
 	letter-spacing: 0.06em;
 	color: var(--color-text-muted);
 	display: block;
+	font-weight: var(--font-weight-semibold);
 }

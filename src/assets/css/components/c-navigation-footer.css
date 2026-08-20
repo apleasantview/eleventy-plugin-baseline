@@ -4,6 +4,7 @@
 	flex-direction: row;
 	row-gap: var(--space-gap-xs);
 	flex-wrap: wrap;
+	padding-block: var(--space-inset-xs);
 }
 
 .c-navigation-footer__section {

@@ -17,13 +17,13 @@ export default {
 					{ label: 'Release notes', url: '/release-notes/' },
 					{ label: 'FAQ', url: '/faq/' },
 					{ label: 'Commercial support', url: '/commercial-support/' },
+					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Agent discovery', url: '/agent-discovery/' }
 				]
 			},
 			{
 				label: 'System',
 				items: [
-					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Internal links', url: '/system/internal-links/' },
 					{ label: 'Outgoing links', url: '/system/outgoing-links/' }
 					// { label: 'Profile test', url: '/system/profile-test/' },
@@ -61,13 +61,13 @@ export default {
 					{ label: 'Releasenotes', url: '/release-notes/' },
 					{ label: 'FAQ', url: '/faq/' },
 					{ label: 'Commerciële ondersteuning', url: '/nl/commercial-support/' },
+					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Agent discovery', url: '/agent-discovery/' }
 				]
 			},
 			{
 				label: 'Systeem',
 				items: [
-					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Interne links', url: '/system/internal-links/' },
 					{ label: 'Uitgaande links', url: '/system/outgoing-links/' }
 				]
@@ -103,13 +103,13 @@ export default {
 					{ label: 'Notes de version', url: '/release-notes/' },
 					{ label: 'FAQ', url: '/faq/' },
 					{ label: 'Support commercial', url: '/fr/commercial-support/' },
+					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Agent discovery', url: '/agent-discovery/' }
 				]
 			},
 			{
 				label: 'Système',
 				items: [
-					{ label: 'Sitemap', url: '/sitemap/' },
 					{ label: 'Liens internes', url: '/system/internal-links/' },
 					{ label: 'Liens sortants', url: '/system/outgoing-links/' }
 				]

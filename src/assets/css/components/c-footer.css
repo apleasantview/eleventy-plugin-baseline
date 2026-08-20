@@ -6,14 +6,12 @@
 }
 
 .c-footer__inner {
-	display: flex;
 	flex-wrap: wrap;
-	gap: var(--space-gap-m);
+	gap: var(--space-gap-s);
 	align-items: flex-start;
 	justify-content: space-between;
 }
 
 .c-footer__group {
-	flex-grow: 1;
-	padding-top: var(--space-inset-xs);
+	padding-block: var(--space-inset-xs);
 }

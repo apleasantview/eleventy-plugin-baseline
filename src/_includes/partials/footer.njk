@@ -3,12 +3,15 @@
 		<div class="u-wrapper">
 			<div class="c-footer__inner">
 				<div class="c-footer__group">
+					<div class="c-footer__block">
+						<p><strong>{{ settings.title }}</strong></p>
+						<p><small>{{ settings.tagline }}</small></p>
+						<p><small>Open source under MIT | Commit: {{ helpers.buildCommit() | safe }}</small></p>
+					</div>
 					{% include "components/c-navigation-footer.njk" %}
 				</div>
 				<div class="c-footer__block">
-					<small>Open source under MIT | Commit: {{ helpers.buildCommit() | safe }}</small>
-					<br />
-					<small>&copy; 2026 - a project by <a href="https://www.apleasantview.com/">a pleasant view</a></small>
+					<p><small>&copy; 2026 - a project by <a href="https://www.apleasantview.com/">a pleasant view</a></small></p>
 				</div>
 			</div>
 		</div>
