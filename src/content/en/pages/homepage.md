@@ -31,11 +31,13 @@ Baseline is those decisions already made and fitted together in one plugin, foll
 ## Install and start
 
 ```bash
-npm install @11ty/eleventy @11ty/eleventy-img
+npm install @11ty/eleventy
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
 Install the packages, register Baseline in your Eleventy config, and run the dev server. The [[quickstart | quickstart]] walks through the full setup.
+
+Rather build it than read about it? The [[tutorial | tutorial]] starts from an empty folder and ends with a homepage, a page, a post and a second language, explaining each decision as it makes it.
 
 If you are new to Eleventy, the [[introduction | introduction chapter]] will get you on your way.
 

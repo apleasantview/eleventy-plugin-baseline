@@ -23,11 +23,13 @@ Baseline, ce sont ces décisions déjà prises et assemblées dans un seul plugi
 ## Installer et démarrer
 
 ```bash
-npm install @11ty/eleventy @11ty/eleventy-img
+npm install @11ty/eleventy
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
 Installez les paquets, enregistrez Baseline dans votre configuration Eleventy, et lancez le serveur de développement. Le [[quickstart | guide de démarrage rapide]] détaille l'installation complète.
+
+Plutôt construire que lire ? Le [[tutorial | tutoriel]] part d'un dossier vide et aboutit à une page d'accueil, une page, un article et une deuxième langue.
 
 Si vous débutez avec Eleventy, le [[introduction | chapitre d'introduction]] vous met sur les rails.
 

@@ -23,11 +23,13 @@ Baseline bundelt die beslissingen, al gemaakt en op elkaar afgestemd, in één p
 ## Installeren en starten
 
 ```bash
-npm install @11ty/eleventy @11ty/eleventy-img
+npm install @11ty/eleventy
 npm install @apleasantview/eleventy-plugin-baseline
 ```
 
 Installeer de packages, registreer Baseline in je Eleventy-config en start de dev-server. De [[quickstart | quickstart]] loopt de volledige setup door.
+
+Liever bouwen dan lezen? De [[tutorial | tutorial]] begint met een lege map en eindigt met een homepage, een pagina, een bericht en een tweede taal.
 
 Ben je nieuw met Eleventy, dan helpt het [[introduction | introductiehoofdstuk]] je op weg.
 
