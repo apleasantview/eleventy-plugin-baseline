@@ -24,6 +24,26 @@ publish = "dist"
   to = "/docs/how-to/deployment-url-checks/"
   status = 301
 
+[[redirects]]
+  from = "/docs/module/*"
+  to = "/docs/modules/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/docs/introduction/overview/"
+  to = "/docs/introduction/what-is-baseline/"
+  status = 301
+
+[[redirects]]
+  from = "/docs/concept/concept-overview/"
+  to = "/docs/concept/how-baseline-works/"
+  status = 301
+
+[[redirects]]
+  from = "/docs/tutorial/add-your-first-page/"
+  to = "/docs/tutorial/add-pages-and-posts/"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]
