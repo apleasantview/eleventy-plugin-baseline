@@ -14,7 +14,14 @@ function buildCache() {
 		raw = execFileSync(
 			'git',
 			['log', '--name-only', '--no-renames', `--pretty=format:${marker}%cI`],
-			{ encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }
+			{
+				encoding: 'utf8',
+				maxBuffer: 64 * 1024 * 1024,
+				// Swallow git's stderr. Outside a repo it writes "fatal: not a git
+				// repository" straight to the terminal before throwing, which reads
+				// as a build failure in a build that is fine without git.
+				stdio: ['ignore', 'pipe', 'ignore']
+			}
 		);
 	} catch {
 		return map;

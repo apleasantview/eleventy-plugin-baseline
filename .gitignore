@@ -4,7 +4,9 @@ node_modules/
 temp/
 
 dist/
+.cache/
 .env
+
 
 # Claude Code
 .claude/
