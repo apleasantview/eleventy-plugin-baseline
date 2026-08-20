@@ -1,12 +1,25 @@
 .c-navigation-footer {
-	max-width: fit-content;
+	display: flex;
+	flex-direction: column;
+	flex-direction: row;
+	row-gap: var(--space-gap-xs);
+	flex-wrap: wrap;
+}
+
+.c-navigation-footer__section {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+}
+
+.c-navigation-footer__section .u-label {
+	flex: 0 0 100%;
 }
 
 .c-navigation-footer__group {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-gap-xs);
-	justify-content: space-between;
 	list-style: none;
 	padding: 0;
 	margin: 0;
