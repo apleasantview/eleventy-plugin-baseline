@@ -15,7 +15,7 @@ Install from npm:
 
 {% enddeckBlock %}
 
-{%- set latest = collections.releases | first %}
+{%- set latest = collections.releases | last %}
 
 ## Latest release
 
@@ -29,7 +29,7 @@ Install from npm:
 
 ## Previous releases
 
-{% for release in collections.releases %}
+{% for release in collections.releases | reverse %}
 {%- if not loop.first %}
 
 ### [{{ release.data.title }}]({{ release.url }})

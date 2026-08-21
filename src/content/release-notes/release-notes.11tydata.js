@@ -1,6 +1,6 @@
 export default {
 	lang: 'en',
-	layout: 'layouts/docs.njk',
+	layout: 'layouts/releases.njk',
 	section: ['release-notes'],
 	sectionLabel: 'Release notes'
 };

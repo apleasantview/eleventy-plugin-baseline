@@ -54,7 +54,7 @@ export default async function (eleventyConfig) {
 				return item.data.version;
 			})
 			.sort(function (a, b) {
-				return b.data.version.localeCompare(a.data.version, undefined, { numeric: true });
+				return a.data.version.localeCompare(b.data.version, undefined, { numeric: true });
 			});
 	});
 
