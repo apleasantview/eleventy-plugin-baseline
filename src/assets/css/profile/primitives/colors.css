@@ -3,6 +3,7 @@
  * components; the semantic tokens (--bg, --text, --blue…) map onto these.
  * Lightness steps are shared across every ramp; chroma peaks where each hue
  * can actually hold it in sRGB, so color-yellow tops out lighter than color-red.
+ * One exception: color-ink is a theme ramp and sets its own steps. See its note.
  */
 :root {
 	/* Black & White */
@@ -22,7 +23,7 @@
 	--color-neutral-900: oklch(0.28 0.015 95);
 	--color-neutral-950: oklch(0.2 0.012 95);
 
-	/* 🔘 Slate (cool, hue 255) — text, dark-theme surfaces */
+	/* 🔘 Slate (cool, hue 255) — text, light-theme surfaces */
 	--color-slate-50: oklch(0.97 0.01 255);
 	--color-slate-100: oklch(0.94 0.015 255);
 	--color-slate-200: oklch(0.88 0.02 255);
@@ -34,6 +35,22 @@
 	--color-slate-800: oklch(0.28 0.02 255);
 	--color-slate-900: oklch(0.2 0.02 255);
 	--color-slate-950: oklch(0.14 0.015 255);
+
+	/* 🌑 Ink (cool, hue 255) — dark-theme surfaces. Slate's hue and chroma, but
+	 * the steps are compressed into the dark half so background and text sit
+	 * 0.51 apart rather than 0.83. Modelled on GitHub's "dark dimmed", which is
+	 * soft by spread rather than by tint. The shared-steps rule does not apply. */
+	--color-ink-50: oklch(0.943 0.011 255);
+	--color-ink-100: oklch(0.91 0.015 255);
+	--color-ink-200: oklch(0.86 0.02 255);
+	--color-ink-300: oklch(0.783 0.023 255);
+	--color-ink-400: oklch(0.604 0.025 255);
+	--color-ink-500: oklch(0.534 0.024 255);
+	--color-ink-600: oklch(0.413 0.02 255);
+	--color-ink-700: oklch(0.361 0.018 255);
+	--color-ink-800: oklch(0.319 0.017 255);
+	--color-ink-900: oklch(0.271 0.015 255);
+	--color-ink-950: oklch(0.246 0.015 255);
 
 	/* 🔵 Blue (hue 255) — links, primary actions */
 	--color-blue-50: oklch(0.97 0.03 255);

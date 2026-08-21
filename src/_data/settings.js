@@ -51,6 +51,10 @@ export default {
 			{ rel: 'manifest', href: '/site.webmanifest' }
 		],
 		script: [
+			{
+				content:
+					"var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;"
+			},
 			{ src: '/assets/js/index.js', defer: true },
 			{ src: '/assets/js/vendor/index.js', defer: true }
 		],

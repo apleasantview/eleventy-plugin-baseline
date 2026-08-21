@@ -7,23 +7,23 @@
 		color-scheme: dark;
 
 		/* Neutral family */
-		--color-background: var(--color-slate-950);
-		--color-background-subtle: var(--color-slate-900);
+		--color-background: var(--color-ink-950);
+		--color-background-subtle: var(--color-ink-900);
 
-		--color-surface: var(--color-slate-800);
-		--color-surface-hover: var(--color-slate-700);
-		--color-surface-active: var(--color-slate-600);
+		--color-surface: var(--color-ink-800);
+		--color-surface-hover: var(--color-ink-700);
+		--color-surface-active: var(--color-ink-600);
 
-		--color-border-subtle: var(--color-slate-800);
-		--color-border: var(--color-slate-700);
-		--color-border-hover: var(--color-slate-600);
+		--color-border-subtle: var(--color-ink-800);
+		--color-border: var(--color-ink-700);
+		--color-border-hover: var(--color-ink-600);
 
-		--color-solid: var(--color-slate-100);
-		--color-solid-hover: var(--color-slate-200);
-		--color-on-solid: var(--color-slate-950);
+		--color-solid: var(--color-ink-100);
+		--color-solid-hover: var(--color-ink-200);
+		--color-on-solid: var(--color-ink-950);
 
-		--color-text-muted: var(--color-slate-400);
-		--color-text: var(--color-slate-50);
+		--color-text-muted: var(--color-ink-400);
+		--color-text: var(--color-ink-50);
 
 		/* Accent family */
 		--color-accent-background: var(--color-blue-950);
@@ -103,23 +103,23 @@
 	color-scheme: dark;
 
 	/* Neutral family */
-	--color-background: var(--color-slate-950);
-	--color-background-subtle: var(--color-slate-900);
+	--color-background: var(--color-ink-950);
+	--color-background-subtle: var(--color-ink-900);
 
-	--color-surface: var(--color-slate-800);
-	--color-surface-hover: var(--color-slate-700);
-	--color-surface-active: var(--color-slate-600);
+	--color-surface: var(--color-ink-800);
+	--color-surface-hover: var(--color-ink-700);
+	--color-surface-active: var(--color-ink-600);
 
-	--color-border-subtle: var(--color-slate-800);
-	--color-border: var(--color-slate-700);
-	--color-border-hover: var(--color-slate-600);
+	--color-border-subtle: var(--color-ink-800);
+	--color-border: var(--color-ink-700);
+	--color-border-hover: var(--color-ink-600);
 
-	--color-solid: var(--color-slate-100);
-	--color-solid-hover: var(--color-slate-200);
-	--color-on-solid: var(--color-slate-950);
+	--color-solid: var(--color-ink-100);
+	--color-solid-hover: var(--color-ink-200);
+	--color-on-solid: var(--color-ink-950);
 
-	--color-text-muted: var(--color-slate-400);
-	--color-text: var(--color-slate-50);
+	--color-text-muted: var(--color-ink-400);
+	--color-text: var(--color-ink-50);
 
 	/* Accent family */
 	--color-accent-background: var(--color-blue-950);
