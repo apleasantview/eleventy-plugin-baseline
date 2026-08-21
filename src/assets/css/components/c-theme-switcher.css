@@ -13,6 +13,10 @@
 	margin-top: 0;
 	color: var(--color-text-muted);
 	text-decoration: none;
+	border: 0;
+	text-box-trim: trim-both;
+	padding: 0;
+	background-color: transparent;
 }
 
 .c-theme-switcher__item:hover {
