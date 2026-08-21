@@ -26,8 +26,8 @@ export default {
 				items: [
 					{ label: 'Internal links', url: '/system/internal-links/' },
 					{ label: 'Outgoing links', url: '/system/outgoing-links/' }
-					// { label: 'Profile test', url: '/system/profile-test/' },
-					// { label: 'Document test', url: '/system/document-test/' }
+					// { label: 'Profile', url: '/system/profile-test/' },
+					// { label: 'Document', url: '/system/document-test/' }
 				]
 			},
 			{

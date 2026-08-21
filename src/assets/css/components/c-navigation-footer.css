@@ -20,10 +20,15 @@
 .c-navigation-footer__group {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--space-gap-xs);
+	column-gap: var(--space-gap-xs);
+	row-gap: var(--space-gap-3xs);
 	list-style: none;
 	padding: 0;
 	margin: 0;
+}
+
+.c-navigation-footer__section:first-child {
+	width: 100%;
 }
 
 .c-navigation-footer-item {

@@ -52,7 +52,7 @@ That was an `hr`.
 
 ### Wikilinks
 
-Wikilinks resolve against the content graph: [[quickstart | the quickstart]] is one, written as a page slug rather than a path.
+Wikilinks resolve against the content graph: [[quickstart | this one]] points at another page by its slug rather than by a path.
 
 ## Blocks
 
@@ -88,7 +88,7 @@ An alert can carry a heading and more than one paragraph.
 
 The heading sits inside the blockquote, and the block grows to fit rather than staying at its fitted width.
 
-That is the shape the quickstart uses for its asides.
+A second paragraph, so the flow spacing inside an alert can be judged as well as the spacing around it.
 
 {% endalertBlock %}
 
@@ -111,9 +111,9 @@ The compact variant, for a checklist rather than a sequence.
 
 {% stepsBlock "compact" %}
 
-- Node 22 or newer
-- A `package.json` with `"type": "module"`
-- An `.env` for the values that differ per environment
+- A first item, short
+- A second, carrying some `inline code`
+- A third that runs on a little longer, so a wrapping item can be seen against the ones that do not
 
 {% endstepsBlock %}
 
@@ -133,13 +133,13 @@ Wrapped in `tableBlock` with `responsive` set, a wide table scrolls sideways ins
 
 {% tableBlock true %}
 
-| Setting | Type | Default | Read by | Notes |
+| Column | Type | Default | Required | Notes |
 | --- | --- | --- | --- | --- |
-| `settings.url` | string | none | head, sitemap, seo-graph | Identity. Absent beats wrong. |
-| `settings.title` | string | none | head, seo-graph | Feeds the title template and the graph |
-| `settings.noindex` | boolean | `false` | head | Site-wide switch |
-| `settings.defaultLanguage` | string | none | multilang | Must match a key in `settings.languages` |
-| `settings.head` | object | `{}` | head | Link, script and meta extras |
+| `first` | string | none | yes | A short cell |
+| `second` | boolean | `false` | no | A cell carrying some `inline code` |
+| `third` | number | `0` | no | A longer cell, so the column has to make room for it |
+| `fourth` | array | `[]` | no | A short cell again |
+| `fifth` | object | `{}` | no | The last row, sitting against the closing rule |
 
 {% endtableBlock %}
 
@@ -149,19 +149,19 @@ Inline `code` sits in a paragraph. Fenced blocks get Prism, server-side, with `t
 
 ```js
 export default {
-	title: 'Eleventy Baseline',
-	url: process.env.BASELINE_URL,
-	defaultLanguage: 'en'
+	title: 'A document',
+	items: ['one', 'two', 'three'],
+	enabled: true
 };
 ```
 
 ```bash
-npm install @apleasantview/eleventy-plugin-baseline
+npm install a-package
 ```
 
 ```json
 {
-	"name": "simple-baseline-site",
+	"name": "a-package",
 	"type": "module"
 }
 ```

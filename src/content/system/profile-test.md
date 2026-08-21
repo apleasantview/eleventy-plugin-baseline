@@ -70,6 +70,8 @@ Raw values, no meaning attached. Nothing in a component should name one of these
 
 Source: `profile/primitives/colors.css`. Eleven rungs per ramp, lightness steps shared across every ramp; chroma peaks where each hue can hold it in sRGB, which is why yellow tops out lighter than red.
 
+Ink is the exception, and is listed last for it. Its steps are compressed into the dark half of the range, so its rungs mean something different from everyone else's and it carries its own descriptions.
+
 {% set rungs = [
 	['50', 'Lightest tint. Callout and alert backgrounds.'],
 	['100', 'Tint. Subtle page and surface fills.'],
@@ -79,9 +81,9 @@ Source: `profile/primitives/colors.css`. Eleven rungs per ramp, lightness steps 
 	['500', 'Peak chroma. The hue at full strength.'],
 	['600', 'Mid-dark. Hover state for the solid.'],
 	['700', 'Dark. Text on a light background.'],
-	['800', 'Darker. Borders and surfaces in the dark theme.'],
-	['900', 'Near-black. Dark theme surfaces, light theme text.'],
-	['950', 'Darkest. Dark theme page background.']
+	['800', 'Darker. Dark theme surfaces in the colour families.'],
+	['900', 'Near-black. Light theme text, and dark theme subtle fills.'],
+	['950', 'Darkest. Dark theme backgrounds in the colour families.']
 ] %}
 
 <details>
@@ -104,7 +106,7 @@ Source: `profile/primitives/colors.css`. Eleven rungs per ramp, lightness steps 
 
 {% set ramps = [
 	['neutral', 'Neutral', 'Warm, hue 95. Surfaces and borders.'],
-	['slate', 'Slate', 'Cool, hue 255. Text, and the dark theme surfaces.'],
+	['slate', 'Slate', 'Cool, hue 255. Text, and the light theme surfaces.'],
 	['blue', 'Blue', 'Hue 255. Links and primary actions.'],
 	['green', 'Green', 'Hue 150. Success.'],
 	['yellow', 'Yellow', 'Hue 95. Warnings. Chroma peaks at 300 to 400, not 500.'],
@@ -134,6 +136,41 @@ Source: `profile/primitives/colors.css`. Eleven rungs per ramp, lightness steps 
 
 </details>
 {% endfor %}
+
+{% set inkRungs = [
+	['50', 'Lightest. Body text.'],
+	['100', 'Solid fills. Buttons and badges.'],
+	['200', 'That fill under the pointer.'],
+	['300', 'Held in reserve.'],
+	['400', 'Muted text. Captions and metadata.'],
+	['500', 'Held in reserve.'],
+	['600', 'Pressed surfaces, and borders under the pointer.'],
+	['700', 'Surfaces under the pointer, and borders.'],
+	['800', 'Raised surfaces, and the dividers you barely notice.'],
+	['900', 'One step off the page.'],
+	['950', 'The page itself, and text sitting on a solid fill.']
+] %}
+
+<details>
+<summary>
+
+#### Ink
+
+</summary>
+
+Cool, hue 255. The dark theme's neutral family, and the only ramp that sets its own lightness steps. Slate's hue and chroma with the range compressed into the dark half, modelled on GitHub's dark dimmed, which is soft by spread rather than by tint. Flip to the dark theme to see these doing their job.
+
+{% tableBlock true %}
+
+| Token | Swatch | Description |
+| --- | --- | --- |
+{%- for rung in inkRungs %}
+| `--color-ink-{{ rung[0] }}` | {{ chip('--color-ink-' + rung[0]) }} | {{ rung[1] }} |
+{%- endfor %}
+
+{% endtableBlock %}
+
+</details>
 
 ### Type
 
