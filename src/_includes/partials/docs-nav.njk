@@ -4,10 +4,12 @@
 <div
 	style="border-top: 1px solid var(--color-border); padding-block: var(--space-inset-s); display: flex; flex-wrap: wrap; justify-content: space-between; box-sizing: content-box; padding-inline: 0 0.5em;"
 >
-	{%- if previousPost %}
-		<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>
-	{%- endif %}
-	{%- if nextPost %}
-		<p>Next: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></p>
-	{%- endif %}
+	<div style="padding-inline: var(--space-inset-s); margin-block-start: var(--space-inset-s)">
+		{%- if previousPost %}
+			<p>Previous: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></p>
+		{%- endif %}
+		{%- if nextPost %}
+			<p>Next: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></p>
+		{%- endif %}
+	</div>
 </div>
