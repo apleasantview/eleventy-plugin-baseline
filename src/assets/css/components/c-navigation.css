@@ -5,7 +5,6 @@
 .c-navigation__inner {
 	display: flex;
 	flex-direction: row;
-	flex-wrap: wrap;
 	gap: var(--space-gap-m);
 	row-gap: var(--space-gap-xs);
 	max-width: 100%;
@@ -14,7 +13,6 @@
 
 .c-navigation__group {
 	display: flex;
-	flex-wrap: wrap;
 	list-style: none;
 	gap: var(--space-gap-s);
 	padding: 0;
@@ -54,6 +52,7 @@
 	svg {
 		display: inline-block;
 		vertical-align: -0.435em;
+		max-width: unset;
 	}
 }
 

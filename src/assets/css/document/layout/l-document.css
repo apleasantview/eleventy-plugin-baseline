@@ -3,12 +3,11 @@
 	--content-min-width: 288px;
 	--wrapper-max-width: 60rem;
 	--wrapper-margin-inline: auto;
-	--wrapper-padding-inline: 0;
-	--wrapper-content-box: content-box;
+	--wrapper-padding-inline: var(--space-inset-s);
+	--wrapper-content-box: border-box;
 	display: grid;
 	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
 	padding-block: var(--space-inset-s);
-	padding-inline: var(--space-inset-s);
 	align-items: start;
 	column-gap: var(--space-gap-l);
 	justify-content: center;

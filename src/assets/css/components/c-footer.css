@@ -1,5 +1,6 @@
 .c-footer {
 	--wrapper-max-width: 60rem;
+	--wrapper-content-box: border-box;
 	border-top: 1px solid var(--color-border);
 	padding-block-start: var(--space-inset-xs);
 	padding-block-end: var(--space-inset-xs);

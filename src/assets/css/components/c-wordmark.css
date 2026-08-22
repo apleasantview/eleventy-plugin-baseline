@@ -1,5 +1,6 @@
 .c-wordmark {
 	max-width: fit-content;
+	padding-block: var(--space-inset-2xs);
 }
 
 .c-wordmark a {
@@ -8,6 +9,5 @@
 }
 
 .c-wordmark a > svg {
-	width: 100%;
-	height: auto;
+	max-width: unset;
 }

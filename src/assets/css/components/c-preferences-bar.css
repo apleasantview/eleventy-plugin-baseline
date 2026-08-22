@@ -1,8 +1,6 @@
 .c-preferences-bar {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
-	justify-content: center;
 	gap: var(--space-gap-xs);
 	padding-block-start: 0.25rem;
 	padding-block-end: 0.25rem;

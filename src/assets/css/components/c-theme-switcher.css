@@ -3,12 +3,6 @@
 	padding-block: var(--space-inset-3xs);
 }
 
-.c-theme-switcher__inner {
-	display: flex;
-	align-items: flex-start;
-	gap: var(--space-gap-s);
-}
-
 .c-theme-switcher__item {
 	margin-top: 0;
 	color: var(--color-text-muted);
@@ -17,6 +11,7 @@
 	text-box-trim: trim-both;
 	padding: 0;
 	background-color: transparent;
+	white-space: nowrap;
 }
 
 .c-theme-switcher__item:hover {

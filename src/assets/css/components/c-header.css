@@ -1,5 +1,6 @@
 .c-header {
 	--wrapper-max-width: 100%;
+	--wrapper-padding-inline: 0;
 	padding-block: var(--space-inset-2xs);
 	width: 100%;
 	background-color: var(--color-background-subtle);
@@ -7,13 +8,18 @@
 }
 
 .c-header__inner {
-	display: flex;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(288px, 1fr));
 	flex-wrap: wrap;
 	justify-content: space-between;
 	column-gap: var(--space-inset-3xl);
-	row-gap: var(--space-inset-m);
+	row-gap: var(--space-inset-s);
 	align-items: center;
 	min-height: 48px;
+}
+
+.c-header__inner > * {
+	padding-inline: var(--space-inset-s);
 }
 
 .c-header__group {
@@ -21,7 +27,7 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	gap: var(--space-gap-m);
+	column-gap: var(--space-gap-m);
 	align-items: baseline;
 }
 
