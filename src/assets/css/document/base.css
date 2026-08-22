@@ -38,7 +38,6 @@ a {
 
 	&[aria-current] {
 		position: relative;
-		margin-top: 0.1em;
 	}
 
 	&[aria-current]::after {
