@@ -1,0 +1,38 @@
+.c-docs-nav {
+	padding-block-start: var(--space-inset-s);
+}
+
+.c-docs-nav__inner {
+	padding-inline: var(--space-inset-s);
+	box-sizing: content-box;
+}
+
+.c-docs-nav__group {
+	border-top: 1px solid var(--color-border);
+	padding-block-start: var(--space-inset-m);
+	padding-block-end: var(--space-inset-s);
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-inset-s);
+	margin: 0;
+	padding-inline-start: 0;
+	list-style: none;
+}
+
+.c-docs-nav__item--next {
+	margin-inline-start: auto;
+}
+
+.c-docs-nav__item--next .c-docs-nav__title {
+	text-align: end;
+}
+
+.c-docs-nav__label,
+.c-docs-nav__title {
+	display: block;
+}
+
+.c-docs-nav__label {
+	font-size: var(--text-size-muted);
+	color: var(--color-text-muted);
+}
