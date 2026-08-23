@@ -35,16 +35,32 @@ const SCOPE_NAME = 'core:slug-index';
  *   page-context.buildPageContext → set() → registry scope → wikilinks getBySlug()
  *
  * @param {import('@11ty/eleventy').UserConfig} eleventyConfig
- * @returns {{set: (slug: string, url: string, inputPath?: string) => void, getBySlug: (slug: string) => string | undefined, snapshot: () => Record<string, {url: string, inputPath?: string}>}}
+ * @returns {{set: (slug: string, url: string, inputPath?: string, options?: {segmented?: boolean}) => void, getBySlug: (slug: string) => string | undefined, snapshot: () => Record<string, {url: string, inputPath?: string}>}}
  */
 export function createSlugIndex(eleventyConfig) {
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
 	return {
-		set(slug, url, inputPath) {
+		/**
+		 * @param {string} slug
+		 * @param {string} url
+		 * @param {string} [inputPath]
+		 * @param {{segmented?: boolean}} [options] - `segmented` marks a page split
+		 *   into parts by a content marker. Later parts of the same source file keep
+		 *   the first part's registration instead of colliding with it.
+		 */
+		set(slug, url, inputPath, options = {}) {
 			if (!slug || !url) return;
 			const existing = getEntry(scope, slug);
 			if (existing && existing.url !== url) {
+				// One source file fanned into parts is not two pages claiming one
+				// slug. The first part wins, so [[slug]] lands on part one. Narrowed
+				// to segmented pages on purpose: a template paginating a collection
+				// also emits many URLs from one inputPath, and duplicate slugs there
+				// are a real authoring error that must keep failing loudly.
+				if (options.segmented && existing.inputPath && existing.inputPath === inputPath) {
+					return;
+				}
 				throw new Error(
 					`Wikilink slug collision: "${slug}" used by both ${existing.inputPath ?? existing.url} and ${inputPath ?? url}`
 				);

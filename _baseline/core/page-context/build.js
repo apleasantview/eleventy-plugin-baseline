@@ -5,6 +5,7 @@ import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
+import { SEGMENT_DATA_KEY } from '../segmentation.js';
 
 /**
  * Apply a title template, replacing tokens with resolved values. Tokens:
@@ -188,6 +189,23 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	 * path array, type as a free-form classifier), and per-page head extras.
 	 * Values pass through raw; consumers normalise.
 	 */
+	/**
+	 * Is this page one part of a source file split by a content marker?
+	 *
+	 * Every part inherits the same front matter, so every part claims the same
+	 * slug. The slug index needs to know the difference between that and two
+	 * separate pages colliding. The signal is the pagination key Baseline's own
+	 * segmentation writes: a template paginating a collection names its own data
+	 * key and never matches.
+	 *
+	 * @param {any} data
+	 * @returns {boolean}
+	 */
+	function isSegmented(data) {
+		const key = data?.pagination?.data;
+		return typeof key === 'string' && key.startsWith(SEGMENT_DATA_KEY);
+	}
+
 	function buildEntry(data) {
 		const rawSlug = data?.slug ?? data?.page?.fileSlug;
 
@@ -370,7 +388,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			// plugin hops to those via the translation map.
 			const eligible = page.isDefaultLang !== false;
 			if (eligible) {
-				slugIndex.set(entry.slug, page.url, page.inputPath);
+				slugIndex.set(entry.slug, page.url, page.inputPath, { segmented: isSegmented(data) });
 			}
 		}
 
