@@ -2,11 +2,17 @@ import { resolveDates } from '../../_baseline/core/dates/index.js';
 
 const mdAlternates = (data) => {
 	if (data.baselineExcludeFromGraph) return [];
+
+	// Only page zero joins collections.all, so page-markdown.11ty.js writes one
+	// sibling per document, at the first URL. It is built from rawInput, so that
+	// file is the whole document however many parts the page renders as.
+	const base = data.pagination?.href?.first ?? data.page.url;
+
 	return [
 		{
 			rel: 'alternate',
 			type: 'text/markdown',
-			href: `${data.page.url}index.md`
+			href: `${base}index.md`
 		}
 	];
 };
