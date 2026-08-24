@@ -1,5 +1,6 @@
 import { renderHead } from './drivers/posthtml-head-elements.js';
 import { buildAlternates } from './utils/alternates.js';
+import { translationGroupKey } from '../../core/utils/translation-group-key.js';
 import { optionsSchema } from './schema.js';
 
 import chalk from 'kleur';
@@ -92,7 +93,8 @@ export function headCore(eleventyConfig, moduleContext) {
 		// the resolved canonical, OG/Twitter projections, and the JSON-LD graph.
 		const seo = seoGraphRegistry?.getByKey(key);
 
-		const translationKey = seeds.page?.translationKey;
+		// Grouped per part, so part two pairs with part two.
+		const translationKey = translationGroupKey(seeds.page?.translationKey, seeds.page?.part);
 
 		// Reads the graph-built index rather than the collection-built map: same
 		// shape, one source, and it drops the full page `data` the map carries.

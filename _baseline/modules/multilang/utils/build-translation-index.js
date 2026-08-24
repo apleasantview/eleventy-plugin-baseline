@@ -1,3 +1,5 @@
+import { translationGroupKey } from '../../../core/utils/translation-group-key.js';
+
 /**
  * Group content-graph nodes into a translationKey-keyed index.
  *
@@ -30,12 +32,14 @@ export function buildTranslationIndex(nodes, context = {}) {
 		// authoring typo, and a typo shouldn't join a translation set.
 		if (known.size && !known.has(lang)) continue;
 
-		if (!index[key]) index[key] = {};
+		// Per part, or the last part of a split page overwrites the rest.
+		const group = translationGroupKey(key, node.part);
+		if (!index[group]) index[group] = {};
 
-		// Last node wins on a duplicate key + lang pair, same as before.
+		// Last node wins on a duplicate group + lang pair, same as before.
 		// `label` names the language, `title` and `description` name the page:
 		// a sibling's own copy is otherwise unreachable without a second lookup.
-		index[key][lang] = {
+		index[group][lang] = {
 			url: node.url,
 			lang,
 			label: languages[lang]?.languageName ?? lang,

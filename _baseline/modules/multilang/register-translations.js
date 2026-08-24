@@ -1,4 +1,6 @@
 import { buildTranslationIndex } from './utils/build-translation-index.js';
+import { translationGroupKey } from '../../core/utils/translation-group-key.js';
+import { SEGMENT_ALIAS } from '../../core/segmentation/constants.js';
 
 const COMPUTED_KEY = 'eleventyComputed.page.translations';
 
@@ -60,7 +62,8 @@ export function registerTranslations(eleventyConfig, context) {
 		const index = getTranslationIndex();
 		if (!index) return [];
 
-		const variants = index[data.translationKey];
+		const group = translationGroupKey(data.translationKey, data[SEGMENT_ALIAS]?.index);
+		const variants = index[group];
 		if (!variants) return [];
 
 		const self = data.page?.url;

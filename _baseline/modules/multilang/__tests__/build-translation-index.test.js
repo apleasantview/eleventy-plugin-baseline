@@ -102,4 +102,39 @@ describe('buildTranslationIndex', () => {
 		expect(buildTranslationIndex(undefined)).toEqual({});
 		expect(buildTranslationIndex({})).toEqual({});
 	});
+
+	// A page split on a content marker is many nodes sharing one translationKey.
+	// Grouping on the key alone let the last part overwrite the rest, so every
+	// part of every language advertised the final part as its counterpart, which
+	// is neither reciprocal nor self-referential. Found on the pathprefix rig,
+	// 2026-08-24.
+	describe('segmented pages', () => {
+		const split = {
+			'/story/': { url: '/story/', lang: 'en', translationKey: 'story', part: 0 },
+			'/story/2/': { url: '/story/2/', lang: 'en', translationKey: 'story', part: 1 },
+			'/nl/verhaal/': { url: '/nl/verhaal/', lang: 'nl', translationKey: 'story', part: 0 },
+			'/nl/verhaal/2/': { url: '/nl/verhaal/2/', lang: 'nl', translationKey: 'story', part: 1 }
+		};
+
+		it('pairs each part with the same part in the other language', () => {
+			const index = buildTranslationIndex(split, { languages, defaultLanguage: 'en' });
+
+			expect(index.story.en.url).toBe('/story/');
+			expect(index.story.nl.url).toBe('/nl/verhaal/');
+			expect(index['story#2'].en.url).toBe('/story/2/');
+			expect(index['story#2'].nl.url).toBe('/nl/verhaal/2/');
+		});
+
+		// The translator controls where their markers go, so counts can differ.
+		// A part with no counterpart gets a group of one rather than a false pair.
+		it('leaves a part with no counterpart on its own', () => {
+			const uneven = {
+				...split,
+				'/story/3/': { url: '/story/3/', lang: 'en', translationKey: 'story', part: 2 }
+			};
+			const index = buildTranslationIndex(uneven, { languages, defaultLanguage: 'en' });
+
+			expect(Object.keys(index['story#3'])).toEqual(['en']);
+		});
+	});
 });
