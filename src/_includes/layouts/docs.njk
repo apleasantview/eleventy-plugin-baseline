@@ -10,8 +10,12 @@
 		<div class="l-document__content">
 			<div class="u-wrapper">
 				<article class="u-flow" {% if not baselineExcludeFromGraph %}data-pagefind-body{% endif %}>
+					{%- if _pagebreak %}
+						<span class="u-label c-page-parts--top">Page {{ _pagebreak.number }} of {{ _pagebreak.total }}</span>
+					{%- endif %}
 					<h1>{{ title }}</h1>
 					{{ content | safe }}
+					{%- include "components/c-page-parts.njk" %}
 				</article>
 			</div>
 		</div>

@@ -1,0 +1,32 @@
+{#- Part navigation for a page split with <!--pagebreak-->.
+
+	`_pagebreak` is undefined on every page that was not split, so this renders
+	nothing anywhere else. Baseline emits no markup of its own for this: it hands
+	over the parts, their urls and their names, and the site owns the element.
+
+	A part is named by the marker that introduced it (`<!--pagebreak|Name-->`) and
+	numbered when the marker gave none, so nothing here needs translating.
+-#}
+{%- if _pagebreak %}
+<nav class="c-page-parts" aria-label="Page parts">
+	<div class="c-page-parts__inner">
+		<span class="u-label">Page {{ _pagebreak.number }} of {{ _pagebreak.total }}</span>
+		<ol class="c-page-parts__list">
+			{%- for part in _pagebreak.parts %}
+				<li class="c-page-parts__item">
+					{%- if part.current %}
+						<span aria-current="page">{{ part.label }}</span>
+					{%- else %}
+						<a
+							href="{{ part.url }}{% if part.anchor %}#{{ part.anchor }}{% endif %}"
+							{%- if part.number == _pagebreak.number - 1 %} rel="prev"{% endif %}
+							{%- if part.number == _pagebreak.number + 1 %} rel="next"{% endif %}
+							>{{ part.label }}</a
+						>
+					{%- endif %}
+				</li>
+			{%- endfor %}
+		</ol>
+	</div>
+</nav>
+{%- endif %}
