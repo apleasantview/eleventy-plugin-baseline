@@ -75,6 +75,8 @@ export function buildGraph(pages, options = {}) {
 				locale: ctx.page?.locale,
 				translationKey: ctx.page?.translationKey,
 				isDefaultLang: ctx.page?.isDefaultLang,
+				// Undefined unless split on a marker; the translation index groups on it.
+				part: ctx.page?.part,
 				date: ctx.page?.date,
 				url
 			};

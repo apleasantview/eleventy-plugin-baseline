@@ -16,6 +16,8 @@ import {
 	createTranslationIndexStore
 } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
+import { registerSegmentation } from './core/segmentation/index.js';
+import { SEGMENT_DATA_KEY, PAGEBREAK_COMPUTED_KEY } from './core/segmentation/constants.js';
 import { registerPageContext } from './core/page-context/index.js';
 import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
@@ -47,6 +49,9 @@ const INTERNAL_KEYS = [
 	'_navigator',
 	'_sitemap',
 	'_snapshot',
+	// Written per page by the segmentation preprocessor; reserved site-wide.
+	SEGMENT_DATA_KEY,
+	PAGEBREAK_COMPUTED_KEY,
 	'eleventyComputed._pageContext',
 	'eleventyComputed._node',
 	'eleventyComputed._seoGraph',
@@ -156,15 +161,8 @@ export default function baseline(settings = {}, options = {}) {
 
 		INTERNAL_KEYS.forEach((key) => {
 			// We leave eleventyComputed callback keys alone, the rest are reserved-empty.
-			if (
-				key === 'eleventyComputed._pageContext' ||
-				key === 'eleventyComputed._node' ||
-				key === 'eleventyComputed._seoGraph' ||
-				key === 'eleventyComputed._backlinks' ||
-				key === 'eleventyComputed._outgoing' ||
-				key === 'eleventyComputed._edges'
-			)
-				return;
+			// Reserving one empty would overwrite the callback that registers it.
+			if (key.startsWith('eleventyComputed.')) return;
 			eleventyConfig.addGlobalData(key, {});
 		});
 
@@ -264,6 +262,10 @@ export default function baseline(settings = {}, options = {}) {
 				}
 			});
 		}
+
+		// --- Page segmentation (one source file, many pages) ---
+		// After drafts: a dropped draft never reaches the split.
+		registerSegmentation(eleventyConfig, { log: scopedLog('segmentation') });
 
 		// --- Runtime stores (self-attach their lifecycle listeners) ---
 		const contentMapStore = createContentMapStore(eleventyConfig);

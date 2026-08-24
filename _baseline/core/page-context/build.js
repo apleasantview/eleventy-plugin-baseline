@@ -5,7 +5,7 @@ import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
 import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
-import { SEGMENT_DATA_KEY } from '../segmentation.js';
+import { SEGMENT_DATA_KEY, SEGMENT_ALIAS } from '../segmentation/constants.js';
 
 /**
  * Apply a title template, replacing tokens with resolved values. Tokens:
@@ -163,8 +163,9 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		};
 	}
 
-	function buildPage(pageInput) {
+	function buildPage(pageInput, data) {
 		return {
+			part: partIndex(data),
 			inputPath: pageInput?.inputPath,
 			fileSlug: pageInput?.fileSlug,
 			filePathStem: pageInput?.filePathStem,
@@ -182,14 +183,6 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	}
 
 	/**
-	 * Build the `entry` branch — the author's view of the page.
-	 *
-	 * Holds the content's self-description (title, description, excerpt), its
-	 * identity (slug), structural classification (section as a hierarchical
-	 * path array, type as a free-form classifier), and per-page head extras.
-	 * Values pass through raw; consumers normalise.
-	 */
-	/**
 	 * Is this page one part of a source file split by a content marker?
 	 *
 	 * Every part inherits the same front matter, so every part claims the same
@@ -206,6 +199,28 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		return typeof key === 'string' && key.startsWith(SEGMENT_DATA_KEY);
 	}
 
+	/**
+	 * Which part of a split source file is this? Undefined for an ordinary page.
+	 *
+	 * Read off the pagination alias, not `pagination.pageNumber`, which still
+	 * reads 0 for every chunk at this point.
+	 *
+	 * @param {any} data
+	 * @returns {number | undefined}
+	 */
+	function partIndex(data) {
+		if (!isSegmented(data)) return undefined;
+		return data?.[SEGMENT_ALIAS]?.index;
+	}
+
+	/**
+	 * Build the `entry` branch — the author's view of the page.
+	 *
+	 * Holds the content's self-description (title, description, excerpt), its
+	 * identity (slug), structural classification (section as a hierarchical
+	 * path array, type as a free-form classifier), and per-page head extras.
+	 * Values pass through raw; consumers normalise.
+	 */
 	function buildEntry(data) {
 		const rawSlug = data?.slug ?? data?.page?.fileSlug;
 
@@ -360,7 +375,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const pageInput = data.page ?? {};
 		const userSettings = data.settings ?? settings;
 
-		const page = buildPage(pageInput);
+		const page = buildPage(pageInput, data);
 		const site = buildSite(page.lang, userSettings);
 		const entry = buildEntry(data);
 		const query = buildQuery({ entry, page });
