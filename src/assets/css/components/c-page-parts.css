@@ -1,0 +1,22 @@
+.c-page-parts {
+	padding-block: var(--space-inset-s);
+	text-align: center;
+}
+
+.c-page-parts--top {
+	margin-block-start: 2.025em;
+}
+
+.c-page-parts__inner {
+	max-width: fit-content;
+}
+
+.c-page-parts__list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	padding-inline: var(--space-inset-3xs);
+	display: flex;
+	align-items: start;
+	gap: var(--space-gap-s);
+}

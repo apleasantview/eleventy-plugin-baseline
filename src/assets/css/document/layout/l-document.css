@@ -40,7 +40,7 @@
 }
 
 .l-document__navigation > * {
-	margin-block-start: var(--space-inset-xl);
+	margin-block-start: var(--space-inset-s);
 	max-width: var(--content-max-width);
 	margin-inline: auto;
 }

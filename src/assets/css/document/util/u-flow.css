@@ -5,6 +5,11 @@
 .u-flow--snug > * + * {
 	margin-block-start: var(--flow-space-snug);
 }
+
+.u-flow > span + h1 {
+	margin-block-start: 0.025rem;
+}
+
 .u-flow > h1 + *,
 .u-flow > h2 + *,
 .u-flow > h2 + pre {
