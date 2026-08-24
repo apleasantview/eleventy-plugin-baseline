@@ -102,6 +102,27 @@ export default async function (eleventyConfig) {
 	});
 
 	// ---- Filters ---
+
+	// Neighbours in a collection, by url.
+	//
+	// Replaces getPreviousCollectionItem / getNextCollectionItem, which take a
+	// locale path whenever `page.lang` is set and resolve the current page
+	// through the I18n plugin's url map first. That map keeps one url per input
+	// path, so a template that paginates resolves to its last page and matches
+	// nothing, and the nav renders empty. Found 2026-08-24 on the first page
+	// split with <!--pagebreak-->; reproducible without Baseline.
+	//
+	// Nothing under /docs/ carries a translationKey, so the locale resolution was
+	// only ever overhead here.
+	eleventyConfig.addFilter('siblings', (collection, url) => {
+		if (!Array.isArray(collection) || !url) return {};
+
+		const index = collection.findIndex((item) => item.url === url);
+		if (index === -1) return {};
+
+		return { previous: collection[index - 1], next: collection[index + 1] };
+	});
+
 	eleventyConfig.addFilter('unique', (array, key) => {
 		if (!Array.isArray(array)) return [];
 
