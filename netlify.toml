@@ -49,6 +49,11 @@ publish = "dist"
   to = "/docs/tutorial/front-matter-and-slugs/"
   status = 301
 
+[[redirects]]
+  from = "/docs/how-to/integrate-eleventy-base-blog/"
+  to = "/docs/integrations/integrate-eleventy-base-blog/"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]
