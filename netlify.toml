@@ -21,7 +21,12 @@ publish = "dist"
 
 [[redirects]]
   from = "/docs/feature-guide/deployment-url-checks/"
-  to = "/docs/how-to/deployment-url-checks/"
+  to = "/docs/how-to/deployment-checks/"
+  status = 301
+
+[[redirects]]
+  from = "/docs/how-to/deployment-url-checks/"
+  to = "/docs/how-to/deployment-checks/"
   status = 301
 
 [[redirects]]
