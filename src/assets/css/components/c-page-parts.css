@@ -1,6 +1,5 @@
 .c-page-parts {
 	padding-block: var(--space-inset-s);
-	text-align: center;
 }
 
 .c-page-parts--top {
@@ -14,9 +13,10 @@
 .c-page-parts__list {
 	list-style-type: none;
 	margin: 0;
+	margin-block-start: var(--space-inset-3xs);
 	padding: 0;
-	padding-inline: var(--space-inset-3xs);
 	display: flex;
+	flex-wrap: wrap;
 	align-items: start;
-	gap: var(--space-gap-s);
+	column-gap: var(--space-gap-s);
 }

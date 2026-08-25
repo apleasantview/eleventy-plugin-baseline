@@ -6,7 +6,12 @@
 
 	A part is named by the marker that introduced it (`<!--pagebreak|Name-->`) and
 	numbered when the marker gave none, so nothing here needs translating.
+
+	Part one is the exception: no marker precedes it, so it can never carry a
+	label and falls back to "1". It is the page the reader starts on, so it is
+	named here instead.
 -#}
+{%- set firstPartLabel = "Introduction" %}
 {%- if _pagebreak %}
 <nav class="c-page-parts" aria-label="Page parts">
 	<div class="c-page-parts__inner">
@@ -14,14 +19,15 @@
 		<ol class="c-page-parts__list">
 			{%- for part in _pagebreak.parts %}
 				<li class="c-page-parts__item">
+					{%- set label = firstPartLabel if part.number == 1 else part.label %}
 					{%- if part.current %}
-						<span aria-current="page">{{ part.label }}</span>
+						<span aria-current="page">{{ label }}</span>
 					{%- else %}
 						<a
 							href="{{ part.url }}{% if part.anchor %}#{{ part.anchor }}{% endif %}"
 							{%- if part.number == _pagebreak.number - 1 %} rel="prev"{% endif %}
 							{%- if part.number == _pagebreak.number + 1 %} rel="next"{% endif %}
-							>{{ part.label }}</a
+							>{{ label }}</a
 						>
 					{%- endif %}
 				</li>
