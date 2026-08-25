@@ -1,4 +1,5 @@
-.l-document {
+.l-document,
+.l-document--footer {
 	--content-max-width: 60rem;
 	--content-min-width: 288px;
 	--wrapper-max-width: 60rem;
