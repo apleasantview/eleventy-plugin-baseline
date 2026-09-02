@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { configSchema, settingsSchema } from '../schema.js';
+import { configSchema, optionsSchema, settingsSchema } from '../schema.js';
 import { config } from '../../index.js';
 import settings from '../../../src/_data/settings.js';
 
@@ -133,5 +133,48 @@ describe('settingsSchema', () => {
 		const result = settingsSchema.safeParse(input);
 		expect(result.success).toBe(false);
 		expect(result.error.issues[0].path).toEqual(['head', 'style']);
+	});
+});
+
+// Nothing validated `options` before 2026-09-02: modules checked their own
+// slices and the keys the composition root reads went unchecked.
+describe('optionsSchema', () => {
+	const ok = (options) => optionsSchema.safeParse(options).success;
+
+	it('accepts an empty object and the documented keys', () => {
+		expect(ok({})).toBe(true);
+		expect(ok({ verbose: true, multilingual: true, sitemap: false })).toBe(true);
+		expect(ok({ navigator: { template: false, inspectorDepth: 3 } })).toBe(true);
+	});
+
+	it('rejects a wrong type on a key core acts on', () => {
+		expect(ok({ verbose: 'yes' })).toBe(false);
+		expect(ok({ sitemap: 'true' })).toBe(false);
+	});
+
+	// Loose at the top: the legacy aliases still arrive through the shim, and
+	// head and assets are validated by the modules that own them.
+	it('lets unknown top-level keys through', () => {
+		expect(ok({ enableSitemapTemplate: true, assetsESBuild: {} })).toBe(true);
+		expect(ok({ head: { titleSeparator: ' | ' }, assets: { esbuild: { minify: true } } })).toBe(true);
+	});
+
+	it('takes a media.image slice', () => {
+		expect(ok({ media: { image: { widths: [320, 640], formats: ['webp'], sizes: '50vw' } } })).toBe(true);
+		expect(ok({ media: { image: { widths: [320, 'auto'] } } })).toBe(true);
+	});
+
+	// Strict inside media, unlike head and assets: nothing here is forwarded to
+	// a third party, so every key it takes is one Baseline reads. A misspelling
+	// would otherwise do nothing, silently.
+	it('catches a misspelled key inside media', () => {
+		expect(ok({ media: { image: { width: [320] } } })).toBe(false);
+		expect(ok({ media: { images: { widths: [320] } } })).toBe(false);
+	});
+
+	it('rejects the wrong shape for a width', () => {
+		expect(ok({ media: { image: { widths: 320 } } })).toBe(false);
+		expect(ok({ media: { image: { widths: ['big'] } } })).toBe(false);
+		expect(ok({ media: { image: { sizes: 42 } } })).toBe(false);
 	});
 });

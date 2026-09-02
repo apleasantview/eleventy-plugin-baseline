@@ -2,18 +2,6 @@ import path from 'node:path';
 import Image from '@11ty/eleventy-img';
 import { createLogger } from '../logging/index.js';
 
-// No `'auto'`: it re-encodes the full-size original, which is the most
-// expensive rendition in the set and the one least often wanted. Pass
-// `widths: [...DEFAULT_WIDTHS, 'auto']` to get it back. eleventy-img never
-// upscales, so a width above the source's own is capped rather than wasted.
-export const DEFAULT_WIDTHS = [320, 640, 960, 1280, 1920];
-export const DEFAULT_FORMATS = ['avif', 'webp'];
-
-// The legacy half of the sizes attribute, used on its own for eager images and
-// as the fallback after `auto` for lazy ones. A guess about a content column,
-// which is what any fixed `sizes` string is.
-export const DEFAULT_SIZES = '(max-width: 768px) 100vw, 768px';
-
 // The `<img>` inside `<picture>` is what a client gets when it can use no
 // `<source>` at all, so it wants the most compatible format rather than the
 // first one the author listed. Same order and intent as eleventy-img's own
@@ -24,21 +12,22 @@ const FALLBACK_FORMAT_PREFERENCE = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp', 
  * Build the `sizes` attribute.
  *
  * A fixed `sizes` string is an assertion about a layout the shortcode cannot
- * see, and ours inherited WordPress's content width. `auto` replaces the guess
- * with the width the image is actually laid out at. It is valid on `<source>`
- * when a lazy `<img>` follows it, and browsers that do not support it read past
- * it to the rest of the list, so the legacy behaviour is unchanged.
+ * see, and Baseline's own inherited WordPress's content width. `auto` replaces
+ * that guess with the width the image is actually laid out at. It is valid on
+ * `<source>` when a lazy `<img>` follows it, and browsers without it read past
+ * it to the rest of the list, so nothing regresses.
  *
- * An explicit `sizes` is left alone: the guess is ours to improve, the
- * caller's answer is not.
+ * A `sizes` anyone authored is left alone, whether it arrived from the call site
+ * or the project's options: the guess is Baseline's to improve, an answer is
+ * not.
  *
  * @param {string} sizes - Resolved sizes value.
- * @param {boolean} isDefault - Whether it came from `DEFAULT_SIZES`.
+ * @param {boolean} authored - Whether somebody supplied it.
  * @param {string} loading - The `<img>` loading attribute.
  * @returns {string} Value for the `sizes` attribute.
  */
-function buildSizes(sizes, isDefault, loading) {
-	if (!isDefault || loading !== 'lazy') return sizes;
+function buildSizes(sizes, authored, loading) {
+	if (authored || loading !== 'lazy') return sizes;
 	return `auto, ${sizes}`;
 }
 
@@ -97,9 +86,14 @@ function pickRenditions(metadata) {
  * @param {Object} [context]
  * @param {import('../logging/index.js').BaselineLogger} [context.log] - Scoped logger.
  * @param {boolean} [context.hasImageTransformPlugin=false] - Marks output `eleventy:ignore` when true.
+ * @param {Object} [context.defaults] - Resolved `options.media.image`; the fallback for every call.
  * @returns {Function} The shortcode, bound to Eleventy's call context at render time.
  */
-export function createImageShortcode({ log = createLogger('image'), hasImageTransformPlugin = false } = {}) {
+export function createImageShortcode({
+	log = createLogger('image'),
+	hasImageTransformPlugin = false,
+	defaults = {}
+} = {}) {
 	/**
 	 * Responsive image shortcode using @11ty/eleventy-img.
 	 *
@@ -110,9 +104,9 @@ export function createImageShortcode({ log = createLogger('image'), hasImageTran
 	 * @param {("lazy"|"eager")} [options.loading="lazy"]   Loading behavior.
 	 * @param {Object} [options.img={}]                     Attributes for the <img> element.
 	 * @param {Object} [options.picture={}]                 Attributes for the <picture> element.
-	 * @param {Array<number|string>} [options.widths=DEFAULT_WIDTHS]   Widths passed to eleventy-img.
-	 * @param {string} [options.sizes=DEFAULT_SIZES]        Sizes attribute used on sources. Left verbatim when passed; the default gains `auto` on lazy images.
-	 * @param {string[]} [options.formats=DEFAULT_FORMATS]  Output formats (order matters).
+	 * @param {Array<number|string>} [options.widths]       Widths passed to eleventy-img. Defaults to `options.media.image.widths`.
+	 * @param {string} [options.sizes]                      Sizes attribute used on sources. Used verbatim; only Baseline's own guess gains `auto` on lazy images.
+	 * @param {string[]} [options.formats]                  Output formats (order matters). Defaults to `options.media.image.formats`.
 	 * @param {string} [options.outputDir]                  Output directory for generated assets.
 	 * @param {string} [options.urlPath="/media/"]          Public URL base for generated assets.
 	 * @param {boolean} [options.setDimensions=true]        When false, omit width/height on <img>.
@@ -124,9 +118,9 @@ export function createImageShortcode({ log = createLogger('image'), hasImageTran
 			alt,
 			caption = '',
 			loading = 'lazy',
-			widths = DEFAULT_WIDTHS,
-			sizes = DEFAULT_SIZES,
-			formats = DEFAULT_FORMATS,
+			widths = defaults.widths,
+			sizes = defaults.sizes,
+			formats = defaults.formats,
 			outputDir = path.join('.', outputBase, 'media'),
 			urlPath = '/media/',
 			setDimensions = true,
@@ -203,7 +197,7 @@ export function createImageShortcode({ log = createLogger('image'), hasImageTran
 
 		// --- HTML assembly ---
 		// One <source> per format, each carrying the full srcset for that format.
-		const resolvedSizes = buildSizes(sizes, options.sizes === undefined, loading);
+		const resolvedSizes = buildSizes(sizes, options.sizes !== undefined || defaults.sizesAuthored === true, loading);
 		const sourceTags = Object.values(metadata)
 			.map((formatEntries) => {
 				const type = formatEntries[0].sourceType;

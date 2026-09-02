@@ -6,15 +6,12 @@ import markdownItAttrs from 'markdown-it-attrs';
 
 import { createLogger, printBannerOnce } from './core/logging/index.js';
 import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
-import { settingsSchema } from './core/schema.js';
+import { optionsSchema, settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
 import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
-import {
-	createTranslationMapStore,
-	createTranslationIndexStore
-} from './core/translation-map-store.js';
+import { createTranslationMapStore, createTranslationIndexStore } from './core/translation-map-store.js';
 import { createSlugIndex } from './core/slug-index.js';
 import { registerSegmentation } from './core/segmentation/index.js';
 import { SEGMENT_DATA_KEY, PAGEBREAK_COMPUTED_KEY } from './core/segmentation/constants.js';
@@ -125,11 +122,19 @@ export default function baseline(settings = {}, options = {}) {
 		baseLog.warn('Single-object plugin arg is deprecated. Use baseline(settings, options).');
 	}
 
-	// Validate configuration shape (non-fatal).
-	const parsed = settingsSchema.safeParse(settings);
-	if (!parsed.success) {
-		for (const issue of parsed.error.issues) {
+	// Validate configuration shape (non-fatal). Modules validate their own
+	// option slices; this covers the keys the composition root reads.
+	const parsedSettings = settingsSchema.safeParse(settings);
+	if (!parsedSettings.success) {
+		for (const issue of parsedSettings.error.issues) {
 			baseLog.warn('settings:', `${issue.path.join('.')}, ${issue.message}`);
+		}
+	}
+
+	const parsedOptions = optionsSchema.safeParse(options);
+	if (!parsedOptions.success) {
+		for (const issue of parsedOptions.error.issues) {
+			baseLog.warn('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
@@ -214,7 +219,9 @@ export default function baseline(settings = {}, options = {}) {
 		// base decides what every relative URL becomes.
 		const baseHref = isPrepass ? '/' : state.settings.url || eleventyConfig.pathPrefix;
 		if (!isPrepass && hasAnyPlugin(eleventyConfig, ['@11ty/eleventy/html-base-plugin', 'eleventyHtmlBasePlugin'])) {
-			baseLog.warn(`HtmlBasePlugin is already registered, so yours wins and Baseline's base ("${baseHref}") is not applied.`);
+			baseLog.warn(
+				`HtmlBasePlugin is already registered, so yours wins and Baseline's base ("${baseHref}") is not applied.`
+			);
 		}
 
 		eleventyConfig.addPlugin(HtmlBasePlugin, { baseHref });
@@ -450,7 +457,14 @@ export default function baseline(settings = {}, options = {}) {
 			})
 		);
 
-		registrar.shortcode('image', createImageShortcode({ log: scopedLog('image'), hasImageTransformPlugin }));
+		registrar.shortcode(
+			'image',
+			createImageShortcode({
+				log: scopedLog('image'),
+				hasImageTransformPlugin,
+				defaults: state.options.media.image
+			})
+		);
 
 		if (registrar.skipped.length) {
 			scopedLog().status(`Already defined here, left alone: ${registrar.skipped.join(', ')}`);
@@ -464,14 +478,6 @@ export default function baseline(settings = {}, options = {}) {
 	Object.defineProperty(plugin, 'name', { value: name });
 	return plugin;
 }
-
-/**
- * Image shortcode defaults (external contract)
- *
- * Published so a project can read what the shortcode assumes and spread it
- * into its own calls, rather than copying the values or the whole shortcode.
- */
-export { DEFAULT_WIDTHS as imageWidths, DEFAULT_FORMATS as imageFormats, DEFAULT_SIZES as imageSizes } from './core/surface/index.js';
 
 /**
  * Eleventy directory configuration (external contract)

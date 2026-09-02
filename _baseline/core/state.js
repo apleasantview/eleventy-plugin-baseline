@@ -40,6 +40,19 @@
  * @param {unknown} url - User-supplied `settings.url`.
  * @returns {string | undefined} Absolute href, or undefined if unusable.
  */
+// Image defaults live here rather than in the shortcode, because this file is
+// where every other default is applied. Cheap and safe: no `'auto'` width, which
+// re-encodes the full-size original.
+//
+// IMAGE_SIZES is a fallback rather than a chosen value. The shortcode puts
+// `auto` in front of it on lazy images, so it is only read where `auto` cannot
+// resolve, and there a bounded guess beats `100vw`, which would send every such
+// browser after the largest candidate under the viewport. The number itself is
+// inherited and unexamined; nothing should present it as a considered default.
+const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920];
+const IMAGE_FORMATS = ['avif', 'webp'];
+const IMAGE_SIZES = '(max-width: 768px) 100vw, 768px';
+
 function resolveSiteUrl(url) {
 	if (typeof url !== 'string') return undefined;
 
@@ -86,6 +99,17 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 		},
 		assets: {
 			esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
+		},
+		media: {
+			image: {
+				widths: options.media?.image?.widths ?? IMAGE_WIDTHS,
+				formats: options.media?.image?.formats ?? IMAGE_FORMATS,
+				sizes: options.media?.image?.sizes ?? IMAGE_SIZES,
+				// `auto` is prepended to Baseline's own guess and never to an answer
+				// somebody gave. Resolution happens here, so the fact that it was a
+				// guess has to travel with the value rather than be deduced later.
+				sizesAuthored: options.media?.image?.sizes !== undefined
+			}
 		}
 	};
 

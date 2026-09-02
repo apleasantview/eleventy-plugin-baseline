@@ -72,3 +72,39 @@ describe('deriveBaselineState — verbosity', () => {
 		expect(deriveOptions({ verbose: false })).toMatchObject({ verbose: false, silent: true });
 	});
 });
+
+// The image defaults live here rather than in the shortcode, because this is
+// where every other default is applied. `media` rather than `image` as the
+// namespace: it is the word already used for the output directory.
+describe('deriveBaselineState — media.image', () => {
+	const image = (options) => deriveOptions(options).media.image;
+
+	it('applies cheap and safe defaults', () => {
+		const defaults = image({});
+
+		// `'auto'` re-encodes the full-size original, the most expensive
+		// rendition in the set. It is opt-in.
+		expect(defaults.widths).not.toContain('auto');
+		expect(defaults.formats).toEqual(['avif', 'webp']);
+		expect(defaults.sizes).toMatch(/max-width/);
+	});
+
+	it('lets a project replace any one of them', () => {
+		expect(image({ media: { image: { widths: [640, 1280] } } }).widths).toEqual([640, 1280]);
+	});
+
+	it('leaves the keys a project did not set alone', () => {
+		const resolved = image({ media: { image: { widths: [640] } } });
+
+		expect(resolved.formats).toEqual(['avif', 'webp']);
+		expect(resolved.sizes).toBe(image({}).sizes);
+	});
+
+	// `auto` is prepended to Baseline's guess and never to somebody's answer, so
+	// whether the value was authored has to travel with it rather than be
+	// deduced at the call site.
+	it('records whether sizes was authored', () => {
+		expect(image({}).sizesAuthored).toBe(false);
+		expect(image({ media: { image: { sizes: '50vw' } } }).sizesAuthored).toBe(true);
+	});
+});

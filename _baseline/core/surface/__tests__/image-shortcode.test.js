@@ -22,15 +22,26 @@ vi.mock('@11ty/eleventy-img', () => ({
 	}
 }));
 
-const { createImageShortcode, DEFAULT_WIDTHS, DEFAULT_FORMATS, DEFAULT_SIZES } = await import('../image-shortcode.js');
+const { createImageShortcode } = await import('../image-shortcode.js');
+const { deriveBaselineState } = await import('../../state.js');
+
+// The real resolved defaults, so these tests break if the wiring between
+// `options.media.image` and the shortcode ever comes apart.
+const DEFAULTS = deriveBaselineState({}, {}).options.media.image;
+const DEFAULT_WIDTHS = DEFAULTS.widths;
+const DEFAULT_SIZES = DEFAULTS.sizes;
 
 const log = { status() {}, info() {}, warn() {}, error() {} };
 
 const context = { eleventy: { directories: { input: 'src', output: 'dist' } } };
 
-// A fresh factory per call, so the deprecation nags do not carry between tests.
+// A fresh factory per call, so nothing a factory holds carries between tests.
 const render = (options, factoryContext) =>
-	createImageShortcode({ log, ...factoryContext }).call(context, { src: '/img/x.jpg', alt: 'x', ...options });
+	createImageShortcode({ log, defaults: DEFAULTS, ...factoryContext }).call(context, {
+		src: '/img/x.jpg',
+		alt: 'x',
+		...options
+	});
 
 describe('image shortcode — when generation is deferred', () => {
 	let saved;
@@ -159,19 +170,35 @@ describe('image shortcode — the <picture> fallback', () => {
 
 // Published so a project can read what the shortcode assumes instead of
 // copying the values, or the whole shortcode, as one consumer already has.
-describe('image shortcode — published defaults', () => {
-	it('exports the three defaults', () => {
-		expect(DEFAULT_WIDTHS).toContain(1920);
-		expect(DEFAULT_FORMATS).toEqual(['avif', 'webp']);
-		expect(DEFAULT_SIZES).toMatch(/max-width/);
+describe('image shortcode — where the defaults come from', () => {
+	beforeEach(() => {
+		state.metadata = null;
+		imageCalls.length = 0;
 	});
 
-	it('reaches the package entry point under stable names', async () => {
-		const pkg = await import('../../../index.js');
+	it('takes them from resolved state, not from the module', async () => {
+		await render({}, { defaults: { widths: [100], formats: ['webp'], sizes: '50vw' } });
 
-		expect(pkg.imageWidths).toEqual(DEFAULT_WIDTHS);
-		expect(pkg.imageFormats).toEqual(DEFAULT_FORMATS);
-		expect(pkg.imageSizes).toEqual(DEFAULT_SIZES);
+		expect(imageCalls[0].options.widths).toEqual([100]);
+		expect(imageCalls[0].options.formats).toEqual(['webp']);
+	});
+
+	// The project's house style, set once at registration.
+	it('lets options.media.image replace them', () => {
+		const state = deriveBaselineState({}, { media: { image: { widths: [640], formats: ['webp'] } } });
+
+		expect(state.options.media.image.widths).toEqual([640]);
+		expect(state.options.media.image.formats).toEqual(['webp']);
+		// Untouched keys keep the fallback.
+		expect(state.options.media.image.sizes).toBe(DEFAULT_SIZES);
+	});
+
+	// Most specific wins: a single call still beats the project's setting.
+	it('lets a call override the project setting', async () => {
+		const state = deriveBaselineState({}, { media: { image: { widths: [640] } } });
+		await render({ widths: [200] }, { defaults: state.options.media.image });
+
+		expect(imageCalls[0].options.widths).toEqual([200]);
 	});
 });
 
