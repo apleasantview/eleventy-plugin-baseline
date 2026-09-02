@@ -22,6 +22,8 @@ import { registerPageContext } from './core/page-context/index.js';
 import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugify } from './core/utils/slugify.js';
+import { hasAnyPlugin } from './core/utils/has-plugin.js';
+import { createRegistrar } from './core/utils/registrar.js';
 import { resolveDefault } from './core/locale/index.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 import {
@@ -207,9 +209,15 @@ export default function baseline(settings = {}, options = {}) {
 			);
 		}
 
-		eleventyConfig.addPlugin(HtmlBasePlugin, {
-			baseHref: isPrepass ? '/' : state.settings.url || eleventyConfig.pathPrefix
-		});
+		// HtmlBasePlugin is `unique`, so Eleventy drops this registration without
+		// a word when the project made one first. Fair outcome, bad silence: the
+		// base decides what every relative URL becomes.
+		const baseHref = isPrepass ? '/' : state.settings.url || eleventyConfig.pathPrefix;
+		if (!isPrepass && hasAnyPlugin(eleventyConfig, ['@11ty/eleventy/html-base-plugin', 'eleventyHtmlBasePlugin'])) {
+			baseLog.warn(`HtmlBasePlugin is already registered, so yours wins and Baseline's base ("${baseHref}") is not applied.`);
+		}
+
+		eleventyConfig.addPlugin(HtmlBasePlugin, { baseHref });
 
 		// --- Pre-pass wiring ---
 		// One mechanic: the pre-pass runs at the start of every Eleventy
@@ -231,12 +239,15 @@ export default function baseline(settings = {}, options = {}) {
 		registerGlobals(eleventyConfig);
 
 		// --- Feature exposure to templates ---
-		// Detection matches on `Function.name`, so passing the plugin through
-		// unwrapped works and wrapping it in an arrow, renaming the import or
-		// calling it through a factory silently returns false. The consequence is
-		// quiet: `eleventy:ignore` is omitted and both pipelines process the same
-		// image. Saying what was detected turns that into a line to check.
-		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
+		// Detection matches on `Function.name`, so wrapping the plugin in an
+		// arrow or a factory silently returns false, `eleventy:ignore` is
+		// omitted and both pipelines process the same image. Saying what was
+		// detected turns that into a line to check. Two names because the
+		// export alias and the declaration differ upstream; see `hasAnyPlugin`.
+		const hasImageTransformPlugin = hasAnyPlugin(eleventyConfig, [
+			'eleventyImageTransformPlugin',
+			'imageTransformPlugin'
+		]);
 		scopedLog('image').info(
 			hasImageTransformPlugin
 				? 'eleventyImageTransformPlugin detected, Baseline will mark its own output eleventy:ignore'
@@ -418,14 +429,18 @@ export default function baseline(settings = {}, options = {}) {
 		// themselves.
 		if (announce) baseLog.info(`Modules: ${active.join(', ')}`);
 
-		// --- Filters ---
-		eleventyConfig.addFilter('markdownify', markdownFilter);
-		eleventyConfig.addFilter('relatedPosts', relatedPostsFilter);
-		eleventyConfig.addFilter('isString', isStringFilter);
+		// --- Filters and shortcodes ---
+		// Registered through the registrar, which yields any name the project
+		// already defined rather than overwriting it.
+		const registrar = createRegistrar(eleventyConfig);
+
+		registrar.filter('markdownify', markdownFilter);
+		registrar.filter('relatedPosts', relatedPostsFilter);
+		registrar.filter('isString', isStringFilter);
 
 		// String translation, registered whether or not multilang is active: a
 		// single-language site still benefits from one place for its UI strings.
-		eleventyConfig.addFilter(
+		registrar.filter(
 			't',
 			createTFilter({
 				getDefaultLanguage: () => resolveDefault(state.settings).lang,
@@ -433,8 +448,11 @@ export default function baseline(settings = {}, options = {}) {
 			})
 		);
 
-		// --- Shortcodes ---
-		eleventyConfig.addShortcode('image', imageShortcode);
+		registrar.shortcode('image', imageShortcode);
+
+		if (registrar.skipped.length) {
+			scopedLog().status(`Already defined here, left alone: ${registrar.skipped.join(', ')}`);
+		}
 
 		// --- Dev image pipeline ---
 		eleventyConfig.addPlugin(eleventyImageOnRequestDuringServePlugin);
