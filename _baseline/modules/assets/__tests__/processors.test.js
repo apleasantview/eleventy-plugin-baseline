@@ -1,4 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import assetsESbuild from '../processors/esbuild-process.js';
 import assetsPostCSS from '../processors/postcss-process.js';
 
@@ -66,5 +70,65 @@ describe('asset processors on failure', () => {
 		await withRunMode(undefined, async () => {
 			await expect(assetsPostCSS(MISSING)).resolves.toBe('/* Error processing CSS */');
 		});
+	});
+});
+
+// Real esbuild, a real entry file. The point of these is that the options bag
+// is a pass-through, which is what the docs have always claimed and what the
+// processor did not do until it read only `minify` and `target`.
+describe('esbuild options pass through', () => {
+	let directory;
+	let entry;
+
+	beforeAll(() => {
+		directory = fs.mkdtempSync(path.join(os.tmpdir(), 'baseline-esbuild-'));
+		entry = path.join(directory, 'index.js');
+		fs.writeFileSync(entry, 'const greeting = "hi";\nconsole.log(greeting, WHO);\n');
+	});
+
+	afterAll(() => {
+		fs.rmSync(directory, { recursive: true, force: true });
+	});
+
+	it('still applies its own defaults', async () => {
+		const js = await assetsESbuild(entry, { define: { WHO: '"world"' } });
+
+		// minify: true, so the local name is gone and there is no indentation.
+		expect(js).not.toContain('greeting');
+		expect(js).toContain('world');
+	});
+
+	it('takes an option it never read before', async () => {
+		const js = await assetsESbuild(entry, {
+			define: { WHO: '"world"' },
+			banner: { js: '/* baseline */' }
+		});
+
+		expect(js.startsWith('/* baseline */')).toBe(true);
+	});
+
+	it('lets a default be overridden', async () => {
+		const js = await assetsESbuild(entry, { define: { WHO: '"world"' }, minify: false });
+
+		expect(js).toContain('greeting');
+	});
+
+	// Two keys are not the caller's to set. `entryPoints` is the argument, and
+	// `write` would send the bytes to disk and leave this function returning
+	// nothing readable.
+	it('keeps entryPoints and write to itself', async () => {
+		const decoy = path.join(directory, 'decoy.js');
+		fs.writeFileSync(decoy, 'console.log("decoy");\n');
+
+		const js = await assetsESbuild(entry, {
+			define: { WHO: '"world"' },
+			entryPoints: [decoy],
+			write: true,
+			outfile: path.join(directory, 'out.js')
+		});
+
+		expect(js).toContain('world');
+		expect(js).not.toContain('decoy');
+		expect(fs.existsSync(path.join(directory, 'out.js'))).toBe(false);
 	});
 });

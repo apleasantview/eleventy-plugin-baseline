@@ -35,13 +35,18 @@ import { createLogger } from '../../../core/logging/index.js';
  */
 
 const log = createLogger('assets-esbuild');
-const defaultOptions = { minify: true, target: 'es2020' };
+const defaultOptions = { minify: true, target: 'es2020', bundle: true };
 
 /**
  * Bundle a JS file with esbuild.
  *
+ * Options are passed through, so anything esbuild takes is reachable and only
+ * `minify`, `target` and `bundle` carry a default. Two keys are Baseline's and
+ * are applied last: `entryPoints`, because the caller names the file, and
+ * `write: false`, because this function returns text rather than emitting it.
+ *
  * @param {string} jsFilePath - Absolute path to the entry file.
- * @param {Object} [options] - esbuild options (merged with defaults).
+ * @param {Object} [options] - esbuild options, merged over the defaults.
  * @param {boolean} [options.minify=true] - Minify output.
  * @param {string} [options.target='es2020'] - esbuild target.
  * @returns {Promise<string>} Bundled JS text, or an error comment on failure.
@@ -51,10 +56,8 @@ export default async function assetsESbuild(jsFilePath, options = {}) {
 
 	try {
 		let result = await esbuild.build({
+			...userOptions,
 			entryPoints: [jsFilePath],
-			bundle: true,
-			minify: userOptions.minify,
-			target: userOptions.target,
 			write: false
 		});
 
