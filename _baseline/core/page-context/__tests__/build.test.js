@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPageContext, applyTitleTemplate, resolveTitle, buildBreadcrumbs } from '../build.js';
+import { createPageContext, applyTitleTemplate, resolveTitle, buildBreadcrumbs, languageBase } from '../build.js';
 
 // Drive the public builder and read the merged `head` it produces. These guard
 // the dedupe regression: distinct tags must survive the settings + front-matter
@@ -323,5 +323,52 @@ describe('buildBreadcrumbs', () => {
 		expect(def[0].url).toBe('/');
 		const none = buildBreadcrumbs({ section: ['docs'], url: '/docs/', title: 'Docs', lang: 'en' });
 		expect(none[0].url).toBe('/');
+	});
+});
+
+// `isHome` compared page.url against a literal '/', so on a multilingual site
+// exactly one page was ever home. Every other language's front page took the
+// interior branch of resolveTitle and kept the site-name suffix, from front
+// matter identical to the default language's.
+describe('languageBase', () => {
+	it('prefixes only a deliberately non-default language', () => {
+		expect(languageBase({ lang: 'nl', isDefaultLang: false })).toBe('/nl');
+		expect(languageBase({ lang: 'en', isDefaultLang: true })).toBe('');
+	});
+
+	it('stays empty when multilang is off, so no page gains a spurious prefix', () => {
+		expect(languageBase({ lang: 'nl' })).toBe('');
+		expect(languageBase({})).toBe('');
+		expect(languageBase()).toBe('');
+	});
+});
+
+describe('query.isHome', () => {
+	const contextFor = (page) => {
+		const build = createPageContext({
+			scope: { values: new Map() },
+			slugIndex: null,
+			settings: { url: 'https://www.example.com', title: 'Demo' },
+			runtime: {},
+			options: {}
+		});
+		return build({ page, title: 'T' });
+	};
+
+	it('is true at the site root on a single-language site', () => {
+		expect(contextFor({ url: '/' }).query.isHome).toBe(true);
+		expect(contextFor({ url: '/about/' }).query.isHome).toBe(false);
+	});
+
+	it('is true at a non-default language root', () => {
+		expect(contextFor({ url: '/nl/', lang: 'nl', isDefaultLang: false }).query.isHome).toBe(true);
+	});
+
+	it('is false for an interior page in that language', () => {
+		expect(contextFor({ url: '/nl/about/', lang: 'nl', isDefaultLang: false }).query.isHome).toBe(false);
+	});
+
+	it('does not treat the site root as home for a non-default language', () => {
+		expect(contextFor({ url: '/', lang: 'nl', isDefaultLang: false }).query.isHome).toBe(false);
 	});
 });

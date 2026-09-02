@@ -48,6 +48,25 @@ export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, sepa
 }
 
 /**
+ * The URL prefix a language's pages sit behind, empty for the site root.
+ *
+ * Only a deliberately non-default language prefixes the path. Absence of
+ * `isDefaultLang` means no multilang at all, so the root stays the root and
+ * never acquires a spurious `/{lang}`.
+ *
+ * Shared so the breadcrumb trail and the `isHome` test answer the question
+ * the same way. They did not: `isHome` compared against a literal `/`, so on
+ * a multilingual site exactly one page was ever home, and every other
+ * language's front page was composed as an interior page.
+ *
+ * @param {{ lang?: string, isDefaultLang?: boolean }} input
+ * @returns {string} `/{lang}` or an empty string.
+ */
+export function languageBase({ lang, isDefaultLang } = {}) {
+	return isDefaultLang === false && lang ? `/${lang}` : '';
+}
+
+/**
  * Resolve a breadcrumb trail from the page's ancestor section path.
  *
  * `section` is the containing-directory chain, not a path that ends at the
@@ -76,9 +95,7 @@ export function resolveTitle({ data, isHome, pageTitle, siteTitle, tagline, sepa
 export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang, homeLabel, sectionLabels } = {}) {
 	if (!section?.length || !url) return [];
 
-	// Only a deliberately non-default language prefixes the path; absence
-	// (no multilang) keeps the root, never a spurious `/{lang}`.
-	const base = isDefaultLang === false && lang ? `/${lang}` : '';
+	const base = languageBase({ lang, isDefaultLang });
 
 	// The site root is its own Home crumb, so it has no trail to show.
 	if (url === `${base}/`) return [];
@@ -258,7 +275,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 
 	function buildQuery({ page }) {
 		return {
-			isHome: page.url === '/'
+			isHome: page?.url === `${languageBase(page)}/`
 		};
 	}
 
