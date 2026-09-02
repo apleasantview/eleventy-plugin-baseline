@@ -94,18 +94,22 @@ export async function imageShortcode(options = {}) {
 	};
 
 	// --- Image processing ---
-	// In serve mode, `transformOnRequest` defers processing to first browser request
-	// for faster dev startup. If it fails, retry without it — this is an edge case
-	// but one that has bitten in practice. In build mode, errors surface immediately.
+	// `transformOnRequest` returns the metadata without generating the files.
+	// Serve mode wants that for a faster dev start, and so does the pre-pass:
+	// it renders every page into a dryRun that writes nothing, so generating
+	// there means generating each rendition twice per build. The graph needs
+	// the markup, not the bytes. If it fails, retry without it — an edge case
+	// that has bitten in practice. A real build surfaces errors instead.
+	const deferred = process.env.ELEVENTY_RUN_MODE === 'serve' || process.env.BASELINE_PREPASS_ACTIVE === '1';
 
 	let metadata;
 	try {
 		metadata = await Image(resolvedSrc, {
-			transformOnRequest: process.env.ELEVENTY_RUN_MODE === 'serve',
+			transformOnRequest: deferred,
 			...imageOptions
 		});
 	} catch (error) {
-		if (process.env.ELEVENTY_RUN_MODE === 'serve') {
+		if (deferred) {
 			log.warn(`transformOnRequest failed for ${src}, retrying. ${error?.message || error}`);
 			metadata = await Image(resolvedSrc, imageOptions);
 		} else {

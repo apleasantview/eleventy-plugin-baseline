@@ -231,7 +231,9 @@ export default function baseline(settings = {}, options = {}) {
 					eleventyConfig.directories?.input,
 					eleventyConfig.directories?.output,
 					scopedLog,
-					{ quietMode: true }
+					// The graph reads pages. Stylesheets and scripts are neither, and
+					// compiling them into a dryRun is the pre-pass's largest waste.
+					{ quietMode: true, ignore: [eleventyConfig.directories?.assets] }
 				);
 			});
 		}

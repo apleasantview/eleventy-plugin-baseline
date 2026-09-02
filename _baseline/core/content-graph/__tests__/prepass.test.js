@@ -61,3 +61,43 @@ describe('runPrepass — nested instance environment', () => {
 		expect(constructorCalls[0].options.dryRun).toBe(true);
 	});
 });
+
+// Compiling the asset pipeline into a dryRun was the pre-pass's largest single
+// waste: 512ms of 3.35s on the docs site, for output nothing reads.
+describe('runPrepass — ignored directories', () => {
+	const runConfig = (call) => {
+		const ignores = new Set();
+		call.options.config({ ignores, dataFilterSelectors: new Set() });
+		return [...ignores];
+	};
+
+	beforeEach(() => {
+		constructorCalls.length = 0;
+	});
+
+	it('turns a directory into a glob the ignores set matches on', async () => {
+		await runPrepass('src', 'dist', silentLog, { ignore: ['./src/assets/'] });
+
+		expect(runConfig(constructorCalls[0])).toEqual(['src/assets/**']);
+	});
+
+	it('takes the shapes a directory value actually arrives in', async () => {
+		await runPrepass('src', 'dist', silentLog, { ignore: ['src/assets', 'site/media/'] });
+
+		expect(runConfig(constructorCalls[0])).toEqual(['src/assets/**', 'site/media/**']);
+	});
+
+	// A project that never registered the dir hands through undefined.
+	it('ignores nothing when given nothing', async () => {
+		await runPrepass('src', 'dist', silentLog, { ignore: [undefined] });
+
+		expect(runConfig(constructorCalls[0])).toEqual([]);
+	});
+
+	it('keeps `ignore` out of the Eleventy constructor options', async () => {
+		await runPrepass('src', 'dist', silentLog, { ignore: ['src/assets'], quietMode: true });
+
+		expect(constructorCalls[0].options.ignore).toBeUndefined();
+		expect(constructorCalls[0].options.quietMode).toBe(true);
+	});
+});

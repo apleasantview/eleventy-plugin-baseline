@@ -53,6 +53,18 @@ export const PREPASS_ACTIVE = 'BASELINE_PREPASS_ACTIVE';
 export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content-graph.json');
 
 /**
+ * Turn a directory path into a glob Eleventy's `ignores` set accepts.
+ * Directory values arrive in several shapes (`./src/assets/`, `src/assets`),
+ * and the leading `./` is what `ignores` will not match on.
+ *
+ * @param {string} dir
+ * @returns {string} Glob covering everything under the directory.
+ */
+function toDirGlob(dir) {
+	return `${String(dir).replace(/^\.\//, '').replace(/\/+$/, '')}/**`;
+}
+
+/**
  * Run a programmatic Eleventy, extract the content graph, write it to disk,
  * return the in-memory graph.
  *
@@ -69,7 +81,8 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  * @param {string} input
  * @param {string} output
  * @param {(namespace: string) => { status: Function, info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
- * @param {object} [options]
+ * @param {object} [options] - Eleventy constructor options, plus `ignore`.
+ * @param {string[]} [options.ignore] - Directories the inner build should skip.
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, scopedLog, options = {}) {
@@ -85,7 +98,8 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
-	const elevOptions = options;
+	const { ignore = [], ...elevOptions } = options;
+	const ignoreGlobs = ignore.filter(Boolean).map(toDirGlob);
 
 	let graph;
 	try {
@@ -101,6 +115,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 			dryRun: true,
 			// Surface fields the graph and backlink enrichment read off `data`.
 			config: function (eleventyConfig) {
+				for (const glob of ignoreGlobs) eleventyConfig.ignores.add(glob);
 				eleventyConfig.dataFilterSelectors.add('_pageContext'); // -> Future pass.
 				eleventyConfig.dataFilterSelectors.add('eleventyExcludeFromCollections');
 				eleventyConfig.dataFilterSelectors.add('baselineExcludeFromGraph');
