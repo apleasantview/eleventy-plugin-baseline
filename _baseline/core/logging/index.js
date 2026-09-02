@@ -36,6 +36,7 @@ export * from './quips.js';
 
 /**
  * @typedef {Object} BaselineLogger
+ * @property {(...args: unknown[]) => void} status Default tier: on unless silenced.
  * @property {(...args: unknown[]) => void} info   Verbose-only.
  * @property {(...args: unknown[]) => void} warn   Always visible.
  * @property {(...args: unknown[]) => void} error  Always visible.
@@ -59,7 +60,7 @@ export * from './quips.js';
  * @param {{ verbose?: boolean, quiet?: boolean | (() => boolean) }} [options]
  * @returns {BaselineLogger}
  */
-export function createLogger(namespace, { verbose = false, quiet = false } = {}) {
+export function createLogger(namespace, { verbose = false, quiet = false, silent = false } = {}) {
 	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
 	const isQuiet = typeof quiet === 'function' ? quiet : () => quiet === true;
 
@@ -72,6 +73,15 @@ export function createLogger(namespace, { verbose = false, quiet = false } = {})
 	const isPrepass = () => process.env.BASELINE_PREPASS_ACTIVE === '1';
 
 	return {
+		// The default tier. Not narrative and not a problem: the few lines worth
+		// printing when the consumer has said nothing either way. Ignores
+		// `verbose`, obeys an explicit silence and Eleventy's quiet mode.
+		status: (...args) => {
+			if (silent) return;
+			if (isQuiet()) return;
+			if (isPrepass()) return;
+			console.log(chalk.gray(label), ...args);
+		},
 		info: (...args) => {
 			if (!verbose) return;
 			if (isQuiet()) return;

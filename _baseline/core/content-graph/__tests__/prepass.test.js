@@ -22,7 +22,7 @@ vi.mock('node:fs/promises', () => ({
 
 const { runPrepass } = await import('../prepass.js');
 
-const silentLog = () => ({ info: () => {}, warn: () => {}, error: () => {} });
+const silentLog = () => ({ status: () => {}, info: () => {}, warn: () => {}, error: () => {} });
 
 describe('runPrepass — nested instance environment', () => {
 	let saved;

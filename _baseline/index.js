@@ -60,10 +60,10 @@ const INTERNAL_KEYS = [
 	'eleventyComputed._edges'
 ];
 
-// Base logger outputs regardless of options.
+// Base logger outputs regardless of options: it runs before state exists, so
+// there is nothing to gate it on. The three lines it emits at plugin init are
+// gated at their call sites instead, by `announce` below.
 const baseLog = createLogger(null, { verbose: true });
-
-printBannerOnce(baseLog, { version, eleventyVersion });
 
 let contentGraph = null;
 
@@ -133,7 +133,6 @@ export default function baseline(settings = {}, options = {}) {
 
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
-	baseLog.info('Settings and options resolved');
 
 	// Set by the initializer below, so the logging helper can read Eleventy's
 	// quiet mode. It is not available in this scope until the plugin runs.
@@ -143,6 +142,7 @@ export default function baseline(settings = {}, options = {}) {
 	function scopedLog(name) {
 		return createLogger(name, {
 			verbose: state.options.verbose,
+			silent: state.options.silent,
 			// Read per call: --quiet arrives through _setQuietModeOverride and a
 			// consumer can flip it from their own config after we register.
 			quiet: () => activeConfig?.quietMode === true
@@ -157,6 +157,12 @@ export default function baseline(settings = {}, options = {}) {
 	 */
 	const plugin = async function (eleventyConfig) {
 		activeConfig = eleventyConfig;
+
+		// Three states, not two. Saying nothing gets the banner, the version line
+		// and one module summary. `verbose: false` is an explicit request for
+		// quiet and drops all three. Eleventy's own `--quiet` does the same.
+		const announce = !state.options.silent && eleventyConfig.quietMode !== true;
+		if (announce) printBannerOnce(baseLog, { version, eleventyVersion });
 
 		// The pre-pass runs Eleventy inside Eleventy. The inner build renders
 		// only to be parsed, so it wants path-only hrefs rather than absolute
@@ -389,6 +395,12 @@ export default function baseline(settings = {}, options = {}) {
 			eleventyConfig.addPlugin(plugin, moduleContext);
 			active.push(name);
 		}
+
+		// The one line the default tier earns: which modules are on. Activation is
+		// conditional in ways people get wrong, and what you cannot see is what is
+		// absent, so the set is worth more than five modules each announcing
+		// themselves.
+		if (announce) baseLog.info(`Modules: ${active.join(', ')}`);
 
 		// --- Filters ---
 		eleventyConfig.addFilter('markdownify', markdownFilter);

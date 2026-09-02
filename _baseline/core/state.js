@@ -70,7 +70,13 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 	};
 
 	const resolvedOptions = {
-		verbose: options.verbose ?? true,
+		// Quiet by default: the banner, the version line and one module summary,
+		// and nothing else. `verbose: true` opts into the full narrative.
+		verbose: options.verbose ?? false,
+		// `verbose: false` is a stronger statement than saying nothing. Absent
+		// means "the default is fine"; an explicit false means "be quiet", and
+		// that includes the three lines the default still prints.
+		silent: options.verbose === false,
 		multilang: options.multilingual ?? false,
 		sitemap: options.sitemap ?? options.enableSitemapTemplate ?? true,
 		navigator: options.navigator ?? options.enableNavigatorTemplate ?? isDev,

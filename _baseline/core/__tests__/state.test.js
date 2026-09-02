@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { deriveBaselineState } from '../state.js';
 
 const derive = (settings) => deriveBaselineState(settings, {}, {}).settings;
+const deriveOptions = (options) => deriveBaselineState({}, options, {}).options;
 
 describe('deriveBaselineState — settings.url', () => {
 	it('keeps an absolute http(s) URL', () => {
@@ -52,5 +53,22 @@ describe('deriveBaselineState — the identity keys page context reads', () => {
 
 	it('leaves an absent description absent rather than inventing one', () => {
 		expect(derive({}).description).toBeUndefined();
+	});
+});
+
+// Saying nothing and saying `false` are different requests. Unset means "the
+// default is fine" and still prints the banner, the version line and one module
+// summary; an explicit false means "be quiet" and drops all three.
+describe('deriveBaselineState — verbosity', () => {
+	it('is quiet by default, without being silent', () => {
+		expect(deriveOptions({})).toMatchObject({ verbose: false, silent: false });
+	});
+
+	it('opts into the narrative on true', () => {
+		expect(deriveOptions({ verbose: true })).toMatchObject({ verbose: true, silent: false });
+	});
+
+	it('treats an explicit false as a request for silence', () => {
+		expect(deriveOptions({ verbose: false })).toMatchObject({ verbose: false, silent: true });
 	});
 });

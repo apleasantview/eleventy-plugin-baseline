@@ -68,7 +68,7 @@ export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content
  *
  * @param {string} input
  * @param {string} output
- * @param {(namespace: string) => { info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
+ * @param {(namespace: string) => { status: Function, info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
  * @param {object} [options]
  * @returns {Promise<object>}
  */
@@ -76,8 +76,11 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	const log = scopedLog('pre-pass');
 	const graphLog = scopedLog('content-graph');
 
-	log.info('Pre-pass starting');
-	log.info(chalk.cyan(pickRepetitionQuip()));
+	// Default tier, not narrative: the pre-pass is the one part of a Baseline
+	// build with a wait attached to it, so saying it started is a courtesy the
+	// quiet default keeps.
+	log.status('Pre-pass starting');
+	log.status(chalk.cyan(pickRepetitionQuip()));
 	graphLog.info('Caching content graph');
 	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
@@ -110,7 +113,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
 	} finally {
 		process.env[PREPASS_ACTIVE] = '0';
-		log.info('Pre-pass done');
+		log.status('Pre-pass done');
 	}
 
 	return graph;

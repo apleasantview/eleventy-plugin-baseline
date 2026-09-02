@@ -186,3 +186,46 @@ describe('quiet mode', () => {
 		expect(spy).toHaveBeenCalled();
 	});
 });
+
+// The default tier: the handful of lines worth printing when the consumer has
+// said nothing either way. The pre-pass bracket is the case that earns it,
+// because it is the one part of a Baseline build with a wait attached.
+describe('status', () => {
+	afterEach(() => {
+		delete process.env.BASELINE_PREPASS_ACTIVE;
+		vi.restoreAllMocks();
+	});
+
+	it('emits with verbose off, which is the whole point of it', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+		createLogger('pre-pass', { verbose: false }).status('starting');
+
+		expect(spy).toHaveBeenCalledWith('[baseline/pre-pass]', 'starting');
+	});
+
+	it('is dropped by an explicit silence', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+		createLogger(null, { silent: true }).status('starting');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it('is dropped by quiet mode', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+		createLogger(null, { quiet: true }).status('starting');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it('is dropped inside the pre-pass, so the inner build does not echo it', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+		process.env.BASELINE_PREPASS_ACTIVE = '1';
+
+		createLogger(null).status('starting');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+});
