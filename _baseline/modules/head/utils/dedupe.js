@@ -5,10 +5,17 @@
  * @returns {Array<Object>}
  */
 function metaKey(meta) {
+	// `media` is part of the identity, not decoration: two `theme-color` tags
+	// that differ only by media query are answers to two different questions,
+	// and keying on the name alone silently kept one. Media-scoped theme-color
+	// is the canonical use of the attribute, so any site with a dark mode hit
+	// this. Tags carrying no `media` key exactly as they always did.
+	const scope = meta.media ? `|media:${meta.media}` : '';
+
 	if (meta.charset) return 'charset';
-	if (meta.name) return `name:${meta.name}`;
-	if (meta.property) return `prop:${meta.property}`;
-	if (meta['http-equiv']) return `http:${meta['http-equiv']}`;
+	if (meta.name) return `name:${meta.name}${scope}`;
+	if (meta.property) return `prop:${meta.property}${scope}`;
+	if (meta['http-equiv']) return `http:${meta['http-equiv']}${scope}`;
 	return null;
 }
 
