@@ -87,12 +87,14 @@ function pickRenditions(metadata) {
  * @param {import('../logging/index.js').BaselineLogger} [context.log] - Scoped logger.
  * @param {boolean} [context.hasImageTransformPlugin=false] - Marks output `eleventy:ignore` when true.
  * @param {Object} [context.defaults] - Resolved `options.media.image`; the fallback for every call.
+ * @param {string} [context.cacheDir] - Write renditions here instead of the output directory. Set in build mode only; the composition root copies them into the output afterwards.
  * @returns {Function} The shortcode, bound to Eleventy's call context at render time.
  */
 export function createImageShortcode({
 	log = createLogger('image'),
 	hasImageTransformPlugin = false,
-	defaults = {}
+	defaults = {},
+	cacheDir
 } = {}) {
 	/**
 	 * Responsive image shortcode using @11ty/eleventy-img.
@@ -113,6 +115,9 @@ export function createImageShortcode({
 	 */
 	return async function imageShortcode(options = {}) {
 		const outputBase = this?.eleventy?.directories?.output || 'dist';
+		// A build is the only mode that writes renditions worth keeping: serve
+		// hands them to the dev middleware and the pre-pass runs `statsOnly`.
+		const useCache = Boolean(cacheDir) && process.env.ELEVENTY_RUN_MODE === 'build';
 		const {
 			src,
 			alt,
@@ -121,7 +126,9 @@ export function createImageShortcode({
 			widths = defaults.widths,
 			sizes = defaults.sizes,
 			formats = defaults.formats,
-			outputDir = path.join('.', outputBase, 'media'),
+			// The cache is Baseline's to redirect, an authored `outputDir` is not:
+			// somebody who named a directory wants the files in it.
+			outputDir = useCache ? cacheDir : path.join('.', outputBase, 'media'),
 			urlPath = '/media/',
 			setDimensions = true,
 			img = {},

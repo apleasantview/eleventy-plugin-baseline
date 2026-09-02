@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const imageCalls = [];
@@ -111,6 +113,65 @@ describe('image shortcode — when generation is deferred', () => {
 		const html = await render();
 
 		expect(html).toContain('<picture>');
+		expect(html).toContain('src="/media/x-320w.webp"');
+	});
+});
+
+describe('image shortcode — where renditions are written', () => {
+	let saved;
+
+	beforeEach(() => {
+		imageCalls.length = 0;
+		state.metadata = null;
+		saved = process.env.ELEVENTY_RUN_MODE;
+		delete process.env.ELEVENTY_RUN_MODE;
+	});
+
+	afterEach(() => {
+		if (saved === undefined) delete process.env.ELEVENTY_RUN_MODE;
+		else process.env.ELEVENTY_RUN_MODE = saved;
+	});
+
+	it('writes into the output directory when no cache is configured', async () => {
+		process.env.ELEVENTY_RUN_MODE = 'build';
+		await render();
+
+		expect(imageCalls[0].options.outputDir).toBe(path.join('.', 'dist', 'media'));
+	});
+
+	// The cache only earns its keep in a build, which is the mode that writes
+	// bytes and the mode the composition root copies them out of afterwards.
+	it('writes into the cache in a build', async () => {
+		process.env.ELEVENTY_RUN_MODE = 'build';
+		await render({}, { cacheDir: '.cache/media' });
+
+		expect(imageCalls[0].options.outputDir).toBe('.cache/media');
+	});
+
+	// Serve serves from the output directory, so a rendition written to the
+	// cache would 404 rather than appear.
+	it('ignores the cache in serve mode', async () => {
+		process.env.ELEVENTY_RUN_MODE = 'serve';
+		await render({}, { cacheDir: '.cache/media' });
+
+		expect(imageCalls[0].options.outputDir).toBe(path.join('.', 'dist', 'media'));
+	});
+
+	// Somebody who named a directory wants the files in it.
+	it('leaves an authored outputDir alone', async () => {
+		process.env.ELEVENTY_RUN_MODE = 'build';
+		await render({ outputDir: 'dist/pictures' }, { cacheDir: '.cache/media' });
+
+		expect(imageCalls[0].options.outputDir).toBe('dist/pictures');
+	});
+
+	// The URL is independent of where the bytes land, which is what makes the
+	// redirect invisible to the markup.
+	it('keeps the public URL path when the cache is in use', async () => {
+		process.env.ELEVENTY_RUN_MODE = 'build';
+		const html = await render({}, { cacheDir: '.cache/media' });
+
+		expect(imageCalls[0].options.urlPath).toBe('/media/');
 		expect(html).toContain('src="/media/x-320w.webp"');
 	});
 });

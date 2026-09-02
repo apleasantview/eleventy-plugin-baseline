@@ -1,4 +1,6 @@
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 
 import { HtmlBasePlugin } from '@11ty/eleventy';
 import { eleventyImageOnRequestDuringServePlugin } from '@11ty/eleventy-img';
@@ -438,6 +440,28 @@ export default function baseline(settings = {}, options = {}) {
 		// themselves.
 		if (announce) baseLog.info(`Modules: ${active.join(', ')}`);
 
+		// --- Media cache ---
+		// Renditions are content-addressed: the filename carries a hash of the
+		// source bytes plus the encode options, so a file that exists is a file
+		// that is still correct. Writing them under `.cache/` rather than into
+		// the output keeps them across a `dist` wipe, and across deploys on a
+		// host that persists the folder. The build then copies them in.
+		//
+		// Nothing here invalidates. `rm -rf .cache` is the reset, and it is also
+		// the answer to the one failure this cannot see: a build interrupted
+		// mid-encode leaves a truncated file that now survives.
+		const mediaCacheDir = path.join('.cache', 'media');
+
+		if (!isPrepass) {
+			eleventyConfig.on('eleventy.after', () => {
+				if (process.env.ELEVENTY_RUN_MODE !== 'build' || !fs.existsSync(mediaCacheDir)) return;
+
+				const target = path.join(eleventyConfig.directories?.output ?? 'dist', 'media');
+				fs.cpSync(mediaCacheDir, target, { recursive: true });
+				scopedLog('image').info(`Media cache copied to ${target}`);
+			});
+		}
+
 		// --- Filters and shortcodes ---
 		// Registered through the registrar, which yields any name the project
 		// already defined rather than overwriting it.
@@ -462,7 +486,8 @@ export default function baseline(settings = {}, options = {}) {
 			createImageShortcode({
 				log: scopedLog('image'),
 				hasImageTransformPlugin,
-				defaults: state.options.media.image
+				defaults: state.options.media.image,
+				cacheDir: mediaCacheDir
 			})
 		);
 
