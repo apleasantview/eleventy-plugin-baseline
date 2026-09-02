@@ -1,6 +1,7 @@
 import { setEntry } from '../registry.js';
 import { assembleSchemaGraph } from './adapter.js';
 import { buildSocialProjections } from './open-graph.js';
+import { isAbsoluteImageUrl } from './pick-image.js';
 
 /**
  * Resolve the canonical URL for the `seo` namespace.
@@ -59,6 +60,9 @@ export function resolveCanonicalUrl({ seo, data, settings, page }) {
  * }} deps
  */
 export function createSeoNamespace({ scope, settings, runtime, options, log }) {
+	// One line per distinct URL, not per page that carries it.
+	const warnedImages = new Set();
+
 	return function buildSeoNamespace(data) {
 		const seoIn = data.seo ?? {};
 		const userSettings = data.settings ?? settings;
@@ -78,6 +82,16 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 		const social = buildSocialProjections(data, url);
 		seoOut.openGraph = social.openGraph;
 		seoOut.twitter = social.twitter;
+
+		// The graph is emitted inside a <script>, which HtmlBasePlugin never walks,
+		// so a relative image URL ships exactly as authored while the @id beside it
+		// is absolute. Baseline does not rewrite it (image URLs are authored
+		// absolute, by decision) but it should not stay quiet about it either.
+		const image = social.openGraph?.image;
+		if (typeof image === 'string' && !isAbsoluteImageUrl(image) && !warnedImages.has(image)) {
+			warnedImages.add(image);
+			log?.warn?.(`og:image "${image}" is relative and will ship as authored; share images need an absolute URL`);
+		}
 
 		const inspectionKey = data.page?.url ?? data.page?.inputPath;
 		if (inspectionKey) setEntry(scope, inspectionKey, seoOut);

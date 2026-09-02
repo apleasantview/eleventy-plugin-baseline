@@ -18,6 +18,7 @@ import {
 } from '@jdevalk/seo-graph-core';
 import { resolveDates } from '../dates/index.js';
 import { resolveDefault, resolveLocale } from '../locale/index.js';
+import { pickImage } from './pick-image.js';
 import { slugify } from '../utils/slugify.js';
 
 /** Recursively strip null/undefined; `_data/schema.js` uses null as "not set". */
@@ -167,8 +168,7 @@ export function assembleSchemaGraph(data) {
 	// open-graph.js: `settings.seo.ogImage` is a social fallback, and inheriting
 	// it here would claim a site-wide share card as the image representing this
 	// page. No page image, no node and no primaryImageOfPage.
-	const pageImageRaw = data.ogImage ?? data.seo?.ogImage;
-	const pageImage = typeof pageImageRaw === 'string' ? { url: pageImageRaw } : pageImageRaw;
+	const pageImage = pickImage(data.ogImage, data.seo?.ogImage);
 	const primaryImageNode = buildImage(pageImage, { pageUrl: canonical }, ids);
 
 	// Trail is resolved once in page-context, carried onto the graph node by the

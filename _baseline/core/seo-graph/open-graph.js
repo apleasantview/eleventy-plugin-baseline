@@ -10,6 +10,7 @@
 
 import { resolveDates } from '../dates/index.js';
 import { resolveDefault, resolveLocale, toOpenGraphLocale } from '../locale/index.js';
+import { pickImage } from './pick-image.js';
 
 /**
  * Sibling-locale alternates in OG underscore form, excluding the page's own
@@ -89,8 +90,7 @@ export function buildSocialProjections(data, canonicalUrl) {
 
 	// Image gating: a URL emits og:image; dimensions and alt ride only when
 	// known — the two-tier degrade the graph adapter follows for the ImageObject.
-	const ogImageRaw = data.ogImage ?? seo.ogImage ?? settings.seo?.ogImage;
-	const ogImage = typeof ogImageRaw === 'string' ? { url: ogImageRaw } : ogImageRaw;
+	const ogImage = pickImage(data.ogImage, seo.ogImage, settings.seo?.ogImage);
 	if (ogImage?.url) {
 		og.image = ogImage.url;
 		if (ogImage.alt) og.imageAlt = ogImage.alt;

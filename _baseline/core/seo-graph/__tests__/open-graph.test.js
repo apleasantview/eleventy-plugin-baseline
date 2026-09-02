@@ -289,3 +289,43 @@ describe('the default-locale alias', () => {
 		expect(openGraph.locale).toBe('nl_BE');
 	});
 });
+
+// The og:image chain used `??`, which only falls through on nullish, so a page
+// carrying anything else unusable got no image at all rather than the site
+// default. `false` is now the way to say "no share card for this page".
+describe('the og:image fallback chain', () => {
+	const withImages = ({ page, site }) =>
+		buildSocialProjections(
+			{
+				settings: { url: siteUrl, title: 'Demo Site', defaultLanguage: 'en', seo: { ogImage: site } },
+				page: { url: '/about/' },
+				title: 'About',
+				ogImage: page
+			},
+			canonical
+		).openGraph;
+
+	it('falls back to the site default when the page value is unusable', () => {
+		const unresolvedComputed = () => '/never.jpg';
+
+		expect(withImages({ page: unresolvedComputed, site: '/site.jpg' }).image).toBe('/site.jpg');
+		expect(withImages({ page: '', site: '/site.jpg' }).image).toBe('/site.jpg');
+	});
+
+	it('lets the page win when it has a real image', () => {
+		expect(withImages({ page: '/page.jpg', site: '/site.jpg' }).image).toBe('/page.jpg');
+	});
+
+	it('emits no image at all when the page opts out with false', () => {
+		expect(withImages({ page: false, site: '/site.jpg' }).image).toBeUndefined();
+	});
+
+	it('carries alt and dimensions when they are known', () => {
+		const og = withImages({ page: { url: '/p.jpg', alt: 'P', width: 1200, height: 630 } });
+
+		expect(og.image).toBe('/p.jpg');
+		expect(og.imageAlt).toBe('P');
+		expect(og.imageWidth).toBe(1200);
+		expect(og.imageHeight).toBe(630);
+	});
+});

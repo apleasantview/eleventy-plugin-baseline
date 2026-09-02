@@ -188,3 +188,44 @@ describe('createSeoNamespace', () => {
 		expect(out.schema.length).toBeGreaterThan(0);
 	});
 });
+
+// The graph is emitted inside a <script>, which HtmlBasePlugin never walks, so
+// a relative image URL ships as authored while the @id beside it is absolute.
+// Baseline does not rewrite it, by decision. It does say so.
+describe('the relative share-image warning', () => {
+	const build = (log, ogImage) => {
+		const buildSeo = createSeoNamespace({
+			scope: { values: new Map() },
+			settings: { url: siteUrl, title: 'Demo' },
+			runtime: {},
+			options: {},
+			log
+		});
+		return (url) => buildSeo({ settings: { url: siteUrl, title: 'Demo' }, page: { url }, title: 'T', ogImage });
+	};
+
+	it('warns once per URL, however many pages carry it', () => {
+		const warn = [];
+		const render = build({ warn: (m) => warn.push(m) }, '/assets/share.jpg');
+
+		render('/a/');
+		render('/b/');
+
+		expect(warn).toHaveLength(1);
+		expect(warn[0]).toContain('/assets/share.jpg');
+	});
+
+	it('stays quiet for an absolute URL', () => {
+		const warn = [];
+		build({ warn: (m) => warn.push(m) }, 'https://www.example.com/share.jpg')('/a/');
+
+		expect(warn).toEqual([]);
+	});
+
+	it('stays quiet when there is no image at all', () => {
+		const warn = [];
+		build({ warn: (m) => warn.push(m) }, undefined)('/a/');
+
+		expect(warn).toEqual([]);
+	});
+});
