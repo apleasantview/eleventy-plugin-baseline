@@ -24,20 +24,6 @@ export function stripTrackingParams(urlObj) {
 }
 
 /**
- * Pull the first paragraph's inner HTML out of a rendered page's content.
- * Used as the last-resort source for meta descriptions.
- *
- * @param {{ content?: string }} data
- * @returns {string | undefined}
- */
-export function extractFirstParagraph(data) {
-	const html = data?.content;
-	if (!html) return;
-	const match = html.match(/<p>(.*?)<\/p>/i);
-	return match?.[1];
-}
-
-/**
  * Resolve a path against the site URL, strip the fragment, and remove
  * tracking params. Returns undefined when inputs are missing or invalid.
  *

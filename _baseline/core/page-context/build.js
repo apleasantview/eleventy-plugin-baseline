@@ -3,7 +3,7 @@ import { slugify } from '../utils/slugify.js';
 import { sentenceCaseSlug } from '../utils/sentence-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
-import { extractFirstParagraph, normalizeCanonical } from './seo-helpers.js';
+import { normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
 import { SEGMENT_DATA_KEY, SEGMENT_ALIAS } from '../segmentation/constants.js';
 
@@ -276,7 +276,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const tagline = site.tagline;
 
 		const pageTitle = data?.seo?.title ?? data?.title ?? siteTitle;
-		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt ?? extractFirstParagraph(data);
+		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt;
 
 		// ---- DESCRIPTION ----
 		const description = resolveField({
