@@ -55,6 +55,7 @@ export const configSchema = z.object({
 export const settingsSchema = z.object({
 	title: z.string().optional(),
 	tagline: z.string().optional(),
+	description: z.string().optional(),
 	url: z.string().optional(),
 	noindex: z.boolean().optional(),
 	defaultLanguage: z.string().optional(),

@@ -33,3 +33,24 @@ describe('deriveBaselineState — settings.url', () => {
 		expect(derive({}).url).toBeUndefined();
 	});
 });
+
+// `description` is documented in site-settings and was missing here, so it
+// reached page context only on sites that also exposed a `settings` global.
+// Where it did not, every page without its own description shipped none.
+describe('deriveBaselineState — the identity keys page context reads', () => {
+	it('carries title, tagline and description through', () => {
+		const settings = derive({
+			title: 'My Site',
+			tagline: 'A tagline',
+			description: 'The site-wide description.'
+		});
+
+		expect(settings.title).toBe('My Site');
+		expect(settings.tagline).toBe('A tagline');
+		expect(settings.description).toBe('The site-wide description.');
+	});
+
+	it('leaves an absent description absent rather than inventing one', () => {
+		expect(derive({}).description).toBeUndefined();
+	});
+});

@@ -59,6 +59,7 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 	const resolvedSettings = {
 		title: settings.title,
 		tagline: settings.tagline,
+		description: settings.description,
 		url: resolveSiteUrl(settings.url),
 		noindex: settings.noindex ?? false,
 		defaultLanguage: settings.defaultLanguage,
