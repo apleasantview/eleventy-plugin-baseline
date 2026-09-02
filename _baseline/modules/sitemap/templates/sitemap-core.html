@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+{# Every tag trims its own whitespace ({%- ... %}) on purpose: the output is
+	XML, so Nunjucks' default spacing would put a blank line between elements.
+	`siteUrl`, `defaultLanguage` and `noindex` are handed in by the module. -#}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-{%- if not settings.noindex %}
+{%- if not noindex %}
 {%- for item in collections.all %}
-{%- if item.url and not item.data.eleventyExcludeFromCollections and (not item.data.sitemap or item.data.sitemap.ignore != true) and item.data.noindex != true %}
-{%- set pageLang = item.data.lang or settings.defaultLanguage %}
-{%- if (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}
-{%- set absoluteUrl = item.url | htmlBaseUrl %}
-{%- set lastmod = item.data.sitemap and item.data.sitemap.lastmod or item.date %}
+{%- set sm = item.data.sitemap %}
+{%- set included = item.url
+	and not item.data.eleventyExcludeFromCollections
+	and item.data.noindex != true
+	and sm.ignore != true %}
+{%- set pageLang = item.data.lang or defaultLanguage %}
+{%- set inThisSitemap = (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}
+{%- if included and inThisSitemap %}
+{%- set lastmod = sm.lastmod or item.date %}
 <url>
-<loc>{{ absoluteUrl }}</loc>
+<loc>{{ item.url | htmlBaseUrl(siteUrl) }}</loc>
 {%- if lastmod %}
 <lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
 {%- endif %}
-{%- if item.data.sitemap and item.data.sitemap.changefreq %}
-<changefreq>{{ item.data.sitemap.changefreq }}</changefreq>
+{%- if sm.changefreq %}
+<changefreq>{{ sm.changefreq }}</changefreq>
 {%- endif %}
-{%- if item.data.sitemap and item.data.sitemap.priority is defined %}
-<priority>{{ item.data.sitemap.priority }}</priority>
+{%- if sm.priority is defined %}
+<priority>{{ sm.priority }}</priority>
 {%- endif %}
 {%- if item.data.translationKey and collections.translationsMap and collections.translationsMap[item.data.translationKey] %}
 {%- for language, entry in collections.translationsMap[item.data.translationKey] %}
-<xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl }}" />
+<xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
 {%- if entry.isDefaultLang %}
-<xhtml:link rel="alternate" hreflang="x-default" href="{{ entry.url | htmlBaseUrl }}" />
+<xhtml:link rel="alternate" hreflang="x-default" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
 {%- endif %}
 {%- endfor %}
 {%- endif %}
 </url>
-{%- endif %}
 {%- endif %}
 {%- endfor %}
 {%- endif %}

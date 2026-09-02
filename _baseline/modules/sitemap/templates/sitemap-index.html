@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+{# Whitespace-trimmed for the same reason as sitemap-core.html. `languages`,
+	`siteUrl` and `noindex` are handed in by the module. -#}
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{%- if not settings.noindex %}
-{%- set langs = languages %}
-{%- if langs %}
-{%- for lang, cfg in langs %}
+{%- if not noindex %}
+{%- for lang, cfg in languages %}
 <sitemap>
-<loc>{{ (lang ~ "/sitemap.xml") | htmlBaseUrl }}</loc>
-{#- Optional lastmod if you track it per-language: #}
+<loc>{{ ("/" ~ lang ~ "/sitemap.xml") | htmlBaseUrl(siteUrl) }}</loc>
+{#- Optional lastmod, if the language config tracks one: #}
 {%- if cfg.lastmod %}<lastmod>{{ date.toUTCISO(cfg.lastmod) }}</lastmod>{% endif %}
 </sitemap>
 {%- endfor %}
-{%- endif %}
 {%- endif %}
 </sitemapindex>

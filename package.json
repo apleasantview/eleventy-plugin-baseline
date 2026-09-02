@@ -82,6 +82,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.6.0",
     "globals": "^17.7.0",
+    "nunjucks": "^3.2.4",
     "prettier": "^3.9.4",
     "prettier-plugin-jinja-template": "^2.2.0",
     "sharp": "^0.35.3",

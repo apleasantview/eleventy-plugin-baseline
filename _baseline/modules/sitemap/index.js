@@ -60,6 +60,15 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 	const hasLanguages = languages && Object.keys(languages).length > 0;
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 
+	// Handed to the templates explicitly rather than read off a `settings` global.
+	// Baseline never registers one: `settings` resolves in a template only because
+	// Eleventy auto-loads `src/_data/settings.js`, which is convention, not contract.
+	const siteData = {
+		siteUrl: settings.url,
+		defaultLanguage,
+		noindex: settings.noindex === true
+	};
+
 	// Computed sitemap data: every page gets a page.sitemap object.
 	// Pages set noindex in frontmatter or site data to be excluded.
 	eleventyConfig.addGlobalData('eleventyComputed.page.sitemap', () => {
@@ -94,6 +103,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 				eleventyExcludeFromCollections: true,
 				isMultilingual: multilingual,
 				sitemapLang: lang,
+				...siteData,
 				_internal: true
 			});
 		}
@@ -106,6 +116,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			eleventyExcludeFromCollections: true,
 			isMultilingual: multilingual,
 			languages: languages,
+			...siteData,
 			_internal: true
 		});
 
@@ -117,6 +128,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			description: '',
 			layout: null,
 			eleventyExcludeFromCollections: true,
+			...siteData,
 			_internal: true
 		});
 
