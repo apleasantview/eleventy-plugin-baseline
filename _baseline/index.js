@@ -120,14 +120,14 @@ export default function baseline(settings = {}, options = {}) {
 		const normalized = normalizeLegacyShape(settings);
 		settings = normalized.settings;
 		options = normalized.options;
-		baseLog.info('Single-object plugin arg is deprecated. Use baseline(settings, options).');
+		baseLog.warn('Single-object plugin arg is deprecated. Use baseline(settings, options).');
 	}
 
 	// Validate configuration shape (non-fatal).
 	const parsed = settingsSchema.safeParse(settings);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			baseLog.info('settings:', `${issue.path.join('.')}, ${issue.message}`);
+			baseLog.warn('settings:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 

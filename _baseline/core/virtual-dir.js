@@ -76,7 +76,7 @@ export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
 	// shared listener below refreshes when Eleventy emits its final directories.
 	const existing = Object.getOwnPropertyDescriptor(eleventyConfig.directories, key);
 	if (existing && existing.configurable === false) {
-		log.info(`directories.${key} already defined, skipping`);
+		log.warn(`directories.${key} already defined, skipping`);
 	} else {
 		Object.defineProperty(eleventyConfig.directories, key, {
 			get() {
@@ -96,8 +96,8 @@ export function registerVirtualDir(eleventyConfig, { key, outputDir } = {}) {
 		}
 	});
 
-	log.info('Virtual directories mounted');
-
+	// No "mounted" line here: this runs once per registered key, and the
+	// composition root already says it once for the set.
 	return cache;
 }
 

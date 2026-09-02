@@ -49,7 +49,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	const parsed = optionsSchema.safeParse(options.assets);
 	if (!parsed.success) {
 		for (const issue of parsed.error.issues) {
-			log.info('options:', `${issue.path.join('.')}, ${issue.message}`);
+			log.warn('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 

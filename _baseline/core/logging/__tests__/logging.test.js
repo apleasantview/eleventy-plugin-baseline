@@ -68,3 +68,69 @@ describe('createLogger', () => {
 		expect(second).toBe('hello');
 	});
 });
+
+// The pre-pass gate had no tests, which is how the reference page came to claim
+// the opposite of what the code does for a year. `info` and `warn` are both
+// silenced while the inner Eleventy runs; only `error` is ungated, because a
+// pre-pass that fails may be the only place it can say so.
+describe('the pre-pass gate', () => {
+	const PREPASS = 'BASELINE_PREPASS_ACTIVE';
+
+	afterEach(() => {
+		delete process.env[PREPASS];
+		vi.restoreAllMocks();
+	});
+
+	it('silences info even when verbose is true', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+		process.env[PREPASS] = '1';
+
+		createLogger(null, { verbose: true }).info('hello');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it('silences warn, which the reference page used to deny', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		process.env[PREPASS] = '1';
+
+		createLogger(null).warn('hello');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it('lets error through', () => {
+		const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+		process.env[PREPASS] = '1';
+
+		createLogger(null).error('boom');
+
+		expect(spy).toHaveBeenCalledWith('[baseline]', 'boom');
+	});
+
+	// The flag is read per call, not captured at construction, so a logger made
+	// before the pre-pass starts is still gated during it.
+	it('reads the flag per call rather than at construction', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger(null);
+
+		log.warn('before');
+		process.env[PREPASS] = '1';
+		log.warn('during');
+		delete process.env[PREPASS];
+		log.warn('after');
+
+		expect(spy).toHaveBeenCalledTimes(2);
+		expect(spy.mock.calls.map((c) => c[1])).toEqual(['before', 'after']);
+	});
+
+	// `'0'` is truthy, so the check has to be an equality test. It is.
+	it('treats the cleared value as not-in-prepass', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		process.env[PREPASS] = '0';
+
+		createLogger(null).warn('hello');
+
+		expect(spy).toHaveBeenCalled();
+	});
+});

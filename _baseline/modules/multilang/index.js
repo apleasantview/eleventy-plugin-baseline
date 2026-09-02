@@ -72,7 +72,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;
 
 	if (!isMultilingual) {
-		log.info('Multilang inactive, needs options.multilang, settings.defaultLanguage or defaultLocale, and languages');
+		log.warn('Multilang inactive, needs options.multilang, settings.defaultLanguage or defaultLocale, and languages');
 		return;
 	}
 
@@ -152,7 +152,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 			if (!lang) continue;
 
 			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
-				log.info(`Unknown lang "${lang}" in ${page.inputPath}`);
+				log.warn(`Unknown lang "${lang}" in ${page.inputPath}`);
 				continue;
 			}
 
