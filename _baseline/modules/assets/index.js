@@ -1,9 +1,11 @@
 import path from 'node:path';
+
 import { TemplatePath } from '@11ty/eleventy-utils';
 
 import { optionsSchema } from './schema.js';
 import assetsESbuild from './processors/esbuild-process.js';
 import assetsPostCSS from './processors/postcss-process.js';
+import { collectDeclaredPaths, findMissingAssets } from './utils/declared-assets.js';
 
 /**
  * Assets (module)
@@ -66,6 +68,30 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		log.warn('directories.assets is unset, registerVirtualDir must run before this plugin');
 		return;
 	}
+
+	// Declared-but-never-emitted check. Baseline holds both halves of this: what
+	// `settings.head` asks the browser to load, and what the build actually put
+	// on disk. A `<link>` to a stylesheet that no entry point produces renders a
+	// 404 on every page, on a green build, and nothing says so.
+	//
+	// Site-level only. Per-page head entries live in the cascade rather than in
+	// settings, and walking every page to check them would cost more than the
+	// class of mistake is worth.
+	const declaredPaths = collectDeclaredPaths(settings.head);
+
+	eleventyConfig.on('eleventy.after', () => {
+		// The pre-pass runs dry, so nothing is on disk and every path would look
+		// missing. Its log lines are gated anyway, but relying on that would make
+		// this check correct by accident.
+		if (process.env.BASELINE_PREPASS_ACTIVE === '1') return;
+
+		for (const href of findMissingAssets(declaredPaths, directories.output)) {
+			log.warn(
+				`settings.head declares "${href}" and the build emitted no such file. ` +
+					'Every page will link to a 404. Check the entry point name, or drop the declaration.'
+			);
+		}
+	});
 
 	// Watch common asset formats so edits trigger reloads during --serve.
 	eleventyConfig.addWatchTarget(watchGlob);

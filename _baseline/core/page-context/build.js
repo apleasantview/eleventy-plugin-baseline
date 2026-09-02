@@ -151,6 +151,8 @@ export function buildBreadcrumbs({ section = [], url, title, lang, isDefaultLang
  * @returns {(data: any) => object}
  */
 export function createPageContext({ scope, slugIndex, settings, runtime, options, log }) {
+	// One line per build, not one per page.
+	let warnedSettingsUrl = false;
 	const separator = options.head?.titleSeparator ?? ' – ';
 
 	// Memoised on graph identity: a serve-mode rebuild swaps the graph object,
@@ -391,6 +393,22 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	return function buildPageContext(data) {
 		const pageInput = data.page ?? {};
 		const userSettings = data.settings ?? settings;
+
+		// Baseline holds both halves of this and used to say nothing about the
+		// disagreement. `settings.url` was right at plugin init, so HtmlBasePlugin
+		// got a real origin, while every template saw `undefined`: the cascade was
+		// reading a different object, from a `settings` global that had been
+		// exported under the wrong name. Nothing was wrong from the plugin's side,
+		// which is what made it forty minutes of bisecting.
+		if (settings?.url && !userSettings?.url && !warnedSettingsUrl) {
+			warnedSettingsUrl = true;
+			log?.warn(
+				'settings.url is set at plugin init but resolves to nothing in the cascade. ' +
+					'Baseline is reading a different settings object than your templates are: ' +
+					'check the export shape of your settings file and how it reaches global data. ' +
+					'Canonical, Open Graph and JSON-LD will be omitted.'
+			);
+		}
 
 		const page = buildPage(pageInput, data);
 		const site = buildSite(page.lang, userSettings);
