@@ -79,8 +79,17 @@ export default async function assetsPostCSS(cssFilePath) {
 		// Return raw CSS; markup wrapping is handled in the plugin registration.
 		return result.css;
 	} catch (error) {
+		// A build must not ship a page whose stylesheet did not compile: there is
+		// no useful site on the other side of it. The dev server is the exception,
+		// where a dead watch loop is worse than an unstyled reload.
+		if (process.env.ELEVENTY_RUN_MODE === 'build') {
+			throw new Error(`[baseline/assets-postcss] PostCSS failed for ${cssFilePath}: ${error?.message || error}`, {
+				cause: error
+			});
+		}
+
 		log.error('PostCSS failed.', error);
-		// Surface a safe CSS string so the caller can decide how to wrap it.
+		// Serve mode: surface a safe CSS string so the page still reloads.
 		return '/* Error processing CSS */';
 	}
 }

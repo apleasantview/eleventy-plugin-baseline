@@ -113,14 +113,13 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// Accepts per-call esbuild options (merged with defaults in process.js).
 	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
 	// so this is a plain async function.
+	// No try/catch here on purpose. The processor already decides what a failure
+	// means: it throws in a build and returns a comment string in serve mode.
+	// Catching again would put the build back to green, which is the behaviour
+	// this replaced.
 	eleventyConfig.addAsyncFilter('inlineESbuild', async function (inputPath, opts = {}) {
-		try {
-			const js = await assetsESbuild(inputPath, opts);
-			return `<script>${js}</script>`;
-		} catch {
-			// Non-fatal: return an error comment so the build doesn't break.
-			return `<script>/* Error processing JS */</script>`;
-		}
+		const js = await assetsESbuild(inputPath, opts);
+		return `<script>${js}</script>`;
 	});
 
 	// --- CSS (PostCSS) ---
@@ -152,13 +151,9 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// Inline filter: process a CSS file through PostCSS and wrap in <style> tags.
 	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
 	// so this is a plain async function.
+	// See inlineESbuild above: the processor owns the build-versus-serve decision.
 	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath) {
-		try {
-			const css = await assetsPostCSS(inputPath);
-			return `<style>${css}</style>`;
-		} catch {
-			// Non-fatal: return an error comment so the build doesn't break.
-			return `<style>/* Error processing CSS */</style>`;
-		}
+		const css = await assetsPostCSS(inputPath);
+		return `<style>${css}</style>`;
 	});
 }
