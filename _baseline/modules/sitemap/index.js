@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
+import { resolveDefault } from '../../core/locale/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,8 +55,12 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 	// --- Language normalization ---
 	// Accept languages as array or object; normalize to object map.
 	// Drives collection building, locale data, and sitemap-core language config.
-	const normalizeLanguageCode = (lang) => (lang || '').toLowerCase().trim();
-	const defaultLanguage = normalizeLanguageCode(settings.defaultLanguage);
+	//
+	// The default goes through resolveDefault, the same resolver multilang uses.
+	// This module used to read settings.defaultLanguage directly, so a site that
+	// set only defaultLocale (its documented alias) failed the isMultilingual
+	// check below and got one flat sitemap while multilang was running.
+	const { lang: defaultLanguage } = resolveDefault(settings);
 	const languages = normalizeLanguageMap(settings, log);
 	const hasLanguages = languages && Object.keys(languages).length > 0;
 	const isMultilingual = options.multilang === true && defaultLanguage && hasLanguages;

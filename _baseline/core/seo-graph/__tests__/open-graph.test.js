@@ -252,3 +252,40 @@ describe('twitter duplicate suppression', () => {
 		expect(twitter.site).toBe('@demo');
 	});
 });
+
+// `defaultLocale` and `defaultLanguage` are documented as aliases, but this
+// projection read the raw `defaultLanguage` key, so a site that set only
+// `defaultLocale` shipped no og:locale on any page.
+describe('the default-locale alias', () => {
+	it('emits og:locale when the site sets defaultLocale alone', () => {
+		const { openGraph } = buildSocialProjections(
+			{
+				settings: { url: siteUrl, title: 'Demo Site', defaultLocale: 'en-GB' },
+				page: { url: '/about/' },
+				title: 'About'
+			},
+			canonical
+		);
+
+		expect(openGraph.locale).toBe('en_GB');
+	});
+
+	it('emits og:locale when the site sets defaultLanguage alone', () => {
+		const { openGraph } = buildSocialProjections(bag({ title: 'About' }), canonical);
+
+		expect(openGraph.locale).toBe('en');
+	});
+
+	it('lets a page override the site default', () => {
+		const { openGraph } = buildSocialProjections(
+			{
+				settings: { url: siteUrl, title: 'Demo Site', defaultLocale: 'en-GB' },
+				page: { url: '/over/', locale: 'nl-BE' },
+				title: 'Over'
+			},
+			canonical
+		);
+
+		expect(openGraph.locale).toBe('nl_BE');
+	});
+});

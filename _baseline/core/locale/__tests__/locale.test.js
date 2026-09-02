@@ -3,6 +3,7 @@ import { normalizeLang } from '../normalize-lang.js';
 import { normalizeLocale } from '../normalize-locale.js';
 import { deriveLang } from '../derive-lang.js';
 import { resolveDefault } from '../resolve-default.js';
+import { resolveLocale } from '../resolve-locale.js';
 import { toOpenGraphLocale } from '../open-graph-locale.js';
 
 describe('normalizeLang', () => {
@@ -135,5 +136,36 @@ describe('toOpenGraphLocale', () => {
 		expect(toOpenGraphLocale(null)).toBeNull();
 		expect(toOpenGraphLocale('')).toBeNull();
 		expect(toOpenGraphLocale('!!!')).toBeNull();
+	});
+});
+
+// The alias only worked if you happened to set defaultLanguage as well.
+// A site setting defaultLocale alone got no locale out of this chain at all,
+// which meant no og:locale and no inLanguage on every page it rendered.
+describe('resolveLocale', () => {
+	const settings = { defaultLocale: 'en-GB' };
+
+	it('prefers the navigator node, then the page, then the bag', () => {
+		expect(resolveLocale({ locale: 'nl-BE' }, { page: { locale: 'fr-FR' } }, settings, 'en')).toBe('nl-BE');
+		expect(resolveLocale(undefined, { page: { locale: 'fr-FR' } }, settings, 'en')).toBe('fr-FR');
+		expect(resolveLocale(undefined, { locale: 'de-DE' }, settings, 'en')).toBe('de-DE');
+	});
+
+	it('takes the language entry ahead of the site default', () => {
+		const withLanguages = { ...settings, languages: { en: { locale: 'en-US' } } };
+		expect(resolveLocale(undefined, {}, withLanguages, 'en')).toBe('en-US');
+	});
+
+	it('falls back to the site default when only defaultLocale is set', () => {
+		expect(resolveLocale(undefined, {}, settings, 'en')).toBe('en-GB');
+	});
+
+	it('honours defaultLanguage as the alias it is documented to be', () => {
+		expect(resolveLocale(undefined, {}, { defaultLanguage: 'fr' }, 'fr')).toBe('fr');
+	});
+
+	it('ends at the bare lang tag when settings say nothing', () => {
+		expect(resolveLocale(undefined, {}, {}, 'pt')).toBe('pt');
+		expect(resolveLocale(undefined, {}, undefined, 'pt')).toBe('pt');
 	});
 });

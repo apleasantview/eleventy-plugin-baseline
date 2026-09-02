@@ -9,7 +9,7 @@
 // — written fresh against Baseline's namespace.
 
 import { resolveDates } from '../dates/index.js';
-import { resolveLocale, toOpenGraphLocale } from '../locale/index.js';
+import { resolveDefault, resolveLocale, toOpenGraphLocale } from '../locale/index.js';
 
 /**
  * Sibling-locale alternates in OG underscore form, excluding the page's own
@@ -61,7 +61,7 @@ export function buildSocialProjections(data, canonicalUrl) {
 	const nodes = data._navigator?.nodes;
 	const node = nodes?.[pageUrl];
 
-	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
+	const lang = node?.lang || data.page?.lang || data.lang || resolveDefault(settings).lang;
 	const locale = toOpenGraphLocale(resolveLocale(node, data, settings, lang)) ?? '';
 	const siteRoot = settings.url.replace(/\/+$/, '');
 

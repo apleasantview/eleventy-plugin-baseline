@@ -17,7 +17,7 @@ import {
 	buildImageObject
 } from '@jdevalk/seo-graph-core';
 import { resolveDates } from '../dates/index.js';
-import { resolveLocale } from '../locale/index.js';
+import { resolveDefault, resolveLocale } from '../locale/index.js';
 import { slugify } from '../utils/slugify.js';
 
 /** Recursively strip null/undefined; `_data/schema.js` uses null as "not set". */
@@ -104,7 +104,7 @@ export function assembleSchemaGraph(data) {
 	const navigatorNodes = data._navigator?.nodes;
 	const node = navigatorNodes?.[pageUrl];
 
-	const lang = node?.lang || data.page?.lang || data.lang || settings.defaultLanguage;
+	const lang = node?.lang || data.page?.lang || data.lang || resolveDefault(settings).lang;
 	const locale = resolveLocale(node, data, settings, lang);
 	const siteName = settings.languages?.[lang]?.title || settings.title;
 	const multilang = data._baseline?.features?.multilang;
