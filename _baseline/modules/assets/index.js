@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { TemplatePath } from '@11ty/eleventy-utils';
 
+import { renderAttributes } from '../../core/utils/render-attributes.js';
 import { optionsSchema } from './schema.js';
 import assetsESbuild from './processors/esbuild-process.js';
 import assetsPostCSS from './processors/postcss-process.js';
@@ -136,16 +137,21 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	});
 
 	// Inline filter: bundle a JS file and wrap in <script> tags.
-	// Accepts per-call esbuild options (merged with defaults in process.js).
+	// Accepts per-call esbuild options (merged with defaults in process.js) plus
+	// `attributes` for the tag itself.
 	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
 	// so this is a plain async function.
 	// No try/catch here on purpose. The processor already decides what a failure
 	// means: it throws in a build and returns a comment string in serve mode.
 	// Catching again would put the build back to green, which is the behaviour
 	// this replaced.
+	// The tag is the filter's to emit, so the attributes on it are too. A caller
+	// who has to unwrap and re-wrap to add `nonce` has thrown away the one thing
+	// only this call site holds: the tag and the bundle it hashes over, together.
 	eleventyConfig.addAsyncFilter('inlineESbuild', async function (inputPath, opts = {}) {
-		const js = await assetsESbuild(inputPath, opts);
-		return `<script>${js}</script>`;
+		const { attributes, ...esbuildOpts } = opts;
+		const js = await assetsESbuild(inputPath, esbuildOpts);
+		return `<script${renderAttributes(attributes)}>${js}</script>`;
 	});
 
 	// --- CSS (PostCSS) ---
@@ -177,9 +183,11 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// Inline filter: process a CSS file through PostCSS and wrap in <style> tags.
 	// Eleventy's addAsyncFilter handles the Nunjucks callback bridge,
 	// so this is a plain async function.
-	// See inlineESbuild above: the processor owns the build-versus-serve decision.
-	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath) {
+	// See inlineESbuild above: the processor owns the build-versus-serve decision,
+	// and the tag's attributes belong to whoever emits the tag. PostCSS takes no
+	// per-call options, so `attributes` is the whole bag here.
+	eleventyConfig.addAsyncFilter('inlinePostCSS', async function (inputPath, opts = {}) {
 		const css = await assetsPostCSS(inputPath);
-		return `<style>${css}</style>`;
+		return `<style${renderAttributes(opts.attributes)}>${css}</style>`;
 	});
 }

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
 import { createLogger } from '../logging/index.js';
+import { renderAttributes } from '../utils/render-attributes.js';
 
 // The `<img>` inside `<picture>` is what a client gets when it can use no
 // `<source>` at all, so it wants the most compatible format rather than the
@@ -29,29 +30,6 @@ const FALLBACK_FORMAT_PREFERENCE = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp', 
 function buildSizes(sizes, authored, loading) {
 	if (authored || loading !== 'lazy') return sizes;
 	return `auto, ${sizes}`;
-}
-
-/**
- * Render an attribute map as HTML, dropping anything with nothing to say.
- *
- * `keepEmpty` exists for `alt`, where the empty string is the message: a
- * decorative image is `alt=""`, and no `alt` at all tells a screen reader to
- * fall back to announcing the filename. The two are not interchangeable.
- *
- * @param {Object} attributes
- * @param {string[]} [keepEmpty=[]] - Attribute names to render even when empty.
- * @returns {string} Attribute string, leading space included when non-empty.
- */
-function renderAttributes(attributes, keepEmpty = []) {
-	const rendered = Object.entries(attributes)
-		.filter(([key, value]) => {
-			if (value === undefined || value === null || value === false) return false;
-			return value !== '' || keepEmpty.includes(key);
-		})
-		.map(([key, value]) => (value === true ? key : `${key}="${value}"`))
-		.join(' ');
-
-	return rendered ? ` ${rendered}` : '';
 }
 
 /**
