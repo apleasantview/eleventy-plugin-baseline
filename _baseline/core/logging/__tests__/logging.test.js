@@ -134,3 +134,55 @@ describe('the pre-pass gate', () => {
 		expect(spy).toHaveBeenCalled();
 	});
 });
+
+// Eleventy's own `--quiet` used to silence Eleventy and leave Baseline talking.
+describe('quiet mode', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('silences info when quiet is true, even with verbose on', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+		createLogger(null, { verbose: true, quiet: true }).info('hello');
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it('still surfaces warnings and errors', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const log = createLogger(null, { quiet: true });
+		log.warn('careful');
+		log.error('boom');
+
+		expect(warn).toHaveBeenCalled();
+		expect(error).toHaveBeenCalled();
+	});
+
+	// quietMode is mutable: the CLI sets it through _setQuietModeOverride and a
+	// consumer can call setQuietMode from their own config, both of which can
+	// land after the logger is built.
+	it('reads a function per call rather than capturing it', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+		let quiet = false;
+		const log = createLogger(null, { verbose: true, quiet: () => quiet });
+
+		log.info('before');
+		quiet = true;
+		log.info('during');
+		quiet = false;
+		log.info('after');
+
+		expect(spy.mock.calls.map((c) => c[1])).toEqual(['before', 'after']);
+	});
+
+	it('defaults to not quiet', () => {
+		const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+		createLogger(null, { verbose: true }).info('hello');
+
+		expect(spy).toHaveBeenCalled();
+	});
+});

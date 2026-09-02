@@ -14,7 +14,7 @@ export function registerSeoGraph(eleventyConfig, coreContext) {
 	const { state, runtime } = coreContext;
 	const { settings, options } = state;
 
-	const log = createLogger(LOG_NAME, { verbose: options.verbose });
+	const log = coreContext.scopedLog?.(LOG_NAME) ?? createLogger(LOG_NAME, { verbose: options.verbose });
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
 	const buildSeoNamespace = createSeoNamespace({ scope, settings, runtime, options, log });

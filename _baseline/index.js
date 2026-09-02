@@ -135,9 +135,18 @@ export default function baseline(settings = {}, options = {}) {
 	const state = deriveBaselineState(settings, options, { mode });
 	baseLog.info('Settings and options resolved');
 
+	// Set by the initializer below, so the logging helper can read Eleventy's
+	// quiet mode. It is not available in this scope until the plugin runs.
+	let activeConfig = null;
+
 	// Scoped logging helper.
 	function scopedLog(name) {
-		return createLogger(name, { verbose: state.options.verbose });
+		return createLogger(name, {
+			verbose: state.options.verbose,
+			// Read per call: --quiet arrives through _setQuietModeOverride and a
+			// consumer can flip it from their own config after we register.
+			quiet: () => activeConfig?.quietMode === true
+		});
 	}
 
 	/**
@@ -147,6 +156,8 @@ export default function baseline(settings = {}, options = {}) {
 	 * composes global APIs, filters, shortcodes, and feature modules.
 	 */
 	const plugin = async function (eleventyConfig) {
+		activeConfig = eleventyConfig;
+
 		// The pre-pass runs Eleventy inside Eleventy. The inner build renders
 		// only to be parsed, so it wants path-only hrefs rather than absolute
 		// ones, which is what keeps graph edges keyed the same way as page.url.
@@ -292,7 +303,10 @@ export default function baseline(settings = {}, options = {}) {
 				slugIndex
 			},
 			directories,
-			helpers
+			helpers,
+			// Handed over so the core registrars log through the same gates as the
+			// modules do, Eleventy's quiet mode included.
+			scopedLog
 		};
 
 		// Page context and SEO graph registries

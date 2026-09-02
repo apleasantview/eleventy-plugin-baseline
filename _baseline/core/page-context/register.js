@@ -45,7 +45,7 @@ export function registerPageContext(eleventyConfig, coreContext) {
 	const { slugIndex } = runtime;
 	const { settings, options } = state;
 
-	const log = createLogger(LOG_NAME, { verbose: options.verbose });
+	const log = coreContext.scopedLog?.(LOG_NAME) ?? createLogger(LOG_NAME, { verbose: options.verbose });
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
 	const buildPageContext = createPageContext({ scope, slugIndex, settings, runtime, options, log });

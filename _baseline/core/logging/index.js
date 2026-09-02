@@ -44,15 +44,24 @@ export * from './quips.js';
 
 /**
  * Create a namespaced logger. Prefix is `[baseline]` at plugin root and
- * `[baseline/<namespace>]` inside modules. `info` is gated behind `verbose`;
- * `warn` and `error` always emit.
+ * `[baseline/<namespace>]` inside modules. `info` is gated behind `verbose`
+ * and behind Eleventy's own quiet mode; `warn` and `error` always emit.
+ *
+ * `quiet` takes a function rather than a boolean because `eleventyConfig.quietMode`
+ * is mutable: the CLI sets it through `_setQuietModeOverride`, and a consumer can
+ * call `setQuietMode` from their config. Reading it per call means the answer is
+ * always current. A plain boolean still works for callers with nothing to watch.
+ *
+ * Quiet suppresses narrative only. A quiet build still surfaces problems, which is
+ * the same contract `verbose: false` has.
  *
  * @param {string | null | undefined} namespace
- * @param {{ verbose?: boolean }} [options]
+ * @param {{ verbose?: boolean, quiet?: boolean | (() => boolean) }} [options]
  * @returns {BaselineLogger}
  */
-export function createLogger(namespace, { verbose = false } = {}) {
+export function createLogger(namespace, { verbose = false, quiet = false } = {}) {
 	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
+	const isQuiet = typeof quiet === 'function' ? quiet : () => quiet === true;
 
 	// Pre-pass gate: silence baseline's own info and warnings during the inner
 	// Eleventy run so modules don't double-log every line they emit again during
@@ -65,6 +74,7 @@ export function createLogger(namespace, { verbose = false } = {}) {
 	return {
 		info: (...args) => {
 			if (!verbose) return;
+			if (isQuiet()) return;
 			if (isPrepass()) return;
 			console.log(chalk.gray(label), ...args);
 		},
