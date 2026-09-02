@@ -231,7 +231,17 @@ export default function baseline(settings = {}, options = {}) {
 		registerGlobals(eleventyConfig);
 
 		// --- Feature exposure to templates ---
+		// Detection matches on `Function.name`, so passing the plugin through
+		// unwrapped works and wrapping it in an arrow, renaming the import or
+		// calling it through a factory silently returns false. The consequence is
+		// quiet: `eleventy:ignore` is omitted and both pipelines process the same
+		// image. Saying what was detected turns that into a line to check.
 		const hasImageTransformPlugin = eleventyConfig.hasPlugin('eleventyImageTransformPlugin');
+		scopedLog('image').info(
+			hasImageTransformPlugin
+				? 'eleventyImageTransformPlugin detected, Baseline will mark its own output eleventy:ignore'
+				: 'eleventyImageTransformPlugin not detected, content images are yours to transform'
+		);
 
 		eleventyConfig.addGlobalData('_baseline', {
 			features: {
@@ -272,7 +282,13 @@ export default function baseline(settings = {}, options = {}) {
 		});
 
 		// --- Draft filtering (build-time concern) ---
-		if (!eleventyConfig.preprocessors.drafts) {
+		// Leaving an existing `drafts` preprocessor alone is the right default,
+		// and it is worth saying out loud: Baseline's keys on ELEVENTY_RUN_MODE,
+		// which cannot be misconfigured, and a starter's keys on whatever it
+		// likes. The guard trades a guarantee for whatever the other one does.
+		if (eleventyConfig.preprocessors.drafts) {
+			scopedLog('drafts').info("a 'drafts' preprocessor is already registered, Baseline's is skipped");
+		} else {
 			eleventyConfig.addPreprocessor('drafts', '*', (data) => {
 				if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
 					return false;
