@@ -32,7 +32,7 @@ import {
 	relatedPostsFilter,
 	isStringFilter,
 	createTFilter,
-	imageShortcode
+	createImageShortcode
 } from './core/surface/index.js';
 
 const __require = createRequire(import.meta.url);
@@ -450,7 +450,7 @@ export default function baseline(settings = {}, options = {}) {
 			})
 		);
 
-		registrar.shortcode('image', imageShortcode);
+		registrar.shortcode('image', createImageShortcode({ log: scopedLog('image'), hasImageTransformPlugin }));
 
 		if (registrar.skipped.length) {
 			scopedLog().status(`Already defined here, left alone: ${registrar.skipped.join(', ')}`);
@@ -464,6 +464,14 @@ export default function baseline(settings = {}, options = {}) {
 	Object.defineProperty(plugin, 'name', { value: name });
 	return plugin;
 }
+
+/**
+ * Image shortcode defaults (external contract)
+ *
+ * Published so a project can read what the shortcode assumes and spread it
+ * into its own calls, rather than copying the values or the whole shortcode.
+ */
+export { DEFAULT_WIDTHS as imageWidths, DEFAULT_FORMATS as imageFormats, DEFAULT_SIZES as imageSizes } from './core/surface/index.js';
 
 /**
  * Eleventy directory configuration (external contract)

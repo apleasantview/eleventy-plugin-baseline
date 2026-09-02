@@ -14,7 +14,7 @@ export { isStringFilter } from './filters/isString.js';
 export { createTFilter } from './filters/t.js';
 
 // --- Shortcodes ---
-export { imageShortcode } from './image-shortcode.js';
+export { createImageShortcode, DEFAULT_WIDTHS, DEFAULT_FORMATS, DEFAULT_SIZES } from './image-shortcode.js';
 
 // --- Global functions (aggregator) ---
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
