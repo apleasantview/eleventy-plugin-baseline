@@ -14,7 +14,7 @@ This is a working plugin, not a finished product. Things might shift, break, or 
 npm install @11ty/eleventy @apleasantview/eleventy-plugin-baseline @11ty/eleventy-img
 ```
 
-Requires Eleventy 3.x and Node >=22.
+Requires Node >=22. Eleventy 3.x is what Baseline is tested against; a stable 4.x satisfies the peer range and has not been exercised yet.
 
 ## Usage
 
