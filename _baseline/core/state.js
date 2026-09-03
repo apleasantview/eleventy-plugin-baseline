@@ -44,13 +44,20 @@
 // where every other default is applied. Cheap and safe: no `'auto'` width, which
 // re-encodes the full-size original.
 //
+// `jpeg` is last in IMAGE_FORMATS and costs a third encode per width. It buys
+// the one thing avif and webp cannot: a format every client can read. Without
+// it the `<img>` fallback is a webp, so a client that took the fallback because
+// it understood neither `<source>` was handed a third format it also may not
+// understand. Order is `<source>` negotiation order, so nothing reaches jpeg
+// that could use something better.
+//
 // IMAGE_SIZES is a fallback rather than a chosen value. The shortcode puts
 // `auto` in front of it on lazy images, so it is only read where `auto` cannot
 // resolve, and there a bounded guess beats `100vw`, which would send every such
 // browser after the largest candidate under the viewport. The number itself is
 // inherited and unexamined; nothing should present it as a considered default.
 const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920];
-const IMAGE_FORMATS = ['avif', 'webp'];
+const IMAGE_FORMATS = ['avif', 'webp', 'jpeg'];
 const IMAGE_SIZES = '(max-width: 768px) 100vw, 768px';
 
 function resolveSiteUrl(url) {

@@ -33,23 +33,23 @@ function buildSizes(sizes, authored, loading) {
 }
 
 /**
- * Pick the renditions the `<img>` fallback is built from.
+ * Pick the rendition the `<img>` fallback is built from.
  *
  * Format is chosen by compatibility, not by author order. Within that format
- * entries run smallest to largest, so `lowsrc` is the `src` and `highsrc`
- * supplies the intrinsic dimensions.
+ * the largest rendition wins, and one entry supplies both the `src` and the
+ * intrinsic dimensions. The `<img>` carries no `srcset`, so `src` is not the
+ * first of several candidates: it is the whole answer for anything reading the
+ * markup without rendering it, which is who still reads that attribute.
  *
  * @param {Object} metadata - eleventy-img metadata keyed by format.
- * @returns {{lowsrc: Object, highsrc: Object}} Smallest and largest rendition.
+ * @returns {Object|undefined} Rendition for the `<img>`, or undefined if none.
  */
-function pickRenditions(metadata) {
+function pickFallback(metadata) {
 	const preferred = FALLBACK_FORMAT_PREFERENCE.find((format) => metadata[format]?.length);
 	// Nothing recognised: a single unusual format is still a fallback, and the
 	// caller reports the empty case.
 	const entries = metadata[preferred] ?? Object.values(metadata)[0];
-	const lowsrc = entries?.[0];
-	const highsrc = entries?.[entries.length - 1];
-	return { lowsrc, highsrc };
+	return entries?.[entries.length - 1];
 }
 
 /**
@@ -175,8 +175,8 @@ export function createImageShortcode({
 			}
 		}
 
-		const { lowsrc, highsrc } = pickRenditions(metadata);
-		if (!lowsrc || !highsrc) {
+		const fallback = pickFallback(metadata);
+		if (!fallback) {
 			throw new Error(`imageShortcode: no renditions produced for ${src}`);
 		}
 
@@ -196,11 +196,11 @@ export function createImageShortcode({
 		// that, since it is not a preference — both pipelines processing the same
 		// image is never what anyone wants.
 		const imgAttributes = {
-			src: lowsrc.url,
+			src: fallback.url,
 			alt: normalizedAlt,
 			loading,
 			decoding: loading === 'eager' ? 'sync' : 'async',
-			...(setDimensions ? { width: highsrc.width, height: highsrc.height } : {}),
+			...(setDimensions ? { width: fallback.width, height: fallback.height } : {}),
 			...img,
 			...(hasImageTransformPlugin ? { 'eleventy:ignore': true } : {})
 		};

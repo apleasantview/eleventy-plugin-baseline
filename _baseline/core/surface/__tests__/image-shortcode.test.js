@@ -113,7 +113,7 @@ describe('image shortcode — when generation is deferred', () => {
 		const html = await render();
 
 		expect(html).toContain('<picture>');
-		expect(html).toContain('src="/media/x-320w.webp"');
+		expect(html).toContain('src="/media/x-960w.webp"');
 	});
 });
 
@@ -172,14 +172,16 @@ describe('image shortcode — where renditions are written', () => {
 		const html = await render({}, { cacheDir: '.cache/media' });
 
 		expect(imageCalls[0].options.urlPath).toBe('/media/');
-		expect(html).toContain('src="/media/x-320w.webp"');
+		expect(html).toContain('src="/media/x-960w.webp"');
 	});
 });
 
 // The `<img>` inside `<picture>` is the last resort for a client that can use
 // no `<source>` at all, so it must be the most compatible rendition available.
 // Before 2026-09-02 it was whichever format the author listed first, which with
-// the default `['avif', 'webp']` meant the least compatible one.
+// the default `['avif', 'webp']` meant the least compatible one. It was also the
+// smallest rendition of that format, fixed 2026-09-03: with no `srcset` on the
+// `<img>`, `src` is the whole answer rather than the first candidate.
 describe('image shortcode — the <picture> fallback', () => {
 	beforeEach(() => {
 		state.metadata = null;
@@ -190,14 +192,14 @@ describe('image shortcode — the <picture> fallback', () => {
 		state.metadata = { avif: renditions('avif'), webp: renditions('webp'), jpeg: renditions('jpeg') };
 		const html = await render();
 
-		expect(html).toContain('<img src="/media/x-320w.jpeg"');
+		expect(html).toContain('<img src="/media/x-960w.jpeg"');
 	});
 
 	it('takes webp over avif when there is no jpeg', async () => {
 		state.metadata = { avif: renditions('avif'), webp: renditions('webp') };
 		const html = await render();
 
-		expect(html).toContain('<img src="/media/x-320w.webp"');
+		expect(html).toContain('<img src="/media/x-960w.webp"');
 	});
 
 	// Every format still gets its own <source>, in the order the author asked
@@ -215,7 +217,7 @@ describe('image shortcode — the <picture> fallback', () => {
 		state.metadata = { jxl: renditions('jxl') };
 		const html = await render();
 
-		expect(html).toContain('<img src="/media/x-320w.jxl"');
+		expect(html).toContain('<img src="/media/x-960w.jxl"');
 	});
 
 	// Dimensions come from the largest rendition of the chosen format, so a
@@ -242,6 +244,15 @@ describe('image shortcode — where the defaults come from', () => {
 
 		expect(imageCalls[0].options.widths).toEqual([100]);
 		expect(imageCalls[0].options.formats).toEqual(['webp']);
+	});
+
+	// jpeg is what makes the fallback a fallback: avif and webp can both be
+	// refused by the client that took it. Last, so negotiation reaches it only
+	// when nothing better fits.
+	it('ends the default formats with a universally readable one', () => {
+		const state = deriveBaselineState({}, {});
+
+		expect(state.options.media.image.formats.at(-1)).toBe('jpeg');
 	});
 
 	// The project's house style, set once at registration.

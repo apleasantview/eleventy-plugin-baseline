@@ -85,7 +85,9 @@ describe('deriveBaselineState — media.image', () => {
 		// `'auto'` re-encodes the full-size original, the most expensive
 		// rendition in the set. It is opt-in.
 		expect(defaults.widths).not.toContain('auto');
-		expect(defaults.formats).toEqual(['avif', 'webp']);
+		// Modern formats first for negotiation, one every client can read last,
+		// so the `<img>` fallback is readable by whoever took it.
+		expect(defaults.formats).toEqual(['avif', 'webp', 'jpeg']);
 		expect(defaults.sizes).toMatch(/max-width/);
 	});
 
@@ -96,7 +98,7 @@ describe('deriveBaselineState — media.image', () => {
 	it('leaves the keys a project did not set alone', () => {
 		const resolved = image({ media: { image: { widths: [640] } } });
 
-		expect(resolved.formats).toEqual(['avif', 'webp']);
+		expect(resolved.formats).toEqual(['avif', 'webp', 'jpeg']);
 		expect(resolved.sizes).toBe(image({}).sizes);
 	});
 

@@ -178,7 +178,7 @@ A plain text block, which gets no highlighting at all.
   caption: "With a caption, the shortcode wraps the image in a figure."
 } %}
 
-The `image` shortcode runs through eleventy-img, so that is a responsive `<picture>` with avif and webp sources rather than a bare `<img>`. Without a `caption` it renders the picture on its own.
+The `image` shortcode runs through eleventy-img, so that is a responsive `<picture>` with avif, webp and jpeg sources rather than a bare `<img>`. Without a `caption` it renders the picture on its own.
 
 {% image {
   src: "/media/example.jpg",
