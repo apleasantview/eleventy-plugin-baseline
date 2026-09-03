@@ -1,0 +1,30 @@
+{#- A split page joins the collection once, at its first url, so every part
+	navigates as the whole document does. See the `siblings` filter for why the
+	built-in getPreviousCollectionItem is not used. -#}
+{%- set navUrl = _pagebreak.parts[0].url if _pagebreak else page.url %}
+{%- set siblings = collections.releases | siblings(navUrl) %}
+{%- set previousPost = siblings.previous %}
+{%- set nextPost = siblings.next %}
+
+<nav class="c-docs-nav" aria-label="Documentation pages">
+	<div class="c-docs-nav__inner">
+		<ul class="c-docs-nav__group">
+			{%- if previousPost %}
+				<li class="c-docs-nav__item c-docs-nav__item--prev">
+					<span class="c-docs-nav__label">Previous</span>
+					<a href="{{ previousPost.url }}" rel="prev">
+						<span class="c-docs-nav__title">{{ previousPost.data.title }}</span>
+					</a>
+				</li>
+			{%- endif %}
+			{%- if nextPost %}
+				<li class="c-docs-nav__item c-docs-nav__item--next">
+					<span class="c-docs-nav__label">Next</span>
+					<a href="{{ nextPost.url }}" rel="next">
+						<span class="c-docs-nav__title">{{ nextPost.data.title }}</span>
+					</a>
+				</li>
+			{%- endif %}
+		</ul>
+	</div>
+</nav>
