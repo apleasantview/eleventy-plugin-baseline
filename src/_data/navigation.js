@@ -2,6 +2,7 @@ export default {
 	en: {
 		main: [
 			{ label: 'Documentation', url: '/docs/' },
+			{ label: 'Release notes', url: '/release-notes/' },
 			{ label: 'About', url: '/about/' }
 		],
 
@@ -49,6 +50,7 @@ export default {
 	nl: {
 		main: [
 			{ label: 'Documentatie', url: '/docs/' },
+			{ label: 'Release notes', url: '/release-notes/' },
 			{ label: 'Over', url: '/nl/about/' }
 		],
 
@@ -91,6 +93,7 @@ export default {
 	fr: {
 		main: [
 			{ label: 'Documentation', url: '/docs/' },
+			{ label: 'Release notes', url: '/release-notes/' },
 			{ label: 'À propos', url: '/fr/about/' }
 		],
 
