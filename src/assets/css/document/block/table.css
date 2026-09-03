@@ -35,3 +35,14 @@ td:first-child {
 .u-overflow--x td {
 	white-space: nowrap;
 }
+
+@media (--screen-xl) {
+	th,
+	td {
+		vertical-align: text-top;
+	}
+
+	.u-overflow--x td {
+		white-space: wrap;
+	}
+}
