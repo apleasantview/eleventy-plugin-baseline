@@ -1,20 +1,25 @@
 .c-page-parts {
-	padding-block: var(--space-inset-s);
-}
-
-.c-page-parts--top {
-	margin-block-start: 2.025em;
+	padding-block-start: var(--space-inset-s);
 }
 
 .c-page-parts__inner {
-	max-width: fit-content;
+	padding-inline: var(--space-inset-s);
+	box-sizing: content-box;
+}
+
+.c-page-parts__group {
+	border-top: 1px solid var(--color-border);
+	padding-block: var(--space-inset-s);
+}
+
+.c-page-parts__group > * {
+	padding: 0 var(--space-inset-3xs);
 }
 
 .c-page-parts__list {
 	list-style-type: none;
 	margin: 0;
 	margin-block-start: var(--space-inset-3xs);
-	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: start;

@@ -8,7 +8,6 @@
 	--wrapper-content-box: border-box;
 	display: grid;
 	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
-	padding-block: var(--space-inset-s);
 	align-items: start;
 	column-gap: var(--space-gap-l);
 	justify-content: center;
@@ -33,6 +32,7 @@
 .l-document__breadcrumbs,
 .l-document__navigation {
 	grid-column: content;
+	padding-block: var(--space-inset-xs);
 }
 
 .l-document__breadcrumbs > * {
@@ -41,7 +41,6 @@
 }
 
 .l-document__navigation > * {
-	margin-block-start: var(--space-inset-s);
 	max-width: var(--content-max-width);
 	margin-inline: auto;
 }

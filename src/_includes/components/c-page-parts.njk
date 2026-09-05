@@ -15,24 +15,26 @@
 {%- if _pagebreak %}
 <nav class="c-page-parts" aria-label="Page parts">
 	<div class="c-page-parts__inner">
-		<span class="u-label">Page {{ _pagebreak.number }} of {{ _pagebreak.total }}</span>
-		<ol class="c-page-parts__list">
-			{%- for part in _pagebreak.parts %}
-				<li class="c-page-parts__item">
-					{%- set label = firstPartLabel if part.number == 1 else part.label %}
-					{%- if part.current %}
-						<span aria-current="page">{{ label }}</span>
-					{%- else %}
-						<a
-							href="{{ part.url }}{% if part.anchor %}#{{ part.anchor }}{% endif %}"
-							{%- if part.number == _pagebreak.number - 1 %} rel="prev"{% endif %}
-							{%- if part.number == _pagebreak.number + 1 %} rel="next"{% endif %}
-							>{{ label }}</a
-						>
-					{%- endif %}
-				</li>
-			{%- endfor %}
-		</ol>
+		<div class="c-page-parts__group">
+			<span class="u-label">Page {{ _pagebreak.number }} of {{ _pagebreak.total }}</span>
+			<ol class="c-page-parts__list">
+				{%- for part in _pagebreak.parts %}
+					<li class="c-page-parts__item">
+						{%- set label = firstPartLabel if part.number == 1 else part.label %}
+						{%- if part.current %}
+							<span aria-current="page">{{ label }}</span>
+						{%- else %}
+							<a
+								href="{{ part.url }}{% if part.anchor %}#{{ part.anchor }}{% endif %}"
+								{%- if part.number == _pagebreak.number - 1 %} rel="prev"{% endif %}
+								{%- if part.number == _pagebreak.number + 1 %} rel="next"{% endif %}
+								>{{ label }}</a
+							>
+						{%- endif %}
+					</li>
+				{%- endfor %}
+			</ol>
+		</div>
 	</div>
 </nav>
 {%- endif %}

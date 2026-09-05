@@ -9,14 +9,17 @@
 
 .c-docs-nav__group {
 	border-top: 1px solid var(--color-border);
-	padding-block-start: var(--space-inset-m);
-	padding-block-end: var(--space-inset-s);
+	padding-block: var(--space-inset-s);
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-inset-s);
 	margin: 0;
 	padding-inline-start: 0;
 	list-style: none;
+}
+
+.c-docs-nav__item {
+	padding-inline: var(--space-inset-3xs);
 }
 
 .c-docs-nav__item--next {

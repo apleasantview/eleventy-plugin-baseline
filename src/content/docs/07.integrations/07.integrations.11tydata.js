@@ -1,4 +1,5 @@
 export default {
 	section: ['docs', 'integrations'],
-	sectionLabel: 'Integrations'
+	sectionLabel: 'Integrations',
+	layout: 'layouts/docs-integrations.njk'
 };
