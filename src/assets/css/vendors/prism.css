@@ -199,6 +199,6 @@ code[class*='language-'] ::selection {
 	background: var(--prism-line-highlight-background);
 }
 
-div.code-toolbar + *:not(h2, ul) {
+div.code-toolbar + *:not(h2, h3, ul) {
 	margin-top: var(--space-inset-s);
 }
