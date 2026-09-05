@@ -101,6 +101,15 @@ export default async function (eleventyConfig) {
 		return res;
 	});
 
+	// Details block: unclutter the page a little.
+	eleventyConfig.addPairedNunjucksShortcode('detailsBlock', function (content, summary = 'Summary') {
+		const res = this.env.render('blocks/details.njk', {
+			content: content,
+			summary: summary
+		});
+		return res;
+	});
+
 	// ---- Filters ---
 
 	// Neighbours in a collection, by url.

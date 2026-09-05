@@ -12,6 +12,7 @@
 @import './block/alert.css';
 @import './block/steps.css';
 @import './block/table.css';
+@import './block/details.css';
 
 @import './layout/l-document.css';
 @import './layout/l-fluid-grid.css';

@@ -1,0 +1,5 @@
+.details:has(.u-label) {
+	summary {
+		display: revert;
+	}
+}
