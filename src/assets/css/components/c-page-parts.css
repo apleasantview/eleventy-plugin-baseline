@@ -19,4 +19,5 @@
 	flex-wrap: wrap;
 	align-items: start;
 	column-gap: var(--space-gap-s);
+	row-gap: var(--space-gap-2xs);
 }
