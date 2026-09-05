@@ -1,5 +1,9 @@
 .details:has(.u-label) {
 	summary {
 		display: revert;
+		font-size: var(--text-size-body);
+		font-weight: var(--font-weight-normal);
+		color: var(--color-text);
+		text-transform: unset;
 	}
 }
