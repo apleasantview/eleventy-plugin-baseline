@@ -1,6 +1,5 @@
 h1 {
 	font-size: var(--text-size-display);
-	margin-top: var(--flow-space);
 	padding-block-end: var(--space-inset-s);
 }
 

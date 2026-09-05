@@ -52,9 +52,9 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	:root {
-		--anim-reveal-distance: 1.45rem; /* how far it rises */
+		--anim-reveal-distance: 0.75em; /* how far it rises */
 		--anim-reveal-ease: cubic-bezier(0.2, 0, 0, 1);
-		--anim-reveal-duration: 600ms;
+		--anim-reveal-duration: 400ms;
 		--anim-reveal-stagger: 100ms;
 	}
 }
