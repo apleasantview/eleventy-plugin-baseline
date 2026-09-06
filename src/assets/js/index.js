@@ -1,6 +1,8 @@
 import { themeSwitcher } from './theme-switcher';
+import { tocScrollspy } from './toc-scrollspy';
 
 themeSwitcher();
+tocScrollspy();
 
 document.addEventListener('DOMContentLoaded', () => {
 	console.log(`Howdy!`);

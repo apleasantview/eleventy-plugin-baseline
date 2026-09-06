@@ -1,0 +1,13 @@
+.c-toc-list a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+
+	&:hover {
+		color: var(--color-accent-text-muted);
+		text-decoration: underline;
+	}
+
+	&[aria-current] {
+		color: var(--color-accent-text);
+	}
+}
