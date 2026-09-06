@@ -6,6 +6,7 @@ const slug = 'faq';
 const description =
 	'Does Baseline lock you in? Is it production-ready? Answers on scope, tooling, SEO, and where to get help.';
 const date = '2026-06-02';
+const seo = { title: 'Baseline FAQ: scope, tooling and support' };
 const permalink = '/faq/';
 const layout = 'layouts/page.njk';
 const lang = 'en';

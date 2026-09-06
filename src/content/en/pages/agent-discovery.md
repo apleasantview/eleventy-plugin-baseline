@@ -1,7 +1,7 @@
 ---
 title: 'Agent discovery'
 slug: 'agent-discovery'
-description: 'Static discovery surfaces for AI agents and integrations.'
+description: 'The static discovery surfaces this site publishes for AI agents and integrations: schema endpoints, a schema map, llms.txt and an API catalog.'
 date: 2026-05-22
 permalink: '/agent-discovery/'
 ---

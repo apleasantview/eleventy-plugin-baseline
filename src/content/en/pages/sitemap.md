@@ -1,8 +1,10 @@
 ---
 title: 'Sitemap'
 slug: 'sitemap-index'
-description: 'Every English page on the site, grouped by section.'
+description: 'Every English page on the site, grouped by section: documentation, release notes, and the pages about the project itself.'
 date: 2026-08-13
+seo:
+  title: 'Sitemap: every page, grouped by section'
 permalink: '/sitemap/'
 ---
 

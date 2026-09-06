@@ -3,6 +3,8 @@ title: 'Eleventy Baseline'
 slug: 'home'
 description: 'Eleventy Baseline is a build framework for Eleventy. Assets, head tags, sitemaps and structured data, ready on the first build.'
 date: 2026-05-17
+seo:
+  title: 'Eleventy Baseline: a build framework for Eleventy'
 permalink: '/'
 translationKey: homepage
 layout: 'layouts/home.njk'
