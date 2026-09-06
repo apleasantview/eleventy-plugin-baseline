@@ -8,16 +8,14 @@
 		margin-block-start: 1em;
 	}
 
-	.c-docs-toc__block li {
-		margin-left: -0.0875em;
-	}
-
 	.c-docs-toc__link {
 		margin-top: 0.1em;
+		margin-left: -0.0875em;
 	}
 
 	li .c-docs-toc__link {
 		margin: 0;
+		margin-left: -0.0875em;
 	}
 
 	li .c-docs-toc__link[aria-current] {

@@ -20,6 +20,10 @@
 	}
 }
 
+.c-docs-toc__children {
+	padding-inline: var(--space-inset-3xs);
+}
+
 .c-docs-toc__link {
 	display: inline-block;
 	padding-inline-start: 1em;
@@ -36,7 +40,6 @@
 		border-left: 0.2em solid currentColor;
 		color: var(--color-accent-text);
 		margin: 0;
-		transform: translateX(-0.03em);
 	}
 
 	&[aria-current]:hover {
