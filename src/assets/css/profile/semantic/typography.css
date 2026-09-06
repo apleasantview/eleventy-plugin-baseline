@@ -28,6 +28,7 @@
 	 * body and heading could diverge tomorrow, the way font-family-heading can. */
 	--text-letterspacing-body: var(--letter-spacing-wide);
 	--text-letterspacing-heading: var(--letter-spacing-wide);
+	--text-letterspacing-summary: var(--letter-spacing-loose);
 
 	--text-inlinesize-body: 75ch;
 	--text-inlinesize-heading: fit-content;

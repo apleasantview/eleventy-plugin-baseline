@@ -2,9 +2,9 @@
 	summary {
 		display: revert;
 		font-size: var(--text-size-body);
-		font-weight: var(--font-weight-normal);
+		font-weight: var(--font-weight-semibold);
 		color: var(--color-text);
 		text-transform: unset;
-		letter-spacing: var(--text-letterspacing-body);
+		letter-spacing: var(--text-letterspacing-summary);
 	}
 }
