@@ -1,10 +1,13 @@
 .details:has(.u-label) {
-	summary {
+	summary span {
 		display: revert;
 		font-size: var(--text-size-body);
 		font-weight: var(--font-weight-semibold);
 		color: var(--color-text);
 		text-transform: unset;
 		letter-spacing: var(--text-letterspacing-summary);
+		text-decoration: underline;
+		text-underline-offset: 0.5em;
+		text-decoration-color: var(--color-border);
 	}
 }
