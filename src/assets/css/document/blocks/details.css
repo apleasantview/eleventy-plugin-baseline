@@ -7,7 +7,18 @@
 		text-transform: unset;
 		letter-spacing: var(--text-letterspacing-summary);
 		text-decoration: underline;
-		text-underline-offset: 0.5em;
 		text-decoration-color: var(--color-border);
+		text-decoration-style: dashed;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.5em;
+	}
+
+	summary + * {
+		margin-block: var(--space-inset-m);
+	}
+
+	.u-overflow--x {
+		margin-block: var(--space-inset-xs);
+		padding-block: 0;
 	}
 }
