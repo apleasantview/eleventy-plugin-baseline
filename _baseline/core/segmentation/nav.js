@@ -52,16 +52,18 @@ export function buildPagebreak(entries, hrefs = [], index) {
 /**
  * Qualify a split page's title with the label of the part being rendered.
  * Part one keeps the document's title; the label leads, so truncation eats
- * the tail. `_pagebreak` arrives as a placeholder string on Eleventy's
- * dependency-discovery pass, which is what the type guard is for.
+ * the tail.
  *
  * @param {string} title
  * @param {any} pagebreak - `_pagebreak`, or anything else.
  * @returns {string}
  */
 export function applyPartLabel(title, pagebreak) {
-	if (!pagebreak || typeof pagebreak !== 'object') return title;
+	if (!pagebreak) return title;
 
+	// `_pagebreak` arrives as a placeholder string on Eleventy's
+	// dependency-discovery pass before it arrives as the object. Destructuring
+	// a string is harmless, so this line is what turns it away.
 	const { number, parts } = pagebreak;
 	if (!number || number < 2 || !Array.isArray(parts)) return title;
 
