@@ -19,7 +19,8 @@ import { isAbsoluteImageUrl } from './pick-image.js';
  */
 export function resolveCanonicalUrl({ seo, data, settings, page }) {
 	if (!settings?.url) return undefined;
-	if (settings.noindex === true || data?.noindex === true) return undefined;
+	if (settings.noindex === true) return undefined;
+	if ((seo?.noindex ?? data?.noindex) === true) return undefined;
 
 	const raw = seo?.canonical ?? data?.canonical ?? page?.url;
 	if (!raw) return undefined;

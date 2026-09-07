@@ -74,6 +74,26 @@ describe('resolveCanonicalUrl', () => {
 		expect(url).toBeUndefined();
 	});
 
+	it('returns undefined when seo.noindex is set', () => {
+		const url = resolveCanonicalUrl({
+			seo: { noindex: true },
+			data: {},
+			settings: { url: siteUrl },
+			page: { url: '/posts/hello/' }
+		});
+		expect(url).toBeUndefined();
+	});
+
+	it('lets seo.noindex override a bare noindex back to false', () => {
+		const url = resolveCanonicalUrl({
+			seo: { noindex: false },
+			data: { noindex: true },
+			settings: { url: siteUrl },
+			page: { url: '/posts/hello/' }
+		});
+		expect(url).toBe('https://www.example.com/posts/hello/');
+	});
+
 	it('returns undefined when the site is noindex', () => {
 		const url = resolveCanonicalUrl({
 			seo: {},

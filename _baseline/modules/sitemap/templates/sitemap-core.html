@@ -31,9 +31,12 @@
 {%- if not noindex %}
 {%- for item in collections.all %}
 {%- set sm = item.data.sitemap %}
+{#- `seo.noindex` wins over bare `noindex`, including when it overrides it to
+	false, which is why this is a fallback rather than a second condition. -#}
+{%- set pageNoindex = item.data.seo.noindex if item.data.seo.noindex is defined else item.data.noindex %}
 {%- set included = item.url
 	and not item.data.eleventyExcludeFromCollections
-	and item.data.noindex != true
+	and pageNoindex != true
 	and sm.ignore != true %}
 {%- set pageLang = item.data.lang or defaultLanguage %}
 {%- set inThisSitemap = (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}

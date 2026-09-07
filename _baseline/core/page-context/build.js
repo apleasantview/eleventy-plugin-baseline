@@ -283,7 +283,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	}
 
 	function buildMeta({ data, site, page, query }) {
-		const noindex = site.noindex || data?.noindex === true;
+		const noindex = site.noindex || (data?.seo?.noindex ?? data?.noindex) === true;
 
 		const robots = noindex
 			? 'noindex, nofollow'
