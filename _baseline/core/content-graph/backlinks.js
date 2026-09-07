@@ -31,7 +31,8 @@
  */
 
 /**
- * @param {Record<string, { links: Array<{ href: string, internal: boolean }>, excerpt?: string }>} nodes
+ * @param {Array<{ internal: boolean, from: string, to: string, text: string, rel: string[] }>} edges - Every link in the graph; only the internal ones are inverted.
+ * @param {Record<string, { title?: string, excerpt?: string }>} nodes - Keyed by url, read for the entry's title and excerpt.
  * @param {Record<string, { title?: string }>} [sourceMeta] - Per-source metadata to enrich entries with.
  * @returns {Record<string, Array<{ url: string, title?: string, excerpt?: string }>>}
  */
