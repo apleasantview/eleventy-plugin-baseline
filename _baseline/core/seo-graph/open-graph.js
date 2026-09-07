@@ -9,6 +9,7 @@
 // — written fresh against Baseline's namespace.
 
 import { resolveDates } from '../dates/index.js';
+import { applyPartLabel } from '../segmentation/nav.js';
 import { resolveDefault, resolveLocale, toOpenGraphLocale } from '../locale/index.js';
 import { pickImage } from './pick-image.js';
 
@@ -66,7 +67,8 @@ export function buildSocialProjections(data, canonicalUrl) {
 	const locale = toOpenGraphLocale(resolveLocale(node, data, settings, lang)) ?? '';
 	const siteRoot = settings.url.replace(/\/+$/, '');
 
-	const title = seo.ogTitle ?? node?.title ?? data.title;
+	// Same qualification the <title> gets, so a shared part names itself.
+	const title = applyPartLabel(seo.ogTitle ?? node?.title ?? data.title, data._pagebreak);
 	const description = seo.ogDescription ?? node?.description ?? data.description ?? node?.excerpt;
 
 	// Editorial `article` projects og:type article (and unlocks article:*);

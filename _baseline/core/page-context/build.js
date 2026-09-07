@@ -6,6 +6,7 @@ import { resolveField } from '../utils/resolve-field.js';
 import { normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
 import { SEGMENT_DATA_KEY, SEGMENT_ALIAS } from '../segmentation/constants.js';
+import { applyPartLabel } from '../segmentation/nav.js';
 
 /**
  * Apply a title template, replacing tokens with resolved values. Tokens:
@@ -294,7 +295,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const siteDescription = site.description;
 		const tagline = site.tagline;
 
-		const pageTitle = data?.seo?.title ?? data?.title ?? siteTitle;
+		const pageTitle = applyPartLabel(data?.seo?.title ?? data?.title ?? siteTitle, data?._pagebreak);
 		const pageDescription = data?.seo?.description ?? data?.description ?? data?.excerpt;
 
 		// ---- DESCRIPTION ----

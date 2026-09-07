@@ -2,6 +2,31 @@
 {# Every tag trims its own whitespace ({%- ... %}) on purpose: the output is
 	XML, so Nunjucks' default spacing would put a blank line between elements.
 	`siteUrl`, `defaultLanguage` and `noindex` are handed in by the module. -#}
+{#- One `<url>` entry. `alternates` is the translations map for the page, or
+	nothing: a part inherits its parent's settings but never its hreflang, because
+	an alternate has to name the equivalent page and page one is not it. -#}
+{%- macro urlEntry(loc, lastmod, sm, alternates) -%}
+<url>
+<loc>{{ loc | htmlBaseUrl(siteUrl) }}</loc>
+{%- if lastmod %}
+<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
+{%- endif %}
+{%- if sm.changefreq %}
+<changefreq>{{ sm.changefreq }}</changefreq>
+{%- endif %}
+{%- if sm.priority is defined %}
+<priority>{{ sm.priority }}</priority>
+{%- endif %}
+{%- if alternates %}
+{%- for language, entry in alternates %}
+<xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
+{%- if entry.isDefaultLang %}
+<xhtml:link rel="alternate" hreflang="x-default" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+</url>
+{%- endmacro -%}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 {%- if not noindex %}
 {%- for item in collections.all %}
@@ -14,26 +39,18 @@
 {%- set inThisSitemap = (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}
 {%- if included and inThisSitemap %}
 {%- set lastmod = sm.lastmod or item.date %}
-<url>
-<loc>{{ item.url | htmlBaseUrl(siteUrl) }}</loc>
-{%- if lastmod %}
-<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
-{%- endif %}
-{%- if sm.changefreq %}
-<changefreq>{{ sm.changefreq }}</changefreq>
-{%- endif %}
-{%- if sm.priority is defined %}
-<priority>{{ sm.priority }}</priority>
-{%- endif %}
-{%- if item.data.translationKey and collections.translationsMap and collections.translationsMap[item.data.translationKey] %}
-{%- for language, entry in collections.translationsMap[item.data.translationKey] %}
-<xhtml:link rel="alternate" hreflang="{{ entry.lang }}" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
-{%- if entry.isDefaultLang %}
-<xhtml:link rel="alternate" hreflang="x-default" href="{{ entry.url | htmlBaseUrl(siteUrl) }}" />
+{%- set alternates = collections.translationsMap[item.data.translationKey] if item.data.translationKey and collections.translationsMap else false %}
+{{ urlEntry(item.url, lastmod, sm, alternates) }}
+{#- A split page enters `collections.all` once, as part one. Its siblings are
+	real URLs with no collection entry of their own, so they are emitted here and
+	inherit everything the parent declared. -#}
+{%- if item.data._pagebreak %}
+{%- for part in item.data._pagebreak.parts %}
+{%- if part.number > 1 and part.url %}
+{{ urlEntry(part.url, lastmod, sm, false) }}
 {%- endif %}
 {%- endfor %}
 {%- endif %}
-</url>
 {%- endif %}
 {%- endfor %}
 {%- endif %}

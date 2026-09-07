@@ -48,3 +48,23 @@ export function buildPagebreak(entries, hrefs = [], index) {
 		next: parts[index + 1]
 	};
 }
+
+/**
+ * Qualify a split page's title with the label of the part being rendered.
+ * Part one keeps the document's title; the label leads, so truncation eats
+ * the tail. `_pagebreak` arrives as a placeholder string on Eleventy's
+ * dependency-discovery pass, which is what the type guard is for.
+ *
+ * @param {string} title
+ * @param {any} pagebreak - `_pagebreak`, or anything else.
+ * @returns {string}
+ */
+export function applyPartLabel(title, pagebreak) {
+	if (!pagebreak || typeof pagebreak !== 'object') return title;
+
+	const { number, parts } = pagebreak;
+	if (!number || number < 2 || !Array.isArray(parts)) return title;
+
+	const current = parts.find((part) => part?.current) ?? parts[number - 1];
+	return current?.label ? `${current.label}: ${title}` : title;
+}
