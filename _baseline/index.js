@@ -20,7 +20,7 @@ import { SEGMENT_DATA_KEY, PAGEBREAK_COMPUTED_KEY } from './core/segmentation/co
 import { registerPageContext } from './core/page-context/index.js';
 import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
-import { slugify } from './core/utils/slugify.js';
+import { slugifyAnchor } from './core/utils/slugify-anchor.js';
 import { hasAnyPlugin } from './core/utils/has-plugin.js';
 import { createRegistrar } from './core/utils/registrar.js';
 import { resolveDefault } from './core/locale/index.js';
@@ -399,7 +399,7 @@ export default function baseline(settings = {}, options = {}) {
 		const mdLog = scopedLog('markdown');
 		eleventyConfig.amendLibrary('md', (md) => {
 			safeUse(md, 'curly_attributes', markdownItAttrs, undefined, mdLog);
-			safeUse(md, 'baseline_auto_heading_ids', autoHeadingIds, { slugify }, mdLog);
+			safeUse(md, 'baseline_auto_heading_ids', autoHeadingIds, { slugify: slugifyAnchor }, mdLog);
 			safeUse(md, 'baseline_wikilinks', wikilinks, { slugIndex, pageContextRegistry, translationMapStore }, mdLog);
 		});
 

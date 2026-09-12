@@ -1,4 +1,4 @@
-import { slugify } from '../utils/slugify.js';
+import { slugifyAnchor } from '../utils/slugify-anchor.js';
 
 /**
  * Extractors (runtime substrate)
@@ -38,7 +38,7 @@ function headingRecord(el) {
 	return {
 		level: Number(el.tagName[1]),
 		text,
-		id: el.id || slugify(text) || null
+		id: el.id || slugifyAnchor(text) || null
 	};
 }
 

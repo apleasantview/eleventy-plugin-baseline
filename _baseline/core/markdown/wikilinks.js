@@ -1,4 +1,5 @@
 import { slugify } from '../utils/slugify.js';
+import { slugifyAnchor } from '../utils/slugify-anchor.js';
 
 /**
  * Wikilinks (runtime substrate)
@@ -57,7 +58,9 @@ export function wikilinks(md, { slugIndex, pageContextRegistry, translationMapSt
 		const hashIdx = target.indexOf('#');
 		const slugAndLang = hashIdx === -1 ? target : target.slice(0, hashIdx);
 		const rawAnchor = hashIdx === -1 ? null : target.slice(hashIdx + 1).trim() || null;
-		const anchor = rawAnchor ? slugify(rawAnchor) : null;
+		// Anchors go through the heading slugifier, not the key one: this has to
+		// land on the id auto-heading-ids assigned, not on a wikilink key.
+		const anchor = rawAnchor ? slugifyAnchor(rawAnchor) : null;
 
 		// [[slug:lang]]
 		const colonIdx = slugAndLang.indexOf(':');
