@@ -60,7 +60,8 @@ export default {
 		],
 		meta: [
 			{ name: 'color-scheme', content: 'light dark' },
-			{ name: 'theme-color', content: '#ffffff' }
+			{ name: 'theme-color', content: '#e8f7ff', media: '(prefers-color-scheme: light)' },
+			{ name: 'theme-color', content: '#1c2128', media: '(prefers-color-scheme: dark)' }
 		]
 	},
 

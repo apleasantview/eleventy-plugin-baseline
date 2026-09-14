@@ -52,6 +52,57 @@ describe('buildHead dedupe', () => {
 		expect(head.meta[0].content).toBe('page');
 	});
 
+	// This pass runs before the head driver's own dedupe, so anything it folds
+	// away never reaches the pass that scopes correctly. Testing the driver's
+	// helper passed while this one dropped the tag, which is why the fix was
+	// recorded as landed and was not.
+	it('keeps two theme-colors that differ only by media query', () => {
+		const head = buildHead({
+			settingsHead: {
+				meta: [
+					{ name: 'theme-color', content: '#fff', media: '(prefers-color-scheme: light)' },
+					{ name: 'theme-color', content: '#000', media: '(prefers-color-scheme: dark)' }
+				]
+			}
+		});
+		expect(head.meta).toHaveLength(2);
+		expect(head.meta.map((m) => m.content)).toEqual(['#fff', '#000']);
+	});
+
+	it('scopes property and http-equiv metas on media too', () => {
+		const head = buildHead({
+			settingsHead: {
+				meta: [
+					{ property: 'og:image', content: 'a.png', media: '(min-width: 40em)' },
+					{ property: 'og:image', content: 'b.png' }
+				]
+			}
+		});
+		expect(head.meta).toHaveLength(2);
+	});
+
+	it('still collapses two media-scoped metas sharing the same query', () => {
+		const head = buildHead({
+			settingsHead: {
+				meta: [
+					{ name: 'theme-color', content: '#fff', media: '(prefers-color-scheme: dark)' },
+					{ name: 'theme-color', content: '#000', media: '(prefers-color-scheme: dark)' }
+				]
+			}
+		});
+		expect(head.meta).toHaveLength(1);
+		expect(head.meta[0].content).toBe('#000');
+	});
+
+	it('still collapses an unscoped meta against another unscoped one', () => {
+		const head = buildHead({
+			settingsHead: { meta: [{ name: 'theme-color', content: '#fff' }] },
+			pageHead: { meta: [{ name: 'theme-color', content: '#000' }] }
+		});
+		expect(head.meta).toHaveLength(1);
+		expect(head.meta[0].content).toBe('#000');
+	});
+
 	it('still collapses a genuinely duplicated link (same rel + href)', () => {
 		const head = buildHead({
 			settingsHead: {

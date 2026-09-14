@@ -351,11 +351,11 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		// identifying attribute (name / property / charset / http-equiv) so og:*
 		// property tags are not collapsed. The head driver runs the authoritative
 		// final pass; this just merges settings + front-matter without losing tags.
-		// Links key on rel + href so tags that share a host but differ in rel
-		// (preconnect vs dns-prefetch) are not collapsed. Metas key on their
-		// identifying attribute so two tags with the same key (e.g. a repeated
-		// og:title) collapse to the last, matching the driver's authoritative
-		// pass instead of leaning on uniqueBy's by-shape fallback.
+		//
+		// This pass runs FIRST, so anything it drops never reaches that final pass.
+		// `modules/head/utils/dedupe.js` holds the same key function and the two
+		// must agree: a media-scoped `theme-color` was folded away here while the
+		// driver's own pass, which scopes correctly, was blamed and found innocent.
 		const link = uniqueBy([...(userHead.link ?? []), ...(pageHead.link ?? [])], (item) => {
 			if (item?.rel === 'canonical') {
 				try {
@@ -372,10 +372,15 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 		const style = uniqueBy([...(userHead.style ?? []), ...(pageHead.style ?? [])], 'href');
 
 		const meta = uniqueBy([...(userHead.meta ?? []), ...(pageHead.meta ?? [])], (item) => {
+			// `media` is part of the identity: two `theme-color` tags differing
+			// only by media query answer two different questions. Tags carrying
+			// no `media` key exactly as they always did.
+			const scope = item?.media ? `|media:${item.media}` : '';
+
 			if (item?.charset) return 'charset';
-			if (item?.name) return `name:${item.name}`;
-			if (item?.property) return `prop:${item.property}`;
-			if (item?.['http-equiv']) return `http:${item['http-equiv']}`;
+			if (item?.name) return `name:${item.name}${scope}`;
+			if (item?.property) return `prop:${item.property}${scope}`;
+			if (item?.['http-equiv']) return `http:${item['http-equiv']}${scope}`;
 			return undefined;
 		});
 
