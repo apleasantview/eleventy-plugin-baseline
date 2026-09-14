@@ -88,10 +88,18 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 		// so a relative image URL ships exactly as authored while the @id beside it
 		// is absolute. Baseline does not rewrite it (image URLs are authored
 		// absolute, by decision) but it should not stay quiet about it either.
-		const image = social.openGraph?.image;
-		if (typeof image === 'string' && !isAbsoluteImageUrl(image) && !warnedImages.has(image)) {
-			warnedImages.add(image);
-			log?.warn?.(`og:image "${image}" is relative and will ship as authored; share images need an absolute URL`);
+		//
+		// Every authored image URL, not just og:image.
+		for (const [field, candidate] of [
+			['og:image', social.openGraph?.image],
+			['twitter:image', social.twitter?.image],
+			['schema logo', data.schema?.organization?.logo?.url]
+		]) {
+			if (typeof candidate !== 'string' || isAbsoluteImageUrl(candidate)) continue;
+			const seenKey = `${field}|${candidate}`;
+			if (warnedImages.has(seenKey)) continue;
+			warnedImages.add(seenKey);
+			log?.warn?.(`${field} "${candidate}" is relative and will ship as authored; share images need an absolute URL`);
 		}
 
 		const inspectionKey = data.page?.url ?? data.page?.inputPath;

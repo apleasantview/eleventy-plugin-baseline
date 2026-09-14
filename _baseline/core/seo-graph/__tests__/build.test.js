@@ -249,3 +249,62 @@ describe('the relative share-image warning', () => {
 		expect(warn).toEqual([]);
 	});
 });
+
+// og:image was the only field watched, and it is the one `pickImage` has
+// already normalised by the time the check runs. These two reach output
+// unexamined, and the logo goes into the <script> the warning is about.
+describe('the relative share-image warning, on the fields that were not watched', () => {
+	const build = (log, data) => {
+		const buildSeo = createSeoNamespace({
+			scope: { values: new Map() },
+			settings: { url: siteUrl, title: 'Demo' },
+			runtime: {},
+			options: {},
+			log
+		});
+		return (url) => buildSeo({ settings: { url: siteUrl, title: 'Demo' }, page: { url }, title: 'T', ...data });
+	};
+
+	it('warns on a relative twitter:image', () => {
+		const warn = [];
+		build({ warn: (m) => warn.push(m) }, { seo: { twitterImage: '/assets/card.jpg' } })('/a/');
+
+		expect(warn).toHaveLength(1);
+		expect(warn[0]).toContain('twitter:image');
+		expect(warn[0]).toContain('/assets/card.jpg');
+	});
+
+	it('warns on a relative organisation logo', () => {
+		const warn = [];
+		const data = { schema: { organization: { name: 'Demo', logo: { url: '/assets/logo.png', width: 1, height: 1 } } } };
+		build({ warn: (m) => warn.push(m) }, data)('/a/');
+
+		expect(warn).toHaveLength(1);
+		expect(warn[0]).toContain('schema logo');
+		expect(warn[0]).toContain('/assets/logo.png');
+	});
+
+	it('names each offending field separately when several are relative', () => {
+		const warn = [];
+		const data = {
+			ogImage: '/assets/share.jpg',
+			seo: { twitterImage: '/assets/card.jpg' },
+			schema: { organization: { name: 'Demo', logo: { url: '/assets/logo.png', width: 1, height: 1 } } }
+		};
+		build({ warn: (m) => warn.push(m) }, data)('/a/');
+
+		expect(warn).toHaveLength(3);
+		expect(warn.map((m) => m.split(' ')[0])).toEqual(['og:image', 'twitter:image', 'schema']);
+	});
+
+	it('stays quiet when both are absolute', () => {
+		const warn = [];
+		const data = {
+			seo: { twitterImage: 'https://www.example.com/card.jpg' },
+			schema: { organization: { name: 'Demo', logo: { url: 'https://www.example.com/logo.png', width: 1, height: 1 } } }
+		};
+		build({ warn: (m) => warn.push(m) }, data)('/a/');
+
+		expect(warn).toEqual([]);
+	});
+});
