@@ -67,6 +67,10 @@ ul {
 	padding-inline-start: 1.5rem;
 }
 
+li + li {
+	margin-block-start: var(--space-inset-xs);
+}
+
 pre,
 code:not(pre code) {
 	background: var(--color-background-subtle);
