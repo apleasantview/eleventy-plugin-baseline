@@ -50,7 +50,11 @@ export function buildGraph(pages, options = {}) {
 	const edges = [];
 	const sourceMeta = {};
 
-	for (const page of pages) {
+	// `toJSON()` promises no order, and node, edge and backlink order all inherit
+	// it. Sorting by url makes the build reproducible.
+	const ordered = [...pages].sort((a, b) => String(a?.url ?? '').localeCompare(String(b?.url ?? '')));
+
+	for (const page of ordered) {
 		if (!page?.url || typeof page.content !== 'string') continue;
 		if (!page.outputPath?.endsWith('.html')) continue;
 		// Honour the same opt-out 404s, drafts and internal templates already use.

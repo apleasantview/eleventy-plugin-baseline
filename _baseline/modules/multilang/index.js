@@ -170,6 +170,12 @@ export function multilangCore(eleventyConfig, moduleContext) {
 			};
 		}
 
+		// Key order is page order, which templates iterate directly (the sitemap
+		// emits one `xhtml:link` per entry). Sorted so that output is stable.
+		for (const key of Object.keys(map)) {
+			map[key] = Object.fromEntries(Object.entries(map[key]).sort(([a], [b]) => a.localeCompare(b)));
+		}
+
 		built = map;
 		return built;
 	};

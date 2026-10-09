@@ -411,18 +411,32 @@ export default function baseline(settings = {}, options = {}) {
 		};
 
 		// --- Module registry ---
+		// `prepass: false` skips a module during the pre-pass, which renders only so
+		// the graph can extract from the content root. Default-on: forgetting it
+		// costs a slow pre-pass, never a wrong graph.
+		//
+		// A module stays if anything it registers is reachable from a template:
+		// multilang owns the computed fields node identity is built from, navigator
+		// owns `_ctx` / `_runtime`, assets owns the inline filters.
 		const moduleRegistry = [
 			{ when: state.features.multilang, name: 'multilang', plugin: multilangCore },
-			{ when: state.features.sitemap, name: 'sitemap', plugin: sitemapCore },
+			{ when: state.features.sitemap, name: 'sitemap', plugin: sitemapCore, prepass: false },
 			{ name: 'navigator', plugin: navigatorCore },
-			{ when: state.features.head, name: 'head', plugin: headCore, consumes: { pageContext: true, seoGraph: true } },
+			{
+				when: state.features.head,
+				name: 'head',
+				plugin: headCore,
+				prepass: false,
+				consumes: { pageContext: true, seoGraph: true }
+			},
 			{ when: state.features.assets, name: 'assets', plugin: assetsCore }
 		];
 
 		const active = [];
 		for (const entry of moduleRegistry) {
-			const { when = true, name, plugin, consumes = {} } = entry;
+			const { when = true, prepass = true, name, plugin, consumes = {} } = entry;
 			if (!when) continue;
+			if (isPrepass && !prepass) continue;
 			const moduleContext = {
 				...coreContext,
 				log: scopedLog(name),

@@ -73,8 +73,48 @@ describe('buildAlternates', () => {
 		expect(out).toEqual([
 			{ rel: 'alternate', hreflang: 'en', href: 'https://www.example.com/en/post/' },
 			{ rel: 'alternate', hreflang: 'x-default', href: 'https://www.example.com/en/post/' },
-			{ rel: 'alternate', hreflang: 'nl', href: 'https://www.example.com/nl/post/' },
-			{ rel: 'alternate', hreflang: 'fr', href: 'https://www.example.com/fr/post/' }
+			{ rel: 'alternate', hreflang: 'fr', href: 'https://www.example.com/fr/post/' },
+			{ rel: 'alternate', hreflang: 'nl', href: 'https://www.example.com/nl/post/' }
 		]);
+	});
+
+	// The set used to come out in whatever order the map was built in, so the
+	// same content produced byte-different output when anything upstream of the
+	// graph changed. Insertion order is the input here, so a passing assertion
+	// on it would have been asserting the accident.
+	it('orders by language whatever order the variants arrive in', () => {
+		const forward = buildAlternates(
+			'post',
+			mapWith({
+				nl: { url: '/nl/post/', lang: 'nl' },
+				fr: { url: '/fr/post/', lang: 'fr' },
+				en: { url: '/en/post/', lang: 'en' }
+			}),
+			siteUrl
+		);
+		const reversed = buildAlternates(
+			'post',
+			mapWith({
+				en: { url: '/en/post/', lang: 'en' },
+				fr: { url: '/fr/post/', lang: 'fr' },
+				nl: { url: '/nl/post/', lang: 'nl' }
+			}),
+			siteUrl
+		);
+
+		expect(forward.map((l) => l.hreflang)).toEqual(['en', 'fr', 'nl']);
+		expect(reversed).toEqual(forward);
+	});
+
+	it('keeps x-default next to the language it duplicates', () => {
+		const out = buildAlternates(
+			'post',
+			mapWith({
+				nl: { url: '/nl/post/', lang: 'nl' },
+				fr: { url: '/fr/post/', lang: 'fr', isDefaultLang: true }
+			}),
+			siteUrl
+		);
+		expect(out.map((l) => l.hreflang)).toEqual(['fr', 'x-default', 'nl']);
 	});
 });
