@@ -27,6 +27,16 @@ export function registerSeoGraph(eleventyConfig, coreContext) {
 
 	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
 		return (data) => {
+			// Eleventy orders computed keys by what each function reads through its
+			// discovery proxy, so these reads have to happen before any early
+			// return or this key is scheduled ahead of what it consumes. Leaf
+			// paths only: `ComputedDataProxy.js:72` records a read only when the
+			// value is neither array nor plain object, so `data.schema` alone
+			// registers nothing.
+			void data.schema?.pieces;
+			void data.seo?.ogImage;
+			void data.ogImage;
+
 			if (shouldSkip(data)) return data._seoGraph ?? null;
 			return memoize(scope, data, buildSeoNamespace);
 		};

@@ -56,8 +56,22 @@ export function registerPageContext(eleventyConfig, coreContext) {
 		return false;
 	}
 
+	// Eleventy orders computed keys by what each function reads through its
+	// discovery proxy, and only a leaf read counts (`ComputedDataProxy.js:72`
+	// records nothing for an array or plain object). Touched before the early
+	// return, or this key is scheduled ahead of the values it consumes.
+	const CONSUMED = ['title', 'description', 'excerpt', 'slug', 'type', 'canonical', 'noindex', 'titleTemplate'];
+
+	function declareDependencies(data) {
+		for (const key of CONSUMED) {
+			void data?.[key];
+			void data?.seo?.[key];
+		}
+	}
+
 	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
 		return (data) => {
+			declareDependencies(data);
 			if (shouldSkip(data)) return null;
 			return memoize(scope, data, buildPageContext);
 		};
