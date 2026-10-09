@@ -259,3 +259,121 @@ describe('renderHead', () => {
 		expect(charsetIdx).toBeLessThan(scriptIdx);
 	});
 });
+
+// The fold runs in the same plugin, after the placeholder has become a real
+// <head>. A richer fake tree is needed because it walks the <html> node rather
+// than matching the placeholder, so this harness answers both selectors.
+//
+// Why this exists at all: the escape hatch puts metadata tags below the
+// placeholder, browsers fold them back into the head, and the file on disk did
+// not. Excellent's output folded only because its WebC plugin re-parses every
+// page with parse5; a project without WebC shipped the strays outside <head>.
+function runDocument(strays, seeds = makeSeeds()) {
+	const plugin = renderHead({
+		seeds,
+		seo: undefined,
+		alternates: [],
+		options: {},
+		placeholderTag: PLACEHOLDER,
+		eol: EOL
+	});
+
+	const body = { tag: 'body', content: ['page'] };
+	const html = { tag: 'html', content: [EOL, { tag: PLACEHOLDER }, EOL, ...strays, body, EOL] };
+
+	const tree = {
+		match(expr, cb) {
+			if (expr.tag === PLACEHOLDER) {
+				const i = html.content.findIndex((n) => n?.tag === PLACEHOLDER);
+				if (i !== -1) html.content[i] = cb(html.content[i]);
+			} else if (expr.tag === 'html') {
+				cb(html);
+			}
+			return tree;
+		}
+	};
+
+	plugin(tree);
+	return html;
+}
+
+const headOf = (html) => html.content.find((n) => n?.tag === 'head');
+const strandedOf = (html) => {
+	const h = html.content.findIndex((n) => n?.tag === 'head');
+	const b = html.content.findIndex((n) => n?.tag === 'body');
+	return html.content.slice(h + 1, b).filter((n) => n?.tag);
+};
+
+describe('folding stranded head siblings', () => {
+	it('moves metadata siblings into the head', () => {
+		const html = runDocument([
+			{ tag: 'link', attrs: { rel: 'stylesheet', href: '/a.css' } },
+			EOL,
+			{ tag: 'script', attrs: { src: '/a.js', type: 'module' } }
+		]);
+
+		const tags = headOf(html).content.filter((n) => n?.tag);
+		expect(tags.some((n) => n.tag === 'link' && n.attrs?.href === '/a.css')).toBe(true);
+		expect(tags.some((n) => n.tag === 'script' && n.attrs?.src === '/a.js')).toBe(true);
+		expect(strandedOf(html)).toEqual([]);
+	});
+
+	it('appends rather than sorting, because the hatch is documented as unsorted', () => {
+		const html = runDocument([{ tag: 'meta', attrs: { name: 'stray' } }]);
+		const tags = headOf(html).content.filter((n) => n?.tag);
+		expect(tags.at(-1)).toEqual({ tag: 'meta', attrs: { name: 'stray' } });
+	});
+
+	it('keeps the relative order of the tags it folds', () => {
+		const html = runDocument([
+			{ tag: 'meta', attrs: { name: 'first' } },
+			{ tag: 'meta', attrs: { name: 'second' } }
+		]);
+		const names = headOf(html)
+			.content.filter((n) => n?.tag === 'meta' && n.attrs?.name?.match(/first|second/))
+			.map((n) => n.attrs.name);
+		expect(names).toEqual(['first', 'second']);
+	});
+
+	it('leaves a non-metadata stray where it sits', () => {
+		const html = runDocument([{ tag: 'div', attrs: { id: 'oops' } }]);
+		expect(strandedOf(html)).toEqual([{ tag: 'div', attrs: { id: 'oops' } }]);
+		expect(headOf(html).content.some((n) => n?.tag === 'div')).toBe(false);
+	});
+
+	it('folds the metadata and leaves the rest, when both are present', () => {
+		const html = runDocument([{ tag: 'div' }, { tag: 'meta', attrs: { name: 'stray' } }]);
+		expect(strandedOf(html)).toEqual([{ tag: 'div' }]);
+		expect(headOf(html).content.some((n) => n?.tag === 'meta' && n.attrs?.name === 'stray')).toBe(true);
+	});
+
+	it('does nothing when there is nothing stranded', () => {
+		const html = runDocument([]);
+		const before = headOf(html).content.length;
+		expect(strandedOf(html)).toEqual([]);
+		expect(headOf(html).content.length).toBe(before);
+	});
+
+	it('leaves the tree alone when there is no body', () => {
+		const plugin = renderHead({
+			seeds: makeSeeds(),
+			alternates: [],
+			options: {},
+			placeholderTag: PLACEHOLDER,
+			eol: EOL
+		});
+		const stray = { tag: 'meta', attrs: { name: 'stray' } };
+		const html = { tag: 'html', content: [{ tag: PLACEHOLDER }, stray] };
+		const tree = {
+			match(expr, cb) {
+				if (expr.tag === PLACEHOLDER) html.content[0] = cb(html.content[0]);
+				else if (expr.tag === 'html') cb(html);
+				return tree;
+			}
+		};
+		plugin(tree);
+
+		expect(html.content.at(-1)).toBe(stray);
+		expect(headOf(html).content.some((n) => n?.tag === 'meta' && n.attrs?.name === 'stray')).toBe(false);
+	});
+});

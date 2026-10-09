@@ -68,8 +68,67 @@ export function renderHead({ seeds, seo, alternates, options, placeholderTag, eo
 			tag: 'head',
 			content: interleaveEOL(sorted, eol)
 		}));
+
+		// Only after the placeholder has become a real <head>, and in this same
+		// pass: the fold needs a head to fold into, and Eleventy's htmlTransformer
+		// exists so every plugin shares one parse per page.
+		foldStrays(tree, eol);
 		return tree;
 	};
+}
+
+// Metadata elements the HTML parser moves into <head> when it meets them after
+// the head has closed. Anything else there implies <body>, so leaving it where
+// it sits is the conservative reading of malformed input.
+//
+// The spec's "after head" list also carries `basefont`, `bgsound` and
+// `noframes`, all legacy, all deliberately omitted.
+const FOLDABLE = new Set(['base', 'link', 'meta', 'noscript', 'script', 'style', 'template', 'title']);
+
+/**
+ * Move metadata siblings stranded between `</head>` and `<body>` into the head.
+ *
+ * The documented escape hatch puts tags below the placeholder, and browsers fold
+ * them back, so the rendered DOM has always been correct. The file on disk was
+ * not, unless something in the build re-parsed it with a spec-compliant parser.
+ * Eleventy Excellent folds by accident, because its WebC plugin re-parses every
+ * page with parse5; a project without WebC shipped the strays outside the head.
+ *
+ * Appends rather than capo-sorting, because the hatch is documented as skipping
+ * dedupe and sorting. That is correct for metadata, where position carries no
+ * meaning, and is the reason anything order-sensitive belongs in `settings.head`.
+ *
+ * Every guard here degrades to leaving the tree untouched.
+ *
+ * @param {Object} tree - PostHTML tree.
+ * @param {string} eol - Separator interleaved between folded nodes.
+ * @returns {Object} The same tree.
+ */
+function foldStrays(tree, eol) {
+	tree.match({ tag: 'html' }, (node) => {
+		if (!Array.isArray(node.content)) return node;
+
+		const headIndex = node.content.findIndex((n) => n?.tag === 'head');
+		const bodyIndex = node.content.findIndex((n) => n?.tag === 'body');
+		if (headIndex === -1 || bodyIndex === -1 || bodyIndex < headIndex) return node;
+
+		const head = node.content[headIndex];
+		if (!Array.isArray(head.content)) return node;
+
+		const kept = [];
+		const folded = [];
+		for (const child of node.content.slice(headIndex + 1, bodyIndex)) {
+			if (child?.tag && FOLDABLE.has(child.tag)) folded.push(child);
+			else kept.push(child);
+		}
+		if (!folded.length) return node;
+
+		head.content = [...head.content, ...interleaveEOL(folded, eol)];
+		node.content = [...node.content.slice(0, headIndex + 1), ...kept, ...node.content.slice(bodyIndex)];
+		return node;
+	});
+
+	return tree;
 }
 
 function emitMeta(meta, render, options, canonical) {
