@@ -6,6 +6,7 @@ import {
 	resolveDefault
 } from '../../core/locale/index.js';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
+import { buildTranslations } from './utils/build-translations.js';
 import { registerTranslations } from './register-translations.js';
 import { resolveLocaleForLang } from './utils/resolve-locale-for-lang.js';
 import translationsFor from './filters/translations-for.js';
@@ -139,44 +140,19 @@ export function multilangCore(eleventyConfig, moduleContext) {
 		built = null;
 	});
 
-	const buildTranslations = (collection) => {
+	// Memoised here rather than in the builder: the cache is a lifecycle
+	// concern, and the builder is the pair's collection-built half.
+	const buildOnce = (collection) => {
 		if (built) return built;
 
-		const map = {};
+		built = buildTranslations(collection.getAll(), {
+			languages,
+			allowedLanguages,
+			defaultLanguage,
+			resolveLang: resolvePageLang,
+			log
+		});
 
-		for (const page of collection.getAll()) {
-			const translationKey = page.data.translationKey;
-			if (!translationKey) continue;
-
-			const lang = resolvePageLang(page.data);
-			if (!lang) continue;
-
-			if (allowedLanguages.size && !allowedLanguages.has(lang)) {
-				log.warn(`Unknown lang "${lang}" in ${page.inputPath}`);
-				continue;
-			}
-
-			// Same shape as the graph-built index, deliberately: two producers,
-			// one record. The full page `data` bag used to ride along here and
-			// survive into the store, which is what made it expensive.
-			if (!map[translationKey]) map[translationKey] = {};
-			map[translationKey][lang] = {
-				url: page.url,
-				lang,
-				label: languages[lang]?.languageName ?? lang,
-				title: page.data.title,
-				description: page.data.description,
-				isDefaultLang: lang === defaultLanguage
-			};
-		}
-
-		// Key order is page order, which templates iterate directly (the sitemap
-		// emits one `xhtml:link` per entry). Sorted so that output is stable.
-		for (const key of Object.keys(map)) {
-			map[key] = Object.fromEntries(Object.entries(map[key]).sort(([a], [b]) => a.localeCompare(b)));
-		}
-
-		built = map;
 		return built;
 	};
 
@@ -185,7 +161,7 @@ export function multilangCore(eleventyConfig, moduleContext) {
 	// Map form: translationsMap[translationKey][lang] → page metadata. Also the
 	// only writer of the store, which wikilinks reads while markdown renders.
 	eleventyConfig.addCollection('translationsMap', (collection) => {
-		const map = buildTranslations(collection);
+		const map = buildOnce(collection);
 		runtime.translationMap.set(map);
 		return map;
 	});
