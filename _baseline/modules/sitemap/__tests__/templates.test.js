@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import nunjucks from 'nunjucks';
 import { describe, expect, it } from 'vitest';
+import { resolveSitemapEntry } from '../utils/resolve-entry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const templateDir = path.join(__dirname, '..', 'templates');
@@ -48,8 +49,14 @@ function alternates(xml) {
 	}));
 }
 
+/**
+ * A collection item, with the module's own computed entry resolved over its
+ * data the way the cascade would. Tests stay written in author keys, and the
+ * template is exercised against the real resolver rather than a hand-built
+ * stand-in for it.
+ */
 function page(url, data = {}) {
-	return { url, date: undefined, data };
+	return { url, date: undefined, data: { ...data, _sitemap: resolveSitemapEntry(data) } };
 }
 
 describe('sitemap-core template', () => {
@@ -82,6 +89,34 @@ describe('sitemap-core template', () => {
 		});
 
 		expect(locs(xml)).toEqual(['https://www.example.com/']);
+	});
+
+	it('drops a page carrying seo.noindex, and keeps one that overrides it to false', () => {
+		const xml = render(core, {
+			...base,
+			collections: {
+				all: [page('/', { noindex: true, seo: { noindex: false } }), page('/secret/', { seo: { noindex: true } })]
+			}
+		});
+
+		expect(locs(xml)).toEqual(['https://www.example.com/']);
+	});
+
+	it('emits the authored lastmod, and the page date when none is authored', () => {
+		const xml = render(core, {
+			...base,
+			collections: {
+				all: [
+					page('/', { page: { date: new Date('2026-03-04T00:00:00.000Z') } }),
+					page('/news/', { sitemap: { lastmod: new Date('2026-01-15T00:00:00.000Z') } })
+				]
+			}
+		});
+
+		expect([...xml.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)].map((m) => m[1])).toEqual([
+			'2026-03-04T00:00:00.000Z',
+			'2026-01-15T00:00:00.000Z'
+		]);
 	});
 
 	it('drops a page excluded from collections, and one with no url', () => {

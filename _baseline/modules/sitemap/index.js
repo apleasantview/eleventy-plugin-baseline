@@ -3,9 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import { resolveDefault } from '../../core/locale/index.js';
+import { resolveSitemapEntry } from './utils/resolve-entry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const COMPUTED_KEY = 'eleventyComputed._sitemap';
 
 /**
  * Sitemap (module)
@@ -26,8 +29,8 @@ const __dirname = path.dirname(__filename);
  * Lifecycle:
  *   build-time   → register virtual sitemap templates (single, per-lang,
  *                  or index)
- *   cascade-time → eleventyComputed `page.sitemap` resolves ignore /
- *                  changefreq / priority on each page
+ *   cascade-time → eleventyComputed `_sitemap` resolves ignore / changefreq /
+ *                  priority / lastmod on each page
  *
  * Why this exists:
  *   Eleventy has no built-in sitemap. Multilingual sites also need
@@ -35,14 +38,14 @@ const __dirname = path.dirname(__filename);
  *   is normalised the same way multilang sees it.
  *
  * Scope:
- *   Owns computed page.sitemap and the virtual sitemap templates
+ *   Owns computed `_sitemap` and the virtual sitemap templates
  *   (single-language /sitemap.xml, or per-lang /{lang}/sitemap.xml plus a
  *   /sitemap.xml index).
  *   Does not own language normalisation (core/utils/normalize-language-map.js) or noindex
  *   propagation through the cascade.
  *
  * Data flow:
- *   settings.languages + page data → computed page.sitemap + virtual
+ *   settings.languages + page data → computed `_sitemap` + virtual
  *   templates → /sitemap.xml or per-language + index
  *
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
@@ -74,14 +77,10 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 		noindex: settings.noindex === true
 	};
 
-	// Computed sitemap data: every page gets a page.sitemap object.
-	// Pages set noindex in frontmatter or site data to be excluded.
-	eleventyConfig.addGlobalData('eleventyComputed.page.sitemap', () => {
-		return (data) => ({
-			ignore: data.noindex ?? data.page?.noindex ?? data.settings?.noindex ?? false,
-			changefreq: '',
-			priority: -1
-		});
+	// The resolved entry lands on the module's own reserved key, and `sitemap`
+	// stays the author's. The template reads one object instead of deciding.
+	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
+		return (data) => resolveSitemapEntry(data);
 	});
 
 	// --- Virtual sitemap templates ---

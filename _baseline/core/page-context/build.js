@@ -197,8 +197,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			lang: pageInput?.lang,
 			locale: pageInput?.locale,
 			translationKey: pageInput?.translationKey,
-			isDefaultLang: pageInput?.isDefaultLang,
-			sitemap: pageInput?.sitemap
+			isDefaultLang: pageInput?.isDefaultLang
 		};
 	}
 

@@ -30,18 +30,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 {%- if not noindex %}
 {%- for item in collections.all %}
-{%- set sm = item.data.sitemap %}
-{#- `seo.noindex` wins over bare `noindex`, including when it overrides it to
-	false, which is why this is a fallback rather than a second condition. -#}
-{%- set pageNoindex = item.data.seo.noindex if item.data.seo.noindex is defined else item.data.noindex %}
+{#- `_sitemap` is the module's resolved entry. The author's `sitemap` key and
+	both noindex keys are folded into it, so this decides nothing. -#}
+{%- set sm = item.data._sitemap %}
 {%- set included = item.url
 	and not item.data.eleventyExcludeFromCollections
-	and pageNoindex != true
 	and sm.ignore != true %}
 {%- set pageLang = item.data.lang or defaultLanguage %}
 {%- set inThisSitemap = (not isMultilingual) or (not sitemapLang) or (pageLang == sitemapLang) %}
 {%- if included and inThisSitemap %}
-{%- set lastmod = sm.lastmod or item.date %}
+{%- set lastmod = sm.lastmod %}
 {%- set alternates = collections.translationsMap[item.data.translationKey] if item.data.translationKey and collections.translationsMap else false %}
 {{ urlEntry(item.url, lastmod, sm, alternates) }}
 {#- A split page enters `collections.all` once, as part one. Its siblings are

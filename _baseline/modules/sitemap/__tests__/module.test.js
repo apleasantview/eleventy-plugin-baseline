@@ -7,22 +7,30 @@ import { sitemapCore } from '../index.js';
  */
 function stubConfig() {
 	const templates = [];
+	const globals = {};
 	return {
 		templates,
-		addGlobalData() {},
+		globals,
+		addGlobalData(key, value) {
+			globals[key] = value;
+		},
 		addTemplate(name, _content, data) {
 			templates.push({ name, data });
 		}
 	};
 }
 
-function run(settings, options = {}) {
+function register(settings, options = {}) {
 	const eleventyConfig = stubConfig();
 	sitemapCore(eleventyConfig, {
 		state: { settings, options },
 		log: { info() {} }
 	});
-	return eleventyConfig.templates;
+	return eleventyConfig;
+}
+
+function run(settings, options = {}) {
+	return register(settings, options).templates;
 }
 
 const languages = { en: {}, nl: {} };
@@ -61,6 +69,22 @@ describe('sitemapCore', () => {
 			'nl/sitemap.xml',
 			'/sitemap.xml'
 		]);
+	});
+
+	// The registration wrote to `eleventyComputed.page.sitemap` until 2026-10-09
+	// while the template read `item.data.sitemap`, so the resolved entry reached
+	// nothing. The key the template reads is the assertion worth having.
+	it('registers the resolved entry on the key the template reads', () => {
+		const { globals } = register({ url: 'https://www.example.com/', defaultLanguage: 'en', languages });
+
+		expect(Object.keys(globals)).toEqual(['eleventyComputed._sitemap']);
+
+		const resolve = globals['eleventyComputed._sitemap']();
+
+		expect(resolve({ page: {}, sitemap: { changefreq: 'daily' } })).toMatchObject({
+			ignore: false,
+			changefreq: 'daily'
+		});
 	});
 
 	it('hands the templates their own site data rather than trusting a settings global', () => {

@@ -48,11 +48,11 @@ const INTERNAL_KEYS = [
 	'_head',
 	'_multilang',
 	'_navigator',
-	'_sitemap',
 	'_snapshot',
 	// Written per page by the segmentation preprocessor; reserved site-wide.
 	SEGMENT_DATA_KEY,
 	PAGEBREAK_COMPUTED_KEY,
+	'eleventyComputed._sitemap',
 	'eleventyComputed._pageContext',
 	'eleventyComputed._node',
 	'eleventyComputed._seoGraph',
