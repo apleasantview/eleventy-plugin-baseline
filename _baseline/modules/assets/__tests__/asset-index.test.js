@@ -192,6 +192,89 @@ describe('createAssetIndex', () => {
 		});
 	});
 
+	describe('fingerprint', () => {
+		it('puts the hash before the extension', async () => {
+			const index = makeIndex();
+			await index.build({ fingerprint: true });
+			const entry = index.get('/css/index.css');
+
+			expect(entry.url).toBe(`/css/index.${entry.hash}.css`);
+		});
+
+		it('leaves the key alone, so the lookup still resolves by authored path', async () => {
+			const index = makeIndex();
+			await index.build({ fingerprint: true });
+
+			expect(Object.keys(index.all())).toContain('/css/index.css');
+		});
+
+		// The point of the whole feature: the name moves only when the bytes do.
+		it('moves the url when an imported partial changes', async () => {
+			const index = makeIndex();
+			await index.build({ fingerprint: true });
+			const before = index.get('/css/index.css').url;
+
+			fs.writeFileSync(path.join(root, 'css/_partial.css'), '.partial{color:crimson}');
+			await index.build({ fingerprint: true });
+
+			expect(index.get('/css/index.css').url).not.toBe(before);
+		});
+
+		it('is off unless asked for', async () => {
+			const index = makeIndex();
+			await index.build();
+
+			expect(index.get('/css/index.css').url).toBe('/css/index.css');
+		});
+	});
+
+	describe('resolve', () => {
+		function makeResolving(messages) {
+			return createAssetIndex({
+				inputDirectory: deps.root,
+				sources: sources(),
+				publicPrefix: '/css/',
+				log: { info: (message) => messages.push(message) }
+			});
+		}
+
+		it('maps a declared path to the file the build wrote', async () => {
+			const index = makeResolving([]);
+			await index.build({ fingerprint: true });
+
+			expect(index.resolve('/css/index.css')).toBe(index.get('/css/index.css').url);
+		});
+
+		it('returns an unmanaged path untouched, and says nothing about it', async () => {
+			const messages = [];
+			const index = makeResolving(messages);
+			await index.build({ fingerprint: true });
+
+			expect(index.resolve('/favicon.ico')).toBe('/favicon.ico');
+			expect(messages).toEqual([]);
+		});
+
+		// A path under the assets directory that is not an entry is either a typo
+		// or something unmanaged, and the two look identical here.
+		it('says one line about a miss inside the assets directory', async () => {
+			const messages = [];
+			const index = makeResolving(messages);
+			await index.build({ fingerprint: true });
+
+			index.resolve('/css/main.css');
+			index.resolve('/css/main.css');
+
+			expect(messages).toEqual(['/css/main.css is not an asset entry point, emitting it as written']);
+		});
+
+		it('survives a non-string', async () => {
+			const index = makeResolving([]);
+			await index.build();
+
+			expect(index.resolve(undefined)).toBeUndefined();
+		});
+	});
+
 	describe('manifest', () => {
 		// `content` is what the compile guards read. In the cascade it would carry
 		// every asset's bytes into every page's data and the navigator's dump.

@@ -20,5 +20,6 @@ export const postcssOptionsSchema = z.looseObject({
 
 export const optionsSchema = z.looseObject({
 	esbuild: esbuildOptionsSchema.optional(),
-	postcss: postcssOptionsSchema.optional()
+	postcss: postcssOptionsSchema.optional(),
+	fingerprint: z.boolean().optional()
 });

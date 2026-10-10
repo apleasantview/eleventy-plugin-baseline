@@ -48,7 +48,7 @@ import { createAssetIndex } from './asset-index.js';
 const SCOPE_NAME = 'module:assets';
 
 export function assetsCore(eleventyConfig, moduleContext) {
-	const { state, directories, log } = moduleContext;
+	const { state, directories, runtime, log } = moduleContext;
 	const { settings, options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
@@ -68,6 +68,10 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// handed: the processor sets its own, one file per call.
 	const { entryPoints: declaredJsEntries, ...esbuildOptions } = options.assets.esbuild ?? {};
 	const { entryPoints: declaredCssEntries } = options.assets.postcss ?? {};
+
+	// Default on: forgetting it costs correct caching, never a wrong file. Head
+	// resolves what `settings.head` declares, so a site changes nothing.
+	const fingerprint = options.assets.fingerprint !== false;
 	const dataFiles = `${inputDirectory}**/*.11tydata.js`;
 	const watchGlob = TemplatePath.join(assetsDirectory, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 
@@ -106,6 +110,8 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// lookups still resolve, and leaves the per-file compile where it is.
 	const assetIndex = createAssetIndex({
 		inputDirectory,
+		publicPrefix: `/${assetsDirectory.replace(inputDirectory, '')}`,
+		log,
 		sources: [
 			{
 				directory: cssDirectory,
@@ -124,6 +130,10 @@ export function assetsCore(eleventyConfig, moduleContext) {
 
 	getScope(eleventyConfig, SCOPE_NAME).values.set('index', assetIndex);
 
+	// Head resolves a declared href through this at transform-time, where the
+	// data cascade is out of reach.
+	runtime?.assetIndex?.set(assetIndex);
+
 	// Read-only, for what a URL cannot carry (`integrity` above all). A function,
 	// so a serve-mode rebuild re-resolves it.
 	eleventyConfig.addGlobalData('_assets', () => assetIndex.manifest());
@@ -137,8 +147,22 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		// assets and has nothing to index.
 		if (isPrepass) return;
 
-		await assetIndex.build({ compile: process.env.ELEVENTY_RUN_MODE === 'build' });
+		const isBuild = process.env.ELEVENTY_RUN_MODE === 'build';
+
+		await assetIndex.build({ compile: isBuild, fingerprint: isBuild && fingerprint });
 	});
+
+	// A function rather than a string: Eleventy renders a string permalink through
+	// this very engine, which would hand back the compiled stylesheet as the path.
+	function assetPermalink(inputPath) {
+		const entry = assetIndex.getByInput(inputPath);
+		if (!entry || entry.url === entry.key) return;
+		return { permalink: () => entry.url };
+	}
+
+	// For a path written in a layout rather than declared in `settings.head`,
+	// which head resolves on the author's behalf.
+	eleventyConfig.addFilter('asset', (href) => assetIndex.resolve(href));
 
 	// Watch common asset formats so edits trigger reloads during --serve.
 	eleventyConfig.addWatchTarget(watchGlob);
@@ -163,6 +187,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		outputFileExtension: 'js',
 		useLayouts: false,
 		read: false,
+		getData: assetPermalink,
 		compileOptions: {
 			permalink: true,
 			cache: true
@@ -212,6 +237,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		outputFileExtension: 'css',
 		useLayouts: false,
 		read: false,
+		getData: assetPermalink,
 		compileOptions: {
 			permalink: true,
 			cache: true

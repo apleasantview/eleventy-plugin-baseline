@@ -39,8 +39,9 @@ const HASH_LENGTH = 8;
  * @param {Array<{ directory: string, basename: string, entryPoints?: string[], compile: (inputPath: string) => Promise<string> | string }>} deps.sources
  * @returns {{ build: (options?: { compile?: boolean }) => Promise<void>, isEntry: (inputPath: string) => boolean, get: (key: string) => object | undefined, getByInput: (inputPath: string) => object | undefined, all: () => Record<string, object>, manifest: () => Record<string, object> }}
  */
-export function createAssetIndex({ inputDirectory, sources = [] }) {
+export function createAssetIndex({ inputDirectory, sources = [], publicPrefix, log }) {
 	let entries = new Map();
+	const reported = new Set();
 
 	/** The path an author writes, which is what head and the filter look up. */
 	function keyFor(inputPath) {
@@ -61,12 +62,19 @@ export function createAssetIndex({ inputDirectory, sources = [] }) {
 		return sources.flatMap((source) => entriesFor(source).map((inputPath) => ({ inputPath, compile: source.compile })));
 	}
 
+	/** `/assets/css/index.css` plus a hash becomes `/assets/css/index.a1b2c3d4.css`. */
+	function fingerprinted(key, hash) {
+		const extension = path.extname(key);
+		return `${key.slice(0, -extension.length)}.${hash}${extension}`;
+	}
+
 	/**
 	 * Rebuilt whole, so the lifetime is one build and nothing needs invalidating.
 	 * `compile: false` keys the index without running a processor, which is dev.
 	 */
-	async function build({ compile = true } = {}) {
+	async function build({ compile = true, fingerprint = false } = {}) {
 		const next = new Map();
+		reported.clear();
 
 		for (const entry of discover()) {
 			const key = keyFor(entry.inputPath);
@@ -77,13 +85,15 @@ export function createAssetIndex({ inputDirectory, sources = [] }) {
 			}
 
 			const content = await entry.compile(entry.inputPath);
+			const hash = createHashHexSync(content).slice(0, HASH_LENGTH);
+
 			next.set(key, {
 				key,
-				// Stays the authored path until fingerprinting turns it into the
-				// hashed one, so the lookup is a no-op until then.
-				url: key,
+				// The authored path, or the hashed one. Everything downstream reads
+				// this rather than deciding again.
+				url: fingerprint ? fingerprinted(key, hash) : key,
 				inputPath: entry.inputPath,
-				hash: createHashHexSync(content).slice(0, HASH_LENGTH),
+				hash,
 				// SRI wants base64 of the digest, which the hex helper cannot give.
 				integrity: `sha384-${createHash('sha384').update(content).digest('base64')}`,
 				size: Buffer.byteLength(content),
@@ -94,8 +104,27 @@ export function createAssetIndex({ inputDirectory, sources = [] }) {
 		entries = next;
 	}
 
+	/**
+	 * A declared path's real URL, or the path untouched. A miss inside the assets
+	 * directory is worth one line: a typo and an unmanaged path look the same here.
+	 */
+	function resolve(href) {
+		if (typeof href !== 'string') return href;
+
+		const entry = entries.get(href);
+		if (entry) return entry.url;
+
+		if (publicPrefix && href.startsWith(publicPrefix) && !reported.has(href)) {
+			reported.add(href);
+			log?.info?.(`${href} is not an asset entry point, emitting it as written`);
+		}
+
+		return href;
+	}
+
 	return {
 		build,
+		resolve,
 		// The one definition of what an entry is, which the compile guards read so
 		// the convention is not spelled out in three places.
 		isEntry: (inputPath) => entries.has(keyFor(inputPath)),

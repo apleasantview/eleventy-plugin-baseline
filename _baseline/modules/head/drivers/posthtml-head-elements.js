@@ -41,12 +41,13 @@ import { dedupeMeta, dedupeLink } from '../utils/dedupe.js';
  * @param {Object} args.seeds - Page context for the current page.
  * @param {Object} [args.seo] - Resolved _seoGraph namespace (url, schema, openGraph, twitter).
  * @param {Array<Object>} args.alternates - hreflang link descriptors.
+ * @param {(href: string) => string} [args.resolveAsset] - Maps a declared asset path to the file the build wrote.
  * @param {Object} args.options - Head options (titleSeparator, showGenerator).
  * @param {string} args.placeholderTag - Placeholder element to replace.
  * @param {string} args.eol - End-of-line separator interleaved between nodes.
  * @returns {(tree: Object) => Object} PostHTML plugin function.
  */
-export function renderHead({ seeds, seo, alternates, options, placeholderTag, eol }) {
+export function renderHead({ seeds, seo, alternates, resolveAsset, options, placeholderTag, eol }) {
 	// seo.url is the canonical source, resolved at cascade-time. It is undefined
 	// on noindex / no-settings.url pages, where the seo layer deliberately drops
 	// the canonical — emitMeta's guard then emits nothing, which is correct. The
@@ -54,7 +55,7 @@ export function renderHead({ seeds, seo, alternates, options, placeholderTag, eo
 	// context), so there is no absent-handle case to fall back for.
 	const canonical = seo?.url;
 	const defaults = emitMeta(seeds.meta, seeds.render, options, canonical);
-	const extras = emitExtras(seeds.head, alternates);
+	const extras = emitExtras(seeds.head, alternates, resolveAsset);
 	const { meta: seoMeta, multi: seoMulti, scripts: seoScripts } = emitSeo(seo);
 
 	// seo emits last so the substrate wins a property collision with settings.head.
@@ -215,14 +216,14 @@ function emitSeo(seo) {
 	return { meta, multi, scripts };
 }
 
-function emitExtras(head, alternates = []) {
+function emitExtras(head, alternates = [], resolveAsset = (href) => href) {
 	const nodes = [];
 	for (const m of asArray(head?.meta)) nodes.push(mkMeta(m));
 	for (const l of asArray(head?.link)) {
 		if (l?.rel === 'canonical') continue; // 🚨 remove duplication source
-		nodes.push(mkLink(l));
+		nodes.push(mkLink(l?.href ? { ...l, href: resolveAsset(l.href) } : l));
 	}
-	for (const s of asArray(head?.script)) nodes.push(mkScript(s));
+	for (const s of asArray(head?.script)) nodes.push(mkScript(s?.src ? { ...s, src: resolveAsset(s.src) } : s));
 	for (const s of asArray(head?.style)) nodes.push(mkStyle(s));
 	for (const a of alternates) nodes.push(mkLink(a));
 

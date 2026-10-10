@@ -31,6 +31,7 @@ function register() {
 		addExtension() {},
 		addWatchTarget() {},
 		addGlobalData() {},
+		addFilter() {},
 		ignores: new Set(),
 		on() {}
 	};

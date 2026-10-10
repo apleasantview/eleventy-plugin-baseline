@@ -110,3 +110,30 @@ describe('deriveBaselineState — media.image', () => {
 		expect(image({ media: { image: { sizes: '50vw' } } }).sizesAuthored).toBe(true);
 	});
 });
+
+describe('deriveBaselineState — options.assets', () => {
+	const assets = (options) => deriveOptions(options).assets;
+
+	it('resolves esbuild options, with the legacy alias', () => {
+		expect(assets({ assets: { esbuild: { minify: false } } }).esbuild).toEqual({ minify: false });
+		expect(assets({ assetsESBuild: { target: 'es2018' } }).esbuild).toEqual({ target: 'es2018' });
+		expect(assets({}).esbuild).toEqual({});
+	});
+
+	// This slice is validated by the module that reads it, and rebuilding it here
+	// dropped every key not named: `postcss`, `fingerprint` and anything later.
+	// The module's own tests passed throughout, because they bypass this.
+	it('passes through the keys it does not resolve itself', () => {
+		const resolved = assets({
+			assets: {
+				fingerprint: true,
+				postcss: { entryPoints: ['index.css'] },
+				esbuild: { entryPoints: ['index.js'] }
+			}
+		});
+
+		expect(resolved.fingerprint).toBe(true);
+		expect(resolved.postcss).toEqual({ entryPoints: ['index.css'] });
+		expect(resolved.esbuild.entryPoints).toEqual(['index.js']);
+	});
+});

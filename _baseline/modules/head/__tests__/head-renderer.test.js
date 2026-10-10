@@ -9,8 +9,16 @@ import { renderHead } from '../drivers/posthtml-head-elements.js';
 const PLACEHOLDER = 'baseline-head';
 const EOL = '\n';
 
-function runHead(seeds, { seo, alternates = [], options = {} } = {}) {
-	const plugin = renderHead({ seeds, seo, alternates, options, placeholderTag: PLACEHOLDER, eol: EOL });
+function runHead(seeds, { seo, alternates = [], options = {}, resolveAsset } = {}) {
+	const plugin = renderHead({
+		seeds,
+		seo,
+		alternates,
+		resolveAsset,
+		options,
+		placeholderTag: PLACEHOLDER,
+		eol: EOL
+	});
 	let replacement;
 	const tree = {
 		match(expr, cb) {
@@ -375,5 +383,60 @@ describe('folding stranded head siblings', () => {
 
 		expect(html.content.at(-1)).toBe(stray);
 		expect(headOf(html).content.some((n) => n?.tag === 'meta' && n.attrs?.name === 'stray')).toBe(false);
+	});
+});
+
+describe('declared asset paths', () => {
+	// `settings.head` is plain data, evaluated before any asset is compiled, so a
+	// filter cannot run there. Head resolving it at transform-time is the only
+	// place the lookup fits without asking authors to restructure their settings.
+	const resolveAsset = (href) =>
+		href === '/assets/css/index.css' ? '/assets/css/index.abc12345.css' : href;
+
+	const hrefs = (replacement, rel) => linksByRel(nodesOf(replacement), rel).map((n) => n.attrs.href);
+
+	it('rewrites a declared stylesheet to the file the build wrote', () => {
+		const replacement = runHead(
+			makeSeeds({ head: { link: [{ rel: 'stylesheet', href: '/assets/css/index.css' }] } }),
+			{ resolveAsset }
+		);
+
+		expect(hrefs(replacement, 'stylesheet')).toEqual(['/assets/css/index.abc12345.css']);
+	});
+
+	it('rewrites a declared script src the same way', () => {
+		const replacement = runHead(
+			makeSeeds({ head: { script: [{ src: '/assets/css/index.css', defer: true }] } }),
+			{ resolveAsset }
+		);
+		const scripts = nodesOf(replacement).filter((n) => n.tag === 'script' && n.attrs?.src);
+
+		expect(scripts.map((n) => n.attrs.src)).toEqual(['/assets/css/index.abc12345.css']);
+		expect(scripts[0].attrs.defer).toBe(true);
+	});
+
+	it('leaves everything else alone', () => {
+		const replacement = runHead(
+			makeSeeds({
+				head: {
+					link: [
+						{ rel: 'me', href: 'https://mastodon.social/@someone' },
+						{ rel: 'icon', href: '/favicon.svg' }
+					]
+				}
+			}),
+			{ resolveAsset }
+		);
+
+		expect(hrefs(replacement, 'me')).toEqual(['https://mastodon.social/@someone']);
+		expect(hrefs(replacement, 'icon')).toEqual(['/favicon.svg']);
+	});
+
+	it('emits the declaration untouched when no resolver is handed over', () => {
+		const replacement = runHead(
+			makeSeeds({ head: { link: [{ rel: 'stylesheet', href: '/assets/css/index.css' }] } })
+		);
+
+		expect(hrefs(replacement, 'stylesheet')).toEqual(['/assets/css/index.css']);
 	});
 });

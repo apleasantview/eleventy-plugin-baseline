@@ -19,6 +19,7 @@ function register(options = { assets: { esbuild: {} } }) {
 			events[name] = handler;
 		},
 		addAsyncFilter() {},
+		addFilter() {},
 		addTemplateFormats() {},
 		addExtension() {},
 		addWatchTarget() {},
@@ -107,10 +108,7 @@ describe('assetsCore registration', () => {
 		});
 		await events['eleventy.before']();
 
-		expect(Object.keys(globals._assets()).sort()).toEqual([
-			'/assets/css/index.css',
-			'/assets/js/vendor/index.js'
-		]);
+		expect(Object.keys(globals._assets()).sort()).toEqual(['/assets/css/index.css', '/assets/js/vendor/index.js']);
 	});
 
 	it('leaves the kind with no list on the convention', async () => {
@@ -120,6 +118,33 @@ describe('assetsCore registration', () => {
 		await events['eleventy.before']();
 
 		expect(Object.keys(globals._assets())).toContain('/assets/js/index.js');
+	});
+
+	// Off until head can resolve a declared href, or a site's own `settings.head`
+	// would point at a name the build no longer writes.
+	it('does not fingerprint unless asked', async () => {
+		const { globals, events } = register();
+		await events['eleventy.before']();
+
+		for (const [key, entry] of Object.entries(globals._assets())) {
+			expect(entry.url).toBe(key);
+		}
+	});
+
+	it('hands the index a permalink when fingerprinting is on', async () => {
+		const runMode = process.env.ELEVENTY_RUN_MODE;
+		process.env.ELEVENTY_RUN_MODE = 'build';
+		let config;
+		try {
+			config = register({ assets: { esbuild: {}, fingerprint: true } });
+			await config.events['eleventy.before']();
+		} finally {
+			process.env.ELEVENTY_RUN_MODE = runMode;
+		}
+
+		const entry = config.globals._assets()['/assets/css/index.css'];
+
+		expect(entry.url).toBe(`/assets/css/index.${entry.hash}.css`);
 	});
 
 	it('leaves the compiled bytes out of what templates can read', async () => {

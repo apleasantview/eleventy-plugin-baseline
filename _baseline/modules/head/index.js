@@ -102,10 +102,15 @@ export function headCore(eleventyConfig, moduleContext) {
 			? buildAlternates(translationKey, runtime.translationIndex.get(), seeds.site?.url)
 			: [];
 
+		// `settings.head` is plain data, evaluated before any asset exists, so the
+		// path it declares is resolved here instead.
+		const assetIndex = runtime.assetIndex?.get();
+
 		return renderHead({
 			seeds,
 			seo,
 			alternates,
+			resolveAsset: (href) => assetIndex?.resolve(href) ?? href,
 			options: headOptions,
 			placeholderTag: PLACEHOLDER_TAG,
 			eol: EOL

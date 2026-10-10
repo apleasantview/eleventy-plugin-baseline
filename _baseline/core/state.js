@@ -104,7 +104,10 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 			titleSeparator: options.head?.titleSeparator,
 			showGenerator: options.head?.showGenerator
 		},
+		// Spread first: this slice is validated by the module, which is where its
+		// keys are read, so rebuilding it here dropped every one not named.
 		assets: {
+			...(options.assets ?? {}),
 			esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
 		},
 		media: {
