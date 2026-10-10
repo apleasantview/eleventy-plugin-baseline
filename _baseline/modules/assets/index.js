@@ -2,11 +2,13 @@ import path from 'node:path';
 
 import { TemplatePath } from '@11ty/eleventy-utils';
 
+import { getScope } from '../../core/registry.js';
 import { renderAttributes } from '../../core/utils/render-attributes.js';
 import { optionsSchema } from './schema.js';
 import assetsESbuild from './processors/esbuild-process.js';
 import assetsPostCSS from './processors/postcss-process.js';
 import { collectDeclaredPaths, findMissingAssets } from './utils/declared-assets.js';
+import { createAssetIndex } from './asset-index.js';
 
 /**
  * Assets (module)
@@ -44,6 +46,8 @@ import { collectDeclaredPaths, findMissingAssets } from './utils/declared-assets
  * @param {import("@11ty/eleventy").UserConfig} eleventyConfig
  * @param {Object} moduleContext
  */
+const SCOPE_NAME = 'module:assets';
+
 export function assetsCore(eleventyConfig, moduleContext) {
 	const { state, directories, log } = moduleContext;
 	const { settings, options } = state;
@@ -94,6 +98,27 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		}
 	});
 
+	// --- Asset index ---
+	// Rebuilt whole on every cycle, so its lifetime is one build and there is no
+	// invalidation to get wrong. Compiles only in a build: dev keys the index so
+	// lookups still resolve, and leaves the per-file compile where it is.
+	const assetIndex = createAssetIndex({
+		inputDirectory,
+		cssDirectory,
+		jsDirectory,
+		esbuildOptions
+	});
+
+	getScope(eleventyConfig, SCOPE_NAME).values.set('index', assetIndex);
+
+	eleventyConfig.on('eleventy.before', async () => {
+		// The pre-pass is handed `ignore: [directories.assets]`, so it compiles no
+		// assets and has nothing to index.
+		if (process.env.BASELINE_PREPASS_ACTIVE === '1') return;
+
+		await assetIndex.build({ compile: process.env.ELEVENTY_RUN_MODE === 'build' });
+	});
+
 	// Watch common asset formats so edits trigger reloads during --serve.
 	eleventyConfig.addWatchTarget(watchGlob);
 
@@ -132,7 +157,10 @@ export function assetsCore(eleventyConfig, moduleContext) {
 				return;
 			}
 
-			return async () => assetsESbuild(inputPath, esbuildOptions);
+			// The index compiled this at `eleventy.before`, so reuse it rather
+			// than running esbuild a second time. Falls through in dev, where
+			// the index is keyed but nothing is compiled.
+			return async () => assetIndex.getByInput(inputPath)?.content ?? assetsESbuild(inputPath, esbuildOptions);
 		}
 	});
 
@@ -176,7 +204,8 @@ export function assetsCore(eleventyConfig, moduleContext) {
 				return;
 			}
 
-			return async () => assetsPostCSS(inputPath);
+			// See the js guard above: the index already holds this in a build.
+			return async () => assetIndex.getByInput(inputPath)?.content ?? assetsPostCSS(inputPath);
 		}
 	});
 
