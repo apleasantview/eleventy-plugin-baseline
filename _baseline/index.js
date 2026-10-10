@@ -337,6 +337,10 @@ export default function baseline(settings = {}, options = {}) {
 		const coreContext = {
 			env,
 			state,
+			// Handed over rather than read from `process.env` per module: the
+			// sentinel is permanent for the process, so only registration time
+			// tells an instance which pass it is.
+			isPrepass,
 			runtime: {
 				get contentMap() {
 					return contentMapStore.get();

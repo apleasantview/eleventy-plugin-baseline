@@ -5,7 +5,7 @@ import { assetsCore } from '../index.js';
  * Enough of an eleventyConfig to register against, recording the two things
  * worth asserting: what global data was declared, and what was hooked.
  */
-function register(options = { assets: { esbuild: {} } }) {
+function register(options = { assets: { esbuild: {} } }, { isPrepass = false } = {}) {
 	const globals = {};
 	const events = {};
 
@@ -28,6 +28,7 @@ function register(options = { assets: { esbuild: {} } }) {
 
 	assetsCore(eleventyConfig, {
 		state: { settings: {}, options },
+		isPrepass,
 		directories: { input: './src/', assets: './src/assets/', output: './dist' },
 		log: { status() {}, info() {}, warn() {}, error() {} }
 	});
@@ -81,16 +82,11 @@ describe('assetsCore registration', () => {
 	});
 
 	// The other half: an instance that *is* the pre-pass has nothing to index,
-	// because it is handed `ignore: [directories.assets]`.
+	// because it is handed `ignore: [directories.assets]`. The flag arrives on the
+	// module context rather than being read from `process.env`, since the sentinel
+	// is permanent for the process and only registration time distinguishes a pass.
 	it('indexes nothing when this instance is the pre-pass', async () => {
-		process.env.BASELINE_PREPASS_RUNNING = '1';
-		let globals;
-		let events;
-		try {
-			({ globals, events } = register());
-		} finally {
-			delete process.env.BASELINE_PREPASS_RUNNING;
-		}
+		const { globals, events } = register(undefined, { isPrepass: true });
 
 		await events['eleventy.before']();
 

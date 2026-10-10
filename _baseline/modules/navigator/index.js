@@ -58,7 +58,7 @@ const __dirname = path.dirname(__filename);
  * @param {Object} moduleContext.snapshots - Thunks: { contentMap, pageContext, seoGraph }.
  */
 export function navigatorCore(eleventyConfig, moduleContext) {
-	const { state, runtime, snapshots, log, env } = moduleContext;
+	const { state, runtime, snapshots, log, env, isPrepass } = moduleContext;
 	const { options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
@@ -75,13 +75,17 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 		navigatorOpts.template ?? (typeof options.navigator === 'boolean' ? options.navigator : env.mode === 'development');
 	const inspectorDepth = navigatorOpts.inspectorDepth ?? 4;
 
-	eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
-		return () => ({
-			contentMap: snapshots.contentMap(),
-			pageContext: snapshots.pageContext(),
-			seoGraph: snapshots.seoGraph()
+	// Skipped in the pre-pass with the page that is its only reader. Three
+	// snapshots per page, and the pre-pass renders every page.
+	if (!isPrepass) {
+		eleventyConfig.addGlobalData('eleventyComputed._snapshot', () => {
+			return () => ({
+				contentMap: snapshots.contentMap(),
+				pageContext: snapshots.pageContext(),
+				seoGraph: snapshots.seoGraph()
+			});
 		});
-	});
+	}
 
 	// Public read surface for plugin-produced cross-page data. Templates can
 	// paginate over `_navigator.backlinks` or read `_navigator.graph` directly.
@@ -123,7 +127,9 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 	 * Registers a synthetic Eleventy page that dumps runtime context.
 	 * This is only enabled when explicitly configured via options.
 	 */
-	if (renderTemplate) {
+	// Not in the pre-pass: it renders every page so the graph can be extracted,
+	// and a debug dump of that render is read by nothing.
+	if (renderTemplate && !isPrepass) {
 		const templatePath = path.join(__dirname, './templates/navigator-core.html');
 		const virtualTemplateContent = fs.readFileSync(templatePath, 'utf-8');
 
