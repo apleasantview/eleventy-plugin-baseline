@@ -134,6 +134,32 @@ describe('createAssetIndex', () => {
 		expect(index.get('/css/index.css').hash).toBeUndefined();
 	});
 
+	describe('manifest', () => {
+		// `content` is what the compile guards read. In the cascade it would carry
+		// every asset's bytes into every page's data and the navigator's dump.
+		it('leaves the compiled bytes out', async () => {
+			const index = createAssetIndex({ ...deps, processors: stubProcessors() });
+			await index.build();
+			const entry = index.manifest()['/css/index.css'];
+
+			expect(Object.keys(entry).sort()).toEqual(['hash', 'integrity', 'size', 'url']);
+			expect(index.get('/css/index.css').content).toBeDefined();
+		});
+
+		it('keys it the same way the index is keyed', async () => {
+			const index = createAssetIndex({ ...deps, processors: stubProcessors() });
+			await index.build();
+
+			expect(Object.keys(index.manifest())).toEqual(Object.keys(index.all()));
+		});
+
+		it('is empty before the first build', async () => {
+			const index = createAssetIndex({ ...deps, processors: stubProcessors() });
+
+			expect(index.manifest()).toEqual({});
+		});
+	});
+
 	it('is empty before the first build', () => {
 		const index = createAssetIndex({ ...deps, processors: stubProcessors() });
 

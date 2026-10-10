@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { TemplatePath } from '@11ty/eleventy-utils';
 
+import { PREPASS_SENTINEL } from '../../core/content-graph/index.js';
 import { getScope } from '../../core/registry.js';
 import { renderAttributes } from '../../core/utils/render-attributes.js';
 import { optionsSchema } from './schema.js';
@@ -111,10 +112,18 @@ export function assetsCore(eleventyConfig, moduleContext) {
 
 	getScope(eleventyConfig, SCOPE_NAME).values.set('index', assetIndex);
 
+	// Read-only, for what a URL cannot carry (`integrity` above all). A function,
+	// so a serve-mode rebuild re-resolves it.
+	eleventyConfig.addGlobalData('_assets', () => assetIndex.manifest());
+
+	// Read at registration, not in the handler: Eleventy runs `eleventy.before`
+	// concurrently, so the root's own handler has already set the active flag.
+	const isPrepass = process.env[PREPASS_SENTINEL] === '1';
+
 	eleventyConfig.on('eleventy.before', async () => {
 		// The pre-pass is handed `ignore: [directories.assets]`, so it compiles no
 		// assets and has nothing to index.
-		if (process.env.BASELINE_PREPASS_ACTIVE === '1') return;
+		if (isPrepass) return;
 
 		await assetIndex.build({ compile: process.env.ELEVENTY_RUN_MODE === 'build' });
 	});

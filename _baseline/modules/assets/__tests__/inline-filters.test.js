@@ -30,6 +30,7 @@ function register() {
 		addTemplateFormats() {},
 		addExtension() {},
 		addWatchTarget() {},
+		addGlobalData() {},
 		ignores: new Set(),
 		on() {}
 	};

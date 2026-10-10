@@ -63,12 +63,8 @@ export function createAssetIndex({ inputDirectory, cssDirectory, jsDirectory, es
 	}
 
 	/**
-	 * Rebuild from scratch. Lifetime is one build, so there is no invalidation
-	 * question: a cache keyed on an entry's mtime would be stale the moment an
-	 * imported partial changed, since the entry's own mtime does not move.
-	 *
-	 * `compile: false` keys the index without running a processor, which is what
-	 * dev wants: the lookup still resolves, and no entry is compiled twice.
+	 * Rebuilt whole, so the lifetime is one build and nothing needs invalidating.
+	 * `compile: false` keys the index without running a processor, which is dev.
 	 */
 	async function build({ compile = true } = {}) {
 		const next = new Map();
@@ -104,6 +100,15 @@ export function createAssetIndex({ inputDirectory, cssDirectory, jsDirectory, es
 		get: (key) => entries.get(key),
 		// For the compile guards, which hold an input path rather than a URL.
 		getByInput: (inputPath) => entries.get(keyFor(inputPath)),
-		all: () => Object.fromEntries(entries)
+		all: () => Object.fromEntries(entries),
+		// `content` is the compile guards' business. In the cascade it would carry
+		// every asset's bytes into every page and the navigator's dump.
+		manifest: () =>
+			Object.fromEntries(
+				[...entries].map(([key, entry]) => [
+					key,
+					{ url: entry.url, hash: entry.hash, integrity: entry.integrity, size: entry.size }
+				])
+			)
 	};
 }
