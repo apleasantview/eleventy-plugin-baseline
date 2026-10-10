@@ -63,4 +63,46 @@ describe('findMissingAssets', () => {
 	it('says nothing when there is no output directory to look in', () => {
 		expect(findMissingAssets(['/nope.css'], undefined)).toEqual([]);
 	});
+
+	// Fingerprinting broke this check the day it shipped: every declared entry
+	// was reported missing, because the build writes the hashed name.
+	describe('with fingerprinted output', () => {
+		const resolve = (href) =>
+			href === '/assets/css/index.css' ? '/assets/css/index.342303cd.css' : href;
+
+		// Its own directory, holding the hashed file and not the declared one.
+		// Sharing the outer fixture would leave `index.css` on disk, and the
+		// assertion would pass whether the resolver were consulted or not.
+		let hashedDir;
+
+		beforeAll(() => {
+			hashedDir = fs.mkdtempSync(path.join(os.tmpdir(), 'baseline-hashed-'));
+			fs.mkdirSync(path.join(hashedDir, 'assets', 'css'), { recursive: true });
+			fs.writeFileSync(path.join(hashedDir, 'assets', 'css', 'index.342303cd.css'), 'a{}');
+		});
+
+		afterAll(() => {
+			fs.rmSync(hashedDir, { recursive: true, force: true });
+		});
+
+		it('clears a declaration the build wrote under its hashed name', () => {
+			expect(findMissingAssets(['/assets/css/index.css'], hashedDir, resolve)).toEqual([]);
+		});
+
+		// The warning has to survive the fix, or it stops being able to report the
+		// case it exists for.
+		it('still reports one the build never wrote', () => {
+			expect(findMissingAssets(['/nope.css'], hashedDir, resolve)).toEqual(['/nope.css']);
+		});
+
+		// A stale hash is the case that would otherwise ship silently: the index
+		// names a file the build did not write.
+		it('reports a resolved name that is not on disk', () => {
+			const stale = () => '/assets/css/index.deadbeef.css';
+
+			expect(findMissingAssets(['/assets/css/index.css'], hashedDir, stale)).toEqual([
+				'/assets/css/index.css'
+			]);
+		});
+	});
 });

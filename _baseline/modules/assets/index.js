@@ -95,7 +95,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		// this check correct by accident.
 		if (isPrepass) return;
 
-		for (const href of findMissingAssets(declaredPaths, directories.output)) {
+		for (const href of findMissingAssets(declaredPaths, directories.output, assetIndex.resolve)) {
 			log.warn(
 				`settings.head declares "${href}" and the build emitted no such file. ` +
 					'Every page will link to a 404. Check the entry point name, or drop the declaration.'

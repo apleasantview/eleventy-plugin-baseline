@@ -30,14 +30,15 @@ export function collectDeclaredPaths(head) {
  *
  * @param {string[]} declaredPaths
  * @param {string} outputDir
+ * @param {(href: string) => string} [resolve] - Declared name to the name the build wrote. Without it a fingerprinted entry looks missing, because nothing is at the declared path.
  * @returns {string[]}
  */
-export function findMissingAssets(declaredPaths, outputDir) {
+export function findMissingAssets(declaredPaths, outputDir, resolve = (href) => href) {
 	if (!outputDir) return [];
 
 	return declaredPaths.filter((href) => {
 		// Query strings and fragments are addressing, not filenames.
-		const onDisk = path.join(outputDir, href.split(/[?#]/)[0]);
+		const onDisk = path.join(outputDir, resolve(href).split(/[?#]/)[0]);
 		return !fs.existsSync(onDisk);
 	});
 }
