@@ -19,15 +19,13 @@ const KEY = 'isPrepass';
  *
  * Lifecycle:
  *   build-time → tagged in the nested constructor's `config` callback, which
- *                runs before Eleventy loads the project config, so the tag is
- *                already there when the plugin registers.
+ *                runs before Eleventy loads the project config.
  *
  * Why this exists:
  *   Both builds load the same config, so the plugin registers twice and the
- *   inner registration must not start a third build. An environment variable
- *   answers "is a pre-pass running in this process", which is the wrong
- *   question: two builds sharing a process read each other's. A config object
- *   is one build's identity, which is the question being asked.
+ *   inner registration must not start a third build. An env var answers
+ *   "is a pre-pass running in this process", which two builds sharing a
+ *   process read from each other. A config object is one build's identity.
  *
  * Scope:
  *   Owns the tag and the lookup.

@@ -24,6 +24,7 @@ import { registerSeoGraph } from './core/seo-graph/index.js';
 import { autoHeadingIds, safeUse, wikilinks } from './core/markdown/index.js';
 import { slugifyAnchor } from './core/utils/slugify-anchor.js';
 import { hasAnyPlugin } from './core/utils/has-plugin.js';
+import { projectRoot, toProjectDir } from './core/utils/project-root.js';
 import { createRegistrar } from './core/utils/registrar.js';
 import { resolveDefault } from './core/locale/index.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
@@ -244,6 +245,14 @@ export default function baseline(settings = {}, options = {}) {
 
 		eleventyConfig.addPlugin(HtmlBasePlugin, { baseHref });
 
+		// --- Cache directory ---
+		// The graph and the media renditions. Anchored beside the input, not the
+		// process, so two sites in one cwd do not share it. `dir.cache` moves it.
+		const cacheDir = path.resolve(
+			projectRoot(eleventyConfig.directories?.input),
+			eleventyConfig.dir?.cache || '.cache'
+		);
+
 		// --- Pre-pass wiring ---
 		// One mechanic: the pre-pass runs at the start of every Eleventy
 		// build cycle via `eleventy.before`. Initial build, watch rebuild,
@@ -258,7 +267,7 @@ export default function baseline(settings = {}, options = {}) {
 					scopedLog,
 					// The graph reads pages. Stylesheets and scripts are neither, and
 					// compiling them into a dryRun is the pre-pass's largest waste.
-					{ quietMode: true, ignore: [eleventyConfig.directories?.assets] }
+					{ quietMode: true, ignore: [eleventyConfig.directories?.assets], cacheDir }
 				);
 			});
 		}
@@ -312,10 +321,12 @@ export default function baseline(settings = {}, options = {}) {
 
 		eleventyConfig.addPassthroughCopy({ [publicDir.input]: '/' });
 
-		// Add paths to global.
+		// Add paths to global. `cache` is the one entry Eleventy knows nothing
+		// about.
 		eleventyConfig.addGlobalData('_baseline', {
 			paths: {
-				...directories
+				...directories,
+				cache: toProjectDir(cacheDir)
 			}
 		});
 
@@ -486,7 +497,7 @@ export default function baseline(settings = {}, options = {}) {
 		// Nothing here invalidates. `rm -rf .cache` is the reset, and it is also
 		// the answer to the one failure this cannot see: a build interrupted
 		// mid-encode leaves a truncated file that now survives.
-		const mediaCacheDir = path.join('.cache', 'media');
+		const mediaCacheDir = path.resolve(cacheDir, 'media');
 
 		if (!isPrepass) {
 			eleventyConfig.on('eleventy.after', () => {

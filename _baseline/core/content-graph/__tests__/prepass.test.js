@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import path from 'node:path';
 
 const constructorCalls = [];
 
@@ -21,6 +22,7 @@ vi.mock('node:fs/promises', () => ({
 }));
 
 const { runPrepass } = await import('../prepass.js');
+const { writeFile, mkdir } = await import('node:fs/promises');
 
 const silentLog = () => ({ status: () => {}, info: () => {}, warn: () => {}, error: () => {} });
 
@@ -99,5 +101,37 @@ describe('runPrepass — ignored directories', () => {
 
 		expect(constructorCalls[0].options.ignore).toBeUndefined();
 		expect(constructorCalls[0].options.quietMode).toBe(true);
+	});
+});
+
+// The cache directory is the composition root's decision, resolved there once
+// and threaded, so two sites in one working directory do not share a file.
+describe('runPrepass — where the graph is written', () => {
+	beforeEach(() => {
+		writeFile.mockClear();
+		mkdir.mockClear();
+	});
+
+	it('writes inside the cache directory it was given', async () => {
+		const cacheDir = path.resolve('/projects/site-a/.cache');
+
+		await runPrepass('src', 'dist', silentLog, { cacheDir });
+
+		expect(writeFile.mock.calls[0][0]).toBe(path.join(cacheDir, '_baseline', 'content-graph.json'));
+	});
+
+	it('keeps two sites apart', async () => {
+		await runPrepass('src', 'dist', silentLog, { cacheDir: path.resolve('/p/a/.cache') });
+		await runPrepass('src', 'dist', silentLog, { cacheDir: path.resolve('/p/b/.cache') });
+
+		expect(writeFile.mock.calls[0][0]).not.toBe(writeFile.mock.calls[1][0]);
+	});
+
+	// `cacheDir` is Baseline's, not Eleventy's, so it must not reach the
+	// constructor as a stray option.
+	it('does not pass it to the nested instance', async () => {
+		await runPrepass('src', 'dist', silentLog, { cacheDir: path.resolve('/p/a/.cache') });
+
+		expect(constructorCalls[0].options).not.toHaveProperty('cacheDir');
 	});
 });

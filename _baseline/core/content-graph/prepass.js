@@ -6,6 +6,7 @@ import chalk from 'kleur';
 
 import { pickRepetitionQuip } from '../logging/index.js';
 import { tagPrepassConfig } from '../prepass-channel.js';
+import { projectRoot } from '../utils/project-root.js';
 import { buildGraph } from './graph.js';
 
 /**
@@ -47,7 +48,21 @@ import { buildGraph } from './graph.js';
 // its own pre-pass guards can read. Set in try, deleted in finally.
 export const PREPASS_ACTIVE = 'BASELINE_PREPASS_ACTIVE';
 
-export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content-graph.json');
+const CACHE_FILE = '_baseline/content-graph.json';
+
+// Only for a caller with no cache directory in hand; the root always has one.
+const DEFAULT_CACHE_DIR = '.cache';
+
+/**
+ * The graph cache file inside a resolved cache directory. A join, not a
+ * policy: where the cache lives is the composition root's decision.
+ *
+ * @param {string} [cacheDir] - Absolute cache directory.
+ * @returns {string} Absolute path to the cache file.
+ */
+export function graphCachePath(cacheDir) {
+	return resolve(cacheDir || resolve(projectRoot(), DEFAULT_CACHE_DIR), CACHE_FILE);
+}
 
 /**
  * Turn a directory path into a glob Eleventy's `ignores` set accepts.
@@ -78,8 +93,9 @@ function toDirGlob(dir) {
  * @param {string} input
  * @param {string} output
  * @param {(namespace: string) => { status: Function, info: Function, warn: Function, error: Function }} scopedLog - Factory the composition root passes through so the pre-pass and the cache-write step can be scoped separately.
- * @param {object} [options] - Eleventy constructor options, plus `ignore`.
+ * @param {object} [options] - Eleventy constructor options, plus `ignore` and `cacheDir`.
  * @param {string[]} [options.ignore] - Directories the inner build should skip.
+ * @param {string} [options.cacheDir] - Absolute cache directory, resolved by the composition root.
  * @returns {Promise<object>}
  */
 export async function runPrepass(input, output, scopedLog, options = {}) {
@@ -94,7 +110,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	graphLog.info('Caching content graph');
 	process.env[PREPASS_ACTIVE] = '1';
 
-	const { ignore = [], ...elevOptions } = options;
+	const { ignore = [], cacheDir, ...elevOptions } = options;
 	const ignoreGlobs = ignore.filter(Boolean).map(toDirGlob);
 
 	let graph;
@@ -125,8 +141,9 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 		const pages = await elev.toJSON();
 		graph = buildGraph(pages, { log: graphLog });
 
-		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
-		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
+		const cachePath = graphCachePath(cacheDir);
+		await mkdir(dirname(cachePath), { recursive: true });
+		await writeFile(cachePath, JSON.stringify(graph), 'utf8');
 	} finally {
 		delete process.env[PREPASS_ACTIVE];
 		log.status('Pre-pass done');
@@ -135,9 +152,12 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	return graph;
 }
 
-export async function readGraphFromDisk() {
+/**
+ * @param {string} [cacheDir] - The same cache directory the write was given.
+ */
+export async function readGraphFromDisk(cacheDir) {
 	try {
-		const raw = await readFile(GRAPH_CACHE_PATH, 'utf8');
+		const raw = await readFile(graphCachePath(cacheDir), 'utf8');
 		return JSON.parse(raw);
 	} catch {
 		return null;
