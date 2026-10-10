@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import { TemplatePath } from '@11ty/eleventy-utils';
 
 import { PREPASS_SENTINEL } from '../../core/content-graph/index.js';
@@ -66,7 +64,10 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	const jsDirectory = `${assetsDirectory}js/`;
 	const cssDirectory = `${assetsDirectory}css/`;
 
-	const esbuildOptions = options.assets.esbuild || {};
+	// Entry points ride with their processor. Stripped from what esbuild is
+	// handed: the processor sets its own, one file per call.
+	const { entryPoints: declaredJsEntries, ...esbuildOptions } = options.assets.esbuild ?? {};
+	const { entryPoints: declaredCssEntries } = options.assets.postcss ?? {};
 	const dataFiles = `${inputDirectory}**/*.11tydata.js`;
 	const watchGlob = TemplatePath.join(assetsDirectory, '**/*.{css,js,svg,png,jpeg,jpg,webp,gif,avif}');
 
@@ -105,9 +106,20 @@ export function assetsCore(eleventyConfig, moduleContext) {
 	// lookups still resolve, and leaves the per-file compile where it is.
 	const assetIndex = createAssetIndex({
 		inputDirectory,
-		cssDirectory,
-		jsDirectory,
-		esbuildOptions
+		sources: [
+			{
+				directory: cssDirectory,
+				basename: 'index.css',
+				entryPoints: declaredCssEntries,
+				compile: (inputPath) => assetsPostCSS(inputPath)
+			},
+			{
+				directory: jsDirectory,
+				basename: 'index.js',
+				entryPoints: declaredJsEntries,
+				compile: (inputPath) => assetsESbuild(inputPath, esbuildOptions)
+			}
+		]
 	});
 
 	getScope(eleventyConfig, SCOPE_NAME).values.set('index', assetIndex);
@@ -155,14 +167,11 @@ export function assetsCore(eleventyConfig, moduleContext) {
 			permalink: true,
 			cache: true
 		},
-		// Compile guard: only process index.js files under the assets js directory.
-		// Returning undefined skips the file without error.
+		// Compile guard: the index decides what an entry is, so a declared
+		// `entryPoints` list works whatever the files are called. Returning
+		// undefined skips the file without error.
 		compile: async function (_inputContent, inputPath) {
-			if (
-				inputPath.includes('11tydata.js') ||
-				!inputPath.startsWith(jsDirectory) ||
-				path.basename(inputPath) !== 'index.js'
-			) {
+			if (inputPath.includes('11tydata.js') || !assetIndex.isEntry(inputPath)) {
 				return;
 			}
 
@@ -207,9 +216,9 @@ export function assetsCore(eleventyConfig, moduleContext) {
 			permalink: true,
 			cache: true
 		},
-		// Compile guard: only process index.css files under the assets css directory.
+		// Compile guard: see the js one above, the index is the authority.
 		compile: async function (_inputContent, inputPath) {
-			if (!inputPath.startsWith(cssDirectory) || path.basename(inputPath) !== 'index.css') {
+			if (!assetIndex.isEntry(inputPath)) {
 				return;
 			}
 

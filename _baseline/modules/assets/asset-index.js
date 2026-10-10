@@ -1,8 +1,7 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { createHashHexSync } from '@11ty/eleventy-utils';
-import assetsESbuild from './processors/esbuild-process.js';
-import assetsPostCSS from './processors/postcss-process.js';
+import { addTrailingSlash } from '../../core/utils/add-trailing-slash.js';
 import { findEntries } from './utils/find-entries.js';
 
 const HASH_LENGTH = 8;
@@ -30,23 +29,17 @@ const HASH_LENGTH = 8;
  *
  * Scope:
  *   Owns entry discovery, one compile per entry, and the hash. Does not own
- *   what any consumer does with it, and does not decide output paths.
+ *   what any consumer does with it, which processor runs, or output paths.
  *
  * Data flow:
  *   find-entries → processor → hash → index → head, `_assets`, permalinks
  *
  * @param {Object} deps
  * @param {string} deps.inputDirectory - Eleventy's input dir, for deriving keys.
- * @param {string} deps.cssDirectory
- * @param {string} deps.jsDirectory
- * @param {Object} [deps.esbuildOptions]
- * @param {{ css?: Function, js?: Function }} [deps.processors] - Injection seam for tests.
- * @returns {{ build: (options?: { compile?: boolean }) => Promise<void>, get: (key: string) => object | undefined, all: () => Record<string, object> }}
+ * @param {Array<{ directory: string, basename: string, entryPoints?: string[], compile: (inputPath: string) => Promise<string> | string }>} deps.sources
+ * @returns {{ build: (options?: { compile?: boolean }) => Promise<void>, isEntry: (inputPath: string) => boolean, get: (key: string) => object | undefined, getByInput: (inputPath: string) => object | undefined, all: () => Record<string, object>, manifest: () => Record<string, object> }}
  */
-export function createAssetIndex({ inputDirectory, cssDirectory, jsDirectory, esbuildOptions = {}, processors = {} }) {
-	const compileCss = processors.css ?? ((inputPath) => assetsPostCSS(inputPath));
-	const compileJs = processors.js ?? ((inputPath) => assetsESbuild(inputPath, esbuildOptions));
-
+export function createAssetIndex({ inputDirectory, sources = [] }) {
 	let entries = new Map();
 
 	/** The path an author writes, which is what head and the filter look up. */
@@ -55,11 +48,17 @@ export function createAssetIndex({ inputDirectory, cssDirectory, jsDirectory, es
 		return `/${relative.split(path.sep).join('/')}`;
 	}
 
+	// A declared list replaces that source's convention rather than adding to it,
+	// so what is written is exactly what runs. Paths are relative to the source's
+	// own directory, so `['vendor/index.js']`, not `['assets/js/vendor/index.js']`.
+	function entriesFor({ directory, basename, entryPoints }) {
+		if (!Array.isArray(entryPoints)) return findEntries(directory, basename);
+		const root = addTrailingSlash(directory);
+		return entryPoints.map((relative) => `${root}${relative}`);
+	}
+
 	function discover() {
-		return [
-			...findEntries(cssDirectory, 'index.css').map((inputPath) => ({ inputPath, compile: compileCss })),
-			...findEntries(jsDirectory, 'index.js').map((inputPath) => ({ inputPath, compile: compileJs }))
-		];
+		return sources.flatMap((source) => entriesFor(source).map((inputPath) => ({ inputPath, compile: source.compile })));
 	}
 
 	/**
@@ -97,6 +96,9 @@ export function createAssetIndex({ inputDirectory, cssDirectory, jsDirectory, es
 
 	return {
 		build,
+		// The one definition of what an entry is, which the compile guards read so
+		// the convention is not spelled out in three places.
+		isEntry: (inputPath) => entries.has(keyFor(inputPath)),
 		get: (key) => entries.get(key),
 		// For the compile guards, which hold an input path rather than a URL.
 		getByInput: (inputPath) => entries.get(keyFor(inputPath)),

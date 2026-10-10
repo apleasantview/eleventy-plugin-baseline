@@ -96,6 +96,32 @@ describe('assetsCore registration', () => {
 		expect(globals._assets()).toEqual({});
 	});
 
+	// The option rides with its processor, so these are the two places it is read
+	// from. Naming one leaves the other kind on the convention.
+	it('reads entry points from `postcss` and `esbuild`', async () => {
+		const { globals, events } = register({
+			assets: {
+				postcss: { entryPoints: ['index.css'] },
+				esbuild: { entryPoints: ['vendor/index.js'] }
+			}
+		});
+		await events['eleventy.before']();
+
+		expect(Object.keys(globals._assets()).sort()).toEqual([
+			'/assets/css/index.css',
+			'/assets/js/vendor/index.js'
+		]);
+	});
+
+	it('leaves the kind with no list on the convention', async () => {
+		const { globals, events } = register({
+			assets: { postcss: { entryPoints: ['index.css'] } }
+		});
+		await events['eleventy.before']();
+
+		expect(Object.keys(globals._assets())).toContain('/assets/js/index.js');
+	});
+
 	it('leaves the compiled bytes out of what templates can read', async () => {
 		const { globals, events } = register();
 		await events['eleventy.before']();
