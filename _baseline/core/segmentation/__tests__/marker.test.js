@@ -47,6 +47,44 @@ describe('segment', () => {
 	});
 });
 
+// Nothing precedes part one, so a marker above the content is the only thing
+// that can name it. Without this a named strip reads "1, Pizze, Primi": one
+// number among three names, which is what both of Baseline's own consumers
+// worked around in their layouts.
+describe('a marker above the content', () => {
+	const source = '<!--pagebreak|Antipasti-->\n\nOne.\n\n<!--pagebreak|Pizze-->\n\nTwo.\n';
+
+	it('names part one', () => {
+		expect(segment(source)[0].lead).toEqual({ anchor: undefined, label: 'Antipasti' });
+	});
+
+	// The cut is ignored because there is nothing above it to cut off. If it ever
+	// produced a part, every URL on every split page would shift by one.
+	it('does not add a part', () => {
+		expect(bodies(segment(source))).toEqual(['One.', 'Two.']);
+	});
+
+	it('carries an anchor as well as a label', () => {
+		const parts = segment('<!--pagebreak#top|Antipasti-->\n\nOne.\n\n<!--pagebreak-->\n\nTwo.\n');
+
+		expect(parts[0].lead).toEqual({ anchor: 'top', label: 'Antipasti' });
+	});
+
+	it('leaves part one unnamed when nothing precedes it', () => {
+		expect(segment('One.\n\n<!--pagebreak|Pizze-->\n\nTwo.\n')[0].lead).toBeUndefined();
+	});
+
+	// A bare leading marker is the shape that was already being dropped, and it
+	// has no name to give.
+	it('ignores a bare one', () => {
+		expect(segment('<!--pagebreak-->\n\nOne.\n\n<!--pagebreak-->\n\nTwo.\n')[0].lead).toBeUndefined();
+	});
+
+	it('still refuses a page that has only one body under it', () => {
+		expect(segment('<!--pagebreak|Antipasti-->\n\nOnly one.\n')).toBeNull();
+	});
+});
+
 // The grammar borrows the wikilinks one: `#` an anchor, `|` the link text. The
 // parameters describe the link *into* the part that follows the marker, so they
 // land on the part before it. The last part never carries one.

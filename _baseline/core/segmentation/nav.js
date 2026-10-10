@@ -2,16 +2,18 @@
  * Name and entry point for each part, in order.
  *
  * A part is named by the marker that introduced it, and numbered when that
- * marker gave no label. Numbers are the floor because they need no copy and no
+ * marker gave no label. Part one is named by a marker written above the content. Numbers are the floor because they need no copy and no
  * translation, which is how WordPress's `wp_link_pages` has always done it;
  * labels are the author raising it, as Joomla's page break allows.
  *
- * @param {Array<{next?: {anchor?: string, label?: string}}>} parts
+ * @param {Array<{next?: {anchor?: string, label?: string}, lead?: {anchor?: string, label?: string}}>} parts
  * @returns {Array<{label: string, anchor: string | undefined}>}
  */
 export function partEntries(parts) {
 	return parts.map((_part, index) => {
-		const marker = parts[index - 1]?.next;
+		// Nothing precedes part one, so a marker written before any content is
+		// the only thing that can name it.
+		const marker = index === 0 ? parts[0]?.lead : parts[index - 1]?.next;
 		return {
 			label: marker?.label ?? String(index + 1),
 			anchor: marker?.anchor

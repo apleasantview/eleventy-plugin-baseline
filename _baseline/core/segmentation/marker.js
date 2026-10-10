@@ -39,9 +39,10 @@ function parseParams(raw) {
  * `{% raw %}` cannot shelter it, being ordinary text at this point.
  *
  * @param {string} content - Raw source, before any template or markdown pass.
- * @returns {Array<{body: string, next?: {anchor?: string, label?: string}}> | null}
+ * @returns {Array<{body: string, next?: {anchor?: string, label?: string}, lead?: {anchor?: string, label?: string}}> | null}
  *   Two or more parts, each carrying the parameters of the marker that follows
  *   it, or null when the page carries no usable marker and should be left alone.
+ *   A marker before any content lands on part one as `lead`.
  */
 export function segment(content) {
 	if (!content || !content.includes('pagebreak')) return null;
@@ -64,7 +65,12 @@ export function segment(content) {
 	}
 	parts.push({ body: lines.slice(cursor).join('\n').trim() });
 
-	// A marker on the first or last line leaves an empty body either side.
+	// A marker on the first or last line leaves an empty body either side. A
+	// leading one names part one rather than cutting it: nothing precedes part
+	// one, so that is the only way an author can label it.
+	const lead = parts[0].body ? undefined : parts[0].next;
 	const kept = parts.filter((part) => part.body);
+	if (lead) kept[0] = { ...kept[0], lead };
+
 	return kept.length > 1 ? kept : null;
 }

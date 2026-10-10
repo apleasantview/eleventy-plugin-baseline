@@ -5,13 +5,10 @@
 	over the parts, their urls and their names, and the site owns the element.
 
 	A part is named by the marker that introduced it (`<!--pagebreak|Name-->`) and
-	numbered when the marker gave none, so nothing here needs translating.
-
-	Part one is the exception: no marker precedes it, so it can never carry a
-	label and falls back to "1". It is the page the reader starts on, so it is
-	named here instead.
+	numbered when the marker gave none, so nothing here needs translating. Part
+	one is named by a marker written above the content, which is why this is a
+	plain loop and no longer special-cases it.
 -#}
-{%- set firstPartLabel = "Introduction" %}
 {%- if _pagebreak %}
 <nav class="c-page-parts" aria-label="Page parts">
 	<div class="c-page-parts__inner">
@@ -20,15 +17,14 @@
 			<ol class="c-page-parts__list">
 				{%- for part in _pagebreak.parts %}
 					<li class="c-page-parts__item">
-						{%- set label = firstPartLabel if part.number == 1 else part.label %}
 						{%- if part.current %}
-							<span aria-current="page">{{ label }}</span>
+							<span aria-current="page">{{ part.label }}</span>
 						{%- else %}
 							<a
 								href="{{ part.url }}{% if part.anchor %}#{{ part.anchor }}{% endif %}"
 								{%- if part.number == _pagebreak.number - 1 %} rel="prev"{% endif %}
 								{%- if part.number == _pagebreak.number + 1 %} rel="next"{% endif %}
-								>{{ label }}</a
+								>{{ part.label }}</a
 							>
 						{%- endif %}
 					</li>

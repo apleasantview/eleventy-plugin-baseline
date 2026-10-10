@@ -2,11 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { partEntries, buildPagebreak, applyPartLabel } from '../nav.js';
 
 const bare = [{ next: undefined }, { next: undefined }, {}];
-const labelled = [
-	{ next: { label: 'Verder' } },
-	{ next: { anchor: 'three', label: 'Part three' } },
-	{}
-];
+const labelled = [{ next: { label: 'Verder' } }, { next: { anchor: 'three', label: 'Part three' } }, {}];
 
 describe('partEntries', () => {
 	// Numbers are the floor: no copy, nothing to translate, and a bare marker
@@ -23,11 +19,7 @@ describe('partEntries', () => {
 	});
 
 	it('carries the anchor onto the part it points into', () => {
-		expect(partEntries(labelled).map((entry) => entry.anchor)).toEqual([
-			undefined,
-			undefined,
-			'three'
-		]);
+		expect(partEntries(labelled).map((entry) => entry.anchor)).toEqual([undefined, undefined, 'three']);
 	});
 });
 
@@ -130,5 +122,27 @@ describe('applyPartLabel', () => {
 
 	it('leaves the title alone when parts are missing entirely', () => {
 		expect(applyPartLabel(title, { number: 2, total: 3 })).toBe(title);
+	});
+});
+
+// The consumer half of a marker above the content: part one has no predecessor
+// to read a name from, so it reads its own `lead` instead.
+describe('partEntries with a named first part', () => {
+	it('names part one from the leading marker', () => {
+		const entries = partEntries([{ lead: { label: 'Antipasti', anchor: 'top' }, next: { label: 'Pizze' } }, {}]);
+
+		expect(entries[0]).toEqual({ label: 'Antipasti', anchor: 'top' });
+		expect(entries[1]).toEqual({ label: 'Pizze', anchor: undefined });
+	});
+
+	it('still numbers part one when nothing names it', () => {
+		expect(partEntries([{ next: { label: 'Pizze' } }, {}])[0].label).toBe('1');
+	});
+
+	// A later part never reads `lead`, so a stray one cannot rename the wrong part.
+	it('ignores a lead on any part but the first', () => {
+		const entries = partEntries([{ next: { label: 'Pizze' } }, { lead: { label: 'Wrong' } }]);
+
+		expect(entries[1].label).toBe('Pizze');
 	});
 });
