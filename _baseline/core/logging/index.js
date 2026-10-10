@@ -57,20 +57,23 @@ export * from './quips.js';
  * the same contract `verbose: false` has.
  *
  * @param {string | null | undefined} namespace
- * @param {{ verbose?: boolean, quiet?: boolean | (() => boolean) }} [options]
+ * @param {{ verbose?: boolean, quiet?: boolean | (() => boolean), silent?: boolean, prepass?: boolean | (() => boolean) }} [options]
  * @returns {BaselineLogger}
  */
-export function createLogger(namespace, { verbose = false, quiet = false, silent = false } = {}) {
+export function createLogger(
+	namespace,
+	{ verbose = false, quiet = false, silent = false, prepass = false } = {}
+) {
 	const label = namespace ? `[baseline/${namespace}]` : '[baseline]';
 	const isQuiet = typeof quiet === 'function' ? quiet : () => quiet === true;
 
 	// Pre-pass gate: silence baseline's own info and warnings during the inner
 	// Eleventy run so modules don't double-log every line they emit again during
-	// the real build. Env-var contract scoped to runPrepass's execution (set in
-	// try, cleared in finally). Eleventy's own `[11ty]` output is governed
-	// by its `quietMode` and stays untouched here.
+	// the real build. Passed in by the caller, which knows which pass it is;
+	// reading process state here cannot tell two builds apart. Eleventy's own
+	// `[11ty]` output is governed by its `quietMode` and stays untouched.
 	// `error` stays ungated: a pre-pass that fails may be the only place it says so.
-	const isPrepass = () => process.env.BASELINE_PREPASS_ACTIVE === '1';
+	const isPrepass = typeof prepass === 'function' ? prepass : () => prepass === true;
 
 	return {
 		// The default tier. Not narrative and not a problem: the few lines worth

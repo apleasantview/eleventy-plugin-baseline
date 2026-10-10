@@ -10,7 +10,8 @@ import { createLogger, printBannerOnce } from './core/logging/index.js';
 import { isLegacyShape, normalizeLegacyShape } from './core/back-compat/options.js';
 import { optionsSchema, settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
-import { runPrepass, PREPASS_SENTINEL } from './core/content-graph/index.js';
+import { runPrepass } from './core/content-graph/index.js';
+import { isPrepassConfig } from './core/prepass-channel.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createAssetIndexStore } from './core/asset-index-store.js';
@@ -62,11 +63,6 @@ const INTERNAL_KEYS = [
 	'eleventyComputed._edges'
 ];
 
-// Base logger outputs regardless of options: it runs before state exists, so
-// there is nothing to gate it on. The three lines it emits at plugin init are
-// gated at their call sites instead, by `announce` below.
-const baseLog = createLogger(null, { verbose: true });
-
 let contentGraph = null;
 
 /**
@@ -117,12 +113,31 @@ export default function baseline(settings = {}, options = {}) {
 	// eslint-disable-next-line no-unused-vars
 	const isProd = mode === 'production';
 
+	// Set by the initializer below, so the logging helpers can read Eleventy's
+	// quiet mode and which pass this is. Neither is available in this scope
+	// until the plugin runs.
+	let activeConfig = null;
+
+	// Base logger outputs regardless of options: it runs before state exists,
+	// so the pre-pass is the only thing left to gate it on. The three lines it
+	// emits at plugin init are gated at their call sites, by `announce` below.
+	const baseLog = createLogger(null, {
+		verbose: true,
+		prepass: () => isPrepassConfig(activeConfig)
+	});
+
+	// Validation runs before any config object exists, so the gate above has
+	// nothing to read yet and both builds would print the same line. Held here
+	// and emitted once the pass is known.
+	const deferredWarnings = [];
+	const warnLater = (...args) => deferredWarnings.push(args);
+
 	// --- Legacy compatibility layer ---
 	if (isLegacyShape(settings, arguments.length)) {
 		const normalized = normalizeLegacyShape(settings);
 		settings = normalized.settings;
 		options = normalized.options;
-		baseLog.warn('Single-object plugin arg is deprecated. Use baseline(settings, options).');
+		warnLater('Single-object plugin arg is deprecated. Use baseline(settings, options).');
 	}
 
 	// Validate configuration shape (non-fatal). Modules validate their own
@@ -130,23 +145,19 @@ export default function baseline(settings = {}, options = {}) {
 	const parsedSettings = settingsSchema.safeParse(settings);
 	if (!parsedSettings.success) {
 		for (const issue of parsedSettings.error.issues) {
-			baseLog.warn('settings:', `${issue.path.join('.')}, ${issue.message}`);
+			warnLater('settings:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
 	const parsedOptions = optionsSchema.safeParse(options);
 	if (!parsedOptions.success) {
 		for (const issue of parsedOptions.error.issues) {
-			baseLog.warn('options:', `${issue.path.join('.')}, ${issue.message}`);
+			warnLater('options:', `${issue.path.join('.')}, ${issue.message}`);
 		}
 	}
 
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
-
-	// Set by the initializer below, so the logging helper can read Eleventy's
-	// quiet mode. It is not available in this scope until the plugin runs.
-	let activeConfig = null;
 
 	// Scoped logging helper.
 	function scopedLog(name) {
@@ -155,7 +166,8 @@ export default function baseline(settings = {}, options = {}) {
 			silent: state.options.silent,
 			// Read per call: --quiet arrives through _setQuietModeOverride and a
 			// consumer can flip it from their own config after we register.
-			quiet: () => activeConfig?.quietMode === true
+			quiet: () => activeConfig?.quietMode === true,
+			prepass: () => isPrepassConfig(activeConfig)
 		});
 	}
 
@@ -168,16 +180,19 @@ export default function baseline(settings = {}, options = {}) {
 	const plugin = async function (eleventyConfig) {
 		activeConfig = eleventyConfig;
 
+		// The pre-pass runs Eleventy inside Eleventy. The inner build renders
+		// only to be parsed, which is what keeps graph edges keyed the same way as page.url.
+		// The nested instance's config carries a tag; nothing else does.
+		const isPrepass = isPrepassConfig(eleventyConfig);
+
+		for (const args of deferredWarnings) baseLog.warn(...args);
+		deferredWarnings.length = 0;
+
 		// Three states, not two. Saying nothing gets the banner, the version line
 		// and one module summary. `verbose: false` is an explicit request for
 		// quiet and drops all three. Eleventy's own `--quiet` does the same.
 		const announce = !state.options.silent && eleventyConfig.quietMode !== true;
 		if (announce) printBannerOnce(baseLog, { version, eleventyVersion });
-
-		// The pre-pass runs Eleventy inside Eleventy. The inner build renders
-		// only to be parsed, so it wants path-only hrefs rather than absolute
-		// ones, which is what keeps graph edges keyed the same way as page.url.
-		const isPrepass = process.env[PREPASS_SENTINEL] === '1';
 
 		// --- Eleventy compatibility check ---
 		try {
@@ -508,7 +523,8 @@ export default function baseline(settings = {}, options = {}) {
 				log: scopedLog('image'),
 				hasImageTransformPlugin,
 				defaults: state.options.media.image,
-				cacheDir: mediaCacheDir
+				cacheDir: mediaCacheDir,
+				isPrepass
 			})
 		);
 

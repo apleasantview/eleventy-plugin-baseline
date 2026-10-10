@@ -51,19 +51,13 @@ describe('image shortcode — when generation is deferred', () => {
 	beforeEach(() => {
 		imageCalls.length = 0;
 		state.metadata = null;
-		saved = {
-			runMode: process.env.ELEVENTY_RUN_MODE,
-			prepass: process.env.BASELINE_PREPASS_ACTIVE
-		};
+		saved = { runMode: process.env.ELEVENTY_RUN_MODE };
 		delete process.env.ELEVENTY_RUN_MODE;
-		delete process.env.BASELINE_PREPASS_ACTIVE;
 	});
 
 	afterEach(() => {
 		if (saved.runMode === undefined) delete process.env.ELEVENTY_RUN_MODE;
 		else process.env.ELEVENTY_RUN_MODE = saved.runMode;
-		if (saved.prepass === undefined) delete process.env.BASELINE_PREPASS_ACTIVE;
-		else process.env.BASELINE_PREPASS_ACTIVE = saved.prepass;
 	});
 
 	// A build writes the renditions. This is the case that must skip neither.
@@ -91,26 +85,30 @@ describe('image shortcode — when generation is deferred', () => {
 	// work while keeping the hashed URL the built site will actually carry.
 	it('takes stats only during the pre-pass, not the middleware URL', async () => {
 		process.env.ELEVENTY_RUN_MODE = 'build';
-		process.env.BASELINE_PREPASS_ACTIVE = '1';
-		await render();
+		await render(undefined, { isPrepass: true });
 
 		expect(imageCalls[0].options.statsOnly).toBe(true);
 		expect(imageCalls[0].options.transformOnRequest).toBe(false);
 	});
 
-	// The flag is cleared to '0' rather than deleted, so a truthiness test
-	// would keep skipping for the rest of the build and write nothing.
-	it('generates again once the pre-pass has cleared the flag', async () => {
+	// The composition root resolves which pass this is and hands it over, so the
+	// shortcode must not reach for the signal published to consumers: in a host
+	// process two builds set it for each other.
+	it('ignores the published consumer signal', async () => {
 		process.env.ELEVENTY_RUN_MODE = 'build';
-		process.env.BASELINE_PREPASS_ACTIVE = '0';
-		await render();
+		process.env.BASELINE_PREPASS_ACTIVE = '1';
+
+		try {
+			await render();
+		} finally {
+			delete process.env.BASELINE_PREPASS_ACTIVE;
+		}
 
 		expect(imageCalls[0].options.statsOnly).toBe(false);
 	});
 
 	it('still returns usable markup when it skips the encode', async () => {
-		process.env.BASELINE_PREPASS_ACTIVE = '1';
-		const html = await render();
+		const html = await render(undefined, { isPrepass: true });
 
 		expect(html).toContain('<picture>');
 		expect(html).toContain('src="/media/x-960w.webp"');

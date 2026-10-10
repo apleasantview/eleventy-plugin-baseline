@@ -5,6 +5,7 @@ import Eleventy from '@11ty/eleventy';
 import chalk from 'kleur';
 
 import { pickRepetitionQuip } from '../logging/index.js';
+import { tagPrepassConfig } from '../prepass-channel.js';
 import { buildGraph } from './graph.js';
 
 /**
@@ -18,8 +19,9 @@ import { buildGraph } from './graph.js';
  *   runtime substrate
  *
  * System role:
- *   Build-time entry point for the content graph. Owns the re-entry
- *   sentinel, the log-suppression scope, and the cache file path.
+ *   Build-time entry point for the content graph. Tags the nested instance
+ *   as the re-entry guard, publishes the consumer signal, and owns the cache
+ *   file path.
  *
  * Lifecycle:
  *   build-time → fires on each Eleventy `eleventy.before` event; spawns a
@@ -40,14 +42,9 @@ import { buildGraph } from './graph.js';
  *   inner Eleventy toJSON() → buildGraph → cache file + in-memory graph
  */
 
-// Re-entry guard: set once by the outer process, read at call-time on
-// the inner re-entry to skip the pre-pass. Permanent for the life of
-// the outer process — the pre-pass runs exactly once.
-export const PREPASS_SENTINEL = 'BASELINE_PREPASS_RUNNING';
-
-// Log-suppression scope: set only while runPrepass is executing. Read by
-// the logger to silence baseline's own info-level chatter during the
-// inner build. Different lifetime to PREPASS_SENTINEL on purpose.
+// Published for consumers only: Baseline's own guards read the config tag.
+// A project's config has no access to the registry, so this stays the signal
+// its own pre-pass guards can read. Set in try, deleted in finally.
 export const PREPASS_ACTIVE = 'BASELINE_PREPASS_ACTIVE';
 
 export const GRAPH_CACHE_PATH = resolve(process.cwd(), '.cache/_baseline/content-graph.json');
@@ -68,8 +65,8 @@ function toDirGlob(dir) {
  * Run a programmatic Eleventy, extract the content graph, write it to disk,
  * return the in-memory graph.
  *
- * Sets the sentinel before constructing Eleventy so the inner re-entry into
- * baseline() skips its own pre-pass.
+ * Tags the nested instance's config so the inner re-entry into baseline()
+ * skips its own pre-pass.
  *
  * Always runs — there is no skip-if-cache-exists check. The pre-pass is fast
  * enough today that unconditional execution is the honest default, and the
@@ -95,7 +92,6 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 	log.status('Pre-pass starting');
 	log.status(chalk.cyan(pickRepetitionQuip()));
 	graphLog.info('Caching content graph');
-	process.env[PREPASS_SENTINEL] = '1';
 	process.env[PREPASS_ACTIVE] = '1';
 
 	const { ignore = [], ...elevOptions } = options;
@@ -115,6 +111,11 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 			dryRun: true,
 			// Surface fields the graph and backlink enrichment read off `data`.
 			config: function (eleventyConfig) {
+				// This callback and every plugin registered against this instance are
+				// handed the same object, and this runs first, so the tag is the
+				// re-entry guard. Measured on 3.1.6.
+				tagPrepassConfig(eleventyConfig);
+
 				for (const glob of ignoreGlobs) eleventyConfig.ignores.add(glob);
 				eleventyConfig.dataFilterSelectors.add('_pageContext'); // -> Future pass.
 				eleventyConfig.dataFilterSelectors.add('eleventyExcludeFromCollections');
@@ -127,7 +128,7 @@ export async function runPrepass(input, output, scopedLog, options = {}) {
 		await mkdir(dirname(GRAPH_CACHE_PATH), { recursive: true });
 		await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph), 'utf8');
 	} finally {
-		process.env[PREPASS_ACTIVE] = '0';
+		delete process.env[PREPASS_ACTIVE];
 		log.status('Pre-pass done');
 	}
 

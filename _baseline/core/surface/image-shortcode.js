@@ -66,13 +66,15 @@ function pickFallback(metadata) {
  * @param {boolean} [context.hasImageTransformPlugin=false] - Marks output `eleventy:ignore` when true.
  * @param {Object} [context.defaults] - Resolved `options.media.image`; the fallback for every call.
  * @param {string} [context.cacheDir] - Write renditions here instead of the output directory. Set in build mode only; the composition root copies them into the output afterwards.
+ * @param {boolean} [context.isPrepass=false] - Switches eleventy-img to `statsOnly`.
  * @returns {Function} The shortcode, bound to Eleventy's call context at render time.
  */
 export function createImageShortcode({
 	log = createLogger('image'),
 	hasImageTransformPlugin = false,
 	defaults = {},
-	cacheDir
+	cacheDir,
+	isPrepass = false
 } = {}) {
 	/**
 	 * Responsive image shortcode using @11ty/eleventy-img.
@@ -153,7 +155,7 @@ export function createImageShortcode({
 		// nothing, so encoding there means encoding each rendition twice per build,
 		// while the markup it hands the graph should match the built site.
 		const onRequest = process.env.ELEVENTY_RUN_MODE === 'serve';
-		const statsOnly = process.env.BASELINE_PREPASS_ACTIVE === '1';
+		const statsOnly = isPrepass;
 
 		let metadata;
 		try {

@@ -93,7 +93,7 @@ export function assetsCore(eleventyConfig, moduleContext) {
 		// The pre-pass runs dry, so nothing is on disk and every path would look
 		// missing. Its log lines are gated anyway, but relying on that would make
 		// this check correct by accident.
-		if (process.env.BASELINE_PREPASS_ACTIVE === '1') return;
+		if (isPrepass) return;
 
 		for (const href of findMissingAssets(declaredPaths, directories.output)) {
 			log.warn(
