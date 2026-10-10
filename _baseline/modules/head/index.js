@@ -80,7 +80,7 @@ export function headCore(eleventyConfig, moduleContext) {
 	// --- Transform-time: compose and inject. ---
 	log.info('Injecting heads');
 	eleventyConfig.htmlTransformer.addPosthtmlPlugin('html', function (context) {
-		headStats.pages.add(context?.page?.inputPath || context?.outputPath);
+		headStats.pages.add(context?.page?.url || context?.outputPath);
 
 		const key = context?.page?.url ?? context?.page?.inputPath;
 		const seeds = pageContextRegistry?.getByKey(key);
