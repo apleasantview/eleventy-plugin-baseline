@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import { resolveDefault } from '../../core/locale/index.js';
 import { resolveSitemapEntry } from './utils/resolve-entry.js';
+import { gitSources } from '../../core/dates/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,8 +80,10 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 
 	// The resolved entry lands on the module's own reserved key, and `sitemap`
 	// stays the author's. The template reads one object instead of deciding.
+	const dateContext = { timeZone: settings.timeZone, sources: options.dates, git: gitSources, log };
+
 	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
-		return (data) => resolveSitemapEntry(data);
+		return (data) => resolveSitemapEntry(data, dateContext);
 	});
 
 	// --- Virtual sitemap templates ---

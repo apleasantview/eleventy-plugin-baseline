@@ -1,5 +1,6 @@
 import { setEntry } from '../registry.js';
 import { assembleSchemaGraph } from './adapter.js';
+import { resolveDates, gitSources } from '../dates/index.js';
 import { buildSocialProjections } from './open-graph.js';
 import { isAbsoluteImageUrl } from './pick-image.js';
 
@@ -55,18 +56,25 @@ export function resolveCanonicalUrl({ seo, data, settings, page }) {
  * @param {{
  *   scope: { values: Map },
  *   settings: import('../types.js').BaselineSettings,
- *   runtime: any,
  *   options: import('../types.js').BaselineOptions,
  *   log?: { warn: (...args: unknown[]) => void }
  * }} deps
  */
-export function createSeoNamespace({ scope, settings, runtime, options, log }) {
+export function createSeoNamespace({ scope, settings, options, log }) {
 	// One line per distinct URL, not per page that carries it.
 	const warnedImages = new Set();
+
+	const dateContext = {
+		timeZone: settings.timeZone,
+		sources: options.dates,
+		git: gitSources,
+		log
+	};
 
 	return function buildSeoNamespace(data) {
 		const seoIn = data.seo ?? {};
 		const userSettings = data.settings ?? settings;
+		const dates = resolveDates(data, dateContext);
 
 		const seoOut = { ...seoIn };
 
@@ -78,9 +86,9 @@ export function createSeoNamespace({ scope, settings, runtime, options, log }) {
 		});
 		if (url) seoOut.url = url;
 
-		seoOut.schema = assembleSchemaGraph(data);
+		seoOut.schema = assembleSchemaGraph(data, dates);
 
-		const social = buildSocialProjections(data, url);
+		const social = buildSocialProjections(data, url, dates);
 		seoOut.openGraph = social.openGraph;
 		seoOut.twitter = social.twitter;
 

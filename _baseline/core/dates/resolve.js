@@ -19,6 +19,11 @@ export const DEFAULT_SOURCES = {
  * @typedef {{ kind: 'date' | 'instant', value: string, source: string }} ResolvedDate
  */
 
+// One spelling for every instant, whichever path produced it: the same value
+// arrived with milliseconds through the Date branch and without through the
+// string one, so a page's published and modified dates disagreed in shape.
+const toInstant = (dt) => dt.toUTC().toISO({ suppressMilliseconds: true });
+
 function isUtcMidnight(d) {
 	return (
 		d.getUTCHours() === 0 &&
@@ -47,7 +52,7 @@ export function classify(raw, timeZone = 'UTC') {
 	if (raw instanceof Date) {
 		if (Number.isNaN(raw.getTime())) return undefined;
 		if (isUtcMidnight(raw)) return { kind: 'date', value: raw.toISOString().slice(0, 10) };
-		return { kind: 'instant', value: raw.toISOString() };
+		return { kind: 'instant', value: toInstant(DateTime.fromJSDate(raw)) };
 	}
 
 	if (typeof raw !== 'string') return undefined;
@@ -58,7 +63,7 @@ export function classify(raw, timeZone = 'UTC') {
 	const dt = DateTime.fromISO(trimmed, { zone: timeZone });
 	if (!dt.isValid) return undefined;
 
-	return { kind: 'instant', value: dt.toUTC().toISO({ suppressMilliseconds: true }) };
+	return { kind: 'instant', value: toInstant(dt) };
 }
 
 function fromFilename(inputPath) {
@@ -68,10 +73,16 @@ function fromFilename(inputPath) {
 
 function rawFor(token, { data, git, published }) {
 	if (!token.startsWith(':')) return data?.[token];
-	if (token === ':filename') return fromFilename(data?.page?.inputPath);
-	if (token === ':git-created') return git?.created?.(data?.page?.inputPath);
-	if (token === ':git-modified') return git?.modified?.(data?.page?.inputPath);
 	if (token === ':datePublished') return published?.value;
+
+	// A virtual template has no input path, so nothing derived from the file
+	// applies to it.
+	const inputPath = data?.page?.inputPath;
+	if (!inputPath) return undefined;
+
+	if (token === ':filename') return fromFilename(inputPath);
+	if (token === ':git-created') return git?.created?.(inputPath);
+	if (token === ':git-modified') return git?.modified?.(inputPath);
 	return undefined;
 }
 

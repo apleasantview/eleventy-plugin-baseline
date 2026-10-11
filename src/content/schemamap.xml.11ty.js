@@ -4,7 +4,7 @@
 // pages that feed that type's endpoint, read from the same resolveDates source
 // the per-page and corpus JSON-LD use, so it cannot drift from them.
 
-import { resolveDates } from '../../_baseline/core/dates/index.js';
+import { resolveDates, gitSources } from '../../_baseline/core/dates/index.js';
 
 const TYPES = ['article', 'page', 'about'];
 
@@ -19,6 +19,8 @@ export default function (data) {
 	const siteUrl = (settings?.url || '').replace(/\/+$/, '');
 	const navigatorNodes = Object.values(_navigator?.nodes || {});
 
+	const dateContext = { timeZone: settings?.timeZone, git: gitSources };
+
 	const itemByUrl = {};
 	for (const item of collections?.all || []) {
 		if (item?.url) itemByUrl[item.url] = item;
@@ -29,9 +31,8 @@ export default function (data) {
 		for (const node of navigatorNodes) {
 			if (node?.type !== type) continue;
 			const item = itemByUrl[node.url];
-			const resolved = item ? resolveDates(item.data).dateModified : undefined;
-			const iso = resolved ? resolved.toISOString() : null;
-			if (iso && (!lastmod || iso > lastmod)) lastmod = iso;
+			const resolved = item ? resolveDates(item.data, dateContext).dateModified : undefined;
+			if (resolved?.value && (!lastmod || resolved.value > lastmod)) lastmod = resolved.value;
 		}
 		return { type, lastmod };
 	});

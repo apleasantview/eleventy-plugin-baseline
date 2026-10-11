@@ -8,7 +8,6 @@
 // presenters, mirrored by Joost's buildSeoContext (seo-context.ts) + Seo.astro
 // — written fresh against Baseline's namespace.
 
-import { resolveDates } from '../dates/index.js';
 import { applyPartLabel } from '../segmentation/nav.js';
 import { resolveDefault, resolveLocale, toOpenGraphLocale } from '../locale/index.js';
 import { pickImage } from './pick-image.js';
@@ -53,7 +52,7 @@ function localeAlternates(nodes, translationKey, currentUrl, primaryLocale) {
  * @param {string | undefined} canonicalUrl  The resolved canonical (`seo.url`).
  * @returns {{ openGraph: Record<string, unknown>, twitter: Record<string, unknown> }}
  */
-export function buildSocialProjections(data, canonicalUrl) {
+export function buildSocialProjections(data, canonicalUrl, dates = {}) {
 	const settings = data.settings;
 	const pageUrl = data.page?.url;
 	if (!settings?.url || !pageUrl) return { openGraph: {}, twitter: {} };
@@ -103,10 +102,9 @@ export function buildSocialProjections(data, canonicalUrl) {
 	// article:* only when the page projects as an article. Author chain mirrors
 	// the graph adapter's: the Person, else the primary entity (Organization).
 	if (type === 'article') {
-		const dates = resolveDates(data);
 		const article = {};
-		if (dates.datePublished) article.publishedTime = dates.datePublished.toISOString();
-		if (dates.dateModified) article.modifiedTime = dates.dateModified.toISOString();
+		if (dates.datePublished) article.publishedTime = dates.datePublished.value;
+		if (dates.dateModified) article.modifiedTime = dates.dateModified.value;
 		if (data.sectionLabel) article.section = data.sectionLabel;
 		// article:tag mirrors the `topics` convention (the same value the graph emits
 		// as schema.org keywords); always an array, OG tags are repeated tags.

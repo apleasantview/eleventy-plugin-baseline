@@ -20,7 +20,7 @@ describe('classify', () => {
 	it('reads any other Date as an instant', () => {
 		expect(classify(new Date('2026-10-08T14:30:00Z'))).toEqual({
 			kind: 'instant',
-			value: '2026-10-08T14:30:00.000Z'
+			value: '2026-10-08T14:30:00Z'
 		});
 	});
 
@@ -152,5 +152,40 @@ describe('resolveDates', () => {
 			':git-modified',
 			':datePublished'
 		]);
+	});
+});
+
+// A virtual template reaches resolution with no input path, and the derived
+// sources all read the file. Calling git with undefined threw from inside
+// `path.relative` and took four unrelated tests down with it.
+describe('a page with no input path', () => {
+	it('skips every file-derived source without throwing', () => {
+		const git = { modified: () => '2026-12-01T09:00:00Z', created: () => '2026-01-01T00:00:00Z' };
+		const { datePublished, dateModified } = resolveDates(
+			{ page: { url: '/virtual/' } },
+			{ git, sources: { datePublished: [':filename', ':git-created'], dateModified: [':git-modified'] } }
+		);
+
+		expect(datePublished).toBeUndefined();
+		expect(dateModified).toBeUndefined();
+	});
+
+	it('still reads front matter', () => {
+		const { datePublished } = resolveDates({ page: {}, date: '2026-10-08' });
+
+		expect(datePublished.value).toBe('2026-10-08');
+	});
+});
+
+// The rig caught this: the same instant arrived with milliseconds through the
+// Date branch and without through the string one, so one page's published and
+// modified dates disagreed in shape.
+describe('instant spelling', () => {
+	it('is the same whichever branch produced it', () => {
+		const fromDate = classify(new Date('2026-10-08T12:30:00Z'));
+		const fromString = classify('2026-10-08T14:30:00+02:00');
+
+		expect(fromDate.value).toBe('2026-10-08T12:30:00Z');
+		expect(fromString.value).toBe(fromDate.value);
 	});
 });

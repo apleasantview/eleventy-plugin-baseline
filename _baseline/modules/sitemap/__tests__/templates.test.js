@@ -102,7 +102,9 @@ describe('sitemap-core template', () => {
 		expect(locs(xml)).toEqual(['https://www.example.com/']);
 	});
 
-	it('emits the authored lastmod, and the page date when none is authored', () => {
+	// The entry arrives resolved and formatted, so the template prints it and
+	// omits the element when there is nothing to print.
+	it('emits the resolved lastmod and omits it when there is none', () => {
 		const xml = render(core, {
 			...base,
 			collections: {
@@ -114,8 +116,7 @@ describe('sitemap-core template', () => {
 		});
 
 		expect([...xml.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)].map((m) => m[1])).toEqual([
-			'2026-03-04T00:00:00.000Z',
-			'2026-01-15T00:00:00.000Z'
+			'2026-01-15'
 		]);
 	});
 

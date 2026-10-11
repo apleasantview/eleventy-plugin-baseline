@@ -1,4 +1,6 @@
-import { resolveDates } from '../../_baseline/core/dates/index.js';
+import { resolveDates, gitSources } from '../../_baseline/core/dates/index.js';
+
+const dateContext = { git: gitSources };
 
 const mdAlternates = (data) => {
 	if (data.baselineExcludeFromGraph) return [];
@@ -30,16 +32,13 @@ export default {
 	},
 	eleventyComputed: {
 		page: {
-			// Dates via the plugin's resolveDates: front-matter override → git
-			// last-commit → publish-date floor (page.date). This is the same source
-			// the JSON-LD graph reads, so page, sitemap, and graph share one resolved
-			// date and cannot drift. gitModified caches its log walk, so the repeated
-			// calls are map lookups, not subprocesses.
-			datePublished: (data) => resolveDates(data).datePublished,
-			dateModified: (data) => resolveDates(data).dateModified
-		},
-		sitemap: {
-			lastmod: (data) => resolveDates(data).dateModified
+			// The plugin's resolved dates, as the strings they are: a calendar date
+			// is a day and an instant is a timestamp. Same source the JSON-LD graph
+			// and the sitemap read, so nothing can drift. The sitemap used to be fed
+			// from here too; the module resolves it itself now, and a computed write
+			// to the author's `sitemap` key would replace it rather than fill it.
+			datePublished: (data) => resolveDates(data, dateContext).datePublished?.value,
+			dateModified: (data) => resolveDates(data, dateContext).dateModified?.value
 		},
 		head: {
 			// JSON-LD, OG, and Twitter now emit straight from the seo handle in the

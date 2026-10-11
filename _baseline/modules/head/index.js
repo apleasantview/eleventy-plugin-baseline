@@ -50,7 +50,7 @@ const EOL = '\n';
  */
 export function headCore(eleventyConfig, moduleContext) {
 	const { state, runtime, log } = moduleContext;
-	const { settings, options } = state;
+	const { options } = state;
 
 	// Structural-only options check: log on mismatch, do not throw.
 	const parsed = optionsSchema.safeParse(options.head);

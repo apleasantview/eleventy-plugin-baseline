@@ -11,13 +11,13 @@ const COMPUTED_KEY = 'eleventyComputed._seoGraph';
  * @param {Object} coreContext
  */
 export function registerSeoGraph(eleventyConfig, coreContext) {
-	const { state, runtime } = coreContext;
+	const { state } = coreContext;
 	const { settings, options } = state;
 
 	const log = coreContext.scopedLog?.(LOG_NAME) ?? createLogger(LOG_NAME, { verbose: options.verbose });
 	const scope = getScope(eleventyConfig, SCOPE_NAME);
 
-	const buildSeoNamespace = createSeoNamespace({ scope, settings, runtime, options, log });
+	const buildSeoNamespace = createSeoNamespace({ scope, settings, options, log });
 
 	function shouldSkip(data) {
 		if (data._internal) return true;

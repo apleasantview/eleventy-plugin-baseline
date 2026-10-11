@@ -16,7 +16,6 @@ import {
 	buildBreadcrumbList,
 	buildImageObject
 } from '@jdevalk/seo-graph-core';
-import { resolveDates } from '../dates/index.js';
 import { resolveDefault, resolveLocale } from '../locale/index.js';
 import { pickImage } from './pick-image.js';
 import { slugify } from '../utils/slugify.js';
@@ -90,7 +89,7 @@ function buildWorkTranslations(nodes, translationKey, currentUrl, siteRoot, ids)
  * @param {Record<string, any>} data  The Eleventy cascade data bag.
  * @returns {Array<unknown>}
  */
-export function assembleSchemaGraph(data) {
+export function assembleSchemaGraph(data, dates = {}) {
 	const settings = data.settings;
 	const schema = data.schema;
 	const pageUrl = data.page?.url;
@@ -193,7 +192,10 @@ export function assembleSchemaGraph(data) {
 	const translationKey = node?.translationKey || data.page?.translationKey || data.translationKey;
 	const workTranslation = buildWorkTranslations(navigatorNodes, translationKey, pageUrl, siteRoot, ids);
 
-	const dates = resolveDates(data);
+	// seo-graph-core calls toISOString() on whatever it is handed, and
+	// schema.org takes a Date as well as a DateTime, so a calendar date travels
+	// as the day rather than being widened into midnight UTC.
+	const asDateInput = (resolved) => (resolved ? { toISOString: () => resolved.value } : undefined);
 
 	// schema.org keywords from the `topics` front-matter convention; native `tags` untouched.
 	const keywords = data.topics?.length ? data.topics : undefined;
@@ -205,8 +207,8 @@ export function assembleSchemaGraph(data) {
 			isPartOf: { '@id': ids.website },
 			description: node?.description || data.description || node?.excerpt,
 			inLanguage: locale,
-			datePublished: dates.datePublished,
-			dateModified: dates.dateModified,
+			datePublished: asDateInput(dates.datePublished),
+			dateModified: asDateInput(dates.dateModified),
 			breadcrumb: breadcrumbNode ? { '@id': breadcrumbNode['@id'] } : undefined,
 			primaryImage: primaryImageNode ? { '@id': primaryImageNode['@id'] } : undefined,
 			workTranslation: workTranslation.length ? workTranslation : undefined,
@@ -228,8 +230,8 @@ export function assembleSchemaGraph(data) {
 						headline: node?.title || data.title,
 						description: node?.description || data.description || node?.excerpt,
 						inLanguage: locale,
-						datePublished: dates.datePublished,
-						dateModified: dates.dateModified,
+						datePublished: asDateInput(dates.datePublished),
+						dateModified: asDateInput(dates.dateModified),
 						articleSection: data.sectionLabel,
 						keywords
 					},

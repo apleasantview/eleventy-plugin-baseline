@@ -9,7 +9,7 @@
 <url>
 <loc>{{ loc | htmlBaseUrl(siteUrl) }}</loc>
 {%- if lastmod %}
-<lastmod>{{ date.toUTCISO(lastmod) }}</lastmod>
+<lastmod>{{ lastmod }}</lastmod>
 {%- endif %}
 {%- if sm.changefreq %}
 <changefreq>{{ sm.changefreq }}</changefreq>

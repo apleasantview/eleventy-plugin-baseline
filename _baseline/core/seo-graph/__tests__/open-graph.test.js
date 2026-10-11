@@ -173,14 +173,33 @@ describe('article:* gating', () => {
 		expect(buildSocialProjections(bag({ title: 'About' }), canonical).openGraph.article).toBeUndefined();
 	});
 
+	// Dates arrive resolved rather than being derived here, so the kind is
+	// already decided and this emits the value as it stands: a calendar date
+	// stays a day, an instant stays a timestamp.
+	const resolved = {
+		datePublished: { kind: 'date', value: '2026-01-02', source: 'date' },
+		dateModified: { kind: 'instant', value: '2026-03-04T09:00:00Z', source: ':git-modified' }
+	};
+
 	it('emits published time, section and author for an article', () => {
 		const { openGraph } = buildSocialProjections(
 			articleBag({ schema: { person: { name: 'Jane' } } }),
-			'https://www.example.com/blog/hello/'
+			'https://www.example.com/blog/hello/',
+			resolved
 		);
-		expect(openGraph.article.publishedTime).toBe(new Date('2026-01-02').toISOString());
+		expect(openGraph.article.publishedTime).toBe('2026-01-02');
+		expect(openGraph.article.modifiedTime).toBe('2026-03-04T09:00:00Z');
 		expect(openGraph.article.section).toBe('Blog');
 		expect(openGraph.article.authors).toEqual(['Jane']);
+	});
+
+	// No date resolved means no claim made, where the old chain floored to
+	// `page.date` and published the file's birthtime.
+	it('omits the times when nothing resolved', () => {
+		const { openGraph } = buildSocialProjections(articleBag(), canonical);
+
+		expect(openGraph.article.publishedTime).toBeUndefined();
+		expect(openGraph.article.modifiedTime).toBeUndefined();
 	});
 
 	// Author chain: Person preferred, else the primary entity (Organization).

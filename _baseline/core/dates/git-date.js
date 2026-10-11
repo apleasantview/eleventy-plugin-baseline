@@ -3,17 +3,38 @@ import path from 'node:path';
 
 let cache = null;
 
-// Build a { repoRelativePath: ISO date } map from one `git log` walk.
-// Each commit emits its date, then the files it touched; first date wins
-// because git log is newest-first.
+/**
+ * Whether the repository has only part of its history, in which case every
+ * file reports the same commit and git is no use as a date source.
+ */
+function isShallow() {
+	try {
+		const out = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'ignore']
+		});
+		return out.trim() === 'true';
+	} catch {
+		return false;
+	}
+}
+
+// One `git log` walk into two { repoRelativePath: ISO date } maps. Newest
+// first, so the first date seen per path is the last commit and the last is
+// the first. The author date, not the committer date: a rebase rewrites the
+// committer date of commits whose content never changed.
 function buildCache() {
-	const map = new Map();
+	const modified = new Map();
+	const created = new Map();
 	const marker = '__BASELINE_COMMIT__';
 	let raw;
+
+	if (isShallow()) return { modified, created, shallow: true };
+
 	try {
 		raw = execFileSync(
 			'git',
-			['log', '--name-only', '--no-renames', `--pretty=format:${marker}%cI`],
+			['log', '--name-only', '--no-renames', `--pretty=format:${marker}%aI`],
 			{
 				encoding: 'utf8',
 				maxBuffer: 64 * 1024 * 1024,
@@ -24,7 +45,7 @@ function buildCache() {
 			}
 		);
 	} catch {
-		return map;
+		return { modified, created, shallow: false };
 	}
 
 	let currentDate = null;
@@ -32,11 +53,12 @@ function buildCache() {
 		if (line.startsWith(marker)) {
 			// Normalise to UTC so all outputs (sitemap, JSON-LD, schemamap) match.
 			currentDate = new Date(line.slice(marker.length)).toISOString();
-		} else if (line && currentDate && !map.has(line)) {
-			map.set(line, currentDate);
+		} else if (line && currentDate) {
+			if (!modified.has(line)) modified.set(line, currentDate);
+			created.set(line, currentDate);
 		}
 	}
-	return map;
+	return { modified, created, shallow: false };
 }
 
 function normalize(inputPath) {
@@ -47,18 +69,32 @@ function normalize(inputPath) {
 
 /**
  * Last-commit date (UTC ISO) for a file, or `null` when git has no record of
- * it (untracked, or no git history available — e.g. a shallow CI clone).
- *
- * Unlike the docs-site copy this carries no mtime/now fallback: the date floor
- * is `page.date`, applied by `resolveDates`, so this stays a pure "what does
- * git say, or nothing" lookup.
+ * it: untracked, no repository, or a shallow clone. No fallback of any kind,
+ * so resolution falls through to the next source rather than inventing one.
  *
  * @param {string} inputPath
  * @returns {string | null}
  */
 export function gitModified(inputPath) {
 	if (!cache) cache = buildCache();
-	return cache.get(normalize(inputPath)) ?? null;
+	return cache.modified.get(normalize(inputPath)) ?? null;
+}
+
+/**
+ * First-commit date (UTC ISO) for a file, on the same terms.
+ *
+ * @param {string} inputPath
+ * @returns {string | null}
+ */
+export function gitCreated(inputPath) {
+	if (!cache) cache = buildCache();
+	return cache.created.get(normalize(inputPath)) ?? null;
+}
+
+/** Whether git was usable as a date source at all. */
+export function gitIsShallow() {
+	if (!cache) cache = buildCache();
+	return cache.shallow;
 }
 
 /**
