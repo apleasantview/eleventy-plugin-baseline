@@ -96,4 +96,36 @@ describe('sitemapCore', () => {
 			noindex: true
 		});
 	});
+
+	// The index template prints what it is handed, so the kind has to be settled
+	// here. A calendar date that reached it raw would widen into midnight.
+	it('resolves a language lastmod before the index template sees it', () => {
+		const templates = run(
+			{
+				url: 'https://www.example.com/',
+				defaultLanguage: 'en',
+				languages: {
+					en: { lastmod: '2026-01-15' },
+					nl: { lastmod: new Date('2026-02-20T14:30:00.000Z') }
+				}
+			},
+			{ multilang: true }
+		);
+
+		const index = templates.find((t) => t.data.permalink === '/sitemap.xml');
+
+		expect(index.data.languages.en.lastmod).toBe('2026-01-15');
+		expect(index.data.languages.nl.lastmod).toBe('2026-02-20T14:30:00Z');
+	});
+
+	it('leaves a language with no lastmod without one', () => {
+		const templates = run(
+			{ url: 'https://www.example.com/', defaultLanguage: 'en', languages },
+			{ multilang: true }
+		);
+
+		const index = templates.find((t) => t.data.permalink === '/sitemap.xml');
+
+		expect(index.data.languages.en.lastmod).toBeUndefined();
+	});
 });

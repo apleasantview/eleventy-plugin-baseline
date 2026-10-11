@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { normalizeLanguageMap } from '../../core/utils/normalize-language-map.js';
 import { resolveDefault } from '../../core/locale/index.js';
 import { resolveSitemapEntry } from './utils/resolve-entry.js';
-import { gitSources } from '../../core/dates/index.js';
+import { classify, gitSources } from '../../core/dates/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,7 +80,8 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 
 	// The resolved entry lands on the module's own reserved key, and `sitemap`
 	// stays the author's. The template reads one object instead of deciding.
-	const dateContext = { timeZone: settings.timeZone, sources: options.dates, git: gitSources, log };
+	// No `log`: page-context owns the unparseable-date warning for every page.
+	const dateContext = { timeZone: settings.timeZone, sources: options.dates, git: gitSources };
 
 	eleventyConfig.addGlobalData(COMPUTED_KEY, () => {
 		return (data) => resolveSitemapEntry(data, dateContext);
@@ -99,6 +100,15 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 
 	const langKeys = Object.keys(languages || {});
 	const multilingual = isMultilingual;
+
+	// A language's own `lastmod`, resolved here so the index template prints it
+	// and formats nothing, the same as the per-page entry.
+	const indexLanguages = Object.fromEntries(
+		langKeys.map((lang) => [
+			lang,
+			{ ...languages[lang], lastmod: classify(languages[lang]?.lastmod, settings.timeZone)?.value }
+		])
+	);
 
 	if (multilingual && langKeys.length > 1) {
 		for (const lang of langKeys) {
@@ -122,7 +132,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			layout: null,
 			eleventyExcludeFromCollections: true,
 			isMultilingual: multilingual,
-			languages: languages,
+			languages: indexLanguages,
 			...siteData,
 			_internal: true
 		});

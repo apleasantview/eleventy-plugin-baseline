@@ -6,8 +6,8 @@
 {%- for lang, cfg in languages %}
 <sitemap>
 <loc>{{ ("/" ~ lang ~ "/sitemap.xml") | htmlBaseUrl(siteUrl) }}</loc>
-{#- Optional lastmod, if the language config tracks one: #}
-{%- if cfg.lastmod %}<lastmod>{{ date.toUTCISO(cfg.lastmod) }}</lastmod>{% endif %}
+{#- Optional lastmod, resolved by the module if the language config tracks one: #}
+{%- if cfg.lastmod %}<lastmod>{{ cfg.lastmod }}</lastmod>{% endif %}
 </sitemap>
 {%- endfor %}
 {%- endif %}

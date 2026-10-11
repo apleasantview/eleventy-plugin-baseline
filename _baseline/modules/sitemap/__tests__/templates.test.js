@@ -32,10 +32,7 @@ function render(template, data, { defaultBase = '/' } = {}) {
 		return new URL(url, base).href;
 	});
 
-	return env.renderString(template, {
-		date: { toUTCISO: (d) => new Date(d).toISOString() },
-		...data
-	});
+	return env.renderString(template, data);
 }
 
 function locs(xml) {
@@ -228,6 +225,17 @@ describe('sitemap-index template', () => {
 
 		expect(locs(xml)).toEqual([]);
 		expect(xml).toContain('</sitemapindex>');
+	});
+
+	it('prints a language lastmod as given, and omits it when there is none', () => {
+		const xml = render(index, {
+			...base,
+			languages: { en: { lastmod: '2026-01-15' }, nl: {} }
+		});
+
+		expect([...xml.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)].map((m) => m[1])).toEqual([
+			'2026-01-15'
+		]);
 	});
 });
 
