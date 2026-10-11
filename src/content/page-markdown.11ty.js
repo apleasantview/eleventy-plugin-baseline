@@ -84,7 +84,7 @@ export default function ({ node }) {
 		description: d.description,
 		slug: d.slug,
 		type: d.type,
-		date: d.date,
+		date: d.page?.datePublished,
 		lang: d.lang,
 		translationKey: d.translationKey,
 		url: `${siteBase}${node.url}`
