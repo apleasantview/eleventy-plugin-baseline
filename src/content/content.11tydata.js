@@ -1,6 +1,6 @@
 import { resolveDates, gitSources } from '../../_baseline/core/dates/index.js';
 
-const dateContext = { git: gitSources };
+const dateContext = (data) => ({ timeZone: data.settings?.timeZone, git: gitSources });
 
 const mdAlternates = (data) => {
 	if (data.baselineExcludeFromGraph) return [];
@@ -32,13 +32,9 @@ export default {
 	},
 	eleventyComputed: {
 		page: {
-			// The plugin's resolved dates, as the strings they are: a calendar date
-			// is a day and an instant is a timestamp. Same source the JSON-LD graph
-			// and the sitemap read, so nothing can drift. The sitemap used to be fed
-			// from here too; the module resolves it itself now, and a computed write
-			// to the author's `sitemap` key would replace it rather than fill it.
-			datePublished: (data) => resolveDates(data, dateContext).datePublished?.value,
-			dateModified: (data) => resolveDates(data, dateContext).dateModified?.value
+			// Resolved strings, from the source the JSON-LD and sitemap read.
+			datePublished: (data) => resolveDates(data, dateContext(data)).datePublished?.value,
+			dateModified: (data) => resolveDates(data, dateContext(data)).dateModified?.value
 		},
 		head: {
 			// JSON-LD, OG, and Twitter now emit straight from the seo handle in the
