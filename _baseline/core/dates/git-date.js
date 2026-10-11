@@ -82,8 +82,14 @@ export function gitCreated(inputPath) {
 	return cache.created.get(normalize(inputPath)) ?? null;
 }
 
-/** Whether git was usable as a date source at all. */
-export function gitIsShallow() {
+/**
+ * Whether git can answer here: `shallow` when the history is partial, `none`
+ * when there is no history to read, `ok` otherwise.
+ *
+ * @returns {'ok' | 'shallow' | 'none'}
+ */
+export function gitAvailability() {
 	if (!cache) cache = buildCache();
-	return cache.shallow;
+	if (cache.shallow) return 'shallow';
+	return cache.modified.size > 0 ? 'ok' : 'none';
 }

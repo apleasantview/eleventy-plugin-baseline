@@ -12,6 +12,7 @@ import { optionsSchema, settingsSchema } from './core/schema.js';
 import { deriveBaselineState } from './core/state.js';
 import { runPrepass } from './core/content-graph/index.js';
 import { isPrepassConfig } from './core/prepass-channel.js';
+import { gitAvailability } from './core/dates/index.js';
 import { registerVirtualDir } from './core/virtual-dir.js';
 import { createContentMapStore } from './core/content-map-store.js';
 import { createAssetIndexStore } from './core/asset-index-store.js';
@@ -29,7 +30,6 @@ import { createRegistrar } from './core/utils/registrar.js';
 import { resolveDefault } from './core/locale/index.js';
 import { assetsCore, headCore, multilangCore, navigatorCore, sitemapCore } from './modules.js';
 import {
-	registerGlobals,
 	markdownFilter,
 	relatedPostsFilter,
 	isStringFilter,
@@ -160,6 +160,24 @@ export default function baseline(settings = {}, options = {}) {
 	// Resolve state once, above the closure. Pure; no eleventyConfig.
 	const state = deriveBaselineState(settings, options, { mode });
 
+	// Only ask git when a source list wants it, so a site that does not use the
+	// git sources pays neither the walk nor a warning about them.
+	const wantsGit = [state.options.dates.datePublished, state.options.dates.dateModified].some(
+		(list) => list.some((token) => token.startsWith(':git-'))
+	);
+	if (wantsGit) {
+		const availability = gitAvailability();
+		if (availability === 'shallow') {
+			warnLater(
+				'Shallow git clone, so the `:git-created` and `:git-modified` date sources are empty: every file reports the same commit. Set `fetch-depth: 0` on your checkout, or drop the git sources from `options.dates`.'
+			);
+		} else if (availability === 'none') {
+			warnLater(
+				'No git history here, so the `:git-created` and `:git-modified` date sources are empty. Dates fall through to the next source in `options.dates`.'
+			);
+		}
+	}
+
 	// Scoped logging helper.
 	function scopedLog(name) {
 		return createLogger(name, {
@@ -271,8 +289,6 @@ export default function baseline(settings = {}, options = {}) {
 				);
 			});
 		}
-
-		registerGlobals(eleventyConfig);
 
 		// --- Feature exposure to templates ---
 		// Detection matches on `Function.name`, so wrapping the plugin in an
