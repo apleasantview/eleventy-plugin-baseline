@@ -56,6 +56,8 @@
 // resolve, and there a bounded guess beats `100vw`, which would send every such
 // browser after the largest candidate under the viewport. The number itself is
 // inherited and unexamined; nothing should present it as a considered default.
+import { DEFAULT_SOURCES } from './dates/resolve.js';
+
 const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920];
 const IMAGE_FORMATS = ['avif', 'webp', 'jpeg'];
 const IMAGE_SIZES = '(max-width: 768px) 100vw, 768px';
@@ -73,6 +75,36 @@ function resolveSiteUrl(url) {
 	}
 }
 
+/**
+ * Canonicalise a time zone, so `utc`, `GMT` and `Etc/UTC` all become `UTC` and
+ * output is stable however it was typed. Unusable values fall back to UTC; the
+ * schema is what reports them.
+ *
+ * @param {unknown} zone
+ * @returns {string}
+ */
+function resolveTimeZone(zone) {
+	if (typeof zone !== 'string' || !zone.trim()) return 'UTC';
+	try {
+		return new Intl.DateTimeFormat('en', { timeZone: zone.trim() }).resolvedOptions().timeZone;
+	} catch {
+		return 'UTC';
+	}
+}
+
+/**
+ * Expand `:default` in a source list, which lets a caller prepend a key and
+ * keep the rest rather than restating the whole chain.
+ *
+ * @param {string[] | undefined} list
+ * @param {string[]} defaults
+ * @returns {string[]}
+ */
+function resolveDateSources(list, defaults) {
+	if (!Array.isArray(list)) return defaults;
+	return list.flatMap((token) => (token === ':default' ? defaults : token));
+}
+
 export function deriveBaselineState(settings, options, { mode } = {}) {
 	const isDev = mode === 'development';
 
@@ -84,6 +116,7 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 		noindex: settings.noindex ?? false,
 		defaultLanguage: settings.defaultLanguage,
 		defaultLocale: settings.defaultLocale,
+		timeZone: resolveTimeZone(settings.timeZone),
 		languages: settings.languages,
 		head: settings.head,
 		seo: settings.seo
@@ -109,6 +142,10 @@ export function deriveBaselineState(settings, options, { mode } = {}) {
 		assets: {
 			...(options.assets ?? {}),
 			esbuild: options.assets?.esbuild ?? options.assetsESBuild ?? {}
+		},
+		dates: {
+			datePublished: resolveDateSources(options.dates?.datePublished, DEFAULT_SOURCES.datePublished),
+			dateModified: resolveDateSources(options.dates?.dateModified, DEFAULT_SOURCES.dateModified)
 		},
 		media: {
 			image: {

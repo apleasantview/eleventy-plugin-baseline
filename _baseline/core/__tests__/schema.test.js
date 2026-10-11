@@ -178,3 +178,58 @@ describe('optionsSchema', () => {
 		expect(ok({ media: { image: { sizes: 42 } } })).toBe(false);
 	});
 });
+
+describe('settings.timeZone', () => {
+	const parse = (timeZone) => settingsSchema.safeParse({ timeZone });
+
+	it('takes an IANA name, an alias, and any casing', () => {
+		expect(parse('Europe/Amsterdam').success).toBe(true);
+		expect(parse('US/Eastern').success).toBe(true);
+		expect(parse('europe/amsterdam').success).toBe(true);
+	});
+
+	// Not in `Intl.supportedValuesOf('timeZone')`, which is why validation
+	// attempts the value rather than checking membership.
+	it('takes UTC, which is the default', () => {
+		expect(parse('UTC').success).toBe(true);
+	});
+
+	// `Intl` refuses `UTC+2` and, since ES2024, accepts `+02:00`. Both are
+	// fixed offsets with no daylight saving, so the schema refuses them itself.
+	it('refuses a fixed offset and a non-zone', () => {
+		expect(parse('UTC+2').success).toBe(false);
+		expect(parse('+02:00').success).toBe(false);
+		expect(parse('+0200').success).toBe(false);
+		expect(parse('Mars/Olympus').success).toBe(false);
+	});
+
+	it('is optional', () => {
+		expect(settingsSchema.safeParse({}).success).toBe(true);
+	});
+});
+
+describe('options.dates', () => {
+	const parse = (dates) => optionsSchema.safeParse({ dates });
+
+	it('takes front-matter keys and the derived sources', () => {
+		expect(parse({ datePublished: ['pubDate', ':filename', ':default'] }).success).toBe(true);
+		expect(parse({ dateModified: [':git-modified', ':datePublished'] }).success).toBe(true);
+	});
+
+	// Hugo's filesystem source is the first thing a migrating user reaches for,
+	// so the message has to say why it does not exist here.
+	it('refuses a filesystem source and says why', () => {
+		const result = parse({ datePublished: [':fileModTime'] });
+
+		expect(result.success).toBe(false);
+		expect(result.error.issues[0].message).toContain('clone time');
+	});
+
+	it('refuses an unknown derived source', () => {
+		expect(parse({ datePublished: [':nope'] }).success).toBe(false);
+	});
+
+	it('refuses a field it does not own', () => {
+		expect(parse({ published: ['date'] }).success).toBe(false);
+	});
+});

@@ -70,7 +70,37 @@ export const configSchema = z.object({
  * forwards nothing to a third party, so every key it accepts is a key Baseline
  * reads, and a misspelled one would otherwise do nothing in silence.
  */
+// `Intl` accepts a bare offset since ES2024. A fixed offset has no daylight
+// saving, so half the year is wrong and it is not a zone.
+const FIXED_OFFSET = /^[+-]\d{2}:?\d{2}$/;
+
+/** Whether `Intl` will take this as a time zone, and whether it is a real one. */
+function isUsableTimeZone(value) {
+	if (FIXED_OFFSET.test(value.trim())) return false;
+	try {
+		new Intl.DateTimeFormat('en', { timeZone: value });
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+const DATE_SOURCE = /^(:filename|:git-created|:git-modified|:datePublished|:default|[A-Za-z_$][\w$]*)$/;
+
+const dateSourceList = z.array(
+	z.string().refine((token) => DATE_SOURCE.test(token), {
+		message:
+			'is not a date source. Use a front-matter key, or one of :filename, :git-created, :git-modified, :datePublished, :default. Filesystem dates are not a source: on CI they are the clone time rather than the content date.'
+	})
+);
+
 export const optionsSchema = z.looseObject({
+	dates: z
+		.strictObject({
+			datePublished: dateSourceList.optional(),
+			dateModified: dateSourceList.optional()
+		})
+		.optional(),
 	verbose: z.boolean().optional(),
 	multilingual: z.boolean().optional(),
 	sitemap: z.boolean().optional(),
@@ -104,6 +134,14 @@ export const settingsSchema = z.object({
 	noindex: z.boolean().optional(),
 	defaultLanguage: z.string().optional(),
 	defaultLocale: z.string().optional(),
+	// Validated by attempting it: `Intl` knows every IANA name and alias, and
+	// `supportedValuesOf` omits `UTC`, which is the default.
+	timeZone: z
+		.string()
+		.optional()
+		.refine((value) => value === undefined || isUsableTimeZone(value), {
+			message: 'is not a time zone Intl recognises (an IANA name like "Europe/Amsterdam")'
+		}),
 	languages: z
 		.unknown()
 		.optional()

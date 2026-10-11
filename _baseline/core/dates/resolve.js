@@ -1,0 +1,115 @@
+import { DateTime } from 'luxon';
+
+/**
+ * Date resolution
+ *
+ * Ordered sources per field, then classification. A calendar date stays a
+ * calendar date; everything else becomes a UTC instant.
+ */
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+const FILENAME_DATE = /(\d{4}-\d{2}-\d{2})/;
+
+export const DEFAULT_SOURCES = {
+	datePublished: ['datePublished', 'date', ':filename'],
+	dateModified: ['dateModified', 'modified', 'updated', ':git-modified', ':datePublished']
+};
+
+/**
+ * @typedef {{ kind: 'date' | 'instant', value: string, source: string }} ResolvedDate
+ */
+
+function isUtcMidnight(d) {
+	return (
+		d.getUTCHours() === 0 &&
+		d.getUTCMinutes() === 0 &&
+		d.getUTCSeconds() === 0 &&
+		d.getUTCMilliseconds() === 0
+	);
+}
+
+/**
+ * Attach a kind to a raw value, or return undefined when it carries no usable
+ * date.
+ *
+ * A `Date` at exactly UTC midnight is read as a calendar date. That is what
+ * js-yaml produces for `2026-10-08`, and it is the one place the author's
+ * intent is recoverable without parsing front matter a second time. The false
+ * positive is an explicit `2026-10-08T00:00:00Z`, which renders as a date.
+ *
+ * @param {unknown} raw
+ * @param {string} timeZone - Anchor for a date-time carrying no offset.
+ * @returns {{ kind: 'date' | 'instant', value: string } | undefined}
+ */
+export function classify(raw, timeZone = 'UTC') {
+	if (raw === null || raw === undefined || raw === '') return undefined;
+
+	if (raw instanceof Date) {
+		if (Number.isNaN(raw.getTime())) return undefined;
+		if (isUtcMidnight(raw)) return { kind: 'date', value: raw.toISOString().slice(0, 10) };
+		return { kind: 'instant', value: raw.toISOString() };
+	}
+
+	if (typeof raw !== 'string') return undefined;
+
+	const trimmed = raw.trim();
+	if (DATE_ONLY.test(trimmed)) return { kind: 'date', value: trimmed };
+
+	const dt = DateTime.fromISO(trimmed, { zone: timeZone });
+	if (!dt.isValid) return undefined;
+
+	return { kind: 'instant', value: dt.toUTC().toISO({ suppressMilliseconds: true }) };
+}
+
+function fromFilename(inputPath) {
+	const match = typeof inputPath === 'string' ? inputPath.match(FILENAME_DATE) : null;
+	return match ? match[1] : undefined;
+}
+
+function rawFor(token, { data, git, published }) {
+	if (!token.startsWith(':')) return data?.[token];
+	if (token === ':filename') return fromFilename(data?.page?.inputPath);
+	if (token === ':git-created') return git?.created?.(data?.page?.inputPath);
+	if (token === ':git-modified') return git?.modified?.(data?.page?.inputPath);
+	if (token === ':datePublished') return published?.value;
+	return undefined;
+}
+
+function resolveField(tokens, context) {
+	for (const token of tokens) {
+		const raw = rawFor(token, context);
+		if (raw === null || raw === undefined || raw === '') continue;
+
+		const classified = classify(raw, context.timeZone);
+		if (classified) return { ...classified, source: token };
+
+		context.log?.warn?.(
+			`Unparseable date "${raw}" from ${token} on ${context.data?.page?.inputPath ?? 'unknown page'}, skipping it`
+		);
+	}
+	return undefined;
+}
+
+/**
+ * Resolve a page's published and modified dates.
+ *
+ * Never invents a value: a field with no resolvable source stays undefined, so
+ * an undated page carries no date rather than the build time.
+ *
+ * @param {object} data - The page's cascade data.
+ * @param {object} [context]
+ * @param {string} [context.timeZone='UTC']
+ * @param {{ datePublished: string[], dateModified: string[] }} [context.sources]
+ * @param {{ created?: (p: string) => string | null, modified?: (p: string) => string | null }} [context.git]
+ * @param {{ warn?: Function }} [context.log]
+ * @returns {{ datePublished: ResolvedDate | undefined, dateModified: ResolvedDate | undefined }}
+ */
+export function resolveDates(data, context = {}) {
+	const { timeZone = 'UTC', sources = DEFAULT_SOURCES, git, log } = context;
+	const shared = { data, git, log, timeZone };
+
+	const datePublished = resolveField(sources.datePublished ?? [], shared);
+	const dateModified = resolveField(sources.dateModified ?? [], { ...shared, published: datePublished });
+
+	return { datePublished, dateModified };
+}
