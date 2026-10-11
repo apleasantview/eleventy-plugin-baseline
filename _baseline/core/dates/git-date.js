@@ -3,10 +3,7 @@ import path from 'node:path';
 
 let cache = null;
 
-/**
- * Whether the repository has only part of its history, in which case every
- * file reports the same commit and git is no use as a date source.
- */
+// A partial history reports the same commit for every file, so git is no use.
 function isShallow() {
 	try {
 		const out = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
@@ -19,10 +16,8 @@ function isShallow() {
 	}
 }
 
-// One `git log` walk into two { repoRelativePath: ISO date } maps. Newest
-// first, so the first date seen per path is the last commit and the last is
-// the first. The author date, not the committer date: a rebase rewrites the
-// committer date of commits whose content never changed.
+// One `git log` walk into two { repoRelativePath: ISO date } maps. Newest first,
+// so the first date per path is the last commit. Author date, not committer.
 function buildCache() {
 	const modified = new Map();
 	const created = new Map();
@@ -38,9 +33,7 @@ function buildCache() {
 			{
 				encoding: 'utf8',
 				maxBuffer: 64 * 1024 * 1024,
-				// Swallow git's stderr. Outside a repo it writes "fatal: not a git
-				// repository" straight to the terminal before throwing, which reads
-				// as a build failure in a build that is fine without git.
+				// Swallowed stderr: outside a repo git prints a fatal that is not one.
 				stdio: ['ignore', 'pipe', 'ignore']
 			}
 		);
@@ -51,7 +44,6 @@ function buildCache() {
 	let currentDate = null;
 	for (const line of raw.split('\n')) {
 		if (line.startsWith(marker)) {
-			// Normalise to UTC so all outputs (sitemap, JSON-LD, schemamap) match.
 			currentDate = new Date(line.slice(marker.length)).toISOString();
 		} else if (line && currentDate) {
 			if (!modified.has(line)) modified.set(line, currentDate);
@@ -68,9 +60,8 @@ function normalize(inputPath) {
 }
 
 /**
- * Last-commit date (UTC ISO) for a file, or `null` when git has no record of
- * it: untracked, no repository, or a shallow clone. No fallback of any kind,
- * so resolution falls through to the next source rather than inventing one.
+ * Last-commit date (UTC ISO), or `null` when git has no record of the file.
+ * No fallback, so resolution falls through to the next source.
  *
  * @param {string} inputPath
  * @returns {string | null}
@@ -95,20 +86,4 @@ export function gitCreated(inputPath) {
 export function gitIsShallow() {
 	if (!cache) cache = buildCache();
 	return cache.shallow;
-}
-
-/**
- * The most recent `gitModified` across several paths, or `null` if none resolve.
- *
- * @param {Array<string | undefined | null>} inputPaths
- * @returns {string | null}
- */
-export function maxGitModified(inputPaths) {
-	let max = null;
-	for (const p of inputPaths) {
-		if (!p) continue;
-		const iso = gitModified(p);
-		if (iso && (!max || iso > max)) max = iso;
-	}
-	return max;
 }

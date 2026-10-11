@@ -19,9 +19,7 @@ export const DEFAULT_SOURCES = {
  * @typedef {{ kind: 'date' | 'instant', value: string, source: string }} ResolvedDate
  */
 
-// One spelling for every instant, whichever path produced it: the same value
-// arrived with milliseconds through the Date branch and without through the
-// string one, so a page's published and modified dates disagreed in shape.
+// One exit for both branches, so an instant has one spelling.
 const toInstant = (dt) => dt.toUTC().toISO({ suppressMilliseconds: true });
 
 function isUtcMidnight(d) {
@@ -34,13 +32,9 @@ function isUtcMidnight(d) {
 }
 
 /**
- * Attach a kind to a raw value, or return undefined when it carries no usable
- * date.
- *
- * A `Date` at exactly UTC midnight is read as a calendar date. That is what
- * js-yaml produces for `2026-10-08`, and it is the one place the author's
- * intent is recoverable without parsing front matter a second time. The false
- * positive is an explicit `2026-10-08T00:00:00Z`, which renders as a date.
+ * Attach a kind to a raw value, or undefined when it carries no usable date.
+ * A `Date` at UTC midnight is a calendar date: that is what js-yaml makes of
+ * `2026-10-08`.
  *
  * @param {unknown} raw
  * @param {string} timeZone - Anchor for a date-time carrying no offset.
@@ -75,8 +69,7 @@ function rawFor(token, { data, git, published }) {
 	if (!token.startsWith(':')) return data?.[token];
 	if (token === ':datePublished') return published?.value;
 
-	// A virtual template has no input path, so nothing derived from the file
-	// applies to it.
+	// A virtual template has no input path, so nothing file-derived applies.
 	const inputPath = data?.page?.inputPath;
 	if (!inputPath) return undefined;
 
@@ -102,10 +95,8 @@ function resolveField(tokens, context) {
 }
 
 /**
- * Resolve a page's published and modified dates.
- *
- * Never invents a value: a field with no resolvable source stays undefined, so
- * an undated page carries no date rather than the build time.
+ * Resolve a page's published and modified dates. Never invents one: a field
+ * with no resolvable source stays undefined rather than taking the build time.
  *
  * @param {object} data - The page's cascade data.
  * @param {object} [context]

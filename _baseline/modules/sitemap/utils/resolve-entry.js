@@ -1,15 +1,9 @@
 import { classify, resolveDates } from '../../../core/dates/index.js';
 
 /**
- * Resolve one page's sitemap entry from the cascade.
- *
- * `sitemap` is the author's key and is read here, never written: a computed
- * write to it replaces the object rather than filling its gaps, which would
- * discard whatever front matter declared.
- *
- * `lastmod` is emitted as a string, so the template formats nothing and
- * decides nothing. W3C Datetime takes a date alone, so a calendar date is
- * written as the day rather than widened into midnight.
+ * Resolve one page's sitemap entry from the cascade. `sitemap` is the author's
+ * key, read here and never written. `lastmod` leaves as a string, so the
+ * template formats nothing.
  *
  * @param {Object} data - The full cascade data bag.
  * @param {Object} [dateContext] - Passed to `resolveDates`.

@@ -192,9 +192,8 @@ export function assembleSchemaGraph(data, dates = {}) {
 	const translationKey = node?.translationKey || data.page?.translationKey || data.translationKey;
 	const workTranslation = buildWorkTranslations(navigatorNodes, translationKey, pageUrl, siteRoot, ids);
 
-	// seo-graph-core calls toISOString() on whatever it is handed, and
-	// schema.org takes a Date as well as a DateTime, so a calendar date travels
-	// as the day rather than being widened into midnight UTC.
+	// seo-graph-core calls toISOString() on what it is handed. A real Date would
+	// widen a calendar date into midnight; schema.org takes the day.
 	const asDateInput = (resolved) => (resolved ? { toISOString: () => resolved.value } : undefined);
 
 	// schema.org keywords from the `topics` front-matter convention; native `tags` untouched.
