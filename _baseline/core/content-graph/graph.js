@@ -81,7 +81,8 @@ export function buildGraph(pages, options = {}) {
 				isDefaultLang: ctx.page?.isDefaultLang,
 				// Undefined unless split on a marker; the translation index groups on it.
 				part: ctx.page?.part,
-				date: ctx.page?.date,
+				datePublished: ctx.page?.datePublished,
+				dateModified: ctx.page?.dateModified,
 				url
 			};
 

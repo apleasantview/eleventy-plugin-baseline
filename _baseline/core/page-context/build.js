@@ -3,6 +3,7 @@ import { slugify } from '../utils/slugify.js';
 import { sentenceCaseSlug } from '../utils/sentence-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
+import { resolveDates, gitSources } from '../dates/index.js';
 import { normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
 import { SEGMENT_DATA_KEY, SEGMENT_ALIAS } from '../segmentation/constants.js';
@@ -155,6 +156,7 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	// One line per build, not one per page.
 	let warnedSettingsUrl = false;
 	const separator = options.head?.titleSeparator ?? ' – ';
+	const dateContext = { timeZone: settings.timeZone, sources: options.dates, git: gitSources, log };
 
 	// Memoised on graph identity: a serve-mode rebuild swaps the graph object,
 	// which is the signal to rebuild the index. Empty during the pre-pass, where
@@ -184,6 +186,10 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 	}
 
 	function buildPage(pageInput, data) {
+		// Eleventy's `page.date` is an instant it backfills from file birthtime,
+		// which is the clone time on CI. Baseline carries its own resolved pair.
+		const dates = resolveDates(data, dateContext);
+
 		return {
 			part: partIndex(data),
 			inputPath: pageInput?.inputPath,
@@ -191,7 +197,8 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			filePathStem: pageInput?.filePathStem,
 			outputFileExtension: pageInput?.outputFileExtension,
 			templateSyntax: pageInput?.templateSyntax,
-			date: pageInput?.date,
+			datePublished: dates.datePublished?.value,
+			dateModified: dates.dateModified?.value,
 			url: pageInput?.url,
 			outputPath: pageInput?.outputPath,
 			lang: pageInput?.lang,
