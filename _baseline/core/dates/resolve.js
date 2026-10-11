@@ -87,7 +87,8 @@ function resolveField(tokens, context) {
 		const classified = classify(raw, context.timeZone);
 		if (classified) return { ...classified, source: token };
 
-		context.log?.warn?.(
+		const warn = context.log?.warnOnce ?? context.log?.warn;
+		warn?.(
 			`Unparseable date "${raw}" from ${token} on ${context.data?.page?.inputPath ?? 'unknown page'}, skipping it`
 		);
 	}

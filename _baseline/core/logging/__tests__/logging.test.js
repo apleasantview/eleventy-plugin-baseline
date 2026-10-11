@@ -69,6 +69,46 @@ describe('createLogger', () => {
 	});
 });
 
+// Eleventy runs a computed function twice, once to discover what it reads and
+// once for real, so a warning raised from one would otherwise double.
+describe('warnOnce', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('says the same thing once however often it is asked', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger(null);
+
+		log.warnOnce('bad date on page.md');
+		log.warnOnce('bad date on page.md');
+		log.warnOnce('bad date on page.md');
+
+		expect(spy).toHaveBeenCalledTimes(1);
+	});
+
+	it('is per message, not a blanket silence after the first', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger(null);
+
+		log.warnOnce('bad date on one.md');
+		log.warnOnce('bad date on two.md');
+		log.warnOnce('bad date on one.md');
+
+		expect(spy.mock.calls.map((c) => c[1])).toEqual(['bad date on one.md', 'bad date on two.md']);
+	});
+
+	it('does not silence plain warn', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const log = createLogger(null);
+
+		log.warnOnce('repeated');
+		log.warn('repeated');
+
+		expect(spy).toHaveBeenCalledTimes(2);
+	});
+});
+
 // The pre-pass gate had no tests, which is how the reference page came to claim
 // the opposite of what the code does for a year. `info` and `warn` are both
 // silenced while the inner Eleventy runs; only `error` is ungated, because a
@@ -118,6 +158,22 @@ describe('the pre-pass gate', () => {
 
 		expect(spy).toHaveBeenCalledTimes(2);
 		expect(spy.mock.calls.map((c) => c[1])).toEqual(['before', 'after']);
+	});
+
+	// The reason `warnOnce` records after the gate rather than before it. A
+	// pre-pass resolves the same pages, so recording first would bank every
+	// message while silent and leave the real build with nothing to say.
+	it('does not let a pre-pass spend a warnOnce the real build needs', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		let inPrepass = true;
+		const log = createLogger(null, { prepass: () => inPrepass });
+
+		log.warnOnce('bad date on page.md');
+		inPrepass = false;
+		log.warnOnce('bad date on page.md');
+
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(spy.mock.calls[0][1]).toBe('bad date on page.md');
 	});
 
 	// No caller passes one during a real build, and the default decides whether

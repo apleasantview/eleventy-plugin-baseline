@@ -64,11 +64,11 @@ export function createSeoNamespace({ scope, settings, options, log }) {
 	// One line per distinct URL, not per page that carries it.
 	const warnedImages = new Set();
 
+	// No `log`: page-context owns the unparseable-date warning for every page.
 	const dateContext = {
 		timeZone: settings.timeZone,
 		sources: options.dates,
-		git: gitSources,
-		log
+		git: gitSources
 	};
 
 	return function buildSeoNamespace(data) {

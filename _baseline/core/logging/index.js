@@ -74,6 +74,7 @@ export function createLogger(
 	// `[11ty]` output is governed by its `quietMode` and stays untouched.
 	// `error` stays ungated: a pre-pass that fails may be the only place it says so.
 	const isPrepass = typeof prepass === 'function' ? prepass : () => prepass === true;
+	const warnedOnce = new Set();
 
 	return {
 		// The default tier. Not narrative and not a problem: the few lines worth
@@ -93,6 +94,16 @@ export function createLogger(
 		},
 		warn: (...args) => {
 			if (isPrepass()) return;
+			console.warn(chalk.yellow().bold(label), ...args);
+		},
+		// For a warning raised from a per-page code path, which Eleventy may run
+		// twice: once to discover what a computed key reads, once for real.
+		// Recorded after the gate, so a pre-pass cannot silence the real build.
+		warnOnce: (...args) => {
+			if (isPrepass()) return;
+			const key = args.join(' ');
+			if (warnedOnce.has(key)) return;
+			warnedOnce.add(key);
 			console.warn(chalk.yellow().bold(label), ...args);
 		},
 		error: (...args) => {
