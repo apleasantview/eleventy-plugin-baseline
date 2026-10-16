@@ -8,7 +8,7 @@
  */
 import 'dotenv/config';
 
-import baseline, { config as baselineConfig } from './_baseline/index.js';
+import baseline, { config as baselineConfig } from '@apleasantview/eleventy-plugin-baseline';
 import syntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 
 import settings from './src/_data/settings.js';
