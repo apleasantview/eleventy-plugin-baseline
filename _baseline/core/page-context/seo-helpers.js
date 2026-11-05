@@ -34,7 +34,12 @@ export function stripTrackingParams(urlObj) {
 export function normalizeCanonical(path, siteUrl) {
 	if (!path || !siteUrl) return;
 
-	const url = new URL(path, siteUrl);
+	let url;
+	try {
+		url = new URL(path, siteUrl);
+	} catch {
+		return;
+	}
 
 	url.hash = '';
 

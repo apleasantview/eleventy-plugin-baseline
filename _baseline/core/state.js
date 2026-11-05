@@ -57,23 +57,11 @@
 // browser after the largest candidate under the viewport. The number itself is
 // inherited and unexamined; nothing should present it as a considered default.
 import { DEFAULT_SOURCES } from './dates/resolve.js';
+import { resolveSiteUrl } from './utils/site-url.js';
 
 const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920];
 const IMAGE_FORMATS = ['avif', 'webp', 'jpeg'];
 const IMAGE_SIZES = '(max-width: 768px) 100vw, 768px';
-
-function resolveSiteUrl(url) {
-	if (typeof url !== 'string') return undefined;
-
-	try {
-		const { protocol } = new URL(url);
-		// Returned as authored, not as `parsed.href`: the docs ask for an origin
-		// with no trailing slash, and normalising would quietly overrule that.
-		return protocol === 'http:' || protocol === 'https:' ? url : undefined;
-	} catch {
-		return undefined;
-	}
-}
 
 /**
  * Canonicalise a time zone, so `utc`, `GMT` and `Etc/UTC` all become `UTC` and

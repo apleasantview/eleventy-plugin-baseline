@@ -3,6 +3,7 @@ import { slugify } from '../utils/slugify.js';
 import { sentenceCaseSlug } from '../utils/sentence-case-slug.js';
 import { uniqueBy } from '../utils/unique-by.js';
 import { resolveField } from '../utils/resolve-field.js';
+import { resolveSiteUrl } from '../utils/site-url.js';
 import { resolveDates, gitSources } from '../dates/index.js';
 import { normalizeCanonical } from './seo-helpers.js';
 import { buildSectionLabelIndex } from '../content-graph/section-labels.js';
@@ -180,7 +181,9 @@ export function createPageContext({ scope, slugIndex, settings, runtime, options
 			title: langEntry?.title ?? userSettings.title ?? '',
 			tagline: langEntry?.tagline ?? userSettings.tagline ?? '',
 			description: langEntry?.description ?? userSettings.description ?? '',
-			url: userSettings.url ?? '',
+			// Resolved here too: this reads the `settings` cascade global, which
+			// state never validated, so a relative url would reach the URL builders.
+			url: resolveSiteUrl(userSettings.url) ?? '',
 			noindex: userSettings.noindex === true
 		};
 	}
