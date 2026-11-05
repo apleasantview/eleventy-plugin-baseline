@@ -117,6 +117,8 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 				title: '',
 				description: '',
 				layout: null,
+				// Ours to render, so it does not follow the project's htmlTemplateEngine.
+				templateEngineOverride: 'njk',
 				eleventyExcludeFromCollections: true,
 				isMultilingual: multilingual,
 				sitemapLang: lang,
@@ -130,6 +132,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			title: '',
 			description: '',
 			layout: null,
+			templateEngineOverride: 'njk',
 			eleventyExcludeFromCollections: true,
 			isMultilingual: multilingual,
 			languages: indexLanguages,
@@ -144,6 +147,7 @@ export function sitemapCore(eleventyConfig, moduleContext) {
 			title: '',
 			description: '',
 			layout: null,
+			templateEngineOverride: 'njk',
 			eleventyExcludeFromCollections: true,
 			...siteData,
 			_internal: true

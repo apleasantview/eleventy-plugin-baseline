@@ -138,6 +138,8 @@ export function navigatorCore(eleventyConfig, moduleContext) {
 			title: 'Navigator Core',
 			description: 'Eleventy + Baseline internals',
 			layout: null,
+			// Ours to render, so it does not follow the project's htmlTemplateEngine.
+			templateEngineOverride: 'njk',
 			eleventyExcludeFromCollections: true,
 			_internal: false,
 			noindex: true,
