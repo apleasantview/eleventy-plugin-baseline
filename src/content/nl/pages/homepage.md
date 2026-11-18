@@ -10,19 +10,15 @@ translationKey: homepage
 layout: 'layouts/home.njk'
 ---
 
-<div class="c-breadcrumbs"><a href="/release-notes/">v{{ _baseline.version }} uitgebracht</a></div>
+<div class="reveal-stagger u-flow">
+
+<div class="c-breadcrumbs" style="--i: 1;"><a href="/release-notes/">v{{ _baseline.version }} uitgebracht</a></div>
+
+<div class="u-flow" style="--i: 1;">
 
 # Het build framework voor Eleventy-sites.
 
 {{ settings.languages[lang].tagline }} {style="--flow-space-heading:0.5em"}
-
-Eleventy is een static site generator die de structurele beslissingen aan jou overlaat. De meeste Eleventy-projecten nemen uiteindelijk dezelfde beslissingen: een asset pipeline, afbeeldingen, head-tags, gestructureerde data, meertaligheid, sitemaps.
-
-Baseline bundelt die beslissingen, al gemaakt en op elkaar afgestemd, in één plugin die de conventies van Eleventy zelf volgt. Een framework in wat het beslist, een plugin in hoe het installeert.
-
----
-
-## Installeren en starten
 
 ```bash
 npm install @11ty/eleventy
@@ -31,39 +27,25 @@ npm install @apleasantview/eleventy-plugin-baseline
 
 Installeer de packages, registreer Baseline in je Eleventy-config en start de dev-server. De [[quickstart | quickstart]] loopt de volledige setup door.
 
-Liever bouwen dan lezen? De [[tutorial | tutorial]] begint met een lege map en eindigt met een homepage, een pagina, een bericht en een tweede taal.
+Liever bouwen dan lezen? De [[tutorial | tutorial]] begint met een lege map en eindigt met een homepage, een pagina, een bericht en een tweede taal, en legt elke beslissing uit op het moment dat hij genomen wordt.
 
 Ben je nieuw met Eleventy, dan helpt het [[introduction | introductiehoofdstuk]] je op weg.
 
----
-
-## Wat je krijgt
-
-### Assets
-
-De asset pipeline, aangesloten. Eén entry point per assetmap: `index.css` loopt via PostCSS, `index.js` via esbuild. Afbeeldingen renderen in de juiste breedtes en moderne formaten, standaard lazy.
-
-### SEO
-
-De head-tags worden gevuld vanuit één settings-bestand, met overrides op paginaniveau waar nodig. `<baseline-head>` zendt een canonical link uit, Open Graph, Twitter Cards en een JSON-LD-graph met gestructureerde data, zonder bedrading per pagina.
-
-De opbouw van de gestructureerde data volgt het model van `seo-graph-core`, van Joost de Valk van Yoast.
-
-### Meertaligheid
-
-Meertaligheid op basis van mappen: collecties per taal, vertalingsmapping, hreflang en i18n-filters. Sitemaps komen per taal, met een index erbovenop.
+</div>
 
 ---
 
-## Eén content graph eronder
+<div class="u-flow" style="--i: 2;">
 
-Backlinks, wikilinks die een mapverplaatsing overleven, breadcrumbs en de gestructureerde data in de head zijn allemaal projecties van één content graph.
+Eleventy is een static site generator die de structurele beslissingen aan jou overlaat. De meeste Eleventy-projecten nemen uiteindelijk dezelfde beslissingen: een asset pipeline, afbeeldingen, head-tags, gestructureerde data, meertaligheid, sitemaps.
 
-Zonder die graph onderhoud je elk daarvan met de hand: een backlinks-index op basis van bestandsnamen, een inhoudsopgave die opnieuw uit de Markdown wordt geparset, gestructureerde data pagina per pagina geschreven. Allemaal loopt het uit de pas zodra je een bestand hernoemt.
+Baseline bundelt die beslissingen, al gemaakt en op elkaar afgestemd, in één plugin die de conventies van Eleventy zelf volgt. Een framework in wat het beslist, een plugin in hoe het installeert.
 
-Baseline bouwt die graph uit de HTML nadat die gerenderd is, dus hij is altijd wat je echt hebt uitgeleverd.
+</div>
 
 ---
+
+<div class="u-flow" style="--i: 3;">
 
 ## Gebouwd op standaarden en conventies
 
@@ -73,7 +55,11 @@ Baseline schrijft geen componenten, CSS-methodologie of frontend framework voor,
 
 Onder de motorkap: [Eleventy](https://www.11ty.dev/) · [[image-shortcode | eleventy-img]] · [[content-helpers | Markdown]] · [[globals | Nunjucks]] · [[assets-pipeline | PostCSS]] · [[assets | esbuild]]
 
+</div>
+
 ---
+
+<div class="u-flow" style="--i: 4;">
 
 ## Draait op Baseline
 
@@ -83,16 +69,32 @@ Bekijk de broncode. Blader door de repo. Draai het lokaal.
 
 [[about:nl | Lees het langere verhaal erachter]].
 
+</div>
+
 ---
 
-## Open source
-
-Baseline is MIT-gelicentieerd en gratis, ontwikkeld in de openbaarheid en onderhouden door [a pleasant view](https://www.apleasantview.com).
-
-[[commercial-support:nl | Commerciële ondersteuning]] krijg je rechtstreeks van de maintainer.
+<div class="u-flow" style="--i: 5;">
 
 ## Doorlopende releases
 
 Baseline verschijnt doorlopend. Elke release brengt het werk verder, gemarkeerd als `0.1.0-next.X`. Breaking changes komen met de regel die je moet aanpassen, uitgeschreven in de [release notes](/release-notes/). Pin een versie als je er iets serieus bovenop bouwt.
 
-Als de docs een gedrag beweren dat je niet kunt reproduceren, dan kloppen de docs waarschijnlijk niet. [Open dan een issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues).
+</div>
+
+---
+
+<div class="u-flow" style="--i: 6;">
+
+## Open source
+
+Baseline is MIT-gelicentieerd en gratis, ontwikkeld in de openbaarheid en onderhouden door [a pleasant view](https://www.apleasantview.com).
+
+Voor hulp uit de community en vragen over Eleventy zelf kun je terecht op de [Eleventy Discord](https://www.11ty.dev/blog/discord/)-server.
+
+[[commercial-support:nl | Commerciële ondersteuning]] krijg je rechtstreeks van de maintainer.
+
+Voor bugs of fouten in de docs kun je [een issue openen](https://github.com/apleasantview/eleventy-plugin-baseline/issues). Als de docs een gedrag beweren dat je niet kunt reproduceren, dan kloppen de docs waarschijnlijk niet.
+
+</div>
+
+</div>

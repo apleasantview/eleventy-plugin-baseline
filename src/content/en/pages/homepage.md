@@ -20,18 +20,6 @@ layout: 'layouts/home.njk'
 
 {{ settings.languages[lang].tagline }} {style="--flow-space-heading:0.5em"}
 
-Eleventy is a static site generator that leaves the structural decisions to you. Most Eleventy projects end up making the same ones: an asset pipeline, images, head tags, structured data, multilingual support, sitemaps.
-
-Baseline is those decisions already made and fitted together in one plugin, following Eleventy's own conventions. A framework in what it decides, a plugin in how it installs.
-
-</div>
-
----
-
-<div class="u-flow" style="--i: 2;">
-
-## Install and start
-
 ```bash
 npm install @11ty/eleventy
 npm install @apleasantview/eleventy-plugin-baseline
@@ -42,6 +30,16 @@ Install the packages, register Baseline in your Eleventy config, and run the dev
 Rather build it than read about it? The [[tutorial | tutorial]] starts from an empty folder and ends with a homepage, a page, a post and a second language, explaining each decision as it makes it.
 
 If you are new to Eleventy, the [[introduction | introduction chapter]] will get you on your way.
+
+</div>
+
+---
+
+<div class="u-flow" style="--i: 2;">
+
+Eleventy is a static site generator that leaves the structural decisions to you. Most Eleventy projects end up making the same ones: an asset pipeline, images, head tags, structured data, multilingual support, sitemaps.
+
+Baseline is those decisions already made and fitted together in one plugin, following Eleventy's own conventions. A framework in what it decides, a plugin in how it installs.
 
 </div>
 
@@ -77,6 +75,16 @@ View source. Browse the repo. Run it locally.
 
 <div class="u-flow" style="--i: 5;">
 
+## Rolling releases
+
+Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
+
+</div>
+
+---
+
+<div class="u-flow" style="--i: 6;">
+
 ## Open source
 
 Baseline is MIT-licensed and free, developed in the open and maintained by [a pleasant view](https://www.apleasantview.com).
@@ -85,17 +93,7 @@ For community support and questions about Eleventy itself, join the [Eleventy Di
 
 [[commercial-support | Commercial support]] is available directly from the maintainer.
 
-</div>
-
----
-
-<div class="u-flow" style="--i: 6;">
-
-## Rolling releases
-
-Baseline ships continuously. Each release advances the work, marked `0.1.0-next.X`. Breaking changes arrive with the line you have to change, written out in the [release notes](/release-notes/). Pin a version when you build something serious on top.
-
-For bugs or doc errors, Please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong.
+For bugs or doc errors, please [open an issue](https://github.com/apleasantview/eleventy-plugin-baseline/issues). If something in the docs claims a behaviour you cannot reproduce, the docs are probably wrong.
 
 </div>
 

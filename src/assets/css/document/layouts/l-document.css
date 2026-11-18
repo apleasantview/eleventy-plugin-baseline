@@ -28,6 +28,18 @@
 	}
 }
 
+/* The footer follows the page's layout. Its sidebar and aside columns only
+ * exist to line it up with a docs page; on a page whose main has no sidebar
+ * (homepage, about…) they push the footer off the content column, so drop
+ * them. :has() can't nest, hence the body-level check. */
+body:not(:has(main .l-document__sidebar)) .l-document--footer {
+	grid-template-columns: [content] minmax(min(var(--content-min-width), 100%), 1fr);
+
+	> :is(.l-document__sidebar, .l-document__aside) {
+		display: none;
+	}
+}
+
 .l-document__content,
 .l-document__breadcrumbs,
 .l-document__navigation {
